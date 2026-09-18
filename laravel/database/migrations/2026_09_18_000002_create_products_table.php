@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -17,7 +18,7 @@ return new class extends Migration
             $table->string('sku', 120)->nullable()->unique();
 
             $table->jsonb('name');
-            $table->string('slug', 190);
+            $table->jsonb('slug');
             $table->jsonb('tag')->nullable();
             $table->jsonb('description')->nullable();
 
@@ -38,8 +39,11 @@ return new class extends Migration
 
             $table->foreign('category_id')->references('id')->on('categories')->restrictOnDelete();
             $table->index(['category_id', 'active']);
-            $table->unique(['category_id', 'slug']);
         });
+
+        DB::statement("CREATE UNIQUE INDEX products_slug_fr_unique ON products ((slug->>'fr')) WHERE (slug->>'fr') IS NOT NULL AND (slug->>'fr') <> ''");
+        DB::statement("CREATE UNIQUE INDEX products_slug_en_unique ON products ((slug->>'en')) WHERE (slug->>'en') IS NOT NULL AND (slug->>'en') <> ''");
+        DB::statement("CREATE UNIQUE INDEX products_slug_ro_unique ON products ((slug->>'ro')) WHERE (slug->>'ro') IS NOT NULL AND (slug->>'ro') <> ''");
     }
 
     public function down(): void
