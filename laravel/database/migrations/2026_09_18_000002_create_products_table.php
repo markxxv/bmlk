@@ -18,10 +18,6 @@ return new class extends Migration
             $table->boolean('is_new')->default(false)->index();
             $table->unsignedInteger('sort_order')->default(0)->index();
 
-            $table->string('status', 40)->default('active')->index();
-            $table->string('product_type', 40)->default('physical')->index();
-            $table->string('catalog_scope', 40)->default('main')->index();
-
             $table->string('source_key', 190)->nullable()->unique();
             $table->string('sku', 120)->nullable()->unique();
             $table->string('barcode', 120)->nullable()->unique();
@@ -47,7 +43,6 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index(['category_id', 'active', 'sort_order']);
-            $table->index(['status', 'active']);
         });
 
         DB::statement('CREATE INDEX products_name_gin_idx ON products USING GIN (name)');
