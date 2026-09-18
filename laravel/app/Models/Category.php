@@ -14,17 +14,17 @@ class Category extends Model
 
     protected $guarded = ['id'];
 
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     protected function casts(): array
     {
         return [
-            'active' => 'boolean',
-            'sort_order' => 'integer',
             'name' => 'array',
-            'slug' => 'array',
             'description' => 'array',
-            'meta_title' => 'array',
-            'meta_description' => 'array',
-            'data' => 'array',
+            'use' => 'array',
+            'price_label' => 'array',
         ];
     }
 
@@ -35,11 +35,11 @@ class Category extends Model
 
     public function children(): HasMany
     {
-        return $this->hasMany(self::class, 'parent_id')->orderBy('sort_order');
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     public function products(): HasMany
     {
-        return $this->hasMany(Product::class)->orderBy('sort_order');
+        return $this->hasMany(Product::class);
     }
 }

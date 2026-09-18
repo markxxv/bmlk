@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,42 +10,35 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->constrained()->restrictOnDelete();
-
+            $table->string('category_id', 80);
             $table->boolean('active')->default(true)->index();
             $table->boolean('featured')->default(false)->index();
             $table->boolean('is_new')->default(false)->index();
-            $table->unsignedInteger('sort_order')->default(0)->index();
             $table->string('sku', 120)->nullable()->unique();
 
             $table->jsonb('name');
-            $table->jsonb('slug');
+            $table->string('slug', 190)->unique();
+            $table->jsonb('tag')->nullable();
             $table->jsonb('description')->nullable();
 
-            $table->jsonb('tags')->nullable();
             $table->jsonb('claims')->nullable();
             $table->jsonb('details')->nullable();
             $table->jsonb('size')->nullable();
             $table->jsonb('measurements')->nullable();
             $table->jsonb('options')->nullable();
+            $table->jsonb('contents')->nullable();
 
             $table->decimal('price', 12, 2)->nullable();
+            $table->decimal('price_min', 12, 2)->nullable();
+            $table->decimal('price_max', 12, 2)->nullable();
             $table->decimal('compare_at_price', 12, 2)->nullable();
-
-            $table->jsonb('source_data')->nullable();
-            $table->jsonb('legacy_data')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['category_id', 'active', 'sort_order']);
+            $table->foreign('category_id')->references('id')->on('categories')->restrictOnDelete();
+            $table->index(['category_id', 'active']);
         });
-
-        DB::statement('CREATE INDEX products_name_gin_idx ON products USING GIN (name)');
-        DB::statement('CREATE INDEX products_slug_gin_idx ON products USING GIN (slug)');
-        DB::statement('CREATE INDEX products_tags_gin_idx ON products USING GIN (tags)');
-        DB::statement('CREATE INDEX products_claims_gin_idx ON products USING GIN (claims)');
-        DB::statement('CREATE INDEX products_options_gin_idx ON products USING GIN (options)');
     }
 
     public function down(): void
