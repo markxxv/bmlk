@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Parisienne&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #E0A4AC; }
+  a { color: #A9636F; }
+  a:hover { color: #3A2E30; }
+  ::selection { background: #3A2E30; color: #FCF8F4; }
+</style>
+<script src="bm-consent.js"></script>
+</helmet>
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#3A2E30"/>
+    <text x="50" y="62" font-family="serif" font-size="42" fill="#E0A4AC" text-anchor="middle">§</text>
+  </svg>
+</template>
+
+<div style="background:#E0A4AC; padding:clamp(10px,2vw,22px); font-family:'Hanken Grotesk', sans-serif; color:#3A2E30;">
+<div style="max-width:1280px; margin:0 auto; background:#FCF8F4; border-radius:26px; overflow:hidden;">
+
+  <div style="background:#E0A4AC; color:#3A2E30; padding:11px clamp(16px,3vw,44px); display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; font-size:11.5px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;">
+    <span>{{ t.bar }}</span>
+    <span>office.blackmilk@gmail.com</span>
+  </div>
+
+  <div style="padding:16px clamp(16px,3vw,44px); display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; border-bottom:1px solid rgba(58,46,48,.10);">
+    <a href="index.html" style="display:flex; align-items:center; gap:11px; text-decoration:none;">
+      <img src="brand/cow-new.png" alt="BLACK MILK" style="width:38px; height:38px; object-fit:contain;">
+      <span style="font-family:'Playfair Display'; font-weight:700; font-size:21px; letter-spacing:.14em; color:#3A2E30;">BLACK MILK</span>
+    </a>
+    <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+      <span style="font-weight:600; font-size:11.5px; letter-spacing:.06em; color:#8A7175;">{{ t.lang_note }}</span>
+      <a href="index.html" style="font-weight:600; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:#3A2E30; text-decoration:none; border-bottom:1px solid rgba(58,46,48,.3); padding-bottom:2px;">{{ t.back }}</a>
+    </div>
+  </div>
+
+  <div style="padding:clamp(44px,6vw,76px) clamp(16px,3vw,44px) 0; max-width:920px; margin:0 auto;">
+    <div style="font-weight:700; font-size:11.5px; letter-spacing:.22em; text-transform:uppercase; color:#A9636F; margin-bottom:14px;">{{ t.kicker }}</div>
+    <h1 style="font-family:'Playfair Display'; font-weight:700; font-size:clamp(34px,5.5vw,58px); line-height:1.04; margin:0 0 16px; color:#3A2E30;">{{ t.h1 }}</h1>
+    <p style="font-size:16px; line-height:1.7; color:#8A7175; margin:0 0 10px; max-width:640px;">{{ t.intro }}</p>
+    <p style="font-size:13px; line-height:1.6; color:#8A7175; margin:0;">{{ t.updated }}</p>
+  </div>
+
+  <div style="padding:34px clamp(16px,3vw,44px) 0; max-width:920px; margin:0 auto;">
+    <div style="background:#F1DFE0; border-radius:18px; padding:24px 26px;">
+      <div style="font-weight:700; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:#A9636F; margin-bottom:10px;">{{ t.todo_t }}</div>
+      <p style="font-size:14px; line-height:1.7; color:#3A2E30; margin:0 0 12px;">{{ t.todo_p }}</p>
+      <ul style="list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:8px;">
+        <sc-for list="{{ t.todo }}" as="td" hint-placeholder-count="8">
+          <li style="font-size:13.5px; line-height:1.5; color:#3A2E30;">— {{ td }}</li>
+        </sc-for>
+      </ul>
+    </div>
+  </div>
+
+  <div style="padding:34px clamp(16px,3vw,44px) 0; max-width:920px; margin:0 auto;">
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="5">
+        <span onClick="{{ tb.pick }}" style="font-weight:600; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; padding:12px 20px; border-radius:40px; cursor:pointer; background-color:{{ tb.bg }}; color:{{ tb.fg }}; box-shadow:inset 0 0 0 1px {{ tb.bd }};">{{ tb.label }}</span>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="padding:36px clamp(16px,3vw,44px) clamp(56px,7vw,96px); max-width:920px; margin:0 auto;">
+    <h2 style="font-family:'Playfair Display'; font-weight:700; font-size:clamp(26px,3.6vw,38px); line-height:1.1; margin:0 0 8px; color:#3A2E30;">{{ doc.title }}</h2>
+    <p style="font-size:14.5px; line-height:1.7; color:#8A7175; margin:0 0 34px;">{{ doc.lead }}</p>
+    <div style="display:flex; flex-direction:column; gap:26px;">
+      <sc-for list="{{ doc.blocks }}" as="bl" hint-placeholder-count="8">
+        <div style="background:#FFFCF9; border-radius:16px; padding:26px 28px; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08);">
+          <h3 style="font-family:'Playfair Display'; font-weight:600; font-size:20px; line-height:1.2; margin:0 0 12px; color:#3A2E30;">{{ bl.h }}</h3>
+          <p style="font-size:14.5px; line-height:1.75; color:#5F4E52; margin:0; white-space:pre-line;">{{ bl.p }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <footer style="background:#F1DFE0; padding:36px clamp(16px,3vw,44px); display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; font-size:12.5px; color:#5F4E52;">
+    <span>© 2026 BLACK MILK France — {{ t.rights }}</span>
+    <span style="display:flex; gap:20px; flex-wrap:wrap;">
+      <a href="index.html" style="color:#A9636F; text-decoration:none;">{{ t.back }}</a>
+      <a href="centre-client.html" style="color:#A9636F; text-decoration:none;">{{ t.help }}</a>
+      <span onClick="{{ reopenConsent }}" style="color:#A9636F; cursor:pointer;">{{ t.cookie_settings }}</span>
+    </span>
+  </footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+const CO = "⟨à compléter : voir encadré⟩";
+
+const DOCS_FR = [
+  {
+    id: "ml", label: "Mentions légales",
+    title: "Mentions légales",
+    lead: "Informations obligatoires au titre de l'article 6-III de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN) et de l'article L.221-5 du Code de la consommation.",
+    blocks: [
+      { h: "Éditeur du site", p: "Dénomination sociale : BLACK MILK FRANCE " + CO + "\nForme juridique : " + CO + " (SAS / SARL / entreprise individuelle)\nCapital social : " + CO + "\nSiège social : " + CO + "\nRCS : " + CO + "\nSIRET : " + CO + "\nNuméro de TVA intracommunautaire : " + CO + "\nAdresse e-mail : office.blackmilk@gmail.com\nTéléphone : +33 7 44 83 81 87" },
+      { h: "Responsable de la publication", p: "Elena Smirnova, en qualité de " + CO + " (gérante / présidente).\nContact : office.blackmilk@gmail.com" },
+      { h: "Hébergeur du site", p: "Nom : " + CO + "\nAdresse : " + CO + "\nTéléphone : " + CO + "\n\nCette mention est obligatoire : l'article 6-III de la LCEN impose d'indiquer le nom, la dénomination sociale, l'adresse et le numéro de téléphone de l'hébergeur." },
+      { h: "Propriété intellectuelle", p: "L'ensemble du site — structure, textes, photographies, nuanciers, logo BLACK MILK, la mascotte et la charte graphique — est protégé par le droit d'auteur et le droit des marques. Toute reproduction, représentation, adaptation ou exploitation, totale ou partielle, sans autorisation écrite préalable est interdite et constitue une contrefaçon sanctionnée par les articles L.335-2 et suivants du Code de la propriété intellectuelle.\n\nLes photographies de réalisations publiées avec l'accord de leurs auteurs restent leur propriété." },
+      { h: "Cosmétiques — conformité réglementaire", p: "Les produits cosmétiques commercialisés sont conformes au Règlement (CE) n° 1223/2009 relatif aux produits cosmétiques." },
+      { h: "Médiation de la consommation", p: "Conformément aux articles L.611-1 et suivants du Code de la consommation, tout consommateur a le droit de recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige.\n\nMédiateur désigné : " + CO + "\nAdresse : " + CO + "\nSite : " + CO + "\n\nPlateforme européenne de règlement en ligne des litiges (RLL) : https://ec.europa.eu/consumers/odr\n\nLa saisine du médiateur n'est recevable qu'après une réclamation écrite préalable adressée à notre service client." },
+      { h: "Litiges et droit applicable", p: "Le présent site et les ventes conclues sont soumis au droit français. Pour les consommateurs résidant dans un autre État membre de l'Union européenne, les dispositions impératives plus protectrices de leur pays de résidence habituelle demeurent applicables (Règlement (CE) n° 593/2008, dit Rome I)." },
+    ],
+  },
+  {
+    id: "cgv", label: "CGV",
+    title: "Conditions Générales de Vente",
+    lead: "Applicables aux ventes conclues sur ce site avec des consommateurs et des professionnels. Version en vigueur à la date indiquée ci-dessus.",
+    blocks: [
+      { h: "Article 1 — Objet et champ d'application", p: "Les présentes conditions générales de vente régissent sans restriction ni réserve l'ensemble des ventes de produits cosmétiques, d'outils professionnels et de formations conclues sur ce site.\n\nElles sont communiquées avant toute commande et leur acceptation par case à cocher, distincte et non pré-cochée, conditionne la validation du panier (article L.221-14 du Code de la consommation)." },
+      { h: "Article 2 — Produits et destination professionnelle", p: "Les produits sont présentés avec leurs caractéristiques essentielles : composition, contenance, mode d'emploi et précautions. Les photographies et nuanciers sont les plus fidèles possible ; une variation de rendu liée à l'écran de l'utilisateur ne saurait engager notre responsabilité.\n\nCertains articles (fraises, meuleuses, gels de construction) sont destinés à un usage professionnel et supposent une formation adaptée. Leur mauvaise utilisation n'est pas couverte par la garantie." },
+      { h: "Article 3 — Prix", p: "Les prix sont indiqués en euros, toutes taxes comprises (TTC) pour les consommateurs, et hors taxes (HT) lorsque cela est expressément précisé pour les professionnels.\n\nLa TVA applicable est celle du pays de livraison au sein de l'Union européenne, conformément au régime du guichet unique OSS. Les frais de livraison sont indiqués séparément avant la validation définitive de la commande.\n\nPour les livraisons hors Union européenne, des droits de douane et taxes d'importation peuvent être exigés à l'arrivée ; ils restent à la charge exclusive du destinataire." },
+      { h: "Article 4 — Commande", p: "Le processus de commande comporte les étapes suivantes : sélection des articles, vérification du panier, saisie des coordonnées de livraison et de facturation, choix du mode de livraison, acceptation des présentes CGV, puis paiement.\n\nLa commande n'est définitive qu'après confirmation du paiement. Un accusé de réception récapitulant la commande est adressé par courrier électronique sur un support durable (article L.221-13 du Code de la consommation).\n\nNous nous réservons le droit de refuser toute commande présentant un caractère anormal, frauduleux ou manifestement destinée à la revente non autorisée." },
+      { h: "Article 5 — Paiement et sécurité", p: "Le paiement est exigible à la commande. Moyens acceptés : " + CO + " (carte bancaire, PayPal, virement).\n\nLes données de paiement sont saisies directement sur l'environnement sécurisé du prestataire de paiement (" + CO + ") et ne transitent ni ne sont stockées sur nos serveurs. Les transactions sont protégées par le chiffrement TLS et l'authentification forte du client (DSP2 / SCA), conformément à la directive (UE) 2015/2366.\n\nEn cas de défaut de paiement, la commande est annulée de plein droit." },
+      { h: "Article 6 — Livraison", p: "Zones desservies : France métropolitaine, Union européenne et international.\n\nDélai de préparation : 1 à 2 jours ouvrés. Délais indicatifs après expédition : France 2 à 4 jours ouvrés, Union européenne 3 à 7 jours ouvrés, hors UE 7 à 15 jours ouvrés selon les formalités douanières.\n\nConformément à l'article L.216-1 du Code de la consommation, la livraison intervient au plus tard trente (30) jours après la conclusion du contrat, sauf délai différent convenu. En cas de dépassement, le consommateur peut, après mise en demeure restée infructueuse, résoudre le contrat et être remboursé sous quatorze (14) jours.\n\nLe transfert des risques n'intervient qu'à la remise physique du colis (article L.216-4). En cas de colis endommagé, il convient de signaler l'avarie sous 48 heures avec photographies du colis, de l'emballage et des produits." },
+      { h: "Article 7 — Droit de rétractation", p: "Le consommateur dispose d'un délai de quatorze (14) jours calendaires à compter de la réception du dernier article de sa commande pour exercer son droit de rétractation, sans motif ni pénalité (articles L.221-18 et suivants du Code de la consommation).\n\nModalités : notification par courrier électronique à office.blackmilk@gmail.com ou au moyen du formulaire type reproduit dans l'onglet « Rétractation ». Les produits doivent être retournés dans les quatorze (14) jours suivant la notification, dans leur état d'origine, complets et non utilisés.\n\nLes frais de retour sont à la charge du consommateur, sauf produit non conforme ou erreur de notre part. Le remboursement intervient dans les quatorze (14) jours suivant la récupération des biens, par le même moyen de paiement.\n\nExceptions légales (article L.221-28) : produits descellés après livraison et ne pouvant être renvoyés pour des raisons d'hygiène ou de protection de la santé ; contenus numériques et formations en ligne dont l'exécution a commencé avec l'accord préalable exprès du consommateur et renoncement exprès à son droit de rétractation ; biens confectionnés selon des spécifications personnalisées." },
+      { h: "Article 8 — Garanties légales", p: "Indépendamment de toute garantie commerciale, le vendeur reste tenu :\n\n— de la garantie légale de conformité (articles L.217-1 et suivants du Code de la consommation), d'une durée de deux (2) ans à compter de la délivrance du bien, avec présomption d'antériorité du défaut pendant vingt-quatre (24) mois pour les biens neufs ; le consommateur choisit entre la réparation et le remplacement, et peut obtenir une réduction du prix ou la résolution du contrat dans les conditions légales ;\n\n— de la garantie des vices cachés (articles 1641 à 1649 du Code civil), pouvant être invoquée dans un délai de deux (2) ans à compter de la découverte du vice.\n\nAucune de ces garanties n'exclut ni ne limite les droits que la directive (UE) 2019/771 confère aux consommateurs européens." },
+      { h: "Article 9 — Formations et services", p: "Les formations en ligne donnent accès à des contenus pédagogiques pour la durée annoncée sur la fiche produit. Elles sont strictement personnelles : le partage des accès, l'enregistrement et la rediffusion sont interdits et entraînent la résiliation immédiate de l'accès sans remboursement.\n\nPour les formations en présentiel, une annulation par le participant plus de trente (30) jours avant la session donne lieu au remboursement intégral hors acompte de réservation ; entre trente (30) et sept (7) jours, à un report ; moins de sept (7) jours avant la session, aucun remboursement n'est dû. En cas d'annulation à notre initiative, l'intégralité des sommes versées est remboursée." },
+      { h: "Article 10 — Réclamations et service client", p: "Toute réclamation doit être adressée à office.blackmilk@gmail.com ou via le Centre client du site, en précisant le numéro de commande. Nous nous engageons à répondre dans un délai de quarante-huit (48) heures ouvrées.\n\nÀ défaut de solution amiable, le consommateur peut saisir gratuitement le médiateur de la consommation mentionné dans les Mentions légales, ou la plateforme européenne de règlement en ligne des litiges." },
+      { h: "Article 11 — Responsabilité", p: "Notre responsabilité ne saurait être engagée en cas de mauvaise utilisation des produits, de non-respect des modes d'emploi et précautions, d'utilisation par une personne non formée, ou de réaction individuelle imprévisible. Il est recommandé de réaliser un test de tolérance avant toute première utilisation.\n\nAucune clause des présentes ne limite la responsabilité légale en cas de dommage corporel, de faute lourde ou de dol." },
+      { h: "Article 12 — Force majeure, nullité partielle, droit applicable", p: "Aucune partie ne peut être tenue responsable d'un manquement résultant d'un événement de force majeure au sens de l'article 1218 du Code civil.\n\nSi une stipulation des présentes est déclarée nulle, les autres conservent leur pleine valeur.\n\nLes présentes sont soumises au droit français. Le consommateur européen conserve le bénéfice des dispositions impératives de son pays de résidence habituelle et peut saisir les juridictions de ce pays (Règlement (UE) n° 1215/2012, dit Bruxelles I bis)." },
+    ],
+  },
+  {
+    id: "rgpd", label: "Confidentialité (RGPD)",
+    title: "Politique de confidentialité",
+    lead: "Traitement des données à caractère personnel au titre du Règlement (UE) 2016/679 (RGPD) et de la loi n° 78-17 du 6 janvier 1978 modifiée (loi Informatique et Libertés).",
+    blocks: [
+      { h: "Responsable du traitement", p: "BLACK MILK FRANCE, " + CO + "\nSiège social : " + CO + "\nContact données personnelles : office.blackmilk@gmail.com\n\nDélégué à la protection des données (DPO) : " + CO + " — la désignation d'un DPO n'est obligatoire que dans les cas prévus à l'article 37 du RGPD ; sa nomination volontaire est néanmoins recommandée." },
+      { h: "Données collectées et finalités", p: "Gestion des commandes et de la facturation — identité, adresses de livraison et de facturation, e-mail, téléphone, détail de la commande. Base légale : exécution du contrat (art. 6.1.b).\n\nCompte client — identifiants et historique de commandes. Base légale : exécution du contrat.\n\nPaiement — les données de carte bancaire sont traitées exclusivement par le prestataire de paiement ; nous n'y avons jamais accès. Base légale : exécution du contrat.\n\nService client, réclamations et suivi — échanges, pièces jointes et photographies transmises. Base légale : exécution du contrat et intérêt légitime.\n\nLettre d'information — adresse e-mail. Base légale : consentement (art. 6.1.a), révocable à tout moment par le lien de désinscription.\n\nAvis clients et notation — pseudonyme facultatif et contenu de l'avis. Base légale : consentement.\n\nMesure d'audience et cookies non essentiels — voir l'onglet « Cookies ». Base légale : consentement.\n\nObligations comptables et fiscales — pièces justificatives. Base légale : obligation légale (art. 6.1.c).\n\nAucune décision entièrement automatisée ni profilage produisant des effets juridiques n'est mise en œuvre. Aucune donnée sensible au sens de l'article 9 du RGPD n'est collectée : ne transmettez aucune information de santé dans vos messages." },
+      { h: "Destinataires et sous-traitants", p: "Les données ne sont ni vendues ni louées. Elles sont communiquées, dans la limite de ce qui est nécessaire, à :\n\n— l'hébergeur du site : " + CO + "\n— le prestataire de paiement : " + CO + "\n— les transporteurs (Colissimo, Chronopost, DHL, UPS, DPD, GLS) pour la livraison et le suivi\n— le prestataire d'envoi d'e-mails : " + CO + "\n— l'outil de mesure d'audience, le cas échéant : " + CO + "\n\nChaque sous-traitant est lié par un contrat conforme à l'article 28 du RGPD." },
+      { h: "Transferts hors Union européenne", p: "Aucun transfert hors de l'Espace économique européen n'est réalisé sans garanties appropriées. Le cas échéant, les transferts sont encadrés par une décision d'adéquation de la Commission européenne (notamment le EU-US Data Privacy Framework) ou par les clauses contractuelles types du 4 juin 2021, complétées d'une analyse d'impact des transferts.\n\nSous-traitants concernés : " + CO },
+      { h: "Durées de conservation", p: "Commandes et facturation : dix (10) ans à compter de la clôture de l'exercice, au titre de l'article L.123-22 du Code de commerce.\nCompte client : durée de la relation commerciale, puis trois (3) ans à compter du dernier contact.\nProspects et lettre d'information : trois (3) ans à compter du dernier contact ou jusqu'au retrait du consentement.\nService client et réclamations : cinq (5) ans.\nAvis clients : jusqu'à demande de suppression.\nCookies et traceurs : treize (13) mois maximum ; les informations collectées, vingt-cinq (25) mois maximum.\nJournaux de connexion : un (1) an, conformément à l'article L.34-1 du Code des postes et des communications électroniques." },
+      { h: "Vos droits", p: "Vous disposez, dans les conditions prévues aux articles 15 à 22 du RGPD, des droits suivants : accès, rectification, effacement, limitation du traitement, opposition, portabilité de vos données, retrait du consentement à tout moment, et définition du sort de vos données après votre décès.\n\nPour les exercer : office.blackmilk@gmail.com, en précisant votre demande. Une réponse vous est apportée dans un délai d'un (1) mois, prorogeable de deux (2) mois pour les demandes complexes. Une pièce justificative d'identité peut être demandée en cas de doute raisonnable sur l'identité du demandeur.\n\nVous pouvez également introduire une réclamation auprès de la Commission nationale de l'informatique et des libertés (CNIL), 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07 — www.cnil.fr — ou auprès de l'autorité de contrôle de votre État de résidence." },
+      { h: "Sécurité des données", p: "Mesures techniques et organisationnelles mises en œuvre : chiffrement des échanges par TLS 1.2 ou supérieur avec redirection HTTPS systématique et en-tête HSTS ; mots de passe stockés sous forme de condensats à sel unique (bcrypt ou Argon2) ; authentification à deux facteurs sur les accès d'administration ; limitation des habilitations au strict nécessaire ; sauvegardes chiffrées et testées ; mises à jour de sécurité régulières ; journalisation des accès ; en-têtes de sécurité (Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) ; protection contre les injections, le cross-site scripting et la falsification de requêtes.\n\nEn cas de violation de données susceptible d'engendrer un risque pour vos droits et libertés, la CNIL est notifiée dans les soixante-douze (72) heures et vous êtes informé dans les meilleurs délais (articles 33 et 34 du RGPD)." },
+      { h: "Mineurs", p: "Le site n'est pas destiné aux personnes de moins de seize (16) ans et aucune donnée n'est collectée sciemment auprès d'elles. Toute donnée transmise par un mineur sans le consentement du titulaire de l'autorité parentale sera supprimée sur simple demande." },
+    ],
+  },
+  {
+    id: "cookies", label: "Cookies",
+    title: "Politique de gestion des cookies",
+    lead: "Conformément à l'article 82 de la loi Informatique et Libertés, transposant l'article 5.3 de la directive 2002/58/CE, et aux lignes directrices de la CNIL.",
+    blocks: [
+      { h: "Principe du consentement", p: "Seuls les cookies strictement nécessaires au fonctionnement du site sont déposés sans votre accord. Tous les autres — mesure d'audience non exemptée, réseaux sociaux, publicité — ne sont déposés qu'après votre consentement explicite.\n\nLe bandeau de consentement propose un choix équitable : « Tout accepter », « Tout refuser » et « Personnaliser » sont présentés avec la même facilité d'accès. Poursuivre la navigation, faire défiler la page ou fermer le bandeau ne vaut pas consentement. Le refus n'est pas re-sollicité avant six (6) mois." },
+      { h: "Cookies strictement nécessaires (sans consentement)", p: "bm-consent — mémorise vos choix en matière de cookies. Durée : six (6) mois.\nbm-lang — mémorise la langue d'affichage. Durée : douze (12) mois.\nPanier et session — assurent la continuité de la commande. Durée : session ou treize (13) mois.\nJeton anti-CSRF — protège les formulaires contre la falsification de requêtes. Durée : session." },
+      { h: "Cookies de mesure d'audience (consentement requis)", p: "Outil utilisé : " + CO + "\n\nUne mesure d'audience peut être exemptée de consentement si elle est strictement limitée à la production de statistiques anonymes, sans recoupement avec d'autres traitements, sans transmission à des tiers, avec adresse IP tronquée et durée de conservation limitée à vingt-cinq (25) mois. À défaut, le consentement est obligatoire." },
+      { h: "Cookies tiers et contenus intégrés (consentement requis)", p: "Les lecteurs vidéo, cartes et modules de réseaux sociaux déposent leurs propres traceurs dès leur chargement. Sur ce site, les contenus intégrés ne sont chargés qu'après votre accord ; à défaut, un espace réservé s'affiche avec un bouton d'activation.\n\nLes liens vers Instagram et TikTok sont de simples hyperliens et ne déposent aucun traceur.\n\nOutils tiers susceptibles d'être utilisés : " + CO + " (pixel Meta, Google Ads, TikTok Pixel)." },
+      { h: "Modifier vos choix", p: "Vous pouvez à tout moment revenir sur votre décision via le lien « Paramètres cookies » présent en pied de page.\n\nVous pouvez également configurer votre navigateur pour bloquer ou supprimer les cookies (Chrome, Firefox, Safari et Edge proposent tous ce réglage dans leurs préférences de confidentialité). Le blocage des cookies strictement nécessaires peut empêcher la validation d'une commande.\n\nUne durée de vie maximale de treize (13) mois s'applique aux traceurs soumis à consentement, et de vingt-cinq (25) mois aux informations qu'ils collectent." },
+    ],
+  },
+  {
+    id: "retract", label: "Rétractation",
+    title: "Formulaire de rétractation",
+    lead: "Formulaire type figurant à l'annexe de l'article R.221-1 du Code de la consommation. À compléter et à renvoyer uniquement si vous souhaitez vous rétracter du contrat.",
+    blocks: [
+      { h: "À l'attention de", p: "BLACK MILK FRANCE\n" + CO + " (adresse postale complète)\nCourrier électronique : office.blackmilk@gmail.com\nTéléphone : +33 7 44 83 81 87" },
+      { h: "Déclaration de rétractation", p: "Je / nous (*) vous notifie / notifions (*) par la présente ma / notre (*) rétractation du contrat portant sur la vente du bien / pour la prestation de services (*) ci-dessous :\n\nCommandé le (*) / reçu le (*) : ……………………………………\nNuméro de commande : ……………………………………\nDésignation du ou des produits : ……………………………………\n\nNom du (des) consommateur(s) : ……………………………………\nAdresse du (des) consommateur(s) : ……………………………………\n\nSignature du (des) consommateur(s) — uniquement en cas de notification sur papier : ……………………………………\n\nDate : ……………………………………\n\n(*) Rayez la mention inutile." },
+      { h: "Ce qu'il faut retenir", p: "Le délai de rétractation est de quatorze (14) jours calendaires à compter de la réception du dernier article de votre commande.\n\nVous pouvez aussi nous notifier votre décision par un courrier électronique dénué d'ambiguïté, sans utiliser ce formulaire.\n\nLes produits doivent nous être retournés dans les quatorze (14) jours suivant votre notification, complets, non utilisés et dans leur emballage d'origine. Les frais de retour sont à votre charge, sauf produit non conforme ou erreur de notre part.\n\nLe remboursement intervient dans les quatorze (14) jours suivant la récupération des biens, par le même moyen de paiement que celui utilisé lors de la commande.\n\nAttention : les produits cosmétiques descellés après livraison ne peuvent être repris pour des raisons d'hygiène et de protection de la santé (article L.221-28 5° du Code de la consommation), et les formations en ligne dont l'accès a été ouvert à votre demande expresse sont exclues du droit de rétractation." },
+    ],
+  },
+];
+
+const T = {
+  FR: {
+    bar: "Informations légales — BLACK MILK France",
+    back: "Retour à l'accueil", help: "Centre client", rights: "Tous droits réservés",
+    kicker: "Cadre juridique",
+    h1: "Informations légales",
+    intro: "Mentions légales, conditions générales de vente, protection des données personnelles, cookies et droit de rétractation. Ces documents s'appliquent aux commandes passées depuis la France et depuis l'ensemble de l'Union européenne.",
+    updated: "Dernière mise à jour : 4 septembre 2026",
+    cookie_settings: "Paramètres cookies",
+    lang_note: "Documents juridiques disponibles en français — versions EN / RO à venir",
+    todo_t: "Éléments à compléter avant la mise en ligne",
+    todo_p: "Les documents ci-dessous sont rédigés et structurés selon le droit français et le droit de l'Union européenne. Chaque mention « à compléter » correspond à une information que seule votre société détient. Ces champs sont juridiquement obligatoires : le site ne doit pas être publié tant qu'ils ne sont pas renseignés.",
+    todo: [
+      "Forme juridique et capital social",
+      "Adresse du siège social",
+      "Numéros RCS et SIRET",
+      "Numéro de TVA intracommunautaire",
+      "Hébergeur : nom, adresse, téléphone",
+      "Médiateur de la consommation adhéré",
+      "Prestataire de paiement et moyens acceptés",
+      "Outil d'e-mailing et de mesure d'audience",
+      "DPO si désigné",
+    ],
+  },
+};
+
+class Component extends DCLogic {
+  state = { tab: 0 };
+
+  componentDidMount() {
+    const h = (location.hash || "").replace("#", "");
+    const i = DOCS_FR.findIndex((d) => d.id === h);
+    if (i >= 0) this.setState({ tab: i });
+  }
+
+  renderVals() {
+    const t = T.FR;
+    const docs = DOCS_FR;
+    return {
+      t,
+      tabs: docs.map((d, i) => ({
+        label: d.label,
+        bg: i === this.state.tab ? "#A9636F" : "transparent",
+        fg: i === this.state.tab ? "#FFFCF9" : "#3A2E30",
+        bd: i === this.state.tab ? "#A9636F" : "rgba(58,46,48,.22)",
+        pick: () => { this.setState({ tab: i }); try { history.replaceState(null, "", "#" + d.id); } catch (e) {} },
+      })),
+      doc: docs[this.state.tab] || docs[0],
+      reopenConsent: () => { if (window.BMConsent && window.BMConsent.open) window.BMConsent.open(); },
+    };
+  }
+}
+</script>
+</body>
+</html>

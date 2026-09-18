@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #E0A4AC; }
+  a { color: #A9636F; }
+  a:hover { color: #3A2E30; }
+  input, select, button { font-family: 'Hanken Grotesk', sans-serif; }
+</style>
+<script src="image-slot.js"></script>
+<script src="swatches-data.js"></script>
+</helmet>
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#E0A4AC"/>
+    <text x="50" y="64" font-family="serif" font-size="38" fill="#3A2E30" text-anchor="middle">M</text>
+  </svg>
+</template>
+
+<div style="background:#E0A4AC; padding:clamp(10px,2vw,22px); font-family:'Hanken Grotesk', sans-serif; color:#3A2E30;">
+<div style="max-width:1280px; margin:0 auto; background:#FCF8F4; border-radius:26px; overflow:hidden;">
+
+  <div style="background:#3A2E30; color:#FCF8F4; padding:12px clamp(16px,3vw,40px); display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;">
+    <span style="font-weight:700; font-size:11px; letter-spacing:.16em; text-transform:uppercase;">Maquette interactive — simulation, aucun paiement réel</span>
+    <span style="font-size:11.5px; color:#E0A4AC;">Les données sont fictives et remises à zéro au rechargement</span>
+  </div>
+
+  <div style="padding:18px clamp(16px,3vw,40px); border-bottom:1px solid rgba(58,46,48,.1); display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;">
+    <div style="display:flex; align-items:center; gap:11px;">
+      <img src="brand/cow-new.png" alt="BLACK MILK" style="width:36px; height:36px; object-fit:contain;">
+      <span style="font-family:'Playfair Display'; font-weight:700; font-size:20px; letter-spacing:.14em;">BLACK MILK</span>
+    </div>
+    <div style="display:flex; gap:7px; flex-wrap:wrap;">
+      <sc-for list="{{ steps }}" as="st" hint-placeholder-count="6">
+        <span onClick="{{ st.go }}" style="font-weight:600; font-size:11px; letter-spacing:.08em; text-transform:uppercase; padding:10px 15px; border-radius:40px; cursor:pointer; background-color:{{ st.bg }}; color:{{ st.fg }}; box-shadow:inset 0 0 0 1px {{ st.bd }};">{{ st.n }}. {{ st.label }}</span>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- ===== 1 · FICHE PRODUIT ===== -->
+  <sc-if value="{{ isProduct }}" hint-placeholder-val="{{ true }}">
+  <div style="padding:clamp(28px,4vw,48px) clamp(16px,3vw,40px);">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:44px; align-items:start;">
+      <div>
+        <div style="aspect-ratio:1/1; border-radius:18px; overflow:hidden; background:#FFFCF9; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08); margin-bottom:12px;">
+          <image-slot src="{{ prod.bigPhoto }}" shape="rect" fit="contain" style="width:100%; height:100%;" placeholder="{{ prod.name }}"></image-slot>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <sc-for list="{{ prod.thumbs }}" as="th" hint-placeholder-count="3">
+            <div onClick="{{ th.pick }}" style="width:78px; height:78px; border-radius:12px; overflow:hidden; cursor:pointer; background:#FFFCF9; box-shadow:inset 0 0 0 2px {{ th.ring }};">
+              <image-slot src="{{ th.src }}" shape="rect" fit="contain" style="width:100%; height:100%;" placeholder=""></image-slot>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-weight:700; font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:#A9636F; margin-bottom:10px;">{{ prod.cat }}</div>
+        <h1 style="font-family:'Playfair Display'; font-weight:700; font-size:clamp(28px,4vw,40px); line-height:1.1; margin:0 0 8px;">{{ prod.name }}</h1>
+        <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:18px;">
+          <span style="font-family:'Playfair Display'; font-weight:600; font-size:30px;">{{ prod.priceLabel }}</span>
+          <span style="font-size:12.5px; color:#8A7175;">TTC · TVA 20 % incluse</span>
+        </div>
+        <div style="display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:{{ prod.stockFg }}; background:{{ prod.stockBg }}; padding:8px 14px; border-radius:30px; margin-bottom:22px;">{{ prod.stockLabel }}</div>
+        <p style="font-size:15px; line-height:1.7; color:#5F4E52; margin:0 0 26px;">{{ prod.desc }}</p>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:22px;">
+          <span style="font-weight:700; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#A9636F;">Teinte</span>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <sc-for list="{{ variants }}" as="v" hint-placeholder-count="4">
+              <span onClick="{{ v.pick }}" style="display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:600; padding:9px 15px; border-radius:30px; cursor:pointer; background-color:{{ v.bg }}; color:{{ v.fg }}; box-shadow:inset 0 0 0 1px {{ v.bd }};">{{ v.name }}</span>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:14px;">
+          <div style="display:flex; align-items:center; background:#FFFCF9; border-radius:40px; box-shadow:inset 0 0 0 1px rgba(58,46,48,.14);">
+            <span onClick="{{ decQty }}" style="width:44px; height:46px; display:flex; align-items:center; justify-content:center; font-size:19px; cursor:pointer; color:#A9636F;">–</span>
+            <span style="min-width:34px; text-align:center; font-weight:700; font-size:15px;">{{ qty }}</span>
+            <span onClick="{{ incQty }}" style="width:44px; height:46px; display:flex; align-items:center; justify-content:center; font-size:19px; cursor:pointer; color:#A9636F;">+</span>
+          </div>
+          <span onClick="{{ addToCart }}" style="flex:1 1 auto; text-align:center; font-weight:600; font-size:12px; letter-spacing:.12em; text-transform:uppercase; background:#A9636F; color:#FFFCF9; padding:16px 28px; border-radius:40px; cursor:pointer; min-width:210px;">Ajouter au panier</span>
+        </div>
+        <sc-if value="{{ justAdded }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:13.5px; font-weight:600; color:#1F8A5B; margin-bottom:14px;">Ajouté au panier — le stock est réservé pendant 15 minutes</div>
+        </sc-if>
+        <div style="font-size:13px; line-height:1.6; color:#8A7175; margin-bottom:26px;">Expédié sous 1 à 3 jours ouvrés · Livraison offerte dès 100 € · Retour sous 14 jours, hors produits descellés</div>
+
+        <div style="border-top:1px solid rgba(58,46,48,.1);">
+          <sc-for list="{{ tabsProd }}" as="tp" hint-placeholder-count="4">
+            <div style="border-bottom:1px solid rgba(58,46,48,.1);">
+              <div onClick="{{ tp.toggle }}" style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:17px 2px; cursor:pointer;">
+                <span style="font-weight:600; font-size:13.5px; letter-spacing:.06em; text-transform:uppercase;">{{ tp.h }}</span>
+                <span style="font-size:19px; color:#A9636F;">{{ tp.arrow }}</span>
+              </div>
+              <sc-if value="{{ tp.isOpen }}" hint-placeholder-val="{{ false }}">
+                <p style="font-size:14px; line-height:1.75; color:#5F4E52; margin:0; padding:0 2px 20px; white-space:pre-line;">{{ tp.p }}</p>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===== 2 · PANIER ===== -->
+  <sc-if value="{{ isCart }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:clamp(28px,4vw,48px) clamp(16px,3vw,40px);">
+    <h2 style="font-family:'Playfair Display'; font-weight:700; font-size:clamp(26px,3.6vw,38px); margin:0 0 26px;">Votre panier</h2>
+    <sc-if value="{{ cartEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#FFFCF9; border-radius:18px; padding:44px; text-align:center; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08);">
+        <img src="brand/cow-new.png" alt="" style="width:70px; height:70px; object-fit:contain; opacity:.5;">
+        <div style="font-size:15px; color:#8A7175; margin-top:14px;">Votre panier est vide.</div>
+      </div>
+    </sc-if>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:26px; align-items:start;">
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <sc-for list="{{ cart }}" as="ci" hint-placeholder-count="2">
+          <div style="background:#FFFCF9; border-radius:16px; padding:16px; display:flex; gap:16px; align-items:center; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08);">
+            <div style="flex:0 0 auto; width:74px; height:74px; border-radius:11px; overflow:hidden; background:#FCF8F4;">
+              <image-slot src="{{ ci.img }}" shape="rect" fit="contain" style="width:100%; height:100%;" placeholder=""></image-slot>
+            </div>
+            <div style="flex:1 1 auto; min-width:0;">
+              <div style="font-family:'Playfair Display'; font-weight:600; font-size:17px; line-height:1.25;">{{ ci.name }}</div>
+              <div style="font-size:12px; color:#8A7175; margin-top:3px;">{{ ci.cat }} · réf. {{ ci.sku }}</div>
+              <div style="font-size:12.5px; color:#8A7175; margin-top:3px;">Lot {{ ci.lot }}</div>
+            </div>
+            <div style="flex:0 0 auto; display:flex; align-items:center; gap:12px;">
+              <div style="display:flex; align-items:center; background:#FCF8F4; border-radius:30px; box-shadow:inset 0 0 0 1px rgba(58,46,48,.12);">
+                <span onClick="{{ ci.dec }}" style="width:34px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#A9636F;">–</span>
+                <span style="min-width:24px; text-align:center; font-weight:700; font-size:14px;">{{ ci.qty }}</span>
+                <span onClick="{{ ci.inc }}" style="width:34px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#A9636F;">+</span>
+              </div>
+              <span style="font-weight:700; font-size:15px; min-width:74px; text-align:right;">{{ ci.lineLabel }}</span>
+              <span onClick="{{ ci.remove }}" style="cursor:pointer; color:#A9636F; font-size:17px;">×</span>
+            </div>
+          </div>
+        </sc-for>
+
+        <div style="background:#FFFCF9; border-radius:16px; padding:18px; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08);">
+          <div style="font-weight:700; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#A9636F; margin-bottom:10px;">Code promotionnel</div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <input id="bm-promo" placeholder="Ex. BIENVENUE10" style="flex:1 1 160px; font-size:14px; color:#3A2E30; background:#FCF8F4; border:none; border-radius:11px; padding:13px 15px; outline:none;">
+            <span onClick="{{ applyPromo }}" style="font-weight:600; font-size:11px; letter-spacing:.1em; text-transform:uppercase; background:#3A2E30; color:#FCF8F4; padding:13px 22px; border-radius:30px; cursor:pointer;">Appliquer</span>
+          </div>
+          <div style="font-size:13px; color:{{ promoFg }}; margin-top:10px;">{{ promoMsg }}</div>
+        </div>
+      </div>
+
+      <div style="background:#F1DFE0; border-radius:18px; padding:26px;">
+        <div style="font-family:'Playfair Display'; font-weight:700; font-size:21px; margin-bottom:18px;">Récapitulatif</div>
+        <sc-for list="{{ totals }}" as="tr" hint-placeholder-count="5">
+          <div style="display:flex; justify-content:space-between; gap:14px; font-size:14px; padding:7px 0; color:{{ tr.fg }}; font-weight:{{ tr.w }};">
+            <span>{{ tr.k }}</span><span>{{ tr.v }}</span>
+          </div>
+        </sc-for>
+        <div style="border-top:1px solid rgba(58,46,48,.18); margin:12px 0 0; padding-top:14px; display:flex; justify-content:space-between; gap:14px;">
+          <span style="font-weight:700; font-size:15px;">Total TTC</span>
+          <span style="font-family:'Playfair Display'; font-weight:700; font-size:24px;">{{ grandLabel }}</span>
+        </div>
+        <div style="font-size:12.5px; color:#7A5A60; margin-top:6px;">{{ freeShipMsg }}</div>
+        <span onClick="{{ goShip }}" style="display:block; text-align:center; font-weight:600; font-size:12px; letter-spacing:.12em; text-transform:uppercase; background:#A9636F; color:#FFFCF9; padding:16px; border-radius:40px; cursor:pointer; margin-top:20px;">Choisir la livraison</span>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===== 3 · LIVRAISON ===== -->
+  <sc-if value="{{ isShip }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:clamp(28px,4vw,48px) clamp(16px,3vw,40px);">
+    <h2 style="font-family:'Playfair Display'; font-weight:700; font-size:clamp(26px,3.6vw,38px); margin:0 0 8px;">Livraison</h2>
+    <p style="font-size:14px; color:#8A7175; margin:0 0 26px;">Les tarifs se recalculent selon la destination, le poids et la valeur du panier.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:26px; align-items:start;">
+      <div>
+        <div style="background:#FFFCF9; border-radius:16px; padding:20px; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08); margin-bottom:16px;">
+          <div style="font-weight:700; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#A9636F; margin-bottom:12px;">Destination</div>
+          <div style="display:flex; gap:7px; flex-wrap:wrap;">
+            <sc-for list="{{ zones }}" as="z" hint-placeholder-count="4">
+              <span onClick="{{ z.pick }}" style="font-size:12.5px; font-weight:600; padding:10px 16px; border-radius:30px; cursor:pointer; background-color:{{ z.bg }}; color:{{ z.fg }}; box-shadow:inset 0 0 0 1px {{ z.bd }};">{{ z.label }}</span>
+            </sc-for>
+          </div>
+          <div style="font-size:13px; color:#8A7175; margin-top:12px;">Poids du panier : {{ weightLabel }} · Valeur marchande : {{ goodsLabel }}</div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:11px;">
+          <sc-for list="{{ methods }}" as="m" hint-placeholder-count="4">
+            <div onClick="{{ m.pick }}" style="background:#FFFCF9; border-radius:16px; padding:18px 20px; cursor:pointer; box-shadow:inset 0 0 0 2px {{ m.ring }}; display:flex; gap:16px; align-items:flex-start;">
+              <span style="flex:0 0 auto; width:18px; height:18px; border-radius:50%; margin-top:3px; background-color:{{ m.dotBg }}; box-shadow:inset 0 0 0 2px #A9636F;"></span>
+              <div style="flex:1 1 auto;">
+                <div style="display:flex; justify-content:space-between; gap:14px; align-items:baseline; flex-wrap:wrap;">
+                  <span style="font-family:'Playfair Display'; font-weight:600; font-size:18px;">{{ m.name }}</span>
+                  <span style="font-weight:700; font-size:15px;">{{ m.priceLabel }}</span>
+                </div>
+                <div style="font-size:13px; color:#8A7175; margin-top:4px;">{{ m.carrier }} · {{ m.delay }}</div>
+                <div style="font-size:12.5px; color:{{ m.insFg }}; margin-top:6px;">{{ m.insNote }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ zoneBlocked }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#F7E4E4; border-radius:14px; padding:18px; margin-top:14px; font-size:13.5px; line-height:1.65; color:#8A4A57;">Nous ne livrons pas encore cette destination. Écrivez-nous à office.blackmilk@gmail.com pour un devis sur mesure.</div>
+        </sc-if>
+      </div>
+
+      <div style="background:#F1DFE0; border-radius:18px; padding:26px;">
+        <div style="font-family:'Playfair Display'; font-weight:700; font-size:21px; margin-bottom:18px;">Récapitulatif</div>
+        <sc-for list="{{ totals }}" as="tr" hint-placeholder-count="5">
+          <div style="display:flex; justify-content:space-between; gap:14px; font-size:14px; padding:7px 0; color:{{ tr.fg }}; font-weight:{{ tr.w }};">
+            <span>{{ tr.k }}</span><span>{{ tr.v }}</span>
+          </div>
+        </sc-for>
+        <div style="border-top:1px solid rgba(58,46,48,.18); margin:12px 0 0; padding-top:14px; display:flex; justify-content:space-between; gap:14px;">
+          <span style="font-weight:700; font-size:15px;">Total TTC</span>
+          <span style="font-family:'Playfair Display'; font-weight:700; font-size:24px;">{{ grandLabel }}</span>
+        </div>
+        <span onClick="{{ goPay }}" style="display:block; text-align:center; font-weight:600; font-size:12px; letter-spacing:.12em; text-transform:uppercase; background:#A9636F; color:#FFFCF9; padding:16px; border-radius:40px; cursor:pointer; margin-top:20px;">Passer au paiement</span>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===== 4 · PAIEMENT ===== -->
+  <sc-if value="{{ isPay }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:clamp(28px,4vw,48px) clamp(16px,3vw,40px);">
+    <h2 style="font-family:'Playfair Display'; font-weight:700; font-size:clamp(26px,3.6vw,38px); margin:0 0 26px;">Paiement</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:26px; align-items:start;">
+      <div>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+          <sc-for list="{{ payMethods }}" as="pm" hint-placeholder-count="5">
+            <div onClick="{{ pm.pick }}" style="background:#FFFCF9; border-radius:14px; padding:16px 18px; cursor:pointer; box-shadow:inset 0 0 0 2px {{ pm.ring }}; display:flex; align-items:center; gap:14px;">
+              <span style="flex:0 0 auto; width:17px; height:17px; border-radius:50%; background-color:{{ pm.dotBg }}; box-shadow:inset 0 0 0 2px #A9636F;"></span>
+              <div style="flex:1 1 auto;">
+                <div style="font-weight:600; font-size:14.5px;">{{ pm.name }}</div>
+                <div style="font-size:12.5px; color:#8A7175; margin-top:2px;">{{ pm.note }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="background:#FFFCF9; border-radius:16px; padding:20px; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08);">
+          <div style="display:flex; flex-direction:column; gap:11px;">
+            <input placeholder="Numéro de carte — simulation, ne saisissez rien de réel" style="font-size:14px; color:#3A2E30; background:#FCF8F4; border:none; border-radius:11px; padding:13px 15px; outline:none;">
+            <div style="display:flex; gap:11px; flex-wrap:wrap;">
+              <input placeholder="MM / AA" style="flex:1 1 100px; font-size:14px; color:#3A2E30; background:#FCF8F4; border:none; border-radius:11px; padding:13px 15px; outline:none;">
+              <input placeholder="CVC" style="flex:1 1 80px; font-size:14px; color:#3A2E30; background:#FCF8F4; border:none; border-radius:11px; padding:13px 15px; outline:none;">
+            </div>
+          </div>
+          <div style="font-size:12.5px; color:#8A7175; margin-top:12px; line-height:1.6;">Les numéros de carte ne transitent jamais par le site : ils sont saisis dans un champ hébergé par le prestataire de paiement. Authentification 3-D Secure 2 obligatoire.</div>
+        </div>
+
+        <div onClick="{{ toggleCgv }}" style="display:flex; align-items:flex-start; gap:12px; margin-top:20px; cursor:pointer;">
+          <span style="flex:0 0 auto; width:20px; height:20px; border-radius:5px; margin-top:2px; background-color:{{ cgvBg }}; box-shadow:inset 0 0 0 2px #A9636F; color:#FFFCF9; font-size:13px; display:flex; align-items:center; justify-content:center;">{{ cgvMark }}</span>
+          <span style="font-size:13.5px; line-height:1.6;">J'ai lu et j'accepte les conditions générales de vente, la politique de confidentialité et les modalités de retour.</span>
+        </div>
+        <div style="font-size:12.5px; color:#8A7175; margin-top:8px;">Case obligatoire, jamais pré-cochée — article L.221-14 du Code de la consommation.</div>
+
+        <span onClick="{{ payNow }}" style="display:inline-block; margin-top:20px; font-weight:600; font-size:12px; letter-spacing:.12em; text-transform:uppercase; background-color:{{ payBtnBg }}; color:#FFFCF9; padding:17px 34px; border-radius:40px; cursor:pointer;">Commander et payer {{ grandLabel }}</span>
+        <div style="font-size:13px; font-weight:600; color:#8A4A57; margin-top:12px;">{{ payErr }}</div>
+      </div>
+
+      <div style="background:#F1DFE0; border-radius:18px; padding:26px;">
+        <div style="font-family:'Playfair Display'; font-weight:700; font-size:21px; margin-bottom:18px;">Votre commande</div>
+        <sc-for list="{{ cart }}" as="ci" hint-placeholder-count="2">
+          <div style="display:flex; justify-content:space-between; gap:12px; font-size:13.5px; padding:6px 0;">
+            <span>{{ ci.qty }} × {{ ci.name }}</span><span>{{ ci.lineLabel }}</span>
+          </div>
+        </sc-for>
+        <div style="border-top:1px solid rgba(58,46,48,.18); margin-top:12px; padding-top:12px;">
+          <sc-for list="{{ totals }}" as="tr" hint-placeholder-count="5">
+            <div style="display:flex; justify-content:space-between; gap:14px; font-size:14px; padding:6px 0; color:{{ tr.fg }}; font-weight:{{ tr.w }};">
+              <span>{{ tr.k }}</span><span>{{ tr.v }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="border-top:1px solid rgba(58,46,48,.18); margin-top:12px; padding-top:14px; display:flex; justify-content:space-between; gap:14px;">
+          <span style="font-weight:700; font-size:15px;">Total TTC</span>
+          <span style="font-family:'Playfair Display'; font-weight:700; font-size:24px;">{{ grandLabel }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isWait }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:clamp(40px,6vw,72px) clamp(16px,3vw,40px); text-align:center;">
+    <img src="brand/cow-new.png" alt="" style="width:76px; height:76px; object-fit:contain; opacity:.55;">
+    <h2 style="font-family:'Playfair Display'; font-weight:700; font-size:clamp(22px,3vw,30px); margin:18px 0 10px;">Aucune commande à afficher</h2>
+    <p style="font-size:14.5px; line-height:1.7; color:#8A7175; max-width:440px; margin:0 auto 24px;">Terminez le paiement pour voir la confirmation, la facture et le suivi de commande.</p>
+    <span onClick="{{ goPay }}" style="display:inline-block; font-weight:600; font-size:12px; letter-spacing:.12em; text-transform:uppercase; background:#A9636F; color:#FFFCF9; padding:15px 30px; border-radius:40px; cursor:pointer;">Revenir au paiement</span>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isPaid }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:clamp(40px,6vw,72px) clamp(16px,3vw,40px); text-align:center;">
+    <div style="display:inline-block; font-weight:700; font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:#1F8A5B; background:#E8F3EC; padding:9px 16px; border-radius:30px;">Commande déjà réglée</div>
+    <h2 style="font-family:'Playfair Display'; font-weight:700; font-size:clamp(22px,3vw,30px); margin:18px 0 10px;">Ce paiement a déjà été traité</h2>
+    <p style="font-size:14.5px; line-height:1.7; color:#8A7175; max-width:480px; margin:0 auto 24px;">Le panier a été vidé et la commande enregistrée une seule fois. Revenir sur cette étape ou rafraîchir la page ne peut pas créer un second paiement ni une commande en double — c'est le comportement que le développeur doit reproduire côté serveur, avec une clé d'idempotence.</p>
+    <span onClick="{{ goDone }}" style="display:inline-block; font-weight:600; font-size:12px; letter-spacing:.12em; text-transform:uppercase; background:#A9636F; color:#FFFCF9; padding:15px 30px; border-radius:40px; cursor:pointer;">Voir la confirmation</span>
+  </div>
+  </sc-if>
+
+  <!-- ===== 5 · CONFIRMATION + FACTURE ===== -->
+  <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:clamp(28px,4vw,48px) clamp(16px,3vw,40px);">
+    <div style="background:#E8F3EC; border-radius:18px; padding:28px; margin-bottom:26px;">
+      <div style="font-weight:700; font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:#1F8A5B; margin-bottom:10px;">Paiement accepté — simulation</div>
+      <h2 style="font-family:'Playfair Display'; font-weight:700; font-size:clamp(24px,3.4vw,34px); margin:0 0 10px;">Merci, votre commande est confirmée</h2>
+      <div style="font-size:14.5px; line-height:1.7; color:#3A2E30;">Commande <b>{{ order.num }}</b> · {{ order.date }} · {{ order.payLabel }}<br>Un e-mail de confirmation vient d'être envoyé, avec la facture en pièce jointe.<br>Expédition sous 1 à 3 jours ouvrés, puis {{ order.shipName }} — {{ order.shipDelay }}.</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:26px; align-items:start;">
+      <div style="background:#FFFCF9; border-radius:18px; padding:28px; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08);">
+        <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:20px;">
+          <div>
+            <div style="font-family:'Playfair Display'; font-weight:700; font-size:20px;">FACTURE</div>
+            <div style="font-size:12.5px; color:#8A7175; margin-top:4px;">N° {{ order.invoice }} · {{ order.date }}</div>
+          </div>
+          <div style="font-size:11.5px; line-height:1.6; color:#5F4E52; text-align:right;">BLACK MILK France<br>SIRET — à compléter<br>TVA FR — à compléter</div>
+        </div>
+        <div style="border-top:1px solid rgba(58,46,48,.12); border-bottom:1px solid rgba(58,46,48,.12); padding:6px 0; margin-bottom:14px;">
+          <sc-for list="{{ cart }}" as="ci" hint-placeholder-count="2">
+            <div style="display:flex; justify-content:space-between; gap:12px; font-size:13px; padding:8px 0;">
+              <span>{{ ci.qty }} × {{ ci.name }} <span style="color:#8A7175;">· lot {{ ci.lot }}</span></span>
+              <span>{{ ci.htLabel }} HT</span>
+            </div>
+          </sc-for>
+        </div>
+        <sc-for list="{{ invoiceRows }}" as="ir" hint-placeholder-count="5">
+          <div style="display:flex; justify-content:space-between; gap:14px; font-size:13.5px; padding:5px 0; font-weight:{{ ir.w }};">
+            <span>{{ ir.k }}</span><span>{{ ir.v }}</span>
+          </div>
+        </sc-for>
+        <div style="font-size:11.5px; line-height:1.6; color:#8A7175; margin-top:16px;">Numérotation séquentielle · mentions de l'article 289-II du CGI · archivage 10 ans · format Factur-X pour les ventes professionnelles.</div>
+      </div>
+
+      <div>
+        <div style="background:#F1DFE0; border-radius:18px; padding:24px; margin-bottom:16px;">
+          <div style="font-weight:700; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#A9636F; margin-bottom:14px;">Suivi de la commande</div>
+          <sc-for list="{{ timeline }}" as="tl" hint-placeholder-count="5">
+            <div style="display:flex; gap:14px; align-items:flex-start; padding:9px 0;">
+              <span style="flex:0 0 auto; width:13px; height:13px; border-radius:50%; margin-top:4px; background-color:{{ tl.bg }};"></span>
+              <div>
+                <div style="font-weight:600; font-size:14px; color:{{ tl.fg }};">{{ tl.k }}</div>
+                <div style="font-size:12.5px; color:#7A5A60;">{{ tl.v }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:#FFFCF9; border-radius:18px; padding:24px; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08);">
+          <div style="font-weight:700; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#A9636F; margin-bottom:12px;">E-mails automatiques envoyés</div>
+          <sc-for list="{{ mails }}" as="ml" hint-placeholder-count="4">
+            <div style="font-size:13.5px; line-height:1.7; color:#5F4E52;">{{ ml }}</div>
+          </sc-for>
+        </div>
+        <span onClick="{{ goAdmin }}" style="display:block; text-align:center; font-weight:600; font-size:12px; letter-spacing:.12em; text-transform:uppercase; background:#3A2E30; color:#FCF8F4; padding:16px; border-radius:40px; cursor:pointer; margin-top:16px;">Voir côté administration</span>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ===== 6 · ADMIN ===== -->
+  <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:clamp(28px,4vw,48px) clamp(16px,3vw,40px);">
+    <h2 style="font-family:'Playfair Display'; font-weight:700; font-size:clamp(26px,3.6vw,38px); margin:0 0 6px;">Administration</h2>
+    <p style="font-size:14px; color:#8A7175; margin:0 0 26px;">Stock par lot, commandes, et rapport automatique de 30 jours envoyé au comptable.</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:26px;">
+      <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+        <div style="background:#FFFCF9; border-radius:16px; padding:20px; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08);">
+          <div style="font-family:'Playfair Display'; font-weight:700; font-size:27px; line-height:1; color:{{ k.fg }};">{{ k.v }}</div>
+          <div style="font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#8A7175; margin-top:8px;">{{ k.k }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="background:#FFFCF9; border-radius:18px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08); margin-bottom:26px;">
+      <div style="padding:18px 22px; border-bottom:1px solid rgba(58,46,48,.1); font-weight:700; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#A9636F;">Stock — suivi par lot</div>
+      <div style="overflow-x:auto;">
+        <div style="min-width:640px;">
+          <div style="display:grid; grid-template-columns:1.6fr .8fr .8fr .8fr 1fr 1fr; gap:12px; padding:12px 22px; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#8A7175; border-bottom:1px solid rgba(58,46,48,.08);">
+            <span>Référence</span><span>Lot</span><span>Stock</span><span>Réservé</span><span>Seuil / PAO</span><span>État</span>
+          </div>
+          <sc-for list="{{ stock }}" as="sk" hint-placeholder-count="5">
+            <div style="display:grid; grid-template-columns:1.6fr .8fr .8fr .8fr 1fr 1fr; gap:12px; padding:14px 22px; font-size:13.5px; align-items:center; border-bottom:1px solid rgba(58,46,48,.06);">
+              <span>{{ sk.name }}<span style="color:#8A7175;"> · {{ sk.sku }}</span></span>
+              <span style="color:#5F4E52;">{{ sk.lot }}</span>
+              <span style="font-weight:700;">{{ sk.qty }}</span>
+              <span style="color:#5F4E52;">{{ sk.res }}</span>
+              <span style="color:#5F4E52;">{{ sk.meta }}</span>
+              <span><span style="font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:5px 10px; border-radius:20px; background-color:{{ sk.tagBg }}; color:{{ sk.tagFg }};">{{ sk.tag }}</span></span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:26px; align-items:start;">
+      <div style="background:#FFFCF9; border-radius:18px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(58,46,48,.08);">
+        <div style="padding:18px 22px; border-bottom:1px solid rgba(58,46,48,.1); font-weight:700; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#A9636F;">Commandes</div>
+        <sc-for list="{{ orders }}" as="o" hint-placeholder-count="3">
+          <div style="padding:16px 22px; border-bottom:1px solid rgba(58,46,48,.06); display:flex; justify-content:space-between; gap:14px; align-items:center; flex-wrap:wrap;">
+            <div>
+              <div style="font-weight:600; font-size:14.5px;">{{ o.num }}</div>
+              <div style="font-size:12.5px; color:#8A7175; margin-top:3px;">{{ o.who }} · {{ o.zone }} · {{ o.pay }}</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="font-weight:700; font-size:15px;">{{ o.total }}</span>
+              <span style="font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:6px 11px; border-radius:20px; background-color:{{ o.tagBg }}; color:{{ o.tagFg }};">{{ o.status }}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:#F1DFE0; border-radius:18px; padding:26px;">
+        <div style="font-weight:700; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#A9636F; margin-bottom:12px;">Rapport 30 jours — comptable</div>
+        <div style="font-family:'Playfair Display'; font-weight:700; font-size:20px; margin-bottom:6px;">Période du 1er au 30 août 2026</div>
+        <div style="font-size:13px; color:#7A5A60; margin-bottom:18px;">Prochain envoi automatique : 1er octobre 2026 à 06 h 00</div>
+        <sc-for list="{{ report }}" as="rp" hint-placeholder-count="8">
+          <div style="display:flex; justify-content:space-between; gap:14px; font-size:13.5px; padding:6px 0; font-weight:{{ rp.w }};">
+            <span>{{ rp.k }}</span><span>{{ rp.v }}</span>
+          </div>
+        </sc-for>
+        <div style="border-top:1px solid rgba(58,46,48,.18); margin-top:14px; padding-top:14px; font-size:12.5px; line-height:1.65; color:#5F4E52;">Pièces jointes : ventes détaillées (CSV) · récapitulatif TVA par taux et par pays (PDF) · état de stock valorisé (CSV)</div>
+        <span onClick="{{ sendReport }}" style="display:block; text-align:center; font-weight:600; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; background:#3A2E30; color:#FCF8F4; padding:15px; border-radius:40px; cursor:pointer; margin-top:18px;">{{ reportBtn }}</span>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <div style="background:#F1DFE0; padding:22px clamp(16px,3vw,40px); font-size:12.5px; line-height:1.6; color:#5F4E52;">Maquette de démonstration : les calculs de TVA, de port, d'assurance et de stock fonctionnent réellement, mais aucun paiement, aucune expédition et aucun e-mail ne sont créés. À utiliser comme cahier des charges visuel pour le développeur.</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:940}}">
+const CATALOG = [
+  { sku: "GC-SWC", name: "Sweet Candy", cat: "Gel Corex · 8 ml", price: 25, weight: 0.06, lot: "L2604-118", stock: 34, pao: "12 M", img: "sw/sweet-candy.jpg", pot: "pots/sweet-candy.jpg",
+    desc: "Gel de couleur haute pigmentation, couvrant en une couche. Application fluide, sans coulure au niveau de la cuticule.",
+    inci: "Di-HEMA Trimethylhexyl Dicarbamate, Hydroxypropyl Methacrylate, Trimethylbenzoyl Diphenylphosphine Oxide, CI 15850, CI 77891.\n\nListe fournie à titre d'exemple dans cette maquette — les listes INCI réelles doivent être obtenues auprès du fabricant.",
+    use: "Appliquer une fine couche sur base polymérisée. Catalyser 30 secondes en lampe LED, 2 minutes en UV. Finir par un top coat.",
+    care: "Réservé à un usage professionnel. Éviter tout contact avec la peau. En cas de contact, laver abondamment. Conserver à l'abri de la lumière." },
+  { sku: "BT-MLK", name: "Milky", cat: "Base camouflage · 15 ml", price: 15, weight: 0.09, lot: "L2605-042", stock: 4, pao: "18 M", img: "basetop/milky.jpg", pot: "bottles/milky.jpg",
+    desc: "Base camouflage laiteuse, autonivelante. Corrige la surface de l'ongle et unifie sans masquer.",
+    inci: "Exemple de maquette — à remplacer par la liste réelle du fabricant.",
+    use: "Appliquer en couche fine sur ongle préparé et dégraissé. Catalyser 60 secondes en LED.",
+    care: "Usage professionnel. Ne pas appliquer sur peau lésée." },
+  { sku: "SO-WAX", name: "Cire pour cuticules", cat: "Soin signature · 15 ml", price: 15, weight: 0.05, lot: "L2603-301", stock: 61, pao: "24 M", img: "brand/wax.jpg", pot: "brand/mousse.jpg",
+    desc: "Cire fonctionnelle de la méthode Wax Manicure. Protège la peau après traitement et lisse la zone cuticulaire.",
+    inci: "Exemple de maquette — à remplacer par la liste réelle du fabricant.",
+    use: "Appliquer une petite quantité sur peau propre, masser 20 à 30 secondes jusqu'à dissolution des granules.",
+    care: "Testée sur peaux sensibles. Usage externe." },
+];
+
+const ZONES = [
+  { id: "fr", label: "France", free: 100 },
+  { id: "eu1", label: "UE proche", free: 100 },
+  { id: "eu2", label: "UE Est / Nord", free: 100 },
+  { id: "int", label: "Hors UE", free: null },
+  { id: "none", label: "Autre pays", free: null },
+];
+
+const RATES = {
+  fr: [
+    { id: "relay", name: "Point relais", carrier: "Mondial Relay", delay: "3 à 5 jours ouvrés", price: 4.4 },
+    { id: "std", name: "Domicile standard", carrier: "Colissimo", delay: "2 à 4 jours ouvrés", price: 6.9 },
+    { id: "exp", name: "Express", carrier: "Chronopost", delay: "Livraison le lendemain", price: 17.5 },
+  ],
+  eu1: [
+    { id: "std", name: "Domicile standard", carrier: "Colissimo Europe", delay: "3 à 7 jours ouvrés", price: 12.9 },
+    { id: "exp", name: "Express", carrier: "DHL Express", delay: "1 à 2 jours ouvrés", price: 28 },
+  ],
+  eu2: [
+    { id: "std", name: "Domicile standard", carrier: "UPS Standard", delay: "5 à 8 jours ouvrés", price: 17.9 },
+    { id: "exp", name: "Express", carrier: "DHL Express", delay: "2 à 3 jours ouvrés", price: 34 },
+  ],
+  int: [
+    { id: "exp", name: "International express", carrier: "DHL Express", delay: "5 à 10 jours ouvrés", price: 46 },
+  ],
+  none: [],
+};
+
+const PAYS = [
+  { id: "card", name: "Carte bancaire", note: "CB · Visa · Mastercard · American Express — 3-D Secure 2" },
+  { id: "apple", name: "Apple Pay / Google Pay", note: "Paiement en un geste, sans saisie de carte" },
+  { id: "paypal", name: "PayPal", note: "Redirection vers votre compte PayPal" },
+  { id: "alma", name: "Payer en 3 fois — Alma", note: "" },
+  { id: "sepa", name: "Virement SEPA", note: "Commandes professionnelles — expédition à réception des fonds" },
+];
+
+const eur = (n) => n.toFixed(2).replace(".", ",") + " €";
+
+class Component extends DCLogic {
+  state = {
+    step: 1, sel: 0, qty: 1, photo: 0, open: {}, justAdded: false,
+    cart: [], promo: null, promoMsg: "", zone: "fr", ship: "std", pay: "card",
+    cgv: false, payErr: "", order: null, reportSent: false,
+  };
+
+  goto(n) { this.setState({ step: n, justAdded: false, payErr: "" }); }
+
+  add() {
+    const p = CATALOG[this.state.sel];
+    const cart = [...this.state.cart];
+    const line = cart.find((c) => c.sku === p.sku);
+    if (line) line.qty += this.state.qty;
+    else cart.push({ sku: p.sku, qty: this.state.qty });
+    this.setState({ cart, justAdded: true });
+    setTimeout(() => this.setState({ justAdded: false }), 3500);
+  }
+
+  lines() {
+    return this.state.cart.map((c) => {
+      const p = CATALOG.find((x) => x.sku === c.sku);
+      return { ...p, qty: c.qty, line: p.price * c.qty, weight: p.weight * c.qty };
+    });
+  }
+
+  money() {
+    const lines = this.lines();
+    const goods = lines.reduce((s, l) => s + l.line, 0);
+    const weight = lines.reduce((s, l) => s + l.weight, 0);
+    const disc = this.state.promo ? Math.round(goods * 0.1 * 100) / 100 : 0;
+    const net = goods - disc;
+    const zone = ZONES.find((z) => z.id === this.state.zone);
+    const list = RATES[this.state.zone] || [];
+    const m = list.find((x) => x.id === this.state.ship) || list[0];
+    let ship = m ? m.price : 0;
+    const freeOK = zone.free !== null && net >= zone.free && weight <= 10;
+    if (freeOK && m && m.id !== "exp") ship = 0;
+    const insurance = net >= 150 ? Math.round(net * 0.015 * 100) / 100 : 0;
+    const total = net + ship + insurance;
+    const vat = Math.round((total / 1.2) * 0.2 * 100) / 100;
+    return { lines, goods, weight, disc, net, ship, insurance, total, vat, m, zone, freeOK };
+  }
+
+  renderVals() {
+    const st = this.state;
+    const p = CATALOG[st.sel];
+    const M = this.money();
+    const photos = [p.img, p.pot];
+
+    const totals = [
+      { k: "Sous-total", v: eur(M.goods), fg: "#3A2E30", w: "500" },
+    ];
+    if (M.disc) totals.push({ k: "Code BIENVENUE10 (−10 %)", v: "−" + eur(M.disc), fg: "#1F8A5B", w: "600" });
+    totals.push({ k: "Livraison" + (M.m ? " — " + M.m.name : ""), v: M.ship === 0 ? "Offerte" : eur(M.ship), fg: M.ship === 0 ? "#1F8A5B" : "#3A2E30", w: "500" });
+    if (M.insurance) totals.push({ k: "Assurance incluse (≥ 150 €)", v: eur(M.insurance), fg: "#3A2E30", w: "500" });
+    totals.push({ k: "dont TVA 20 %", v: eur(M.vat), fg: "#8A7175", w: "500" });
+
+    const need = M.zone.free !== null ? M.zone.free - M.net : null;
+    const freeShipMsg = M.zone.free === null
+      ? "Hors UE : droits et taxes de douane à la charge du destinataire."
+      : M.freeOK ? "Livraison offerte — seuil de 100 € atteint."
+      : need > 0 ? "Encore " + eur(need) + " pour la livraison offerte."
+      : "Au-delà de 10 kg, les frais sont calculés sur devis.";
+
+    const ORD = st.order;
+
+    return {
+      steps: ["Fiche produit", "Panier", "Livraison", "Paiement", "Confirmation", "Administration"].map((label, i) => {
+        const n = i + 1;
+        const locked = n === 5 && !ORD;
+        return {
+          n, label,
+          bg: st.step === n ? "#A9636F" : "transparent",
+          fg: st.step === n ? "#FFFCF9" : locked ? "#B69AA0" : "#3A2E30",
+          bd: st.step === n ? "#A9636F" : locked ? "rgba(58,46,48,.10)" : "rgba(58,46,48,.22)",
+          go: () => this.goto(n),
+        };
+      }),
+      isProduct: st.step === 1, isCart: st.step === 2, isShip: st.step === 3,
+      isPay: st.step === 4 && !ORD, isDone: st.step === 5 && !!ORD, isAdmin: st.step === 6,
+      isWait: st.step === 5 && !ORD, isPaid: st.step === 4 && !!ORD,
+
+      prod: {
+        ...p,
+        priceLabel: eur(p.price),
+        bigPhoto: photos[st.photo] || p.img,
+        thumbs: photos.map((src, i) => ({ src, ring: i === st.photo ? "#A9636F" : "rgba(58,46,48,.10)", pick: () => this.setState({ photo: i }) })),
+        stockLabel: p.stock === 0 ? "Épuisé" : p.stock <= 5 ? "Dernières pièces — " + p.stock + " en stock" : "En stock",
+        stockBg: p.stock === 0 ? "#F7E4E4" : p.stock <= 5 ? "#FBF0DE" : "#E8F3EC",
+        stockFg: p.stock === 0 ? "#8A4A57" : p.stock <= 5 ? "#8A6A0A" : "#1F8A5B",
+      },
+      variants: CATALOG.map((c, i) => ({
+        name: c.name,
+        bg: i === st.sel ? "#3A2E30" : "transparent",
+        fg: i === st.sel ? "#FCF8F4" : "#3A2E30",
+        bd: i === st.sel ? "#3A2E30" : "rgba(58,46,48,.2)",
+        pick: () => this.setState({ sel: i, photo: 0 }),
+      })),
+      qty: st.qty,
+      incQty: () => this.setState({ qty: st.qty + 1 }),
+      decQty: () => this.setState({ qty: Math.max(1, st.qty - 1) }),
+      addToCart: () => this.add(),
+      justAdded: st.justAdded,
+      tabsProd: [
+        { h: "Description", p: p.desc },
+        { h: "Composition (INCI)", p: p.inci },
+        { h: "Mode d'emploi", p: p.use },
+        { h: "Précautions", p: p.care },
+      ].map((t, i) => ({
+        ...t, isOpen: !!st.open["p" + i], arrow: st.open["p" + i] ? "–" : "+",
+        toggle: () => { const o = { ...st.open }; o["p" + i] = !o["p" + i]; this.setState({ open: o }); },
+      })),
+
+      cart: M.lines.map((l) => ({
+        name: l.name, cat: l.cat, sku: l.sku, lot: l.lot, img: l.img, qty: l.qty,
+        lineLabel: eur(l.line), htLabel: eur(Math.round((l.line / 1.2) * 100) / 100),
+        inc: () => { const c = st.cart.map((x) => x.sku === l.sku ? { ...x, qty: x.qty + 1 } : x); this.setState({ cart: c }); },
+        dec: () => { const c = st.cart.map((x) => x.sku === l.sku ? { ...x, qty: Math.max(1, x.qty - 1) } : x); this.setState({ cart: c }); },
+        remove: () => this.setState({ cart: st.cart.filter((x) => x.sku !== l.sku) }),
+      })),
+      cartEmpty: M.lines.length === 0,
+      totals, grandLabel: eur(M.total), freeShipMsg,
+      promoMsg: st.promoMsg, promoFg: st.promo ? "#1F8A5B" : "#8A4A57",
+      applyPromo: () => {
+        const el = document.getElementById("bm-promo");
+        const v = (el && el.value.trim().toUpperCase()) || "";
+        if (v === "BIENVENUE10") this.setState({ promo: v, promoMsg: "Code appliqué : −10 % sur les articles." });
+        else this.setState({ promo: null, promoMsg: v ? "Code inconnu ou expiré." : "Saisissez un code." });
+      },
+      goShip: () => this.goto(3),
+      goPay: () => this.goto(4),
+      goAdmin: () => this.goto(6),
+      goDone: () => this.goto(5),
+
+      weightLabel: M.weight.toFixed(2).replace(".", ",") + " kg",
+      goodsLabel: eur(M.net),
+      zones: ZONES.map((z) => ({
+        label: z.label,
+        bg: st.zone === z.id ? "#3A2E30" : "transparent",
+        fg: st.zone === z.id ? "#FCF8F4" : "#3A2E30",
+        bd: st.zone === z.id ? "#3A2E30" : "rgba(58,46,48,.2)",
+        pick: () => { const list = RATES[z.id] || []; this.setState({ zone: z.id, ship: (list[0] || {}).id || "std" }); },
+      })),
+      methods: (RATES[st.zone] || []).map((m) => {
+        const isFree = M.freeOK && m.id !== "exp";
+        return {
+          name: m.name, carrier: m.carrier, delay: m.delay,
+          priceLabel: isFree ? "Offerte" : eur(m.price),
+          ring: st.ship === m.id ? "#A9636F" : "rgba(58,46,48,.10)",
+          dotBg: st.ship === m.id ? "#A9636F" : "transparent",
+          insNote: M.net >= 150
+            ? "Assurance incluse — obligatoire au-delà de 150 € de marchandise"
+            : m.carrier.indexOf("Colissimo") === 0
+              ? "Assurance recommandée : sur cette offre nous constatons davantage de colis égarés"
+              : "Suivi détaillé inclus",
+          insFg: M.net >= 150 ? "#1F8A5B" : "#8A7175",
+          pick: () => this.setState({ ship: m.id }),
+        };
+      }),
+      zoneBlocked: (RATES[st.zone] || []).length === 0,
+
+      payMethods: PAYS.map((m) => ({
+        name: m.name,
+        note: m.id === "alma" ? "3 × " + eur(Math.round((M.total / 3) * 100) / 100) + " sans frais" : m.note,
+        ring: st.pay === m.id ? "#A9636F" : "rgba(58,46,48,.10)",
+        dotBg: st.pay === m.id ? "#A9636F" : "transparent",
+        pick: () => this.setState({ pay: m.id }),
+      })),
+      cgvBg: st.cgv ? "#A9636F" : "transparent",
+      cgvMark: st.cgv ? "✓" : "",
+      toggleCgv: () => this.setState({ cgv: !st.cgv, payErr: "" }),
+      payBtnBg: st.cgv && M.lines.length ? "#A9636F" : "#C9AEB2",
+      payErr: st.payErr,
+      payNow: () => {
+        if (st.order) return;
+        if (!M.lines.length) { this.setState({ payErr: "Votre panier est vide." }); return; }
+        if (!st.cgv) { this.setState({ payErr: "Vous devez accepter les conditions générales de vente." }); return; }
+        const pm = PAYS.find((x) => x.id === st.pay);
+        this.setState({
+          step: 5, cart: [], promo: null, promoMsg: "", cgv: false,
+          order: {
+            num: "BM-2026-0418", invoice: "FA-2026-0418", date: "4 septembre 2026",
+            payLabel: pm ? pm.name : "Carte bancaire",
+            shipName: (M.m || {}).name || "Standard", shipDelay: (M.m || {}).delay || "",
+            total: M.total, ship: M.ship, insurance: M.insurance, disc: M.disc, goods: M.goods, vat: M.vat,
+          },
+        });
+      },
+      order: ORD || { num: "", invoice: "", date: "", payLabel: "", shipName: "", shipDelay: "" },
+      invoiceRows: ORD ? (() => {
+        const r = [{ k: "Total HT", v: eur(Math.round((ORD.goods / 1.2) * 100) / 100), w: "500" }];
+        if (ORD.disc) r.push({ k: "Remise", v: "−" + eur(ORD.disc), w: "500" });
+        r.push({ k: "Livraison HT", v: ORD.ship === 0 ? "Offerte" : eur(Math.round((ORD.ship / 1.2) * 100) / 100), w: "500" });
+        if (ORD.insurance) r.push({ k: "Assurance HT", v: eur(Math.round((ORD.insurance / 1.2) * 100) / 100), w: "500" });
+        r.push({ k: "TVA 20 %", v: eur(ORD.vat), w: "500" });
+        r.push({ k: "Total TTC", v: eur(ORD.total), w: "700" });
+        return r;
+      })() : [],
+      timeline: [
+        { k: "Commande enregistrée", v: "4 sept. 2026 — stock décrémenté, lot affecté", bg: "#1F8A5B", fg: "#1F8A5B" },
+        { k: "Paiement confirmé", v: "Webhook prestataire vérifié et journalisé", bg: "#1F8A5B", fg: "#1F8A5B" },
+        { k: "En préparation", v: "Expédition sous 1 à 3 jours ouvrés", bg: "#A9636F", fg: "#3A2E30" },
+        { k: "Expédiée", v: "Étiquette générée, numéro de suivi envoyé", bg: "#D8C4C6", fg: "#8A7175" },
+        { k: "Livrée", v: "Demande d'avis envoyée 3 jours après réception", bg: "#D8C4C6", fg: "#8A7175" },
+      ],
+      mails: [
+        "Confirmation de commande + facture PDF — envoyée",
+        "Avis d'expédition avec lien de suivi — à l'expédition",
+        "Colis en cours de livraison — automatique",
+        "Demande d'avis vérifié — 3 jours après livraison",
+      ],
+
+      kpis: [
+        { k: "Commandes 30 j", v: "48", fg: "#3A2E30" },
+        { k: "CA TTC 30 j", v: "3 940 €", fg: "#3A2E30" },
+        { k: "Alertes stock", v: "2", fg: "#8A6A0A" },
+        { k: "Ruptures", v: "1", fg: "#8A4A57" },
+      ],
+      stock: [
+        { name: "Sweet Candy", sku: "GC-SWC", lot: "L2604-118", qty: 34 - (st.order ? (M.lines.find((l) => l.sku === "GC-SWC") || {}).qty || 0 : 0), res: st.order ? 0 : (M.lines.find((l) => l.sku === "GC-SWC") || {}).qty || 0, meta: "seuil 20 · PAO 12 M", tag: "OK", tagBg: "#E8F3EC", tagFg: "#1F8A5B" },
+        { name: "Milky", sku: "BT-MLK", lot: "L2605-042", qty: 4, res: 0, meta: "seuil 15 · PAO 18 M", tag: "Réassort", tagBg: "#FBF0DE", tagFg: "#8A6A0A" },
+        { name: "Cire pour cuticules", sku: "SO-WAX", lot: "L2603-301", qty: 61, res: 0, meta: "seuil 25 · PAO 24 M", tag: "OK", tagBg: "#E8F3EC", tagFg: "#1F8A5B" },
+        { name: "Fairy Bloom", sku: "GC-FBL", lot: "L2602-077", qty: 0, res: 0, meta: "seuil 20 · PAO 12 M", tag: "Épuisé", tagBg: "#F7E4E4", tagFg: "#8A4A57" },
+        { name: "Éclat de Minuit", sku: "BT-EDM", lot: "L2601-210", qty: 9, res: 2, meta: "péremption 03/2027", tag: "Lot à écouler", tagBg: "#FBF0DE", tagFg: "#8A6A0A" },
+      ],
+      orders: [
+        ...(ORD ? [{ num: ORD.num, who: "Cliente invitée", zone: M.zone.label, pay: ORD.payLabel, total: eur(ORD.total), status: "Payée", tagBg: "#E8F3EC", tagFg: "#1F8A5B" }] : []),
+        { num: "BM-2026-0417", who: "Salon Éclat — pro", zone: "France", pay: "Virement SEPA", total: "412,00 €", status: "Préparation", tagBg: "#F1DFE0", tagFg: "#8A4A57" },
+        { num: "BM-2026-0416", who: "Crystal Nails Greece", zone: "UE Est / Nord", pay: "Carte bancaire", total: "1 268,40 €", status: "Expédiée", tagBg: "#EDE4F3", tagFg: "#6A4A8A" },
+        { num: "BM-2026-0415", who: "Cliente particulière", zone: "France", pay: "Alma 3×", total: "128,90 €", status: "Livrée", tagBg: "#E8F3EC", tagFg: "#1F8A5B" },
+      ],
+      report: [
+        { k: "Chiffre d'affaires brut TTC", v: "3 940,20 €", w: "500" },
+        { k: "dont France (TVA 20 %)", v: "2 610,00 €", w: "500" },
+        { k: "dont UE B2C — guichet OSS", v: "884,20 €", w: "500" },
+        { k: "dont UE B2B — autoliquidation", v: "412,00 €", w: "500" },
+        { k: "dont hors UE — exonéré", v: "34,00 €", w: "500" },
+        { k: "TVA collectée", v: "512,84 €", w: "600" },
+        { k: "Commissions prestataires", v: "−61,40 €", w: "500" },
+        { k: "Stock au 30/08 (prix d'achat)", v: "7 412,00 €", w: "600" },
+      ],
+      reportBtn: st.reportSent ? "Rapport envoyé au comptable ✓" : "Envoyer maintenant (simulation)",
+      sendReport: () => { this.setState({ reportSent: true }); setTimeout(() => this.setState({ reportSent: false }), 4000); },
+    };
+  }
+}
+</script>
+</body>
+</html>
