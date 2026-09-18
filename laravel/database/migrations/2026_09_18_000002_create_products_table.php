@@ -17,10 +17,7 @@ return new class extends Migration
             $table->boolean('featured')->default(false)->index();
             $table->boolean('is_new')->default(false)->index();
             $table->unsignedInteger('sort_order')->default(0)->index();
-
-            $table->string('source_key', 190)->nullable()->unique();
             $table->string('sku', 120)->nullable()->unique();
-            $table->string('barcode', 120)->nullable()->unique();
 
             $table->jsonb('name');
             $table->jsonb('slug');
