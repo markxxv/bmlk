@@ -12,18 +12,7 @@ class Category extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'parent_id',
-        'active',
-        'sort_order',
-        'code',
-        'name',
-        'slug',
-        'description',
-        'meta_title',
-        'meta_description',
-        'data',
-    ];
+    protected $guarded = ['id'];
 
     protected function casts(): array
     {

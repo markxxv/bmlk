@@ -5,41 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Product extends Model
+class Product extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, InteractsWithMedia, SoftDeletes;
 
-    protected $fillable = [
-        'category_id',
-        'active',
-        'featured',
-        'is_new',
-        'sort_order',
-        'status',
-        'product_type',
-        'catalog_scope',
-        'source_key',
-        'sku',
-        'barcode',
-        'name',
-        'slug',
-        'description',
-        'tags',
-        'claims',
-        'details',
-        'size',
-        'measurements',
-        'options',
-        'price',
-        'compare_at_price',
-        'currency',
-        'tax_included',
-        'source_data',
-        'legacy_data',
-    ];
+    protected $guarded = ['id'];
 
     protected function casts(): array
     {
@@ -70,8 +46,18 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function images(): HasMany
+    public function registerMediaCollections(): void
     {
-        return $this->hasMany(ProductImage::class)->orderBy('sort_order');
+        $this->addMediaCollection('images');
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('images')
+            ->fit(Fit::Contain, 400, 400)
+            ->format('webp')
+            ->quality(82)
+            ->nonQueued();
     }
 }
