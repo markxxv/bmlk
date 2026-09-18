@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('sku', 120)->nullable()->unique();
 
             $table->jsonb('name');
-            $table->string('slug', 190)->unique();
+            $table->string('slug', 190);
             $table->jsonb('tag')->nullable();
             $table->jsonb('description')->nullable();
 
@@ -38,6 +38,7 @@ return new class extends Migration
 
             $table->foreign('category_id')->references('id')->on('categories')->restrictOnDelete();
             $table->index(['category_id', 'active']);
+            $table->unique(['category_id', 'slug']);
         });
     }
 
