@@ -39,7 +39,6 @@ return new class extends Migration
 
             $table->decimal('price', 12, 2)->nullable();
             $table->decimal('compare_at_price', 12, 2)->nullable();
-            $table->char('currency', 3)->default('EUR');
             $table->boolean('tax_included')->nullable();
 
             $table->jsonb('source_data')->nullable();
