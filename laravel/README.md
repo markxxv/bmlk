@@ -6,6 +6,7 @@ Target stack:
 - PostgreSQL
 - Filament v5
 - Spatie Laravel Media Library v11
+- Spatie Laravel Translatable
 
 The schema is normalized from `products.json`; extraction/debug metadata is intentionally not copied into production tables.
 
@@ -16,19 +17,64 @@ The schema is normalized from `products.json`; extraction/debug metadata is inte
 
 Images are stored only through Spatie Media Library in the `images` collection.
 
+## Translations
+
+Translatable fields use `spatie/laravel-translatable` and PostgreSQL `jsonb`.
+
+Laravel locale keys are normalized to lowercase:
+
+```json
+{
+  "fr": "...",
+  "en": "...",
+  "ro": "..."
+}
+```
+
+`Product::$translatable`:
+
+- `name`
+- `slug`
+- `tag`
+- `description`
+- `details`
+- `contents`
+
+`Category::$translatable`:
+
+- `name`
+- `description`
+- `use`
+- `price_label`
+
+## Slugs
+
+Product slugs are globally unique per locale, never merely unique inside a category.
+
+PostgreSQL unique expression indexes enforce this directly for `fr`, `en` and `ro`.
+
+The four duplicate source slugs were corrected in `products.json`:
+
+- `pink-sparkly` → `pink-sparkly-base`
+- `natural-muse` → `natural-muse-base`
+- `cocoa-pink` → `cocoa-pink-base`
+- `ultra-white` → `ultra-white-base`
+
+These changes apply to the Base Camouflage records only.
+
 ## Category mapping
 
 The source category IDs (`gel_corex`, `base_camouflage`, etc.) are preserved directly as string primary keys.
 
 Real category content is normalized into:
 
-- `name` JSONB — FR / EN / RO
-- `description` JSONB — FR / EN / RO
-- `use` JSONB — FR / EN / RO where present
-- `price_label` JSONB — source category price text where present
-- `parent_id` — source hierarchy field
+- `name` JSONB
+- `description` JSONB
+- `use` JSONB where present
+- `price_label` JSONB where present
+- `parent_id`
 
-No invented `active`, sorting, SEO, code or generic data columns are added to categories.
+No invented sorting, SEO, code or generic data columns are added to categories.
 
 ## Product mapping
 
@@ -39,8 +85,8 @@ Real product content is normalized into:
 - `featured`
 - `is_new`
 - `sku` — nullable; only source demo records currently contain values
-- `name` JSONB — FR / EN / RO
-- `slug` — unique only inside its category; the source contains duplicate slugs across categories
+- `name` JSONB
+- `slug` JSONB
 - `tag` JSONB
 - `description` JSONB
 - `claims` JSONB
@@ -48,9 +94,9 @@ Real product content is normalized into:
 - `size` JSONB
 - `measurements` JSONB
 - `options` JSONB
-- `contents` JSONB for sets
+- `contents` JSONB
 - `price`
-- `price_min` / `price_max` for real ranged prices such as 5–20 €
+- `price_min` / `price_max`
 - `compare_at_price`
 
 Laravel infrastructure fields `id`, timestamps and soft deletes are retained.
