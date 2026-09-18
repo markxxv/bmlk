@@ -40,7 +40,7 @@ Real product content is normalized into:
 - `is_new`
 - `sku` — nullable; only source demo records currently contain values
 - `name` JSONB — FR / EN / RO
-- `slug`
+- `slug` — unique only inside its category; the source contains duplicate slugs across categories
 - `tag` JSONB
 - `description` JSONB
 - `claims` JSONB
