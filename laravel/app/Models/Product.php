@@ -10,12 +10,22 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Translatable\HasTranslations;
 
 class Product extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, SoftDeletes;
+    use HasFactory, HasTranslations, InteractsWithMedia, SoftDeletes;
 
     protected $guarded = ['id'];
+
+    public array $translatable = [
+        'name',
+        'slug',
+        'tag',
+        'description',
+        'details',
+        'contents',
+    ];
 
     protected function casts(): array
     {
@@ -23,15 +33,10 @@ class Product extends Model implements HasMedia
             'active' => 'boolean',
             'featured' => 'boolean',
             'is_new' => 'boolean',
-            'name' => 'array',
-            'tag' => 'array',
-            'description' => 'array',
             'claims' => 'array',
-            'details' => 'array',
             'size' => 'array',
             'measurements' => 'array',
             'options' => 'array',
-            'contents' => 'array',
             'price' => 'decimal:2',
             'price_min' => 'decimal:2',
             'price_max' => 'decimal:2',
