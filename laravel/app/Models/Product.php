@@ -35,7 +35,6 @@ class Product extends Model implements HasMedia
             'options' => 'array',
             'price' => 'decimal:2',
             'compare_at_price' => 'decimal:2',
-            'tax_included' => 'boolean',
             'source_data' => 'array',
             'legacy_data' => 'array',
         ];
