@@ -7459,7 +7459,7 @@
       "product_type": "physical",
       "category_id": "base_camouflage",
       "name": "Ultra White",
-      "slug": "ultra-white",
+      "slug": "ultra-white-base",
       "status": "active",
       "is_new": false,
       "price": {
@@ -8107,7 +8107,7 @@
       "product_type": "physical",
       "category_id": "base_camouflage",
       "name": "Natural Muse",
-      "slug": "natural-muse",
+      "slug": "natural-muse-base",
       "status": "active",
       "is_new": false,
       "price": {
@@ -8323,7 +8323,7 @@
       "product_type": "physical",
       "category_id": "base_camouflage",
       "name": "Cocoa Pink",
-      "slug": "cocoa-pink",
+      "slug": "cocoa-pink-base",
       "status": "active",
       "is_new": false,
       "price": {
@@ -8755,7 +8755,7 @@
       "product_type": "physical",
       "category_id": "base_camouflage",
       "name": "Pink Sparkly",
-      "slug": "pink-sparkly",
+      "slug": "pink-sparkly-base",
       "status": "active",
       "is_new": false,
       "price": {
