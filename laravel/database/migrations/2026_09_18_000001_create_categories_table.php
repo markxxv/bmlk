@@ -9,16 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
-            $table->string('id', 80)->primary();
-            $table->string('parent_id', 80)->nullable();
+            $table->id();
+            $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->jsonb('name');
             $table->jsonb('description')->nullable();
             $table->jsonb('use')->nullable();
             $table->jsonb('price_label')->nullable();
             $table->timestamps();
             $table->softDeletes();
-
-            $table->foreign('parent_id')->references('id')->on('categories')->nullOnDelete();
         });
     }
 

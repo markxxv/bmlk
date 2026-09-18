@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('category_id', 80);
+            $table->foreignId('category_id')->constrained()->restrictOnDelete();
             $table->boolean('active')->default(true)->index();
             $table->boolean('featured')->default(false)->index();
             $table->boolean('is_new')->default(false)->index();
@@ -37,7 +37,6 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('category_id')->references('id')->on('categories')->restrictOnDelete();
             $table->index(['category_id', 'active']);
         });
 

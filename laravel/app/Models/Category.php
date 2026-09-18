@@ -15,10 +15,6 @@ class Category extends Model
 
     protected $guarded = ['id'];
 
-    protected $keyType = 'string';
-
-    public $incrementing = false;
-
     public array $translatable = [
         'name',
         'description',
