@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Translatable\HasTranslations;
 
 class Category extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasTranslations, SoftDeletes;
 
     protected $guarded = ['id'];
 
@@ -18,15 +19,12 @@ class Category extends Model
 
     public $incrementing = false;
 
-    protected function casts(): array
-    {
-        return [
-            'name' => 'array',
-            'description' => 'array',
-            'use' => 'array',
-            'price_label' => 'array',
-        ];
-    }
+    public array $translatable = [
+        'name',
+        'description',
+        'use',
+        'price_label',
+    ];
 
     public function parent(): BelongsTo
     {
