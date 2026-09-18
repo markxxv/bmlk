@@ -21,7 +21,6 @@ No `ProductImage` model. Product images live in the Spatie Media Library `images
 - Translatable fields are JSONB: `name`, `slug`, `description`, `meta_title`, `meta_description`.
 - `tags`, `claims`, `details`, `size`, `measurements`, `options` are JSONB.
 - Prices use `numeric(12,2)`.
-- `source_key` is reserved for idempotent imports from `products.json`.
 - `source_data` and `legacy_data` preserve source/demo data.
 - Product media collection: `images`.
 - Media conversion: `thumb`, 400×400 WebP, quality 82.
