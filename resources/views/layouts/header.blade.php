@@ -4,7 +4,7 @@
     class="relative z-50 px-3 pt-3 sm:px-5 sm:pt-5 lg:px-8 lg:pt-6"
 >
     <div class="mx-auto max-w-[1560px]">
-        <div class="relative rounded-full bg-white px-4 shadow-xl shadow-zinc-100 sm:px-5 lg:px-7">
+        <div class="relative rounded-full bg-white px-4 shadow-xl shadow-zinc-300 sm:px-5 lg:px-7">
             <div class="grid min-h-20 grid-cols-[1fr_auto] items-center gap-4 lg:grid-cols-[1fr_auto_1fr]">
                 <nav class="hidden items-center gap-8 lg:flex">
                     <a href="#" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
