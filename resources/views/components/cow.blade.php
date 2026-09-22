@@ -1,30 +1,30 @@
-
+<div class="bm-cow relative h-full w-full overflow-hidden" data-bm-cow>
 <style>
-  :root{
-    --milk:#F8F0ED; --ink:#3A2A2A; --rose:#F0B4C4;
+  .bm-cow{
+    --milk:#F8F0ED;
+    --ink:#3A2A2A;
+    --rose:#F0B4C4;
+    position:relative;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    opacity:0;
+    transition:opacity 1.1s ease;
   }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%;overflow:hidden}
-  body{
-    background:transparent;
-    opacity:0;transition:opacity 1.1s ease;
-  }
-  body.ready{opacity:1}
-  .glow{
-    position:fixed;inset:0;
+  .bm-cow.ready{opacity:1}
+  .bm-cow .glow{
+    position:absolute;
+    inset:0;
     background:radial-gradient(58% 62% at 50% 54%, rgba(255,248,245,.92) 0%, rgba(255,248,245,0) 70%);
     pointer-events:none;
   }
-  .stage{position:fixed;inset:0}
-  canvas{display:block;width:100%;height:100%}
-  /* курсор */
-  .cur,.ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9;will-change:transform}
-  .cur{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--rose)}
-  .ring{width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;
-        border:1px solid rgba(58,42,42,.28);transition:width .25s,height .25s,margin .25s,border-color .25s}
-  @media (hover:hover) and (pointer:fine){ body{cursor:none} }
-  @media (hover:none){ .cur,.ring{display:none} }
-  @media (prefers-reduced-motion:reduce){ body{transition:none} }
+  .bm-cow .stage{position:absolute;inset:0}
+  .bm-cow canvas{display:block;width:100%;height:100%}
+  .bm-cow .cur,
+  .bm-cow .ring{display:none}
+  @media (prefers-reduced-motion:reduce){
+    .bm-cow{transition:none}
+  }
 </style>
 
   
@@ -47,7 +47,8 @@
   pupils[0].src = 'data:image/webp;base64,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';
   pupils[1].src = 'data:image/webp;base64,UklGRlwFAABXRUJQVlA4WAoAAAAQAAAANwAANwAAQUxQSGYBAAABkAPZtmlbtm3btm3btm3btvFt27ZtM32I/s4O9voKI4KN20aO6OpiNWHfwPA/FjYuTmbsxA3dwlNy8vMz4wPt1HmwEbSIrhzZfvLa/UeP7lw8tNSV56vJiIOwc/74iRfriCA/7+xqjzWgzzxn9sYqIs2nY13hivSIBfdeXEeU8mF3mTUdKmmb3iHKudbjw0mZZv7BVUQjLyZDeChSLTiG6OXjTDA7JZIZhxDdfBj3pIIlfOsGbehphxkFtkOfEYZcLJAmJV18HeHwa0sAKZ/NCE9eNKmTkKl8hAnaG0LCeQnh8rxGjhB7+hVs0KIjcam1f8PnfAIhh2WEz+tqCSJhxzFaG9IjwJxxCyO0yYGAQNkLnA74ErVS/SecToYRkGv5jtO5aDhwF3CvwP0Irt7g6husn+D6F25egM0nuHkINn/h5j3YfgHbZ3D7E2xfg50PoM4jYOcfqPMW2PkO6DwJc37964cBVlA4INADAAAwEwCdASo4ADgAPhUIg0EhBv6rgAQAUSxgFqQoKnu+773+Mf4gfJjVWujuw9Tvq629d3JT41qPPgH2Aymf33NAb/TAB4x7X1Mk8j30R/2/cF/l39cM+g3+8pGr23dJV8FnkU6LMt3jUjqoyZ+RrW0okRpIre1GPDPizLEkUZQ0kaHe1xKONVMitVThfP6d2OY7oq/+esd+Jgd+Lxbugm602wAA/sTVB/+BVgpWjhoOg7XkI0LcPILBcSy939vrrN7D08dFOz/pm2vmLx3TDv1vccVdpqce4F/g7Wy6HhgXhrKxEZTyFC2BOvkAvnm8ac/+04zApPKis+Inejyh7nd2wJxCwR024zeHOsxxg3D4ldZ4VaRf8UPafY73/miGMkq9FJ3RWdmNUJh3OB03+wUT1U6qQ1d9TIL5B7JVzPGdCnON9gh+9B/gt6M9vjM7c4ZPlWWipjH10ojObQICrjmW8HzJ3VEpKEfe0j///TdgOVaU/L/dA9i/pyxgQ/7b95nmvDoOeBRKEYDg+3dHJdi/wYNMfS6xpupauDLLIkeWYHqzbLpKV+4S2/vRM2iwMPtlJv8cmzkxNcHMOafpw4dTOaKn7HqlIeKWqT8eXfLHGeafsmbpd6b6p5B6XPb/NC/+7lwqfXFHh+IvVptGVxs/I+yfuGKas+G9nI7c7P4NPLU7Nn+zvIL+pYNQgRCc0QiF/B+7bThpIKc5hRzH4scz53MiA83P7NFDt9j8ZZeDU7dRjA9AJYaBM/cfv21aKuhN4O5KcSHv9Xxo1ejCCawV0umruu7x0XE8n+2fGB4g+meenzX2ECJRj44XvuZW6e3RbY+PgtR31YfHIpArCzRXdIEICyikuOQvbHWTn8DOw35hD0T7eR+dvDw8f1HoAhxpQO6t8dkvPt0cdUR+oIcStk5UmsRG0siEYB4I7gmWHAP6txlOyQuqTgrb07yK3nWPkd33BrHrzPDetBv2zyYyvBkmtvVA2ero3yqUAO0E32JBRKM6MP3I3PFkmmOZ7haSgx674j5+Dx1o/Ruc5akzHvRbN7lR+LMhV672nS4urFgE/0D+fa54ebBJvwRNI4GXt9wNgfbGPwwmGWOcwnZqB6w7SNkGgS7mOuWc03tIvQzz4bnybJr3tN7hVDOByj5W877npdsJrG3KIXK3REcxUWA8QNuXT8zjPBHyhjWntRpW3+2ZlBWxVyAv1/XMI7Lu4Mrc1WP/Xr/5W/PTg3sgwPLJauf6jFII3SiS44M8POxqY+77tpFre/7mAph+aQu4JKc3VrFv/C/gGlFQAAAA';
 
-  const cv = document.getElementById('cow');
+  const root = document.currentScript.closest('[data-bm-cow]');
+  const cv = root.querySelector('#cow');
   const ctx = cv.getContext('2d');
   let W=0,H=0,dpr=1;
   let geo = {s:1,dw:1,dh:1,ox:0,oy:0};
@@ -84,7 +85,7 @@
 
   function resize(){
     dpr = Math.min(window.devicePixelRatio||1, 2);
-    W = Math.max(1, window.innerWidth); H = Math.max(1, window.innerHeight);
+    W = Math.max(1, root.clientWidth); H = Math.max(1, root.clientHeight);
     cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
     ctx.imageSmoothingEnabled = true;
@@ -108,9 +109,12 @@
   }
 
   function point(x,y){
+    const rect = root.getBoundingClientRect();
+    const px = x - rect.left;
+    const py = y - rect.top;
     const hx = geo.ox + geo.dw/2, hy = geo.oy + geo.dh*0.28;
-    targetX = Math.max(-1, Math.min(1, (x-hx)/(W*0.42)));
-    targetY = Math.max(-1, Math.min(1, (y-hy)/(H*0.42)));
+    targetX = Math.max(-1, Math.min(1, (px-hx)/(W*0.42)));
+    targetY = Math.max(-1, Math.min(1, (py-hy)/(H*0.42)));
   }
   window.addEventListener('pointermove', e => { point(e.clientX,e.clientY); moveCursor(e.clientX,e.clientY); }, {passive:true});
   window.addEventListener('touchmove',  e => { const p=e.touches[0]; if(p) point(p.clientX,p.clientY); }, {passive:true});
@@ -130,11 +134,12 @@
   function ready(){
     if(++done < 3) return;
     resize();
-    document.body.classList.add('ready');
+    root.classList.add('ready');
   }
   [base,pupils[0],pupils[1]].forEach(im => { if(im.complete) ready(); else { im.onload=ready; im.onerror=ready; } });
 
-  window.addEventListener('resize', resize);
+  const observer = new ResizeObserver(resize);
+  observer.observe(root);
   window.addEventListener('orientationchange', () => setTimeout(resize,120));
   requestAnimationFrame(loop);
 })();
@@ -153,3 +158,4 @@ window.addEventListener('message', (e) => {
   window.dispatchEvent(ev);
 }, false);
 </script>
+</div>
