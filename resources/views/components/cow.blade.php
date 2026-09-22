@@ -28,7 +28,7 @@
 </style>
 
   
-  <div class="stage"><canvas id="cow" aria-label="Коровка Black Milk: её глаза следят за курсором." role="img"></canvas></div>
+  <div class="stage"><canvas id="cow" aria-label="{{ __('Vachette BLACK MILK') }}" role="img"></canvas></div>
   <div class="cur" id="cur"></div>
   <div class="ring" id="ring"></div>
 <script>
