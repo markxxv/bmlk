@@ -1,7 +1,7 @@
 <x-layout>
     <section class="px-3 pb-6 pt-3 sm:px-5 sm:pb-8 sm:pt-5 lg:px-8 lg:pb-10">
         <div class="mx-auto max-w-[1560px]">
-            <div class="grid min-h-[720px] overflow-hidden rounded-3xl bg-[#DDA1AA] lg:grid-cols-2">
+            <div class="grid overflow-hidden rounded-3xl bg-[#DDA1AA] lg:grid-cols-2">
                 <div class="flex flex-col justify-between p-7 sm:p-10 lg:p-14 xl:p-16">
                     <div class="flex items-center gap-3">
                         <span class="h-px w-10 bg-zinc-800"></span>
