@@ -330,6 +330,7 @@ These rules are mandatory for all public Blade / Tailwind UI work:
 - Prefer solid Tailwind palette colors over opacity-based color syntax. For example, prefer `text-zinc-200` instead of `text-black/20`, and `border-zinc-200` instead of `border-black/10`.
 - Prefer native Tailwind color families such as `zinc`, `stone`, `neutral`, `white`, `black`, plus the project's intentional brand colors when they are required.
 - Keep arbitrary values rare and deliberate. Use them only for genuinely project-specific values that Tailwind does not represent cleanly.
+- Wrap every user-facing UI string in Blade's translation helper, including navigation labels, buttons, headings, helper text, accessibility labels and screen-reader text: `{{ __('...') }}`. Do not hard-code visible UI copy directly in Blade.
 
 ## Working rules
 
