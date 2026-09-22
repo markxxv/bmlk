@@ -319,6 +319,18 @@ The VPS project is now the canonical working copy that was pushed to `main`.
 
 A server deployment/update pipeline has not yet been finalized and is the next infrastructure task.
 
+## Frontend design rules
+
+These rules are mandatory for all public Blade / Tailwind UI work:
+
+- Use Tailwind CSS v4 as natively as possible.
+- Prefer built-in Tailwind utilities over arbitrary values whenever a native utility exists.
+- Use built-in shadow classes such as `shadow-sm`, `shadow-md`, etc. Do not create custom arbitrary box shadows unless there is no reasonable native equivalent and it is explicitly requested.
+- Use Tailwind's native typography scale such as `text-xs`, `text-sm`, `text-base`, `text-xl`, `text-2xl`, etc. Do not use arbitrary font sizes like `text-[11px]` when a native size is suitable.
+- Prefer solid Tailwind palette colors over opacity-based color syntax. For example, prefer `text-zinc-200` instead of `text-black/20`, and `border-zinc-200` instead of `border-black/10`.
+- Prefer native Tailwind color families such as `zinc`, `stone`, `neutral`, `white`, `black`, plus the project's intentional brand colors when they are required.
+- Keep arbitrary values rare and deliberate. Use them only for genuinely project-specific values that Tailwind does not represent cleanly.
+
 ## Working rules
 
 - Keep implementation minimal and project-specific.
