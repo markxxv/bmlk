@@ -128,6 +128,7 @@ Categories use standard numeric auto-incrementing IDs.
 Current translatable fields include:
 
 - `name`
+- `slug`
 - `description`
 - `use`
 - `price_label`
@@ -135,6 +136,15 @@ Current translatable fields include:
 - `meta_description`
 
 Hierarchy is handled with nullable `parent_id`.
+
+Category slugs are globally unique per locale and back the public SEO routes:
+
+```text
+/shop
+/shop/category/{slug}
+```
+
+Do not implement category filtering with a category query-string parameter. Category selection must resolve to its own canonical URL.
 
 ## Media
 
