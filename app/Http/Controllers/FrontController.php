@@ -175,6 +175,12 @@ class FrontController extends Controller
             ]);
         }
 
+        if (blank($metaDescription)) {
+            $metaDescription = __('Découvrez :product de BLACK MILK, produit professionnel pour la manucure.', [
+                'product' => $name,
+            ]);
+        }
+
         $metaDescription = Str::limit(
             trim(preg_replace('/\s+/', ' ', strip_tags((string) $metaDescription))),
             160,
