@@ -145,6 +145,52 @@
         </div>
     </section>
 
+    <section class="px-3 pb-16 sm:px-5 sm:pb-20 lg:px-8 lg:pb-24">
+        <div class="mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-[#DDA1AA]">
+            <div class="grid lg:grid-cols-2">
+                <div>
+                    <img
+                        src="/img/elena.webp"
+                        alt="{{ __('Elena Smirnova, fondatrice de BLACK MILK') }}"
+                        class="block h-auto w-full"
+                        loading="lazy"
+                    >
+                </div>
+
+                <div class="flex items-center p-8 sm:p-10 lg:p-14 xl:p-16">
+                    <div class="max-w-xl">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-700">
+                            {{ __('La maître derrière la marque') }}
+                        </p>
+
+                        <h2 class="mt-5 font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+                            {{ __('Née') }}
+                            <span class="italic text-white">{{ __('de la') }}</span>
+                            {{ __('pratique') }}
+                        </h2>
+
+                        <div class="mt-7 space-y-5 text-base leading-7 text-zinc-700 sm:text-lg">
+                            <p>
+                                {{ __('Elena Smirnova a développé une méthode révolutionnaire de manucure à la cire et formulé chaque produit pour qu’il tienne ses promesses en cabine. Ses formules HEMA-free sont utilisées par des centaines de maîtres dans plus de 50 pays.') }}
+                            </p>
+
+                            <p>
+                                {{ __('Chaque référence est testée en conditions réelles avant d’arriver dans ta commande.') }}
+                            </p>
+                        </div>
+
+                        <a
+                            href="#"
+                            class="mt-8 inline-flex h-12 items-center justify-center rounded-full border border-zinc-900 px-6 text-xs font-semibold uppercase tracking-widest text-zinc-900 transition hover:bg-zinc-900 hover:text-white"
+                        >
+                            {{ __('Notre histoire') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     @foreach ($categories as $category)
         <section class="overflow-hidden border-t border-zinc-200 px-3 py-16 sm:px-5 sm:py-20 lg:px-8 lg:py-24">
             <div class="mx-auto max-w-[1560px]">
