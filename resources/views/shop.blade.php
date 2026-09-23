@@ -102,7 +102,7 @@
                     <div class="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 sm:gap-y-12 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-6">
                         @foreach ($products as $product)
                             @php
-                                $image = $product->getFirstMediaUrl('images', 'thumb');
+                                $image = $product->getFirstMediaUrl('images');
                                 $productSlug = $product->getTranslation('slug', $locale, false)
                                     ?: $product->getTranslation('slug', 'fr', false);
                                 $productUrl = $productSlug
@@ -112,12 +112,12 @@
 
                             <article class="group min-w-0">
                                 <a href="{{ $productUrl }}" class="block">
-                                    <div class="aspect-square overflow-hidden rounded-2xl bg-white">
+                                    <div class="aspect-[3/4] overflow-hidden rounded-2xl">
                                     @if ($image)
                                         <img
                                             src="{{ $image }}"
                                             alt="{{ $product->name }}"
-                                            class="h-full w-full object-contain p-4 transition duration-500 group-hover:scale-105 sm:p-6"
+                                            class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                                             loading="lazy"
                                         >
                                     @else
