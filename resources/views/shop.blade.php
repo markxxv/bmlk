@@ -112,12 +112,12 @@
 
                             <article class="group min-w-0">
                                 <a href="{{ $productUrl }}" class="block">
-                                    <div class="rounded-2xl ">
+                                    <div class="aspect-square overflow-hidden rounded-2xl bg-white">
                                     @if ($image)
                                         <img
                                             src="{{ $image }}"
                                             alt="{{ $product->name }}"
-                                            class="aspect-[4/5] overflow-hidden object-cover transition duration-500 group-hover:scale-105 "
+                                            class="h-full w-full object-contain p-4 transition duration-500 group-hover:scale-105 sm:p-6"
                                             loading="lazy"
                                         >
                                     @else
