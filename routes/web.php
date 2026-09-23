@@ -16,3 +16,5 @@ Route::get('/shop/product/{slug}', [FrontController::class, 'shopProduct'])
     ->name('shop.product');
 
 Route::get('/ou-acheter', [FrontController::class, 'whereToBuy'])->name('where-to-buy');
+
+Route::get('/sitemap.xml', [FrontController::class, 'sitemap'])->name('sitemap');
