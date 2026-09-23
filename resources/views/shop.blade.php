@@ -117,7 +117,7 @@
                                         <img
                                             src="{{ $image }}"
                                             alt="{{ $product->name }}"
-                                            class="aspect-[3/4] overflow-hidden object-cover transition duration-500 group-hover:scale-105 "
+                                            class="aspect-[4/5] overflow-hidden object-cover transition duration-500 group-hover:scale-105 "
                                             loading="lazy"
                                         >
                                     @else
