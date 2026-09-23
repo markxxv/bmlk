@@ -23,7 +23,7 @@
 
                         <div class="mt-9 flex flex-wrap gap-3">
                             <a
-                                href="#coffrets"
+                                href="{{ route('shop.index') }}"
                                 class="inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-6 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-zinc-800"
                             >
                                 {{ __('Découvrir la boutique') }}
@@ -219,7 +219,7 @@
                         @endphp
 
                         <article class="group w-3/4 shrink-0 snap-start sm:w-2/5 lg:w-auto">
-                            <a href="#" class="block">
+                            <a href="{{ route('shop.category', ['slug' => $category->slug]) }}" class="block">
                                 @if ($image)
                                     <div class="overflow-hidden rounded-3xl bg-stone-100">
                                         <img
