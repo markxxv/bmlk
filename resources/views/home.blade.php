@@ -133,7 +133,7 @@
                                             </p>
                                         @endif
 
-                                        <h3 class="mt-2 font-['Playfair_Display'] text-2xl font-medium leading-tight text-zinc-900 sm:text-3xl">
+                                        <h3 class="mt-2 font-['Playfair_Display'] text-xl font-medium leading-tight text-zinc-900 sm:text-3xl">
                                             {{ $product->name }}
                                         </h3>
                                     </div>
