@@ -1,29 +1,29 @@
 <?php
 
-use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FrontController;
+use App\Http\Controllers\ShopController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontController::class, 'home'])->name('home');
 
-Route::get('/shop', [FrontController::class, 'shop'])->name('shop.index');
+Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 
-Route::get('/shop/category/{slug}', [FrontController::class, 'shopCategory'])
+Route::get('/shop/category/{slug}', [ShopController::class, 'category'])
     ->where('slug', '[A-Za-z0-9-]+')
     ->name('shop.category');
 
-Route::get('/shop/product/{slug}', [FrontController::class, 'shopProduct'])
+Route::get('/shop/product/{slug}', [ShopController::class, 'product'])
     ->where('slug', '[A-Za-z0-9-]+')
     ->name('shop.product');
 
-Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
+Route::post('/checkout', [ShopController::class, 'processOrder'])->name('checkout.store');
 
-Route::get('/api/delivery-cost/{code}', [CheckoutController::class, 'deliveryCost'])
+Route::get('/api/delivery-cost/{code}', [ShopController::class, 'deliveryCost'])
     ->where('code', '[A-Za-z0-9-]+')
     ->name('api.delivery.cost');
 
-Route::get('/order/{orderNumber}', [CheckoutController::class, 'status'])
+Route::get('/order/{orderNumber}', [ShopController::class, 'orderStatus'])
     ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
     ->name('order.status');
 
