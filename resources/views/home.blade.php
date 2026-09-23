@@ -30,10 +30,10 @@
                             </a>
 
                             <a
-                                href="#"
-                                class="inline-flex h-12 items-center justify-center rounded-full border border-zinc-800 px-6 text-xs font-semibold uppercase tracking-widest text-zinc-900 transition hover:bg-white"
+                                href="{{ route('where-to-buy') }}"
+                                class="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-xs font-semibold uppercase tracking-widest text-zinc-900 transition hover:bg-zinc-50"
                             >
-                                {{ __('Voir les cours') }}
+                                {{ __('Où acheter') }}
                             </a>
                         </div>
                     </div>
