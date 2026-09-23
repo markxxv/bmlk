@@ -57,11 +57,29 @@
                 @endforeach
             </div>
 
-            <div class="mt-6 flex items-center justify-between">
-                <span class="text-sm text-zinc-500">{{ __('Total') }}</span>
-                <span class="text-lg font-semibold text-zinc-900">
-                    {{ number_format((float) $order->total_amount, 2, ',', ' ') }} €
-                </span>
+            <div class="mt-6 space-y-3">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-zinc-500">{{ __('Sous-total') }}</span>
+                    <span class="font-medium text-zinc-900">
+                        {{ number_format((float) $order->subtotal, 2, ',', ' ') }} €
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-zinc-500">{{ __('Livraison') }}</span>
+                    <span class="font-medium {{ (float) $order->delivery_cost === 0.0 ? 'text-emerald-700' : 'text-zinc-900' }}">
+                        {{ (float) $order->delivery_cost === 0.0
+                            ? __('Offerte')
+                            : number_format((float) $order->delivery_cost, 2, ',', ' ').' €' }}
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-between border-t border-zinc-100 pt-3">
+                    <span class="text-sm font-semibold text-zinc-900">{{ __('Total') }}</span>
+                    <span class="text-lg font-semibold text-zinc-900">
+                        {{ number_format((float) $order->total_amount, 2, ',', ' ') }} €
+                    </span>
+                </div>
             </div>
 
             <a
