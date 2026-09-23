@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FrontController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,13 @@ Route::get('/shop/category/{slug}', [FrontController::class, 'shopCategory'])
 Route::get('/shop/product/{slug}', [FrontController::class, 'shopProduct'])
     ->where('slug', '[A-Za-z0-9-]+')
     ->name('shop.product');
+
+Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+Route::get('/order/{orderNumber}', [CheckoutController::class, 'status'])
+    ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
+    ->name('order.status');
 
 Route::get('/events', [FrontController::class, 'events'])->name('events');
 
