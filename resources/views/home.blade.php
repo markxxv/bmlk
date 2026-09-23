@@ -97,7 +97,7 @@
                 </p>
             </div>
 
-            <div class="-mx-3 mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto px-3 pb-4 sm:-mx-5 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-8 lg:overflow-visible lg:px-0 lg:pb-0">
+            <div class="-mx-3 mt-12 flex snap-x snap-mandatory gap-2 overflow-x-auto px-5 pb-4 sm:-mx-5 sm:gap-5 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-8 lg:overflow-visible lg:px-0 lg:pb-0">
                 @foreach ($coffrets as $product)
                     @php
                         $image = $product->getFirstMediaUrl('images');
@@ -262,7 +262,7 @@
                     </div>
                 </div>
 
-                <div class="-mx-3 mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-3 pb-4 sm:-mx-5 sm:mt-12 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0">
+                <div class="-mx-3 mt-10 flex snap-x snap-mandatory gap-2 overflow-x-auto px-5 pb-4 sm:-mx-5 sm:mt-12 sm:gap-5 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0">
                     @foreach ($category->products as $product)
                         @php
                             $image = $product->getFirstMediaUrl('images');
