@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\Page;
 use App\Models\Product;
 use App\Models\Representative;
 use Illuminate\Http\RedirectResponse;
@@ -240,6 +241,61 @@ class FrontController extends Controller
             'metaTitle' => __('Où acheter BLACK MILK | Représentants officiels'),
             'metaDescription' => __('Trouvez un représentant officiel, un revendeur ou un point de vente BLACK MILK près de chez vous.'),
             'canonical' => route('where-to-buy'),
+        ]);
+    }
+
+    public function page(string $slug): View|RedirectResponse
+    {
+        $locale = $this->catalogLocale();
+
+        $page = Page::query()
+            ->where('active', true)
+            ->whereRaw("slug->>? = ?", [$locale, $slug])
+            ->first();
+
+        if (! $page) {
+            $page = Page::query()
+                ->where('active', true)
+                ->whereRaw("slug->>'fr' = ?", [$slug])
+                ->firstOrFail();
+
+            $localizedSlug = $page->getTranslation('slug', $locale, false)
+                ?: $page->getTranslation('slug', 'fr', false);
+
+            if ($localizedSlug && $localizedSlug !== $slug) {
+                return redirect()->route('page', ['slug' => $localizedSlug], 301);
+            }
+        }
+
+        $title = $page->getTranslation('title', $locale, false)
+            ?: $page->getTranslation('title', 'fr', false);
+
+        $body = $page->getTranslation('body', $locale, false)
+            ?: $page->getTranslation('body', 'fr', false);
+
+        $metaTitle = $page->getTranslation('meta_title', $locale, false)
+            ?: "{$title} | BLACK MILK";
+
+        $metaDescription = $page->getTranslation('meta_description', $locale, false);
+
+        if (blank($metaDescription)) {
+            $metaDescription = Str::limit(
+                trim(preg_replace('/\\s+/', ' ', strip_tags((string) $body))),
+                160,
+                ''
+            );
+        }
+
+        $localizedSlug = $page->getTranslation('slug', $locale, false)
+            ?: $page->getTranslation('slug', 'fr', false);
+
+        return view('page', [
+            'page' => $page,
+            'title' => $title,
+            'body' => $body,
+            'metaTitle' => $metaTitle,
+            'metaDescription' => $metaDescription,
+            'canonical' => route('page', ['slug' => $localizedSlug]),
         ]);
     }
 
