@@ -92,6 +92,11 @@
                 }
             },
 
+            clearCart() {
+                this.items = [];
+                this.save();
+            },
+
             toggle() {
                 this.isOpen = !this.isOpen;
             },
