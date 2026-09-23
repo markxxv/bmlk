@@ -6,12 +6,6 @@
     @php
         $locale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true) ? app()->getLocale() : 'fr';
 
-        $formatPrice = static function (mixed $value): string {
-            $price = round((float) $value, 2);
-            $decimals = abs($price - round($price)) < 0.00001 ? 0 : 2;
-
-            return number_format($price, $decimals, ',', ' ');
-        };
         $pageTitle = $currentCategory
             ? ($currentCategory->getTranslation('name', $locale, false) ?: $currentCategory->getTranslation('name', 'fr', false))
             : __('Boutique');
