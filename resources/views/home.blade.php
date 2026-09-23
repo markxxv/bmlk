@@ -88,12 +88,12 @@
 
                     <article class="group w-4/5 shrink-0 snap-start sm:w-1/2 lg:w-auto @if ($loop->iteration === 2) lg:pt-12 @endif">
                         <a href="#" class="block">
-                            <div class="aspect-square overflow-hidden rounded-3xl bg-stone-100">
+                            <div class="overflow-hidden rounded-3xl bg-stone-100">
                                 @if ($image)
                                     <img
                                         src="{{ $image }}"
                                         alt="{{ $product->name }}"
-                                        class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                                        class="block h-auto w-full transition duration-500 group-hover:scale-105"
                                         loading="lazy"
                                     >
                                 @endif
