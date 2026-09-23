@@ -51,30 +51,28 @@
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
 
-                    <a
-                        href="#"
+                    <button
+                        type="button"
+                        @click="$store.cart.toggle()"
                         class="inline-flex h-11 items-center gap-2 rounded-full bg-[#A9636F] px-5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#945763]"
                     >
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M7 9V7a5 5 0 0 1 10 0v2M5.5 9h13l1 11h-15l1-11Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <x-lucide-shopping-bag class="h-4 w-4" />
                         {{ __('Panier') }}
                         <span>·</span>
-                        <span>0</span>
-                    </a>
+                        <span x-text="$store.cart.count">0</span>
+                    </button>
                 </div>
 
                 <div class="flex items-center justify-self-end gap-2 lg:hidden">
-                    <a
-                        href="#"
+                    <button
+                        type="button"
+                        @click="$store.cart.toggle()"
                         class="inline-flex h-10 min-w-10 items-center justify-center gap-2 rounded-full border border-zinc-200 px-3 text-xs font-semibold"
-                        aria-label="{{ __('Panier, :count article', ['count' => 0]) }}"
+                        :aria-label="'{{ __('Panier') }} · ' + $store.cart.count"
                     >
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M7 9V7a5 5 0 0 1 10 0v2M5.5 9h13l1 11h-15l1-11Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>0</span>
-                    </a>
+                        <x-lucide-shopping-bag class="h-4 w-4" />
+                        <span x-text="$store.cart.count">0</span>
+                    </button>
 
                     <button
                         type="button"
@@ -156,12 +154,14 @@
                     {{ __('BLACK MILK France') }}
                 </span>
 
-                <a href="#" class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-900">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M7 9V7a5 5 0 0 1 10 0v2M5.5 9h13l1 11h-15l1-11Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    {{ __('Panier') }} · 0
-                </a>
+                <button
+                    type="button"
+                    @click="open = false; $store.cart.toggle()"
+                    class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-900"
+                >
+                    <x-lucide-shopping-bag class="h-4 w-4" />
+                    {{ __('Panier') }} · <span x-text="$store.cart.count">0</span>
+                </button>
             </div>
         </div>
     </div>
