@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,6 +38,50 @@ class Product extends Model implements HasMedia
     public function getTranslatableSlugTargetAttribute(): string
     {
         return 'slug';
+    }
+
+    protected function formattedPrice(): Attribute
+    {
+        return Attribute::get(
+            fn (): ?string => $this->price !== null
+                ? self::formatPriceValue($this->price)
+                : null
+        );
+    }
+
+    protected function formattedPriceMin(): Attribute
+    {
+        return Attribute::get(
+            fn (): ?string => $this->price_min !== null
+                ? self::formatPriceValue($this->price_min)
+                : null
+        );
+    }
+
+    protected function formattedPriceMax(): Attribute
+    {
+        return Attribute::get(
+            fn (): ?string => $this->price_max !== null
+                ? self::formatPriceValue($this->price_max)
+                : null
+        );
+    }
+
+    protected function formattedCompareAtPrice(): Attribute
+    {
+        return Attribute::get(
+            fn (): ?string => $this->compare_at_price !== null
+                ? self::formatPriceValue($this->compare_at_price)
+                : null
+        );
+    }
+
+    public static function formatPriceValue(mixed $value): string
+    {
+        $price = round((float) $value, 2);
+        $decimals = abs($price - round($price)) < 0.00001 ? 0 : 2;
+
+        return number_format($price, $decimals, ',', ' ');
     }
 
     protected function casts(): array
