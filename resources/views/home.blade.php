@@ -276,7 +276,7 @@
                                         </p>
                                     @endif
 
-                                    <div class="mt-2 flex items-start justify-between gap-4">
+                                    <div class="mt-2 flex items-center justify-between gap-4">
                                         <h3 class="font-medium leading-tight text-zinc-900">
                                             {{ $product->name }}
                                         </h3>
