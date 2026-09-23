@@ -545,17 +545,17 @@
     <section class="px-3 pb-6 pt-8 sm:px-5 sm:pb-8 sm:pt-12 lg:px-8 lg:pb-10 lg:pt-16">
         <div class="mx-auto max-w-[1560px] rounded-3xl bg-[#EFDDE0] px-6 py-20 text-center sm:px-10 sm:py-24 lg:px-16 lg:py-28">
             <div class="mx-auto max-w-4xl">
-                <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                     {{ __('BLACK MILK Journal') }}
                 </p>
 
-                <h2 class="mt-5 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
-                    {{ __('Reste') }}
-                    <span class="italic text-[#A9636F]">{{ __('au') }}</span>
-                    {{ __('courant') }}
+                <h2 class="mt-5 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl" data-reveal-title data-reveal-title-duration="1" data-reveal-title-stagger="0.08">
+                    <span class="inline-block">{{ __('Reste') }}</span>
+                    <span class="inline-block italic text-[#A9636F]">{{ __('au') }}</span>
+                    <span class="inline-block">{{ __('courant') }}</span>
                 </h2>
 
-                <p class="mx-auto mt-5 max-w-2xl text-base leading-7 text-zinc-600 sm:text-lg">
+                <p class="mx-auto mt-5 max-w-2xl text-base leading-7 text-zinc-600 sm:text-lg" data-reveal data-reveal-y="16" data-reveal-duration="0.8" data-reveal-delay="0.14">
                     {{ __('Nouvelles teintes, éditions limitées et conseils de la maître, directement dans ta boîte mail.') }}
                 </p>
 
@@ -563,6 +563,10 @@
                     x-data
                     @submit.prevent
                     class="mx-auto mt-10 flex max-w-2xl items-center bg-white rounded-full py-2 px-6 text-left sm:mt-12"
+                    data-reveal
+                    data-reveal-y="14"
+                    data-reveal-duration="0.8"
+                    data-reveal-delay="0.22"
                 >
                     <label for="newsletter-email" class="sr-only">
                         {{ __('Votre adresse e-mail') }}
