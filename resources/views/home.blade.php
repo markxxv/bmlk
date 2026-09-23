@@ -96,12 +96,12 @@
 
                     <article class="group w-4/5 shrink-0 snap-start sm:w-1/2 lg:w-auto @if ($loop->iteration === 2) lg:pt-12 @endif">
                         <a href="{{ $coffretUrl }}" class="block">
-                            <div class="overflow-hidden rounded-3xl bg-stone-100">
+                            <div class="aspect-[3/4] overflow-hidden rounded-3xl">
                                 @if ($image)
                                     <img
                                         src="{{ $image }}"
                                         alt="{{ $product->name }}"
-                                        class="block h-auto w-full transition duration-500 group-hover:scale-105"
+                                        class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                                         loading="lazy"
                                     >
                                 @endif
@@ -455,11 +455,11 @@
                         <article class="group w-3/4 shrink-0 snap-start sm:w-2/5 lg:w-auto">
                             <a href="{{ $productUrl }}" class="block">
                                 @if ($image)
-                                    <div class="overflow-hidden rounded-3xl bg-stone-100">
+                                    <div class="aspect-[3/4] overflow-hidden rounded-3xl">
                                         <img
                                             src="{{ $image }}"
                                             alt="{{ $product->name }}"
-                                            class="block h-auto w-full transition duration-500 group-hover:scale-105"
+                                            class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                                             loading="lazy"
                                         >
                                     </div>
