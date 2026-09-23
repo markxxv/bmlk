@@ -73,7 +73,7 @@
         <div class="mx-auto max-w-[1560px]">
             <div class="grid gap-6 lg:grid-cols-2 lg:items-end">
                 <div>
-                    <p class="text-[9px] font-semibold uppercase tracking-widest text-[#A9636F]">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
                         {{ __('Coffrets BLACK MILK') }}
                     </p>
 
@@ -280,7 +280,7 @@
 
                                 <div class="pt-4">
                                     @if ($product->tag)
-                                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                                        <p class="text-[9px] font-semibold uppercase tracking-widest text-[#A9636F]">
                                             {{ $product->tag }}
                                         </p>
                                     @endif
