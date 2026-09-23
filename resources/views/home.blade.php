@@ -23,7 +23,7 @@
                                     {{ __('Bases, builder gels et soins pensés pour une pose précise, régulière et durable') }}
                                 </p>
 
-                                <div class="mt-6 flex gap-2 sm:mt-9 sm:flex-wrap sm:gap-3">
+                                <div class="mt-6 flex gap-2 sm:mt-9 sm:flex-wrap sm:gap-3 relative z-10">
                                     <a href="{{ route('shop.index') }}" class="group inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-zinc-900 px-5 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-zinc-800 sm:flex-none sm:gap-3 sm:px-6 sm:tracking-widest">
                                         {{ __('Découvrir la boutique') }}
                                         <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -34,7 +34,7 @@
                                     </a>
                                 </div>
 
-                                <div class="relative -mx-5 -mt-1 sm:hidden">
+                                <div class="relative -mx-5 -mt-9 sm:-mt-1 sm:hidden">
                                     <div class="relative left-1/2 w-[128%] -translate-x-1/2">
                                         <x-hero-mascot class="w-full" />
                                     </div>
