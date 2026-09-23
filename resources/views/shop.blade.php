@@ -112,7 +112,7 @@
 
                             <article class="group min-w-0">
                                 <a href="{{ $productUrl }}" class="block">
-                                    <div class="overflow-hidden rounded-2xl bg-white">
+                                    <div class="rounded-2xl ">
                                     @if ($image)
                                         <img
                                             src="{{ $image }}"
