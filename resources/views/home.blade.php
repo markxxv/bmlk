@@ -13,7 +13,7 @@
 
                         <div class="flex flex-1 items-center py-10 sm:py-16 lg:py-10">
                             <div>
-                                <h1 class="max-w-2xl font-['Playfair_Display'] text-4xl font-medium leading-[0.92] tracking-tight text-zinc-900 sm:text-6xl lg:text-6xl xl:text-7xl">
+                                <h1 class="max-w-2xl font-['Playfair_Display'] text-4xl font-medium leading-[0.92] tracking-tight text-zinc-900 sm:text-6xl lg:text-6xl">
                                     <span class="block">{{ __('Gels professionnels') }}</span>
                                     <span class="block italic text-white">{{ __('Hema-free') }}</span>
                                     <span class="block">{{ __('pour les maîtres') }}</span>
