@@ -13,13 +13,14 @@
 
                         <div class="flex flex-1 items-center py-14 sm:py-16 lg:py-10">
                             <div>
-                                <h1 class="max-w-2xl font-['Playfair_Display'] text-6xl font-medium leading-[0.88] tracking-tight text-zinc-900 sm:text-7xl lg:text-7xl xl:text-8xl">
-                                    <span class="block">{{ __('Élève') }} <span class="italic text-white">{{ __('ton') }}</span></span>
-                                    <span class="block">{{ __('niveau') }}</span>
+                                <h1 class="max-w-2xl font-['Playfair_Display'] text-5xl font-medium leading-[0.92] tracking-tight text-zinc-900 sm:text-6xl lg:text-6xl xl:text-7xl">
+                                    <span class="block">{{ __('Gels professionnels') }}</span>
+                                    <span class="block italic text-white">{{ __('Hema-free') }}</span>
+                                    <span class="block">{{ __('pour les maîtres') }}</span>
                                 </h1>
 
                                 <p class="mt-7 max-w-lg text-base leading-7 text-zinc-800 sm:text-lg">
-                                    {{ __('La technique révolutionnaire à la cire et des produits professionnels HEMA-free pensés pour celles et ceux qui exigent plus de leur travail.') }}
+                                    {{ __('Bases, builder gels et soins pensés pour une pose précise, régulière et durable') }}
                                 </p>
 
                                 <div class="mt-9 flex flex-wrap gap-3">
