@@ -130,9 +130,13 @@ class ImportCatalog extends Command
                 ->whereRaw("name->>? = ?", ['fr', $frName])
                 ->first() ?? new Category();
 
+            $existingSlugs = $category->exists
+                ? $category->getTranslations('slug')
+                : [];
+
             $category->fill([
                 'name' => $name,
-                'slug' => $this->categorySlugs($name, $category),
+                'slug' => $existingSlugs !== [] ? $existingSlugs : $this->categorySlugs($name, $category),
                 'description' => $this->localizedField($translations, ['description', 'desc']),
                 'use' => $this->localizedField($translations, ['use']),
                 'price_label' => $this->localizedField($translations, ['price']),
