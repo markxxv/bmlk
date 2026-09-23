@@ -233,7 +233,7 @@
 
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('blackMilkProduct', (product, options, fallbackPriceLabel, numberLocale) => ({
+            Alpine.data('blackMilkProduct', (product, options, fallbackPriceLabel, numberLocale, selectOptionsLabel) => ({
                 qty: 1,
                 selected: {},
 
@@ -285,7 +285,7 @@
 
                 get displayPrice() {
                     if (this.currentPrice === null) {
-                        return fallbackPriceLabel || '';
+                        return fallbackPriceLabel || selectOptionsLabel;
                     }
 
                     return new Intl.NumberFormat(numberLocale, {
@@ -438,7 +438,8 @@
                                 'en' => 'en-GB',
                                 'ro' => 'ro-RO',
                                 default => 'fr-FR',
-                            })
+                            }),
+                            @js(__('Sélectionnez les options'))
                         )"
                     >
                         <div class="lg:sticky lg:top-8">
@@ -467,7 +468,7 @@
                                 <div class="mt-6 flex flex-wrap items-baseline gap-3">
                                     <p
                                         class="font-['Playfair_Display'] text-3xl font-medium text-zinc-900"
-                                        x-text="displayPrice || @js(__('Sélectionnez les options'))"
+                                        x-text="displayPrice"
                                     >{{ $priceLabel ?: __('Sélectionnez les options') }}</p>
 
                                     @if ($product->compare_at_price !== null && $product->price !== null && (float) $product->compare_at_price > (float) $product->price)
@@ -578,9 +579,8 @@
                                     class="flex h-13 flex-1 items-center justify-center gap-2 rounded-full px-7 text-xs font-semibold uppercase tracking-widest transition"
                                 >
                                     <x-lucide-shopping-bag class="h-4 w-4" />
-                                    <span x-text="isReady ? @js(__('Ajouter au panier')) : @js(__('Choisissez les options'))">
-                                        {{ $productOptions === [] ? __('Ajouter au panier') : __('Choisissez les options') }}
-                                    </span>
+                                    <span x-show="isReady">{{ __('Ajouter au panier') }}</span>
+                                    <span x-show="! isReady">{{ __('Choisissez les options') }}</span>
                                 </button>
                             </div>
 
