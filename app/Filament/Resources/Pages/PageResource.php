@@ -194,8 +194,8 @@ class PageResource extends Resource
                         ->schema([
                             TextInput::make("slug.{$locale}")
                                 ->label('Slug')
-                                ->required($locale === 'fr')
                                 ->prefixIcon('lucide-link')
+                                ->helperText('Generated from the title on creation when empty. It will not change automatically later.')
                                 ->maxLength(255),
 
                             TextInput::make("meta_title.{$locale}")
