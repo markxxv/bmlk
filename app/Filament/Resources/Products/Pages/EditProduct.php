@@ -12,6 +12,13 @@ class EditProduct extends EditRecord
 {
     protected static string $resource = ProductResource::class;
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['options'] = ProductResource::optionsForForm($data['options'] ?? []);
+
+        return $data;
+    }
+
     protected function getHeaderActions(): array
     {
         return [
