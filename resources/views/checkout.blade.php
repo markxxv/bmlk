@@ -416,8 +416,8 @@
                         </div>
                     </div>
 
-                    <div class="mt-6 flex items-center justify-center gap-2 text-emerald-500">
-                        <p class="bg-white py-2 px-6 rounded-full flex items-center justify-center">
+                    <div class="mt-6 flex items-center justify-center text-emerald-500">
+                        <p class="bg-white py-2 px-6 rounded-full flex gap-2 items-center justify-center">
                             <x-lucide-shield-check class="h-4 w-4" />
                             <span class="text-xs font-medium">{{ __('Secure Checkout') }}</span>
                         </p>
