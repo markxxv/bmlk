@@ -149,11 +149,11 @@
 
                                         <div class="shrink-0 pt-1 text-xs font-semibold text-zinc-900 sm:text-sm">
                                             @if ($product->price)
-                                                {{ $formatPrice($product->price) }} €
+                                                {{ $product->formatted_price }} €
                                             @elseif ($product->price_min && $product->price_max)
-                                                {{ $formatPrice($product->price_min) }}–{{ $formatPrice($product->price_max) }} €
+                                                {{ $product->formatted_price_min }}–{{ $product->formatted_price_max }} €
                                             @elseif ($product->price_min)
-                                                {{ __('Dès :price €', ['price' => $formatPrice($product->price_min)]) }}
+                                                {{ __('Dès :price €', ['price' => $product->formatted_price_min]) }}
                                             @endif
                                         </div>
                                     </div>
