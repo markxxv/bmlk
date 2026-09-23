@@ -18,6 +18,16 @@ class Event extends Model
         'description',
     ];
 
+    public function getTranslatableSlugSourceAttribute(): string
+    {
+        return 'name';
+    }
+
+    public function getTranslatableSlugTargetAttribute(): string
+    {
+        return 'url';
+    }
+
     protected function casts(): array
     {
         return [
