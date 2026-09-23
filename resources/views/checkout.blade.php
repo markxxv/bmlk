@@ -315,7 +315,7 @@
 
                         <div class="mt-6 border-t border-zinc-100 pt-5">
                             <div class="flex items-center justify-center gap-2">
-                                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
+                                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
                                     <x-lucide-lock-keyhole class="h-3.5 w-3.5" />
                                 </span>
 
@@ -417,7 +417,7 @@
                     </div>
 
                     <div class="mt-6 flex items-center justify-center gap-2 text-emerald-500">
-                        <p class="bg-white py-2 px-6 rounded-full">
+                        <p class="bg-white py-2 px-6 rounded-full flex items-center justify-center">
                             <x-lucide-shield-check class="h-4 w-4" />
                             <span class="text-xs font-medium">{{ __('Secure Checkout') }}</span>
                         </p>
