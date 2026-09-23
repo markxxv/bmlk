@@ -87,7 +87,7 @@
                     {{ __('Commande') }}
                 </p>
 
-                <h1 class="mt-3 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">
+                <h1 class="mt-3 font-['Playfair_Display'] text-4xl font-medium tracking-tight text-zinc-900 sm:text-5xl">
                     {{ __('Finaliser la commande') }}
                 </h1>
             </div>
@@ -95,9 +95,15 @@
             <div class="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-start">
                 <form @submit.prevent="submit()" class="space-y-5">
                     <section class="rounded-2xl bg-white p-6 sm:p-8">
-                        <h2 class="text-base font-semibold text-zinc-900">
-                            {{ __('Coordonnées') }}
-                        </h2>
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
+                                <x-lucide-user class="h-4 w-4" />
+                            </span>
+
+                            <h2 class="text-base font-semibold text-zinc-900">
+                                {{ __('Coordonnées') }}
+                            </h2>
+                        </div>
 
                         <div class="mt-5 grid gap-4 sm:grid-cols-2">
                             <div>
@@ -145,9 +151,15 @@
                     </section>
 
                     <section class="rounded-2xl bg-white p-6 sm:p-8">
-                        <h2 class="text-base font-semibold text-zinc-900">
-                            {{ __('Adresse de livraison') }}
-                        </h2>
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
+                                <x-lucide-map-pin class="h-4 w-4" />
+                            </span>
+
+                            <h2 class="text-base font-semibold text-zinc-900">
+                                {{ __('Adresse de livraison') }}
+                            </h2>
+                        </div>
 
                         <div class="mt-5 grid gap-4 sm:grid-cols-2">
                             <div class="sm:col-span-2">
@@ -227,6 +239,41 @@
                             <span x-show="! isSubmitting">{{ __('Créer la commande') }}</span>
                             <span x-show="isSubmitting">{{ __('Traitement…') }}</span>
                         </button>
+
+                        <div class="mt-5 flex items-center justify-center gap-2 text-emerald-700">
+                            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50">
+                                <x-lucide-lock-keyhole class="h-3.5 w-3.5" />
+                            </span>
+
+                            <span class="text-xs font-medium">
+                                {{ __('Secure Checkout') }}
+                            </span>
+                        </div>
+
+                        <div class="mt-6 border-t border-zinc-100 pt-5">
+                            <div class="flex items-center justify-center gap-2">
+                                <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
+                                    <x-lucide-lock-keyhole class="h-3.5 w-3.5" />
+                                </span>
+
+                                <div>
+                                    <div class="text-xs font-medium text-zinc-900">
+                                        {{ __('Secure payments') }}
+                                    </div>
+                                    <div class="mt-0.5 text-[10px] text-zinc-400">
+                                        {{ __('Your payment information is protected') }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-3">
+                                <img src="/img/visa.svg" alt="Visa" class="w-8">
+                                <img src="/img/mastercard.svg" alt="Mastercard" class="w-8">
+                                <img src="/img/amex.svg" alt="American Express" class="w-8">
+                                <img src="/img/paypal.svg" alt="PayPal" class="w-8">
+                                <img src="/img/apple-pay.svg" alt="Apple Pay" class="w-8">
+                            </div>
+                        </div>
                     </section>
                 </form>
 
