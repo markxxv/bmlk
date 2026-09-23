@@ -214,15 +214,27 @@
                         </p>
 
                         <h2 class="mt-4 max-w-3xl font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
-                            {{ $category->name }}
+                            <a href="{{ $categoryUrl }}" class="transition hover:text-[#A9636F]">
+                                {{ $category->name }}
+                            </a>
                         </h2>
                     </div>
 
-                    @if ($category->description)
-                        <p class="max-w-xl text-base leading-7 text-zinc-600 lg:justify-self-end lg:text-lg">
-                            {{ $category->description }}
-                        </p>
-                    @endif
+                    <div class="lg:justify-self-end">
+                        @if ($category->description)
+                            <p class="max-w-xl text-base leading-7 text-zinc-600 lg:text-lg">
+                                {{ $category->description }}
+                            </p>
+                        @endif
+
+                        <a
+                            href="{{ $categoryUrl }}"
+                            class="group mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-900"
+                        >
+                            {{ __('Voir toute la collection') }}
+                            <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </a>
+                    </div>
                 </div>
 
                 <div class="-mx-3 mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-3 pb-4 sm:-mx-5 sm:mt-12 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0">
