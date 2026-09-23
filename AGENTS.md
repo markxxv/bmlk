@@ -455,3 +455,11 @@ Sales logic:
 - `ticket_url != null` — ticket purchase goes to the external platform.
 
 `url` is reserved for future event detail pages and is unique per locale.
+
+
+## Events frontend
+
+- `GET /events` → public events listing page.
+- Main navigation links to `route('events')`.
+- Home and events page use the same upcoming-events query and date relevance ordering.
+- Event type filtering is client-side with Alpine.js and no transition animation.
