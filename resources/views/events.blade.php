@@ -19,24 +19,26 @@
     @endphp
 
     <main>
-        <section class="px-3 pb-8 pt-10 sm:px-5 sm:pb-10 sm:pt-14 lg:px-8 lg:pb-12 lg:pt-16">
-            <div class="mx-auto max-w-[1560px] rounded-3xl bg-[#EFDDE0] px-6 py-14 sm:px-10 sm:py-16 lg:px-14 lg:py-20 xl:px-16">
-                <div class="grid gap-10 lg:grid-cols-12 lg:items-end">
+        <section class="px-3 pb-5 pt-5 sm:px-5 sm:pb-10 lg:px-8">
+            <div class="mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-[#EFDDE0]">
+                <div class="grid gap-12 px-7 py-12 sm:px-10 sm:py-16 lg:grid-cols-12 lg:px-14 lg:py-20 xl:px-16">
                     <div class="lg:col-span-8">
                         <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
                             {{ __('Événements BLACK MILK') }}
                         </p>
 
-                        <h1 class="mt-5 max-w-5xl font-['Playfair_Display'] text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl">
+                        <h1 class="mt-6 max-w-5xl font-['Playfair_Display'] text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl">
                             {{ __('Les prochains') }}
                             <span class="italic text-[#A9636F]">{{ __('rendez-vous') }}</span>
                         </h1>
                     </div>
 
-                    <div class="lg:col-span-4">
-                        <p class="max-w-xl text-base leading-7 text-zinc-700 sm:text-lg">
-                            {{ __('Formations, workshops et rencontres BLACK MILK en France et à l’international.') }}
-                        </p>
+                    <div class="flex items-end lg:col-span-4">
+                        <div class="max-w-md">
+                            <p class="text-base leading-7 text-zinc-700 sm:text-lg">
+                                {{ __('Formations, workshops et rencontres BLACK MILK en France et à l’international.') }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
