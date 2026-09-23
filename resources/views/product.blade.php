@@ -211,14 +211,15 @@
 
                 <div class="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-14 xl:gap-20">
                     <div class="lg:col-span-7" data-product-gallery>
-                        <div
-                            class="overflow-hidden rounded-3xl bg-white"
-                            data-embla-viewport
-                            role="region"
-                            aria-roledescription="{{ __('carrousel') }}"
-                            aria-label="{{ __('Galerie de :product', ['product' => $productName]) }}"
-                        >
-                            <div class="flex touch-pan-y">
+                        <div class="relative">
+                            <div
+                                class="overflow-hidden rounded-3xl bg-white"
+                                data-embla-viewport
+                                role="region"
+                                aria-roledescription="{{ __('carrousel') }}"
+                                aria-label="{{ __('Galerie de :product', ['product' => $productName]) }}"
+                            >
+                                <div class="flex touch-pan-y">
                                 @if ($images->isNotEmpty())
                                     @foreach ($images as $index => $image)
                                         <div
@@ -252,11 +253,34 @@
                                         <span class="sr-only">{{ __('Image indisponible') }}</span>
                                     </div>
                                 @endif
+                                </div>
                             </div>
+
+                            @if ($images->count() > 1)
+                                <div class="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-center justify-between px-4 sm:px-5">
+                                    <button
+                                        type="button"
+                                        data-embla-prev
+                                        class="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-zinc-900 shadow-sm backdrop-blur transition hover:bg-white disabled:pointer-events-none disabled:opacity-30"
+                                        aria-label="{{ __('Image précédente') }}"
+                                    >
+                                        <x-lucide-chevron-left class="h-5 w-5" />
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        data-embla-next
+                                        class="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-zinc-900 shadow-sm backdrop-blur transition hover:bg-white disabled:pointer-events-none disabled:opacity-30"
+                                        aria-label="{{ __('Image suivante') }}"
+                                    >
+                                        <x-lucide-chevron-right class="h-5 w-5" />
+                                    </button>
+                                </div>
+                            @endif
                         </div>
 
                         @if ($images->count() > 1)
-                            <div class="mt-3 flex gap-3 overflow-x-auto pb-1" aria-label="{{ __('Miniatures du produit') }}">
+                            <div class="-mx-1 mt-3 flex gap-3 overflow-x-auto px-1 py-1 pb-2" aria-label="{{ __('Miniatures du produit') }}">
                                 @foreach ($images as $index => $image)
                                     <button
                                         type="button"
