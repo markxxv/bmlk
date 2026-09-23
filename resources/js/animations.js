@@ -147,27 +147,48 @@ export function initBlurReveal(root = document) {
 const prepareTitleLines = (title) => {
     const explicit = [...title.querySelectorAll(':scope > [data-reveal-title-line]')];
 
-    if (explicit.length) return explicit;
+    let lines = explicit;
 
-    const directSpans = [...title.children].filter((child) => child.tagName === 'SPAN');
+    if (!lines.length) {
+        const directSpans = [...title.children].filter((child) => child.tagName === 'SPAN');
 
-    if (!directSpans.length) {
-        const inner = document.createElement('span');
-        inner.dataset.revealTitleLine = '';
-        inner.className = 'block';
-        inner.innerHTML = title.innerHTML;
+        if (!directSpans.length) {
+            const inner = document.createElement('span');
+            inner.dataset.revealTitleLine = '';
+            inner.className = 'block';
+            inner.innerHTML = title.innerHTML;
 
-        title.innerHTML = '';
-        title.append(inner);
+            title.innerHTML = '';
+            title.append(inner);
 
-        return [inner];
+            lines = [inner];
+        } else {
+            directSpans.forEach((line) => {
+                line.dataset.revealTitleLine = '';
+            });
+
+            lines = directSpans;
+        }
     }
 
-    directSpans.forEach((line) => {
-        line.dataset.revealTitleLine = '';
+    lines.forEach((line) => {
+        if (line.parentElement?.dataset.revealTitleMask !== undefined) return;
+
+        const display = getComputedStyle(line).display;
+        const mask = document.createElement('span');
+
+        mask.dataset.revealTitleMask = '';
+        mask.style.display = display === 'block' ? 'block' : 'inline-block';
+        mask.style.overflow = 'hidden';
+        mask.style.paddingBlock = '0.14em';
+        mask.style.marginBlock = '-0.14em';
+        mask.style.verticalAlign = 'bottom';
+
+        line.before(mask);
+        mask.append(line);
     });
 
-    return directSpans;
+    return lines;
 };
 
 export function initTitleReveal(root = document) {
@@ -198,7 +219,7 @@ export function initTitleReveal(root = document) {
             });
         };
 
-        title.style.overflow = 'hidden';
+        title.style.overflow = 'visible';
         hide();
 
         inView(title, () => {
