@@ -151,25 +151,21 @@ class ProductResource extends Resource
                                                     ])
                                                     ->compact()
                                                     ->schema([
-                                                        TextInput::make('value')
-                                                            ->placeholder('0,21 mm'),
+                                                        TextInput::make('value'),
                                                         TextInput::make('quantity')
                                                             ->numeric()
-                                                            ->minValue(1)
-                                                            ->placeholder('1'),
+                                                            ->minValue(1),
                                                         TextInput::make('price')
                                                             ->numeric()
                                                             ->inputMode('decimal')
                                                             ->minValue(0)
-                                                            ->prefix('€')
-                                                            ->placeholder('5,00'),
+                                                            ->prefix('€'),
                                                     ])
                                                     ->defaultItems(0)
                                                     ->addActionLabel('Add value')
                                                     ->reorderable()
                                                     ->columnSpanFull(),
                                             ])
-                                            ->formatStateUsing(fn (mixed $state): array => static::optionsForForm($state))
                                             ->dehydrateStateUsing(fn (mixed $state): ?array => static::optionsForStorage($state))
                                             ->itemLabel(fn (array $state): ?string => static::productOptionTypeOptions()[data_get($state, 'type')] ?? 'Option')
                                             ->defaultItems(0)
@@ -446,7 +442,7 @@ class ProductResource extends Resource
         );
     }
 
-    protected static function optionsForForm(mixed $options): array
+    public static function optionsForForm(mixed $options): array
     {
         if (! is_array($options)) {
             return [];
