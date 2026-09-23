@@ -124,6 +124,89 @@ class FrontController extends Controller
         ]);
     }
 
+    public function shopProduct(string $slug): View|RedirectResponse
+    {
+        $locale = $this->catalogLocale();
+
+        $product = Product::query()
+            ->where('active', true)
+            ->with(['category', 'media'])
+            ->whereRaw("slug->>? = ?", [$locale, $slug])
+            ->first();
+
+        if (! $product) {
+            $product = Product::query()
+                ->where('active', true)
+                ->with(['category', 'media'])
+                ->whereRaw("slug->>'fr' = ?", [$slug])
+                ->firstOrFail();
+
+            $localizedSlug = $product->getTranslation('slug', $locale, false)
+                ?: $product->getTranslation('slug', 'fr', false);
+
+            if ($localizedSlug && $localizedSlug !== $slug) {
+                return redirect()->route('shop.product', ['slug' => $localizedSlug], 301);
+            }
+        }
+
+        $name = $product->getTranslation('name', $locale, false)
+            ?: $product->getTranslation('name', 'fr', false);
+
+        $description = $product->getTranslation('description', $locale, false)
+            ?: $product->getTranslation('description', 'fr', false);
+
+        $categoryName = $product->category?->getTranslation('name', $locale, false)
+            ?: $product->category?->getTranslation('name', 'fr', false);
+
+        $categoryDescription = $product->category?->getTranslation('description', $locale, false)
+            ?: $product->category?->getTranslation('description', 'fr', false);
+
+        $metaTitle = $product->getTranslation('meta_title', $locale, false)
+            ?: "{$name} – {$categoryName} | BLACK MILK";
+
+        $metaDescription = $product->getTranslation('meta_description', $locale, false)
+            ?: $description;
+
+        if (blank($metaDescription) && $categoryDescription) {
+            $metaDescription = __(':product fait partie de la collection :category. :description', [
+                'product' => $name,
+                'category' => $categoryName,
+                'description' => $categoryDescription,
+            ]);
+        }
+
+        $metaDescription = Str::limit(
+            trim(preg_replace('/\s+/', ' ', strip_tags((string) $metaDescription))),
+            160,
+            ''
+        );
+
+        $localizedSlug = $product->getTranslation('slug', $locale, false)
+            ?: $product->getTranslation('slug', 'fr', false);
+
+        $canonical = route('shop.product', ['slug' => $localizedSlug]);
+
+        $recommended = Product::query()
+            ->where('active', true)
+            ->whereKeyNot($product->id)
+            ->with(['category', 'media'])
+            ->orderByRaw('CASE WHEN category_id = ? THEN 0 ELSE 1 END', [$product->category_id])
+            ->orderByDesc('featured')
+            ->orderByDesc('is_new')
+            ->orderBy('id')
+            ->limit(4)
+            ->get();
+
+        return view('product', [
+            'product' => $product,
+            'recommended' => $recommended,
+            'metaTitle' => $metaTitle,
+            'metaDescription' => $metaDescription,
+            'canonical' => $canonical,
+            'ogImage' => $product->getFirstMediaUrl('images'),
+        ]);
+    }
+
     public function whereToBuy(): View
     {
         $representatives = Representative::query()
