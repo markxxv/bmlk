@@ -276,7 +276,7 @@ class EventResource extends Resource
                         ->label('URL slug')
                         ->prefixIcon('lucide-link')
                         ->maxLength(255)
-                        ->helperText('Reserved for future event detail pages.'),
+                        ->helperText('Generated from the name on creation when empty. It will not change automatically later.'),
 
                     Textarea::make("description.{$locale}")
                         ->label('Description')
