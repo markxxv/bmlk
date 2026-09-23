@@ -79,6 +79,58 @@
             ]);
         }
 
+        $productOptions = collect($product->options ?? [])
+            ->filter(fn (mixed $option): bool => is_array($option) && filled(data_get($option, 'id')))
+            ->map(function (array $option) use ($localeKey): array {
+                $id = data_get($option, 'id');
+                $label = data_get($option, "label.{$localeKey}")
+                    ?: data_get($option, 'label.FR')
+                    ?: $id;
+
+                $choices = collect(data_get($option, 'values', []))
+                    ->map(function (mixed $value): array {
+                        if (is_array($value)) {
+                            $quantity = data_get($value, 'quantity');
+                            $price = data_get($value, 'price.amount');
+
+                            return [
+                                'key' => 'quantity:'.($quantity ?? 'none').':'.($price ?? 'none'),
+                                'value' => null,
+                                'quantity' => $quantity !== null ? (int) $quantity : null,
+                                'price' => $price !== null ? (float) $price : null,
+                                'display' => $quantity !== null ? $quantity.' ×' : __('Option'),
+                            ];
+                        }
+
+                        return [
+                            'key' => 'value:'.(string) $value,
+                            'value' => (string) $value,
+                            'quantity' => null,
+                            'price' => null,
+                            'display' => (string) $value,
+                        ];
+                    })
+                    ->values()
+                    ->all();
+
+                return [
+                    'id' => $id,
+                    'label' => $label,
+                    'choices' => $choices,
+                ];
+            })
+            ->filter(fn (array $option): bool => $option['choices'] !== [])
+            ->values()
+            ->all();
+
+        $cartProduct = [
+            'id' => $product->id,
+            'name' => $productName,
+            'url' => $canonical,
+            'image' => $product->getFirstMediaUrl('images', 'thumb') ?: $product->getFirstMediaUrl('images'),
+            'price' => $product->price !== null ? (float) $product->price : null,
+        ];
+
         $offerSchema = null;
 
         if ($product->price !== null) {
@@ -177,6 +229,80 @@
 
     <script type="application/ld+json">
         {!! json_encode($breadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+    </script>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('blackMilkProduct', (product, options, fallbackPriceLabel, numberLocale) => ({
+                qty: 1,
+                selected: {},
+
+                init() {
+                    options.forEach(option => {
+                        if (option.choices.length === 1) {
+                            this.selectOption(option.id, option.label, option.choices[0]);
+                        }
+                    });
+                },
+
+                selectOption(optionId, optionLabel, choice) {
+                    this.selected = {
+                        ...this.selected,
+                        [optionId]: {
+                            ...choice,
+                            id: optionId,
+                            label: optionLabel,
+                        },
+                    };
+                },
+
+                isSelected(optionId, choiceKey) {
+                    return this.selected[optionId]?.key === choiceKey;
+                },
+
+                get allOptionsSelected() {
+                    return options.every(option => Boolean(this.selected[option.id]));
+                },
+
+                get currentPrice() {
+                    const pricedOption = Object.values(this.selected)
+                        .find(option => option.price !== null && option.price !== undefined);
+
+                    if (pricedOption) {
+                        return Number(pricedOption.price);
+                    }
+
+                    return product.price !== null && product.price !== undefined
+                        ? Number(product.price)
+                        : null;
+                },
+
+                get isReady() {
+                    return this.allOptionsSelected
+                        && this.currentPrice !== null
+                        && Number.isFinite(Number(this.currentPrice));
+                },
+
+                get displayPrice() {
+                    if (this.currentPrice === null) {
+                        return fallbackPriceLabel || '';
+                    }
+
+                    return new Intl.NumberFormat(numberLocale, {
+                        style: 'currency',
+                        currency: 'EUR',
+                    }).format(this.currentPrice);
+                },
+
+                addToCart() {
+                    if (! this.isReady) {
+                        return;
+                    }
+
+                    this.$store.cart.addItem(product, this.selected, this.qty);
+                },
+            }));
+        });
     </script>
 
     <main>
@@ -302,7 +428,19 @@
                         @endif
                     </div>
 
-                    <div class="lg:col-span-5">
+                    <div
+                        class="lg:col-span-5"
+                        x-data="blackMilkProduct(
+                            @js($cartProduct),
+                            @js($productOptions),
+                            @js($priceLabel),
+                            @js(match ($locale) {
+                                'en' => 'en-GB',
+                                'ro' => 'ro-RO',
+                                default => 'fr-FR',
+                            })
+                        )"
+                    >
                         <div class="lg:sticky lg:top-8">
                             <div class="flex flex-wrap items-center gap-2">
                                 @if ($categoryName)
@@ -325,11 +463,12 @@
                                 {{ $productName }}
                             </h1>
 
-                            @if ($priceLabel)
+                            @if ($priceLabel || $productOptions !== [])
                                 <div class="mt-6 flex flex-wrap items-baseline gap-3">
-                                    <p class="font-['Playfair_Display'] text-3xl font-medium text-zinc-900">
-                                        {{ $priceLabel }}
-                                    </p>
+                                    <p
+                                        class="font-['Playfair_Display'] text-3xl font-medium text-zinc-900"
+                                        x-text="displayPrice || @js(__('Sélectionnez les options'))"
+                                    >{{ $priceLabel ?: __('Sélectionnez les options') }}</p>
 
                                     @if ($product->compare_at_price !== null && $product->price !== null && (float) $product->compare_at_price > (float) $product->price)
                                         <p class="text-sm text-zinc-400 line-through">
@@ -369,56 +508,44 @@
                                 </div>
                             @endif
 
-                            @if (is_array($product->options) && $product->options !== [])
+                            @if ($productOptions !== [])
                                 <div class="mt-9 space-y-6">
-                                    @foreach ($product->options as $option)
-                                        @php
-                                            $optionLabel = data_get($option, "label.{$localeKey}")
-                                                ?: data_get($option, 'label.FR')
-                                                ?: data_get($option, 'id');
-                                            $values = data_get($option, 'values', []);
-                                        @endphp
+                                    @foreach ($productOptions as $option)
+                                        <div>
+                                            <p class="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+                                                {{ $option['label'] }}
+                                            </p>
 
-                                        @if ($optionLabel && is_array($values) && $values !== [])
-                                            <div>
-                                                <p class="text-xs font-semibold uppercase tracking-widest text-zinc-500">
-                                                    {{ $optionLabel }}
-                                                </p>
+                                            <div class="mt-3 flex flex-wrap gap-2">
+                                                @foreach ($option['choices'] as $choice)
+                                                    <button
+                                                        type="button"
+                                                        @click="selectOption(
+                                                            @js($option['id']),
+                                                            @js($option['label']),
+                                                            @js($choice)
+                                                        )"
+                                                        :class="isSelected(@js($option['id']), @js($choice['key']))
+                                                            ? 'border-[#A9636F] bg-[#EFDDE0] text-zinc-900'
+                                                            : 'border-zinc-200 bg-white text-zinc-700 hover:border-[#DDA1AA]'"
+                                                        class="rounded-full border px-4 py-2 text-sm transition"
+                                                    >
+                                                        <span>{{ $choice['display'] }}</span>
 
-                                                <div class="mt-3 flex flex-wrap gap-2">
-                                                    @foreach ($values as $value)
-                                                        @php
-                                                            $valueLabel = is_array($value)
-                                                                ? (
-                                                                    data_get($value, 'quantity')
-                                                                        ? data_get($value, 'quantity').' ×'
-                                                                        : json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
-                                                                )
-                                                                : $value;
-
-                                                            $valuePrice = is_array($value)
-                                                                ? data_get($value, 'price.amount')
-                                                                : null;
-                                                        @endphp
-
-                                                        <span class="rounded-full border border-zinc-200 bg-transparent px-4 py-2 text-sm text-zinc-700">
-                                                            {{ $valueLabel }}
-                                                            @if ($valuePrice !== null)
-                                                                · {{ number_format((float) $valuePrice, 2, ',', ' ') }} €
-                                                            @endif
-                                                        </span>
-                                                    @endforeach
-                                                </div>
+                                                        @if ($choice['price'] !== null)
+                                                            <span class="ml-1 text-xs text-zinc-500">
+                                                                · {{ number_format((float) $choice['price'], 2, ',', ' ') }} €
+                                                            </span>
+                                                        @endif
+                                                    </button>
+                                                @endforeach
                                             </div>
-                                        @endif
+                                        </div>
                                     @endforeach
                                 </div>
                             @endif
 
-                            <div
-                                x-data="{ qty: 1 }"
-                                class="mt-9 flex flex-col gap-3 sm:flex-row"
-                            >
+                            <div class="mt-9 flex flex-col gap-3 sm:flex-row">
                                 <div class="flex h-13 items-center justify-between rounded-full bg-white px-2 sm:w-36">
                                     <button
                                         type="button"
@@ -443,10 +570,17 @@
 
                                 <button
                                     type="button"
-                                    class="flex h-13 flex-1 items-center justify-center gap-2 rounded-full bg-[#A9636F] px-7 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#945763]"
+                                    @click="addToCart()"
+                                    :disabled="! isReady"
+                                    :class="isReady
+                                        ? 'bg-[#A9636F] text-white hover:bg-[#945763]'
+                                        : 'cursor-not-allowed bg-zinc-200 text-zinc-400'"
+                                    class="flex h-13 flex-1 items-center justify-center gap-2 rounded-full px-7 text-xs font-semibold uppercase tracking-widest transition"
                                 >
                                     <x-lucide-shopping-bag class="h-4 w-4" />
-                                    {{ __('Ajouter au panier') }}
+                                    <span x-text="isReady ? @js(__('Ajouter au panier')) : @js(__('Choisissez les options'))">
+                                        {{ $productOptions === [] ? __('Ajouter au panier') : __('Choisissez les options') }}
+                                    </span>
                                 </button>
                             </div>
 
