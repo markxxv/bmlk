@@ -123,12 +123,13 @@
                 ></span>
             </div>
 
-            <button
-                type="button"
+            <a
+                href="{{ route('checkout') }}"
+                @click="$store.cart.close()"
                 class="block w-full rounded-lg bg-zinc-900 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-zinc-800"
             >
                 {{ __('Passer commande') }}
-            </button>
+            </a>
         </div>
     </aside>
 </div>
