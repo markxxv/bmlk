@@ -262,4 +262,51 @@
         </section>
     @endforeach
 
+
+    <section class="px-3 pb-6 pt-8 sm:px-5 sm:pb-8 sm:pt-12 lg:px-8 lg:pb-10 lg:pt-16">
+        <div class="mx-auto max-w-[1560px] rounded-3xl bg-[#EFDDE0] px-6 py-20 text-center sm:px-10 sm:py-24 lg:px-16 lg:py-28">
+            <div class="mx-auto max-w-4xl">
+                <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                    {{ __('BLACK MILK Journal') }}
+                </p>
+
+                <h2 class="mt-5 font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+                    {{ __('Reste') }}
+                    <span class="italic text-[#A9636F]">{{ __('au') }}</span>
+                    {{ __('courant') }}
+                </h2>
+
+                <p class="mx-auto mt-5 max-w-2xl text-base leading-7 text-zinc-600 sm:text-lg">
+                    {{ __('Nouvelles teintes, éditions limitées et conseils de la maître, directement dans ta boîte mail.') }}
+                </p>
+
+                <form
+                    x-data
+                    @submit.prevent
+                    class="mx-auto mt-10 flex max-w-2xl items-center border-b border-zinc-900 pb-3 text-left sm:mt-12"
+                >
+                    <label for="newsletter-email" class="sr-only">
+                        {{ __('Votre adresse e-mail') }}
+                    </label>
+
+                    <input
+                        id="newsletter-email"
+                        type="email"
+                        name="email"
+                        placeholder="{{ __('Votre adresse e-mail') }}"
+                        class="min-w-0 flex-1 bg-transparent text-sm font-medium uppercase tracking-widest text-zinc-900 outline-none placeholder:text-zinc-500"
+                    >
+
+                    <button
+                        type="submit"
+                        class="ml-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition hover:bg-zinc-900 hover:text-white"
+                        aria-label="{{ __('S’inscrire à la newsletter') }}"
+                    >
+                        <x-lucide-arrow-right class="h-5 w-5" />
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
 </x-layout>
