@@ -183,19 +183,21 @@ class PageResource extends Resource
                         ->prefixIcon('lucide-type')
                         ->maxLength(255),
 
-                    TextInput::make("slug.{$locale}")
-                        ->label('Slug')
-                        ->required($locale === 'fr')
-                        ->prefixIcon('lucide-link')
-                        ->maxLength(255),
-
                     RichEditor::make("body.{$locale}")
                         ->label('Body')
                         ->columnSpanFull(),
 
                     Section::make('SEO')
                         ->icon('lucide-search')
+                        ->collapsible()
+                        ->collapsed()
                         ->schema([
+                            TextInput::make("slug.{$locale}")
+                                ->label('Slug')
+                                ->required($locale === 'fr')
+                                ->prefixIcon('lucide-link')
+                                ->maxLength(255),
+
                             TextInput::make("meta_title.{$locale}")
                                 ->label('Meta title')
                                 ->maxLength(255),
