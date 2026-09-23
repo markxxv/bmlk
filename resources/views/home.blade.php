@@ -11,7 +11,7 @@
                             </p>
                         </div>
 
-                        <div class="flex flex-1 items-center py-10 sm:py-16 lg:py-10">
+                        <div class="flex flex-1 items-center sm:py-16 lg:py-10">
                             <div>
                                 <h1 class="max-w-2xl font-['Playfair_Display'] text-4xl font-medium leading-[0.92] tracking-tight text-zinc-900 sm:text-6xl lg:text-6xl">
                                     <span class="block">{{ __('Gels professionnels') }}</span>
@@ -42,7 +42,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-3 gap-2 border-t border-[#C98792] pt-5 sm:gap-5 lg:gap-4">
+                        <div class="grid grid-cols-3 gap-2 md:border-t md:border-[#C98792] md:pt-5 sm:gap-5 lg:gap-4">
                             <div class="flex items-start gap-3">
                                 <x-lucide-leaf class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
