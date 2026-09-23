@@ -229,7 +229,7 @@
 
                         <a
                             href="{{ $categoryUrl }}"
-                            class="group mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-900"
+                            class="group mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#A9636F] transition hover:text-[#945763]"
                         >
                             {{ __('Voir toute la collection') }}
                             <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
