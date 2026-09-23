@@ -62,7 +62,7 @@
 
                 <div class="flex items-center justify-center px-5 pb-8 sm:px-10 lg:px-8 lg:py-10 xl:px-14">
                     <div class="aspect-square w-full max-w-2xl overflow-hidden rounded-full bg-[#FCF8F4] lg:p-24">
-                        <x-cow />
+                        <x-hero-mascot class="w-full max-w-2xl" />
                     </div>
                 </div>
             </div>
