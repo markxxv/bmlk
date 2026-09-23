@@ -285,14 +285,14 @@
                                     <button
                                         type="button"
                                         data-embla-thumb
-                                        class="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-white p-2 transition {{ $index === 0 ? 'ring-2 ring-[#DDA1AA]' : 'ring-1 ring-zinc-200 hover:ring-zinc-400' }}"
+                                        class="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-white transition {{ $index === 0 ? 'ring-2 ring-[#DDA1AA]' : 'ring-1 ring-zinc-200 hover:ring-zinc-400' }}"
                                         aria-label="{{ __('Voir l’image :number', ['number' => $index + 1]) }}"
                                         aria-current="{{ $index === 0 ? 'true' : 'false' }}"
                                     >
                                         <img
                                             src="{{ $image['thumb'] }}"
                                             alt=""
-                                            class="h-full w-full select-none object-contain"
+                                            class="h-full w-full select-none object-cover"
                                             draggable="false"
                                             loading="lazy"
                                         >
