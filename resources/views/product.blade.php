@@ -591,17 +591,17 @@
                                     ? route('shop.product', ['slug' => $recommendedSlug])
                                     : route('shop.index');
 
-                                $recommendedImage = $recommendedProduct->getFirstMediaUrl('images', 'thumb');
+                                $recommendedImage = $recommendedProduct->getFirstMediaUrl('images');
                             @endphp
 
                             <article class="group/card w-3/4 shrink-0 snap-start sm:w-2/5 lg:w-auto">
                                 <a href="{{ $recommendedUrl }}" class="block">
-                                    <div class="aspect-square overflow-hidden rounded-2xl bg-[#FCF8F4]">
+                                    <div class="aspect-[3/4] overflow-hidden rounded-2xl">
                                         @if ($recommendedImage)
                                             <img
                                                 src="{{ $recommendedImage }}"
                                                 alt="{{ $recommendedProduct->name }}"
-                                                class="h-full w-full object-contain p-4 transition duration-500 group-hover/card:scale-105 sm:p-5"
+                                                class="h-full w-full object-cover transition duration-500 group-hover/card:scale-105"
                                                 loading="lazy"
                                             >
                                         @endif
