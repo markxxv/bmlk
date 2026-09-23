@@ -400,3 +400,20 @@ These rules are mandatory for all public Blade / Tailwind UI work:
 - Use Lucide icons in Filament.
 - Preserve the established Filament v5 full-width layout.
 - Treat `design_prototype/` as source/reference material, not runtime application code.
+
+
+## Product JavaScript
+
+Product-only frontend JavaScript lives in:
+
+```text
+resources/js/product.js
+```
+
+It is a separate Vite entry and must only be loaded from the product detail view with:
+
+```blade
+@vite('resources/js/product.js')
+```
+
+The product gallery uses `embla-carousel`. Do not import Embla into `resources/js/app.js`; pages other than product detail must not download the carousel bundle.
