@@ -15,6 +15,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -126,11 +127,16 @@ class ProductResource extends Resource
                                         Repeater::make('options')
                                             ->label('Product options')
                                             ->schema([
-                                                Select::make('type')
+                                                ToggleButtons::make('type')
                                                     ->label('Option type')
                                                     ->options(static::productOptionTypeOptions())
+                                                    ->icons([
+                                                        'diameter' => 'lucide-ruler',
+                                                        'pack_quantity' => 'lucide-package',
+                                                    ])
+                                                    ->default('diameter')
+                                                    ->grouped()
                                                     ->required()
-                                                    ->native(false)
                                                     ->columnSpanFull(),
 
                                                 Repeater::make('values')
@@ -525,7 +531,7 @@ class ProductResource extends Resource
                     'source' => 'filament',
                 ];
             })
-            ->filter()
+            ->filter(fn (?array $option): bool => $option !== null && $option['values'] !== [])
             ->values()
             ->all();
 
