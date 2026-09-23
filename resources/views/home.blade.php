@@ -182,7 +182,7 @@
     <section class="px-3 pb-16 sm:px-5 sm:pb-20 lg:px-8 lg:pb-24">
         <div class="mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-[#DDA1AA]">
             <div class="grid lg:grid-cols-2">
-                <div data-parallax data-parallax-distance="10" data-parallax-scale="1.12">
+                <div class="overflow-hidden" data-parallax data-parallax-distance="10" data-parallax-scale="1.12">
                     <img
                         src="/img/elena.webp"
                         alt="{{ __('Elena Smirnova, fondatrice de BLACK MILK') }}"
@@ -192,7 +192,7 @@
                     >
                 </div>
 
-                <div class="flex items-center p-16 sm:p-10 lg:p-14 xl:p-24">
+                <div class="flex items-center p-8 sm:p-10 lg:p-14 xl:p-16">
                     <div class="max-w-xl">
                         <p class="text-xs font-semibold uppercase tracking-widest text-zinc-700" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ __('La maître derrière la marque') }}
