@@ -105,7 +105,7 @@
         class="fixed inset-0 z-50 bg-[#DDA1AA] lg:hidden"
     >
         <div class="flex h-full flex-col px-5 py-5">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between pt-2">
                 <a href="{{ url('/') }}" class="flex items-center gap-3" aria-label="{{ __('BLACK MILK') }}" @click="open = false">
                     <img src="/img/logo.png" alt="" class="h-12 w-12 object-contain">
 
