@@ -273,7 +273,7 @@
                                 : $categoryUrl;
                         @endphp
 
-                        <article class="group w-3/4 shrink-0 snap-start sm:w-2/5 lg:w-auto">
+                        <article class="group w-[40%] shrink-0 snap-start sm:w-2/5 lg:w-auto">
                             <a href="{{ $productUrl }}" class="block">
                                 @if ($image)
                                     <div class="aspect-[3/4] overflow-hidden rounded-3xl">
@@ -294,11 +294,11 @@
                                     @endif
 
                                     <div class="mt-2 flex items-center justify-between gap-4">
-                                        <h3 class="font-medium leading-tight text-zinc-900">
+                                        <h3 class="font-medium text-sm md:text-base leading-tight text-zinc-900">
                                             {{ $product->name }}
                                         </h3>
 
-                                        <div class="shrink-0 text-sm font-semibold text-zinc-900">
+                                        <div class="shrink-0 text-xs md:text-sm font-semibold text-zinc-900">
                                             @if ($product->price)
                                                 {{ $product->formatted_price }} €
                                             @elseif ($product->price_min && $product->price_max)
