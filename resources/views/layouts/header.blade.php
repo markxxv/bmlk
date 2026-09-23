@@ -31,10 +31,10 @@
                     <img src="/img/logo.png" alt="" class="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14">
 
                     <span class="min-w-0">
-                        <span class="block whitespace-nowrap font-['Playfair_Display'] text-xl font-medium leading-none tracking-widest text-zinc-900 sm:text-2xl">
+                        <span class="block whitespace-nowrap font-serif text-xl font-medium leading-none tracking-widest text-zinc-900 sm:text-2xl">
                             {{ __('BLACK MILK') }}
                         </span>
-                        <span class="mt-1 block font-['Playfair_Display'] text-xs italic leading-none text-[#A9636F] sm:text-sm">
+                        <span class="mt-1 block font-serif text-xs italic leading-none text-[#A9636F] sm:text-sm">
                             {{ __('Le Premier Choix') }}
                         </span>
                     </span>
@@ -110,10 +110,10 @@
                     <img src="/img/logo.png" alt="" class="h-12 w-12 object-contain">
 
                     <span>
-                        <span class="block font-['Playfair_Display'] text-xl font-medium leading-none tracking-widest text-zinc-900">
+                        <span class="block font-serif text-xl font-medium leading-none tracking-widest text-zinc-900">
                             {{ __('BLACK MILK') }}
                         </span>
-                        <span class="mt-1 block font-['Playfair_Display'] text-xs italic text-zinc-700">
+                        <span class="mt-1 block font-serif text-xs italic text-zinc-700">
                             {{ __('Le Premier Choix') }}
                         </span>
                     </span>
@@ -132,19 +132,19 @@
             </div>
 
             <nav class="flex flex-1 flex-col justify-center py-10">
-                <a href="{{ route('shop.index') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
+                <a href="{{ route('shop.index') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900">
                     {{ __('Produits') }}
                 </a>
-                <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
+                <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900">
                     {{ __('Soins') }}
                 </a>
-                <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
+                <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900">
                     {{ __('Outils') }}
                 </a>
-                <a href="{{ route('where-to-buy') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
+                <a href="{{ route('where-to-buy') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900">
                     {{ __('Où acheter') }}
                 </a>
-                <a href="{{ route('events') }}" @click="open = false" class="py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
+                <a href="{{ route('events') }}" @click="open = false" class="py-4 font-serif text-4xl text-zinc-900">
                     {{ __('Événements') }}
                 </a>
             </nav>

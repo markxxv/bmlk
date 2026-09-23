@@ -27,7 +27,7 @@
                             {{ __('Événements BLACK MILK') }}
                         </p>
 
-                        <h1 class="mt-6 max-w-5xl font-['Playfair_Display'] text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl">
+                        <h1 class="mt-6 max-w-5xl font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl">
                             {{ __('Les prochains') }}
                             <span class="italic text-[#A9636F]">{{ __('rendez-vous') }}</span>
                         </h1>
@@ -55,7 +55,7 @@
                             {{ __('Calendrier') }}
                         </p>
 
-                        <h2 class="mt-3 font-['Playfair_Display'] text-3xl font-medium leading-none tracking-tight text-zinc-900 sm:text-4xl">
+                        <h2 class="mt-3 font-serif text-3xl font-medium leading-none tracking-tight text-zinc-900 sm:text-4xl">
                             {{ __('Choisis ton prochain rendez-vous') }}
                         </h2>
                     </div>
@@ -139,7 +139,7 @@
                                 <div class="lg:col-span-2">
                                     @if ($event->starts_at)
                                         <div class="flex items-end gap-3">
-                                            <span class="font-['Playfair_Display'] text-6xl font-medium leading-none tracking-tight text-[#DDA1AA] sm:text-7xl">
+                                            <span class="font-serif text-6xl font-medium leading-none tracking-tight text-[#DDA1AA] sm:text-7xl">
                                                 {{ $startDay }}
                                             </span>
 
@@ -160,7 +160,7 @@
                                             </div>
                                         </div>
                                     @else
-                                        <p class="font-['Playfair_Display'] text-2xl font-medium leading-tight text-[#DDA1AA]">
+                                        <p class="font-serif text-2xl font-medium leading-tight text-[#DDA1AA]">
                                             {{ __('Date à venir') }}
                                         </p>
                                     @endif
@@ -171,7 +171,7 @@
                                 </div>
 
                                 <div class="lg:col-span-5">
-                                    <h3 class="font-['Playfair_Display'] text-2xl font-medium leading-tight text-zinc-900 sm:text-3xl">
+                                    <h3 class="font-serif text-2xl font-medium leading-tight text-zinc-900 sm:text-3xl">
                                         {{ $eventName }}
                                     </h3>
 
@@ -222,7 +222,7 @@
                     </div>
                 @else
                     <div class="mt-10 rounded-2xl bg-[#FCF8F4] px-6 py-16 text-center sm:px-10">
-                        <p class="font-['Playfair_Display'] text-3xl font-medium text-zinc-900">
+                        <p class="font-serif text-3xl font-medium text-zinc-900">
                             {{ __('De nouvelles dates arrivent bientôt') }}
                         </p>
 

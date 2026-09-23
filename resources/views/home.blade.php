@@ -13,7 +13,7 @@
 
                         <div class="flex flex-1 items-center sm:py-16 lg:py-10">
                             <div>
-                                <h1 class="max-w-2xl font-['Playfair_Display'] text-4xl font-medium leading-[0.92] tracking-tight text-zinc-900 sm:text-6xl lg:text-6xl pt-10 md:pt-0">
+                                <h1 class="max-w-2xl font-serif text-4xl font-medium leading-[0.92] tracking-tight text-zinc-900 sm:text-6xl lg:text-6xl pt-10 md:pt-0">
                                     <span class="block">{{ __('Gels professionnels') }}</span>
                                     <span class="block italic text-white">{{ __('Hema-free') }}</span>
                                     <span class="block">{{ __('pour les maîtres') }}</span>
@@ -85,7 +85,7 @@
                         {{ __('Coffrets BLACK MILK') }}
                     </p>
 
-                    <h2 class="mt-4 font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+                    <h2 class="mt-4 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
                         {{ __('Compose') }}
                         <span class="italic text-[#A9636F]">{{ __('ton') }}</span>
                         {{ __('rituel') }}
@@ -133,7 +133,7 @@
                                             </p>
                                         @endif
 
-                                        <h3 class="mt-2 font-['Playfair_Display'] text-xl font-medium leading-tight text-zinc-900 sm:text-3xl">
+                                        <h3 class="mt-2 font-serif text-xl font-medium leading-tight text-zinc-900 sm:text-3xl">
                                             {{ $product->name }}
                                         </h3>
                                     </div>
@@ -188,7 +188,7 @@
                             {{ __('La maître derrière la marque') }}
                         </p>
 
-                        <h2 class="mt-5 font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+                        <h2 class="mt-5 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
                             {{ __('Née') }}
                             <span class="italic text-white">{{ __('de la') }}</span>
                             {{ __('pratique') }}
@@ -238,7 +238,7 @@
                             {{ __('Collection') }}
                         </p>
 
-                        <h2 class="mt-4 max-w-3xl font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+                        <h2 class="mt-4 max-w-3xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
                             <a href="{{ $categoryUrl }}" class="transition hover:text-[#A9636F]">
                                 {{ $category->name }}
                             </a>
@@ -344,7 +344,7 @@
                             {{ __('Événements BLACK MILK') }}
                         </p>
 
-                        <h2 class="mt-4 max-w-4xl font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+                        <h2 class="mt-4 max-w-4xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
                             {{ __('Les prochains') }}
                             <span class="italic text-[#DDA1AA]">{{ __('rendez-vous') }}</span>
                         </h2>
@@ -428,7 +428,7 @@
                             <div class="lg:col-span-2">
                                 @if ($event->starts_at)
                                     <div class="flex items-end gap-3">
-                                        <span class="font-['Playfair_Display'] text-6xl font-medium leading-none tracking-tight text-[#DDA1AA]">
+                                        <span class="font-serif text-6xl font-medium leading-none tracking-tight text-[#DDA1AA]">
                                             {{ $startDay }}
                                         </span>
 
@@ -449,7 +449,7 @@
                                         </div>
                                     </div>
                                 @else
-                                    <p class="font-['Playfair_Display'] text-2xl font-medium leading-tight text-[#DDA1AA]">
+                                    <p class="font-serif text-2xl font-medium leading-tight text-[#DDA1AA]">
                                         {{ __('Date à venir') }}
                                     </p>
                                 @endif
@@ -460,7 +460,7 @@
                             </div>
 
                             <div class="lg:col-span-5">
-                                <h3 class="font-['Playfair_Display'] text-xl font-medium leading-tight text-zinc-900 sm:text-2xl">
+                                <h3 class="font-serif text-xl font-medium leading-tight text-zinc-900 sm:text-2xl">
                                     {{ $eventName }}
                                 </h3>
 
@@ -521,7 +521,7 @@
                     {{ __('BLACK MILK Journal') }}
                 </p>
 
-                <h2 class="mt-5 font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+                <h2 class="mt-5 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
                     {{ __('Reste') }}
                     <span class="italic text-[#A9636F]">{{ __('au') }}</span>
                     {{ __('courant') }}

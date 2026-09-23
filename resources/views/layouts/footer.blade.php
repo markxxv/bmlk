@@ -19,11 +19,11 @@
                 </a>
 
                 <div class="mt-12 sm:mt-16">
-                    <p class="font-['Playfair_Display'] text-5xl font-medium leading-none tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl">
+                    <p class="font-serif text-5xl font-medium leading-none tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl">
                         {{ __('BLACK MILK') }}
                     </p>
 
-                    <p class="mt-3 font-['Playfair_Display'] text-2xl italic text-[#DDA1AA] sm:text-3xl">
+                    <p class="mt-3 font-serif text-2xl italic text-[#DDA1AA] sm:text-3xl">
                         {{ __('Le Premier Choix') }}
                     </p>
                 </div>
@@ -144,7 +144,7 @@
 
         <div class="flex flex-col gap-5 bg-[#DDA1AA] px-7 py-5 text-zinc-900 sm:px-10 lg:flex-row lg:items-center lg:justify-between lg:px-14 xl:px-16">
             <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                <span class="font-['Playfair_Display'] text-xl italic">
+                <span class="font-serif text-xl italic">
                     {{ __('made with love · Paris') }}
                 </span>
 

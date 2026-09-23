@@ -469,14 +469,14 @@
                                 @endif
                             </div>
 
-                            <h1 class="mt-6 font-['Playfair_Display'] text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl">
+                            <h1 class="mt-6 font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl">
                                 {{ $productName }}
                             </h1>
 
                             @if ($priceLabel || $productOptions !== [])
                                 <div class="mt-6 flex flex-wrap items-baseline gap-3">
                                     <p
-                                        class="font-['Playfair_Display'] text-3xl font-medium text-zinc-900"
+                                        class="font-serif text-3xl font-medium text-zinc-900"
                                         x-text="displayPrice"
                                     >{{ $priceLabel ?: __('Sélectionnez les options') }}</p>
 
@@ -618,7 +618,7 @@
                             {{ __('Détails du produit') }}
                         </p>
 
-                        <h2 class="mt-4 font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl">
+                        <h2 class="mt-4 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl">
                             {{ __('Tout ce qu’il faut savoir') }}
                         </h2>
                     </div>
@@ -631,7 +631,7 @@
                                         <x-lucide-package-open class="h-4 w-4" />
                                     </span>
 
-                                    <h3 class="font-['Playfair_Display'] text-2xl font-medium text-zinc-900">
+                                    <h3 class="font-serif text-2xl font-medium text-zinc-900">
                                         {{ __('Contenu') }}
                                     </h3>
                                 </div>
@@ -709,7 +709,7 @@
                                 {{ __('Sélection BLACK MILK') }}
                             </p>
 
-                            <h2 class="mt-4 font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl">
+                            <h2 class="mt-4 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl">
                                 {{ __('Tu pourrais') }}
                                 <span class="italic text-white">{{ __('aussi aimer') }}</span>
                             </h2>
@@ -758,7 +758,7 @@
                                         @endif
 
                                         <div class="mt-2 flex items-start justify-between gap-3">
-                                            <h3 class="font-['Playfair_Display'] text-xl font-medium leading-tight text-zinc-900">
+                                            <h3 class="font-serif text-xl font-medium leading-tight text-zinc-900">
                                                 {{ $recommendedProduct->name }}
                                             </h3>
 

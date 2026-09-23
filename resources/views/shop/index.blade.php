@@ -52,7 +52,7 @@
                             {{ $currentCategory ? __('Collection BLACK MILK') : __('Catalogue professionnel') }}
                         </p>
 
-                        <h1 class="mt-4 max-w-5xl font-['Playfair_Display'] text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl">
+                        <h1 class="mt-4 max-w-5xl font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl">
                             {{ $pageTitle }}
                         </h1>
                     </div>
@@ -205,7 +205,7 @@
                     @endif
                 @else
                     <div class="py-24 text-center">
-                        <p class="font-['Playfair_Display'] text-3xl text-zinc-900">
+                        <p class="font-serif text-3xl text-zinc-900">
                             {{ __('Aucun produit dans cette catégorie pour le moment.') }}
                         </p>
                     </div>
@@ -221,7 +221,7 @@
                             {{ __('À propos de la collection') }}
                         </p>
 
-                        <h2 class="mt-4 font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl">
+                        <h2 class="mt-4 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl">
                             {{ $pageTitle }}
                         </h2>
                     </div>

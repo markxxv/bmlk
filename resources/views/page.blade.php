@@ -5,7 +5,7 @@
 >
     <main class="px-3 py-12 sm:px-5 sm:py-16 lg:px-8 lg:py-20">
         <article class="mx-auto max-w-4xl rounded-3xl bg-white px-6 py-10 sm:px-10 sm:py-14 lg:px-14">
-            <h1 class="font-['Playfair_Display'] text-4xl font-medium tracking-tight text-zinc-900 sm:text-5xl">
+            <h1 class="font-serif text-4xl font-medium tracking-tight text-zinc-900 sm:text-5xl">
                 {{ $title }}
             </h1>
 

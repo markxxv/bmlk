@@ -144,7 +144,7 @@
                     {{ __('Commande') }}
                 </p>
 
-                <h1 class="mt-3 font-['Playfair_Display'] text-4xl font-medium tracking-tight text-zinc-900 sm:text-5xl">
+                <h1 class="mt-3 font-serif text-4xl font-medium tracking-tight text-zinc-900 sm:text-5xl">
                     {{ __('Finaliser la commande') }}
                 </h1>
             </div>

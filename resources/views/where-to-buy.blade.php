@@ -13,7 +13,7 @@
                             <span>{{ __('Réseau officiel BLACK MILK') }}</span>
                         </div>
 
-                        <h1 class="mt-6 max-w-5xl font-['Playfair_Display'] text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl">
+                        <h1 class="mt-6 max-w-5xl font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl">
                             {{ __('Trouve') }}
                             <span class="italic text-white">{{ __('BLACK MILK') }}</span>
                             {{ __('près de toi') }}
@@ -66,7 +66,7 @@
                                     </span>
                                 </div>
 
-                                <h2 class="mt-8 font-['Playfair_Display'] text-3xl font-medium leading-tight text-zinc-900">
+                                <h2 class="mt-8 font-serif text-3xl font-medium leading-tight text-zinc-900">
                                     {{ $representative->name }}
                                 </h2>
 
@@ -114,7 +114,7 @@
                             {{ __('Développe BLACK MILK dans ta région') }}
                         </p>
 
-                        <h2 class="mt-4 max-w-3xl font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl">
+                        <h2 class="mt-4 max-w-3xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl">
                             {{ __('Ton pays') }}
                             <span class="italic text-[#A9636F]">{{ __('n’est pas') }}</span>
                             {{ __('dans la liste ?') }}
