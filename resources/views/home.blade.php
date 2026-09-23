@@ -1,13 +1,4 @@
 <x-layout>
-    @php
-        $formatPrice = static function (mixed $value): string {
-            $price = round((float) $value, 2);
-            $decimals = abs($price - round($price)) < 0.00001 ? 0 : 2;
-
-            return number_format($price, $decimals, ',', ' ');
-        };
-    @endphp
-
     <section class="relative z-[41] -mt-[92px] overflow-hidden bg-[#DDA1AA] pb-6 pt-[92px] sm:-mt-[100px] sm:pb-8 sm:pt-[100px] lg:-mt-[104px] lg:pb-10 lg:pt-[104px]">
         <div class="relative z-10 mx-auto max-w-[1560px] px-3 pt-3 sm:px-5 sm:pt-5 lg:px-8 lg:pt-6">
             <div class="relative lg:min-h-[720px] xl:min-h-[760px]">
@@ -155,11 +146,11 @@
 
                                     <div class="shrink-0 text-sm font-semibold text-zinc-900">
                                         @if ($product->price)
-                                            {{ $formatPrice($product->price) }} €
+                                            {{ $product->formatted_price }} €
                                         @elseif ($product->price_min && $product->price_max)
-                                            {{ $formatPrice($product->price_min) }}–{{ $formatPrice($product->price_max) }} €
+                                            {{ $product->formatted_price_min }}–{{ $product->formatted_price_max }} €
                                         @elseif ($product->price_min)
-                                            {{ __('Dès :price €', ['price' => $formatPrice($product->price_min)]) }}
+                                            {{ __('Dès :price €', ['price' => $product->formatted_price_min]) }}
                                         @endif
                                     </div>
                                 </div>
@@ -315,11 +306,11 @@
 
                                         <div class="shrink-0 text-sm font-semibold text-zinc-900">
                                             @if ($product->price)
-                                                {{ $formatPrice($product->price) }} €
+                                                {{ $product->formatted_price }} €
                                             @elseif ($product->price_min && $product->price_max)
-                                                {{ $formatPrice($product->price_min) }}–{{ $formatPrice($product->price_max) }} €
+                                                {{ $product->formatted_price_min }}–{{ $product->formatted_price_max }} €
                                             @elseif ($product->price_min)
-                                                {{ __('Dès :price €', ['price' => $formatPrice($product->price_min)]) }}
+                                                {{ __('Dès :price €', ['price' => $product->formatted_price_min]) }}
                                             @endif
                                         </div>
                                     </div>
@@ -505,7 +496,7 @@
                             <div class="flex items-center justify-between gap-4 lg:col-span-2 lg:flex-col lg:items-end">
                                 @if ($event->price !== null)
                                     <p class="text-sm font-semibold text-zinc-900">
-                                        {{ $formatPrice($event->price) }} €
+                                        {{ $event->formatted_price }} €
                                     </p>
                                 @endif
 
