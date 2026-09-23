@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
@@ -16,6 +17,10 @@ class CheckoutController extends Controller
     public function show(): View
     {
         return view('checkout', [
+            'deliveries' => Delivery::query()
+                ->where('active', true)
+                ->orderBy('sort')
+                ->get(),
             'metaTitle' => __('Commande | BLACK MILK'),
             'metaDescription' => __('Finalisez votre commande BLACK MILK.'),
             'canonical' => route('checkout'),
@@ -64,7 +69,22 @@ class CheckoutController extends Controller
             2,
         );
 
-        $deliveryCost = 0.0;
+        $delivery = Delivery::query()
+            ->where('code', $validated['country'])
+            ->where('active', true)
+            ->first();
+
+        if (! $delivery) {
+            throw ValidationException::withMessages([
+                'country' => __('La livraison vers cette destination n’est pas disponible.'),
+            ]);
+        }
+
+        $deliveryCost = $delivery->free_from !== null
+            && $subtotal >= (float) $delivery->free_from
+                ? 0.0
+                : (float) $delivery->price;
+
         $totalAmount = round($subtotal + $deliveryCost, 2);
 
         $order = Order::query()->create([
@@ -72,7 +92,8 @@ class CheckoutController extends Controller
             'last_name' => $validated['last_name'] ?? null,
             'phone' => $validated['phone'],
             'email' => $validated['email'] ?? null,
-            'country' => $validated['country'],
+            'country' => $delivery->name,
+            'delivery_code' => $delivery->code,
             'zip' => $validated['zip'] ?? null,
             'city' => $validated['city'],
             'address' => $validated['address'],
@@ -87,6 +108,33 @@ class CheckoutController extends Controller
         return response()->json([
             'success' => true,
             'redirect' => route('order.status', ['orderNumber' => $order->order_number]),
+        ]);
+    }
+
+    public function deliveryCost(string $code): JsonResponse
+    {
+        $delivery = Delivery::query()
+            ->where('code', $code)
+            ->where('active', true)
+            ->first();
+
+        if (! $delivery) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Livraison indisponible.'),
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'code' => $delivery->code,
+            'name' => $delivery->name,
+            'carrier' => $delivery->carrier,
+            'delay' => $delivery->delay,
+            'price' => (float) $delivery->price,
+            'free_from' => $delivery->free_from !== null
+                ? (float) $delivery->free_from
+                : null,
         ]);
     }
 
