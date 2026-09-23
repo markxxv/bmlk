@@ -281,7 +281,7 @@
                                             {{ $product->name }}
                                         </h3>
 
-                                        <div class="shrink-0 pt-1 text-sm font-semibold text-zinc-900">
+                                        <div class="shrink-0 text-sm font-semibold text-zinc-900">
                                             @if ($product->price)
                                                 {{ number_format((float) $product->price, 2, ',', ' ') }} €
                                             @elseif ($product->price_min && $product->price_max)
