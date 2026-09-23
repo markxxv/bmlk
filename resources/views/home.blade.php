@@ -199,6 +199,164 @@
         </div>
     </section>
 
+    @if ($events->isNotEmpty())
+        @php
+            $eventLocale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
+                ? app()->getLocale()
+                : 'fr';
+
+            $eventTypes = $events->pluck('type')->filter()->unique()->values();
+
+            $eventTypeLabels = [
+                'training' => __('Formations'),
+                'workshop' => __('Workshops'),
+                'international_tour' => __('Tournée internationale'),
+                'event' => __('Événements'),
+            ];
+        @endphp
+
+        <section id="events" class="px-3 pb-16 sm:px-5 sm:pb-20 lg:px-8 lg:pb-24">
+            <div
+                x-data="{ filter: 'all' }"
+                class="mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-zinc-900 px-6 py-12 text-white sm:px-10 sm:py-14 lg:px-14 lg:py-16 xl:px-16"
+            >
+                <div class="grid gap-8 lg:grid-cols-12 lg:items-end">
+                    <div class="lg:col-span-7">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-[#DDA1AA]">
+                            {{ __('Événements BLACK MILK') }}
+                        </p>
+
+                        <h2 class="mt-4 max-w-4xl font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-white sm:text-5xl lg:text-6xl">
+                            {{ __('Les prochains') }}
+                            <span class="italic text-[#DDA1AA]">{{ __('rendez-vous') }}</span>
+                        </h2>
+                    </div>
+
+                    <p class="max-w-xl text-base leading-7 text-zinc-300 lg:col-span-5 lg:justify-self-end lg:text-lg">
+                        {{ __('Formations, workshops et rencontres BLACK MILK en France et à l’international.') }}
+                    </p>
+                </div>
+
+                <div class="-mx-2 mt-9 flex gap-2 overflow-x-auto px-2 pb-2">
+                    <button
+                        type="button"
+                        @click="filter = 'all'"
+                        :class="filter === 'all' ? 'bg-[#DDA1AA] text-zinc-900' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'"
+                        class="shrink-0 rounded-full px-5 py-3 text-xs font-semibold uppercase tracking-widest transition"
+                    >
+                        {{ __('Tous') }}
+                    </button>
+
+                    @foreach ($eventTypes as $type)
+                        <button
+                            type="button"
+                            @click="filter = '{{ $type }}'"
+                            :class="filter === '{{ $type }}' ? 'bg-[#DDA1AA] text-zinc-900' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'"
+                            class="shrink-0 rounded-full px-5 py-3 text-xs font-semibold uppercase tracking-widest transition"
+                        >
+                            {{ $eventTypeLabels[$type] ?? $type }}
+                        </button>
+                    @endforeach
+                </div>
+
+                <div class="mt-8 space-y-3">
+                    @foreach ($events as $event)
+                        @php
+                            $eventName = $event->getTranslation('name', $eventLocale, false)
+                                ?: $event->getTranslation('name', 'fr', false);
+
+                            $eventDescription = $event->getTranslation('description', $eventLocale, false)
+                                ?: $event->getTranslation('description', 'fr', false);
+
+                            if ($event->starts_at) {
+                                $start = $event->starts_at->copy()->locale($eventLocale);
+                                $eventDate = $start->translatedFormat('d M Y');
+
+                                if ($event->ends_at && ! $event->ends_at->isSameDay($event->starts_at)) {
+                                    $end = $event->ends_at->copy()->locale($eventLocale);
+                                    $eventDate .= ' — '.$end->translatedFormat('d M Y');
+                                }
+                            } else {
+                                $eventDate = __('Date à venir');
+                            }
+
+                            $eventLocation = collect([$event->city, $event->country])
+                                ->filter(fn ($value) => filled($value))
+                                ->join(', ');
+                        @endphp
+
+                        <article
+                            x-cloak
+                            x-show="filter === 'all' || filter === '{{ $event->type }}'"
+                            x-transition.opacity.duration.200ms
+                            class="grid gap-6 rounded-2xl bg-zinc-800 p-6 transition hover:bg-zinc-700 sm:p-7 lg:grid-cols-12 lg:items-center"
+                        >
+                            <div class="lg:col-span-3">
+                                <p class="font-['Playfair_Display'] text-2xl font-medium leading-tight text-[#DDA1AA] sm:text-3xl">
+                                    {{ $eventDate }}
+                                </p>
+
+                                <p class="mt-2 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+                                    {{ $eventTypeLabels[$event->type] ?? $event->type }}
+                                </p>
+                            </div>
+
+                            <div class="lg:col-span-5">
+                                <h3 class="font-['Playfair_Display'] text-2xl font-medium leading-tight text-white sm:text-3xl">
+                                    {{ $eventName }}
+                                </h3>
+
+                                @if ($eventDescription)
+                                    <p class="mt-3 max-w-2xl text-sm leading-6 text-zinc-300">
+                                        {{ $eventDescription }}
+                                    </p>
+                                @endif
+                            </div>
+
+                            <div class="space-y-3 lg:col-span-2">
+                                @if ($eventLocation)
+                                    <div class="flex items-start gap-2 text-sm leading-6 text-zinc-300">
+                                        <x-lucide-map-pin class="mt-1 h-4 w-4 shrink-0 text-[#DDA1AA]" />
+                                        <span>{{ $eventLocation }}</span>
+                                    </div>
+                                @endif
+
+                                @if ($event->address)
+                                    <div class="flex items-start gap-2 text-sm leading-6 text-zinc-400">
+                                        <x-lucide-navigation class="mt-1 h-4 w-4 shrink-0 text-[#DDA1AA]" />
+                                        <span>{{ $event->address }}</span>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="flex items-center justify-between gap-4 lg:col-span-2 lg:flex-col lg:items-end">
+                                <p class="text-sm font-semibold text-white">
+                                    @if ($event->price !== null)
+                                        {{ number_format((float) $event->price, 2, ',', ' ') }} €
+                                    @else
+                                        {{ __('Tarif à venir') }}
+                                    @endif
+                                </p>
+
+                                @if ($event->ticket_url)
+                                    <a
+                                        href="{{ $event->ticket_url }}"
+                                        target="_blank"
+                                        rel="noopener"
+                                        class="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#DDA1AA] transition hover:text-white"
+                                    >
+                                        {{ __('Billets') }}
+                                        <x-lucide-arrow-up-right class="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                                    </a>
+                                @endif
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     @foreach ($categories as $category)
         @php
             $locale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
