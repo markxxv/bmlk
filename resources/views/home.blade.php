@@ -3,7 +3,7 @@
         <div class="relative z-10 mx-auto max-w-[1560px] px-5 pt-3 sm:px-5 sm:pt-5 lg:px-8 lg:pt-6">
             <div class="relative lg:min-h-[720px] xl:min-h-[760px]">
                 <div class="relative z-10 grid h-full lg:min-h-[720px] lg:grid-cols-12 xl:min-h-[760px]">
-                    <div class="flex flex-col pb-7 pt-7 sm:px-10 sm:pb-10 sm:pt-12 lg:col-span-5 lg:px-14 lg:pb-10 lg:pt-14 xl:px-16 xl:pt-16">
+                    <div class="flex flex-col pb-7 pt-7 sm:px-10 sm:pb-10 sm:pt-12 lg:col-span-6 lg:px-14 lg:pb-10 lg:pt-14 xl:px-16 xl:pt-16">
                         <div class="flex items-center gap-2 sm:gap-3">
                             <span class="h-px w-8 shrink-0 bg-zinc-800 sm:w-10"></span>
                             <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-800 sm:text-xs sm:tracking-widest">
