@@ -137,7 +137,7 @@
 
                                 <div class="pt-4">
                                     @if ($product->tag)
-                                        <p class="truncate text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                                        <p class="truncate text-[9px] font-semibold uppercase tracking-widest text-[#A9636F]">
                                             {{ $product->tag }}
                                         </p>
                                     @endif
