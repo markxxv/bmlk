@@ -18,17 +18,17 @@
                     </span>
                 </a>
 
-                <div class="mt-12 sm:mt-16">
-                    <p class="font-serif text-5xl font-medium leading-none tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl">
+                <div class="mt-12 sm:mt-16" data-blur-reveal data-blur-stagger="0.09" data-blur-duration="0.85" data-blur-y="16" data-blur-pixels="7">
+                    <p class="font-serif text-5xl font-medium leading-none tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl" data-blur-reveal-item>
                         {{ __('BLACK MILK') }}
                     </p>
 
-                    <p class="mt-3 font-serif text-2xl italic text-[#DDA1AA] sm:text-3xl">
+                    <p class="mt-3 font-serif text-2xl italic text-[#DDA1AA] sm:text-3xl" data-blur-reveal-item>
                         {{ __('Le Premier Choix') }}
                     </p>
                 </div>
 
-                <p class="mt-8 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg">
+                <p class="mt-8 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg" data-reveal data-reveal-y="14" data-reveal-duration="0.8">
                     {{ __('Cosmétique professionnelle pour la manucure, développée par des maîtres pour celles et ceux qui placent la technique au premier plan.') }}
                 </p>
             </div>
@@ -39,10 +39,11 @@
                         {{ __('Parlons-nous') }}
                     </p>
 
-                    <div class="mt-5 space-y-3">
+                    <div class="mt-5 space-y-3" data-blur-reveal data-blur-stagger="0.09" data-blur-duration="0.8" data-blur-y="14" data-blur-pixels="7">
                         <a
                             href="mailto:office.blackmilk@gmail.com"
                             class="group flex items-center justify-between rounded-2xl bg-zinc-900 px-5 py-4 transition hover:bg-zinc-800"
+                            data-blur-reveal-item
                         >
                             <span class="flex items-center gap-4">
                                 <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#DDA1AA] text-zinc-950">
@@ -65,6 +66,7 @@
                         <a
                             href="#"
                             class="group flex items-center justify-between rounded-2xl bg-zinc-900 px-5 py-4 transition hover:bg-zinc-800"
+                            data-blur-reveal-item
                         >
                             <span class="flex items-center gap-4">
                                 <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#DDA1AA] text-zinc-950">
@@ -95,29 +97,47 @@
 
         <div class="grid gap-10 border-t border-zinc-800 px-7 py-10 sm:px-10 lg:grid-cols-12 lg:px-14 xl:px-16">
             <div class="lg:col-span-7">
-                <nav class="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3">
-                    <a href="{{ route('shop.index') }}" class="text-sm text-zinc-400 transition hover:text-white">
-                        {{ __('Produits') }}
-                    </a>
-                    <a href="#coffrets" class="text-sm text-zinc-400 transition hover:text-white">
-                        {{ __('Coffrets') }}
-                    </a>
-                    <a href="#" class="text-sm text-zinc-400 transition hover:text-white">
-                        {{ __('Cours') }}
-                    </a>
-                    <a href="#" class="text-sm text-zinc-400 transition hover:text-white">
-                        {{ __('Notre histoire') }}
-                    </a>
-                    <a href="{{ route('where-to-buy') }}" class="text-sm text-zinc-400 transition hover:text-white">
-                        {{ __('Représentants') }}
-                    </a>
-                    <a href="#" class="text-sm text-zinc-400 transition hover:text-white">
-                        {{ __('Contact') }}
-                    </a>
-                </nav>
+                <div class="grid grid-cols-2 gap-8 sm:gap-12" data-blur-reveal data-blur-stagger="0.08" data-blur-duration="0.8" data-blur-y="14" data-blur-pixels="6">
+                    <nav data-blur-reveal-item>
+                        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+                            {{ __('Navigation') }}
+                        </p>
+
+                        <div class="mt-5 space-y-3">
+                            <a href="{{ route('shop.index') }}" class="block text-sm text-zinc-400 transition hover:text-white">{{ __('Produits') }}</a>
+                            <a href="{{ url('/') }}#coffrets" class="block text-sm text-zinc-400 transition hover:text-white">{{ __('Coffrets') }}</a>
+                            <a href="#" class="block text-sm text-zinc-400 transition hover:text-white">{{ __('Cours') }}</a>
+                            <a href="#" class="block text-sm text-zinc-400 transition hover:text-white">{{ __('Notre histoire') }}</a>
+                            <a href="{{ route('where-to-buy') }}" class="block text-sm text-zinc-400 transition hover:text-white">{{ __('Représentants') }}</a>
+                            <a href="#" class="block text-sm text-zinc-400 transition hover:text-white">{{ __('Contact') }}</a>
+                        </div>
+                    </nav>
+
+                    <nav data-blur-reveal-item>
+                        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+                            {{ __('Collections') }}
+                        </p>
+
+                        <div class="mt-5 space-y-3">
+                            @foreach ($footerCategories as $footerCategory)
+                                @php
+                                    $footerLocale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true) ? app()->getLocale() : 'fr';
+                                    $footerCategorySlug = $footerCategory->getTranslation('slug', $footerLocale, false)
+                                        ?: $footerCategory->getTranslation('slug', 'fr', false);
+                                @endphp
+
+                                @if ($footerCategorySlug)
+                                    <a href="{{ route('shop.category', ['slug' => $footerCategorySlug]) }}" class="block text-sm text-zinc-400 transition hover:text-white">
+                                        {{ $footerCategory->name }}
+                                    </a>
+                                @endif
+                            @endforeach
+                        </div>
+                    </nav>
+                </div>
             </div>
 
-            <div class="flex items-start justify-between gap-6 lg:col-span-5 lg:pl-10">
+            <div class="flex items-start justify-between gap-6 lg:col-span-5 lg:pl-10" data-reveal data-reveal-y="12" data-reveal-duration="0.75">
                 <div>
                     <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
                         <x-lucide-languages class="h-4 w-4" />
@@ -142,7 +162,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col gap-5 bg-[#DDA1AA] px-7 py-5 text-zinc-900 sm:px-10 lg:flex-row lg:items-center lg:justify-between lg:px-14 xl:px-16">
+        <div class="flex flex-col gap-5 bg-[#DDA1AA] px-7 py-5 text-zinc-900 sm:px-10 lg:flex-row lg:items-center lg:justify-between lg:px-14 xl:px-16" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
             <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
                 <span class="font-serif text-xl italic">
                     {{ __('made with love · Paris') }}
