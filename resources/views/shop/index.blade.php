@@ -113,7 +113,13 @@
 
                             <article class="group min-w-0">
                                 <a href="{{ $productUrl }}" class="block">
-                                    <div class="aspect-[3/4] overflow-hidden rounded-2xl">
+                                    <div class="relative aspect-[3/4] overflow-hidden rounded-2xl">
+                                        @if ($product->is_new)
+                                            <span class="absolute left-3 top-3 z-10 rounded-full bg-[#DDA1AA] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-900 sm:left-4 sm:top-4 sm:px-4 sm:py-2 sm:text-xs">
+                                                {{ __('Nouveau') }}
+                                            </span>
+                                        @endif
+
                                     @if ($image)
                                         <img
                                             src="{{ $image }}"
