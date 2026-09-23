@@ -68,19 +68,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="hidden sm:relative sm:block sm:min-h-[520px] lg:col-span-7 lg:min-h-0">
-                        <div class="absolute right-7 top-7 z-20 hidden items-start gap-5 lg:flex xl:right-12 xl:top-12">
-                            <span class="mt-1 h-14 w-px bg-zinc-700"></span>
-                            <div>
-                                <p class="text-[11px] font-semibold uppercase tracking-widest text-zinc-900">01 / BLACK MILK</p>
-                                <p class="mt-4 text-[10px] font-medium uppercase leading-5 tracking-[0.22em] text-zinc-700">
-                                    PROFESSIONAL<br>
-                                    NAIL SYSTEM
-                                </p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
