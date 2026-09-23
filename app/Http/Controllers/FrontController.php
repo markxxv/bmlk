@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Representative;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -120,6 +121,22 @@ class FrontController extends Controller
             'metaTitle' => $metaTitle,
             'metaDescription' => $metaDescription,
             'canonical' => $canonical,
+        ]);
+    }
+
+    public function whereToBuy(): View
+    {
+        $representatives = Representative::query()
+            ->where('active', true)
+            ->orderBy('sort')
+            ->orderBy('id')
+            ->get();
+
+        return view('where-to-buy', [
+            'representatives' => $representatives,
+            'metaTitle' => __('Où acheter BLACK MILK | Représentants officiels'),
+            'metaDescription' => __('Trouvez un représentant officiel, un revendeur ou un point de vente BLACK MILK près de chez vous.'),
+            'canonical' => route('where-to-buy'),
         ]);
     }
 
