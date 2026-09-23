@@ -11,4 +11,8 @@ Route::get('/shop/category/{slug}', [FrontController::class, 'shopCategory'])
     ->where('slug', '[A-Za-z0-9-]+')
     ->name('shop.category');
 
+Route::get('/shop/product/{slug}', [FrontController::class, 'shopProduct'])
+    ->where('slug', '[A-Za-z0-9-]+')
+    ->name('shop.product');
+
 Route::get('/ou-acheter', [FrontController::class, 'whereToBuy'])->name('where-to-buy');
