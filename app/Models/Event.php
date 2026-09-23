@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
@@ -26,6 +27,15 @@ class Event extends Model
     public function getTranslatableSlugTargetAttribute(): string
     {
         return 'url';
+    }
+
+    protected function formattedPrice(): Attribute
+    {
+        return Attribute::get(
+            fn (): ?string => $this->price !== null
+                ? Product::formatPriceValue($this->price)
+                : null
+        );
     }
 
     protected function casts(): array
