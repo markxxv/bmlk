@@ -54,7 +54,6 @@ class EventSeeder extends Seeder
                     'ro' => 'BLACK MILK ajunge în America. Orașul și datele vor fi dezvăluite curând.',
                 ],
                 'country' => 'Amérique',
-                'city' => 'Ville à venir',
             ],
             [
                 'name' => [
@@ -131,7 +130,6 @@ class EventSeeder extends Seeder
                     'ro' => 'O nouă destinație internațională se alătură calendarului BLACK MILK.',
                 ],
                 'country' => 'Brésil',
-                'city' => 'Ville à venir',
             ],
             [
                 'name' => [
