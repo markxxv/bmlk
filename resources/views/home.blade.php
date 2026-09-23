@@ -270,6 +270,15 @@
 
                             $eventLocation = collect([$event->city, $event->country])
                                 ->filter(fn ($value) => filled($value))
+                                ->reject(fn ($value) => in_array(mb_strtolower(trim($value)), [
+                                    'ville à venir',
+                                    'city to come',
+                                    'oraș de anunțat',
+                                    'lieu à venir',
+                                    'venue to come',
+                                    'loc de anunțat',
+                                    '—',
+                                ], true))
                                 ->join(', ');
 
                             $startDay = null;
@@ -361,13 +370,11 @@
                             </div>
 
                             <div class="flex items-center justify-between gap-4 lg:col-span-2 lg:flex-col lg:items-end">
-                                <p class="text-sm font-semibold text-zinc-900">
-                                    @if ($event->price !== null)
+                                @if ($event->price !== null)
+                                    <p class="text-sm font-semibold text-zinc-900">
                                         {{ number_format((float) $event->price, 2, ',', ' ') }} €
-                                    @else
-                                        {{ __('Tarif à venir') }}
-                                    @endif
-                                </p>
+                                    </p>
+                                @endif
 
                                 @if ($event->ticket_url)
                                     <a
