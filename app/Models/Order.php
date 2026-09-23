@@ -21,6 +21,11 @@ class Order extends Model
         ];
     }
 
+    public function delivery()
+    {
+        return $this->belongsTo(Delivery::class, 'delivery_code', 'code');
+    }
+
     protected static function booted(): void
     {
         static::created(function (Order $order): void {
