@@ -1,10 +1,38 @@
+@props([
+    'title' => null,
+    'metaDescription' => null,
+    'canonical' => null,
+    'robots' => 'index, follow',
+])
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{ $title ?? 'BLACK MILK' }}</title>
+    <title>{{ $title ?? __('BLACK MILK') }}</title>
+    <meta name="robots" content="{{ $robots }}">
+
+    @if ($metaDescription)
+        <meta name="description" content="{{ $metaDescription }}">
+    @endif
+
+    @if ($canonical)
+        <link rel="canonical" href="{{ $canonical }}">
+    @endif
+
+    <meta property="og:site_name" content="{{ __('BLACK MILK') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ $title ?? __('BLACK MILK') }}">
+
+    @if ($metaDescription)
+        <meta property="og:description" content="{{ $metaDescription }}">
+    @endif
+
+    @if ($canonical)
+        <meta property="og:url" content="{{ $canonical }}">
+    @endif
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
