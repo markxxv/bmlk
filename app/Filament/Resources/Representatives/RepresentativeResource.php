@@ -34,7 +34,7 @@ class RepresentativeResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Shop';
+        return 'General';
     }
 
     public static function getModelLabel(): string
