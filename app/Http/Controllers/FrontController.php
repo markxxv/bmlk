@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Representative;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -227,6 +228,25 @@ class FrontController extends Controller
             'metaDescription' => __('Trouvez un représentant officiel, un revendeur ou un point de vente BLACK MILK près de chez vous.'),
             'canonical' => route('where-to-buy'),
         ]);
+    }
+
+    public function sitemap(): Response
+    {
+        $categories = Category::query()
+            ->whereNotNull('slug')
+            ->whereHas('products', fn ($query) => $query->where('active', true))
+            ->orderBy('id')
+            ->get();
+
+        $products = Product::query()
+            ->where('active', true)
+            ->with('media')
+            ->orderBy('id')
+            ->get();
+
+        return response()
+            ->view('sitemap', compact('categories', 'products'))
+            ->header('Content-Type', 'application/xml; charset=UTF-8');
     }
 
     private function shopCategories(): Collection
