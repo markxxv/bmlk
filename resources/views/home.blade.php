@@ -248,20 +248,20 @@
             <div class="mx-auto max-w-[1560px]">
                 <div class="grid gap-6 lg:grid-cols-2 lg:items-end">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ __('Collection') }}
                         </p>
 
-                        <h2 class="mt-4 max-w-3xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+                        <h2 class="mt-4 max-w-3xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl" data-reveal-title data-reveal-title-duration="1" data-reveal-title-stagger="0.08">
                             <a href="{{ $categoryUrl }}" class="transition hover:text-[#A9636F]">
                                 {{ $category->name }}
                             </a>
                         </h2>
                     </div>
 
-                    <div class="lg:justify-self-end">
+                    <div class="lg:justify-self-end" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.8" data-blur-y="14" data-blur-pixels="7">
                         @if ($category->description)
-                            <p class="max-w-xl text-base leading-7 text-zinc-600 lg:text-lg">
+                            <p class="max-w-xl text-base leading-7 text-zinc-600 lg:text-lg" data-blur-reveal-item>
                                 {{ $category->description }}
                             </p>
                         @endif
@@ -269,6 +269,7 @@
                         <a
                             href="{{ $categoryUrl }}"
                             class="group mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#A9636F] transition hover:text-[#945763]"
+                            data-blur-reveal-item
                         >
                             {{ __('Voir toute la collection') }}
                             <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -276,7 +277,7 @@
                     </div>
                 </div>
 
-                <div class="-mx-3 mt-10 flex snap-x snap-mandatory gap-2 overflow-x-auto px-5 pb-4 sm:-mx-5 sm:mt-12 sm:gap-5 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0">
+                <div class="-mx-3 mt-10 flex snap-x snap-mandatory gap-2 overflow-x-auto px-5 pb-4 sm:-mx-5 sm:mt-12 sm:gap-5 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0" data-blur-reveal data-blur-stagger="0.09" data-blur-duration="0.8" data-blur-y="20" data-blur-pixels="9">
                     @foreach ($category->products as $product)
                         @php
                             $image = $product->getFirstMediaUrl('images');
@@ -287,7 +288,7 @@
                                 : $categoryUrl;
                         @endphp
 
-                        <article class="group w-[40%] shrink-0 snap-start sm:w-2/5 lg:w-auto">
+                        <article class="group w-[40%] shrink-0 snap-start sm:w-2/5 lg:w-auto" data-blur-reveal-item>
                             <a href="{{ $productUrl }}" class="block">
                                 @if ($image)
                                     <div class="relative aspect-[3/4] overflow-hidden rounded-3xl">
