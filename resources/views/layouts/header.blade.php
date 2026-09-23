@@ -8,17 +8,17 @@
             <div class="grid min-h-20 grid-cols-[1fr_auto] items-center gap-4 lg:grid-cols-[1fr_auto_1fr]">
                 <nav class="hidden items-center gap-8 lg:flex">
                     <a href="{{ route('shop.index') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
-                        {{ __('Boutique') }}
-                        <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
-                    </a>
-
-                    <a href="{{ route('shop.index') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
                         {{ __('Produits') }}
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
 
-                    <a href="#" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
-                        {{ __('Cours') }}
+                    <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
+                        {{ __('Soins') }}
+                        <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
+                    </a>
+
+                    <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
+                        {{ __('Outils') }}
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
                 </nav>
@@ -135,13 +135,13 @@
 
             <nav class="flex flex-1 flex-col justify-center py-10">
                 <a href="{{ route('shop.index') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
-                    {{ __('Boutique') }}
-                </a>
-                <a href="{{ route('shop.index') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
                     {{ __('Produits') }}
                 </a>
-                <a href="#" @click="open = false" class="border-b border-[#C98792] py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
-                    {{ __('Cours') }}
+                <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
+                    {{ __('Soins') }}
+                </a>
+                <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
+                    {{ __('Outils') }}
                 </a>
                 <a href="{{ route('where-to-buy') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
                     {{ __('Où acheter') }}
