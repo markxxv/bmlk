@@ -29,6 +29,16 @@ class Product extends Model implements HasMedia
     'meta_description',
     ];
 
+    public function getTranslatableSlugSourceAttribute(): string
+    {
+        return 'name';
+    }
+
+    public function getTranslatableSlugTargetAttribute(): string
+    {
+        return 'slug';
+    }
+
     protected function casts(): array
     {
         return [
