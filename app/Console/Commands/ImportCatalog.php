@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use JsonException;
 use RuntimeException;
 
@@ -131,6 +132,7 @@ class ImportCatalog extends Command
 
             $category->fill([
                 'name' => $name,
+                'slug' => $this->categorySlugs($name, $category),
                 'description' => $this->localizedField($translations, ['description', 'desc']),
                 'use' => $this->localizedField($translations, ['use']),
                 'price_label' => $this->localizedField($translations, ['price']),
@@ -336,6 +338,34 @@ class ImportCatalog extends Command
                 throw new RuntimeException("Product {$slug} references unknown category {$categoryId}");
             }
         }
+    }
+
+    private function categorySlugs(array $names, Category $category): array
+    {
+        $slugs = [];
+        $fallback = $names['fr'] ?? reset($names);
+
+        foreach ($this->locales as $locale) {
+            $base = Str::slug((string) ($names[$locale] ?? $fallback));
+
+            if ($base === '') {
+                $base = 'category';
+            }
+
+            $slug = $base;
+            $suffix = 2;
+
+            while (Category::withTrashed()
+                ->when($category->exists, fn ($query) => $query->whereKeyNot($category->getKey()))
+                ->whereRaw("slug->>? = ?", [$locale, $slug])
+                ->exists()) {
+                $slug = $base.'-'.$suffix++;
+            }
+
+            $slugs[$locale] = $slug;
+        }
+
+        return $slugs;
     }
 
     private function normalizeTranslations(array $translations): array
