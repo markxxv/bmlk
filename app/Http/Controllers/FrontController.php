@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Event;
 use App\Models\Product;
 use App\Models\Representative;
 use Illuminate\Http\RedirectResponse;
@@ -35,7 +36,21 @@ class FrontController extends Controller
             ->orderBy('id')
             ->get();
 
-        return view('home', compact('coffrets', 'categories'));
+        $events = Event::query()
+            ->where('active', true)
+            ->where(function ($query) {
+                $query
+                    ->whereNull('starts_at')
+                    ->orWhere('starts_at', '>=', now()->startOfDay())
+                    ->orWhere('ends_at', '>=', now()->startOfDay());
+            })
+            ->orderByRaw('starts_at IS NULL')
+            ->orderBy('starts_at')
+            ->orderBy('sort')
+            ->orderBy('id')
+            ->get();
+
+        return view('home', compact('coffrets', 'categories', 'events'));
     }
 
     public function shop(): View
