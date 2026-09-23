@@ -5,6 +5,8 @@
     og-type="product"
     :og-image="$ogImage"
 >
+    @vite('resources/js/product.js')
+
     @php
         $locale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
             ? app()->getLocale()
@@ -208,56 +210,66 @@
                 </nav>
 
                 <div class="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-14 xl:gap-20">
-                    <div
-                        class="lg:col-span-7"
-                        @if ($images->isNotEmpty())
-                            x-data="{ active: 0 }"
-                        @endif
-                    >
-                        <div class="relative aspect-square overflow-hidden rounded-3xl bg-white">
-                            @if ($images->isNotEmpty())
-                                @foreach ($images as $index => $image)
-                                    <img
-                                        x-show="active === {{ $index }}"
-                                        x-transition.opacity
-                                        src="{{ $image['url'] }}"
-                                        alt="{{ $productName }}{{ $images->count() > 1 ? ' — '.($index + 1) : '' }}"
-                                        class="absolute inset-0 h-full w-full object-contain p-6 sm:p-10 lg:p-12"
-                                        @if ($index === 0)
-                                            fetchpriority="high"
-                                        @else
-                                            loading="lazy"
-                                        @endif
-                                    >
-                                @endforeach
-                            @else
-                                <div class="flex h-full items-center justify-center text-zinc-300">
-                                    <x-lucide-image-off class="h-8 w-8" />
-                                    <span class="sr-only">{{ __('Image indisponible') }}</span>
-                                </div>
-                            @endif
+                    <div class="lg:col-span-7" data-product-gallery>
+                        <div
+                            class="overflow-hidden rounded-3xl bg-white"
+                            data-embla-viewport
+                            role="region"
+                            aria-roledescription="{{ __('carrousel') }}"
+                            aria-label="{{ __('Galerie de :product', ['product' => $productName]) }}"
+                        >
+                            <div class="flex touch-pan-y">
+                                @if ($images->isNotEmpty())
+                                    @foreach ($images as $index => $image)
+                                        <div
+                                            class="relative aspect-square min-w-0 flex-[0_0_100%]"
+                                            role="group"
+                                            aria-roledescription="{{ __('diapositive') }}"
+                                            aria-label="{{ ($index + 1).' / '.$images->count() }}"
+                                        >
+                                            <img
+                                                src="{{ $image['url'] }}"
+                                                alt="{{ $productName }}{{ $images->count() > 1 ? ' — '.($index + 1) : '' }}"
+                                                class="h-full w-full select-none object-contain p-6 sm:p-10 lg:p-12"
+                                                draggable="false"
+                                                @if ($index === 0)
+                                                    fetchpriority="high"
+                                                @else
+                                                    loading="lazy"
+                                                @endif
+                                            >
 
-                            @if ($product->is_new)
-                                <span class="absolute left-5 top-5 rounded-full bg-[#DDA1AA] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-zinc-900">
-                                    {{ __('Nouveau') }}
-                                </span>
-                            @endif
+                                            @if ($product->is_new && $index === 0)
+                                                <span class="absolute left-5 top-5 rounded-full bg-[#DDA1AA] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-zinc-900">
+                                                    {{ __('Nouveau') }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="flex aspect-square min-w-0 flex-[0_0_100%] items-center justify-center text-zinc-300">
+                                        <x-lucide-image-off class="h-8 w-8" />
+                                        <span class="sr-only">{{ __('Image indisponible') }}</span>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
 
                         @if ($images->count() > 1)
-                            <div class="mt-3 flex gap-3 overflow-x-auto pb-1">
+                            <div class="mt-3 flex gap-3 overflow-x-auto pb-1" aria-label="{{ __('Miniatures du produit') }}">
                                 @foreach ($images as $index => $image)
                                     <button
                                         type="button"
-                                        @click="active = {{ $index }}"
-                                        class="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-white p-2 transition"
-                                        :class="active === {{ $index }} ? 'ring-2 ring-[#DDA1AA]' : 'ring-1 ring-zinc-200 hover:ring-zinc-400'"
+                                        data-embla-thumb
+                                        class="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-white p-2 transition {{ $index === 0 ? 'ring-2 ring-[#DDA1AA]' : 'ring-1 ring-zinc-200 hover:ring-zinc-400' }}"
                                         aria-label="{{ __('Voir l’image :number', ['number' => $index + 1]) }}"
+                                        aria-current="{{ $index === 0 ? 'true' : 'false' }}"
                                     >
                                         <img
                                             src="{{ $image['thumb'] }}"
                                             alt=""
-                                            class="h-full w-full object-contain"
+                                            class="h-full w-full select-none object-contain"
+                                            draggable="false"
                                             loading="lazy"
                                         >
                                     </button>
