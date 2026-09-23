@@ -21,6 +21,16 @@ class Page extends Model
         'meta_description',
     ];
 
+    public function getTranslatableSlugSourceAttribute(): string
+    {
+        return 'title';
+    }
+
+    public function getTranslatableSlugTargetAttribute(): string
+    {
+        return 'slug';
+    }
+
     protected function casts(): array
     {
         return [
