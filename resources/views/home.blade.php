@@ -299,7 +299,7 @@
 
                     <button
                         type="submit"
-                        class="ml-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition hover:bg-zinc-900 hover:text-white"
+                        class="ml-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition bg-zinc-800 hover:bg-zinc-900 text-white"
                         aria-label="{{ __('S’inscrire à la newsletter') }}"
                     >
                         <x-lucide-arrow-right class="h-5 w-5" />
