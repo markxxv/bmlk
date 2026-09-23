@@ -199,7 +199,108 @@
         </div>
     </section>
 
-    @if ($events->isNotEmpty())
+    @foreach ($categories as $category)
+        @php
+            $locale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
+                ? app()->getLocale()
+                : 'fr';
+
+            $categorySlug = $category->getTranslation('slug', $locale, false)
+                ?: $category->getTranslation('slug', 'fr', false);
+
+            $categoryUrl = $categorySlug
+                ? route('shop.category', ['slug' => $categorySlug])
+                : route('shop.index');
+        @endphp
+
+        <section class="overflow-hidden border-t border-zinc-200 px-3 py-16 sm:px-5 sm:py-20 lg:px-8 lg:py-24">
+            <div class="mx-auto max-w-[1560px]">
+                <div class="grid gap-6 lg:grid-cols-2 lg:items-end">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                            {{ __('Collection') }}
+                        </p>
+
+                        <h2 class="mt-4 max-w-3xl font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+                            <a href="{{ $categoryUrl }}" class="transition hover:text-[#A9636F]">
+                                {{ $category->name }}
+                            </a>
+                        </h2>
+                    </div>
+
+                    <div class="lg:justify-self-end">
+                        @if ($category->description)
+                            <p class="max-w-xl text-base leading-7 text-zinc-600 lg:text-lg">
+                                {{ $category->description }}
+                            </p>
+                        @endif
+
+                        <a
+                            href="{{ $categoryUrl }}"
+                            class="group mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#A9636F] transition hover:text-[#945763]"
+                        >
+                            {{ __('Voir toute la collection') }}
+                            <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </a>
+                    </div>
+                </div>
+
+                <div class="-mx-3 mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-3 pb-4 sm:-mx-5 sm:mt-12 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0">
+                    @foreach ($category->products as $product)
+                        @php
+                            $image = $product->getFirstMediaUrl('images');
+                            $productSlug = $product->getTranslation('slug', $locale, false)
+                                ?: $product->getTranslation('slug', 'fr', false);
+                            $productUrl = $productSlug
+                                ? route('shop.product', ['slug' => $productSlug])
+                                : $categoryUrl;
+                        @endphp
+
+                        <article class="group w-3/4 shrink-0 snap-start sm:w-2/5 lg:w-auto">
+                            <a href="{{ $productUrl }}" class="block">
+                                @if ($image)
+                                    <div class="aspect-[3/4] overflow-hidden rounded-3xl">
+                                        <img
+                                            src="{{ $image }}"
+                                            alt="{{ $product->name }}"
+                                            class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                                            loading="lazy"
+                                        >
+                                    </div>
+                                @endif
+
+                                <div class="pt-4">
+                                    @if ($product->tag)
+                                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                                            {{ $product->tag }}
+                                        </p>
+                                    @endif
+
+                                    <div class="mt-2 flex items-start justify-between gap-4">
+                                        <h3 class="font-['Playfair_Display'] text-xl font-medium leading-tight text-zinc-900 sm:text-2xl">
+                                            {{ $product->name }}
+                                        </h3>
+
+                                        <div class="shrink-0 pt-1 text-sm font-semibold text-zinc-900">
+                                            @if ($product->price)
+                                                {{ number_format((float) $product->price, 2, ',', ' ') }} €
+                                            @elseif ($product->price_min && $product->price_max)
+                                                {{ number_format((float) $product->price_min, 2, ',', ' ') }}–{{ number_format((float) $product->price_max, 2, ',', ' ') }} €
+                                            @elseif ($product->price_min)
+                                                {{ __('Dès :price €', ['price' => number_format((float) $product->price_min, 2, ',', ' ')]) }}
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </article>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endforeach
+
+     @if ($events->isNotEmpty())
         @php
             $eventLocale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
                 ? app()->getLocale()
@@ -394,107 +495,6 @@
             </div>
         </section>
     @endif
-
-    @foreach ($categories as $category)
-        @php
-            $locale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
-                ? app()->getLocale()
-                : 'fr';
-
-            $categorySlug = $category->getTranslation('slug', $locale, false)
-                ?: $category->getTranslation('slug', 'fr', false);
-
-            $categoryUrl = $categorySlug
-                ? route('shop.category', ['slug' => $categorySlug])
-                : route('shop.index');
-        @endphp
-
-        <section class="overflow-hidden border-t border-zinc-200 px-3 py-16 sm:px-5 sm:py-20 lg:px-8 lg:py-24">
-            <div class="mx-auto max-w-[1560px]">
-                <div class="grid gap-6 lg:grid-cols-2 lg:items-end">
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
-                            {{ __('Collection') }}
-                        </p>
-
-                        <h2 class="mt-4 max-w-3xl font-['Playfair_Display'] text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
-                            <a href="{{ $categoryUrl }}" class="transition hover:text-[#A9636F]">
-                                {{ $category->name }}
-                            </a>
-                        </h2>
-                    </div>
-
-                    <div class="lg:justify-self-end">
-                        @if ($category->description)
-                            <p class="max-w-xl text-base leading-7 text-zinc-600 lg:text-lg">
-                                {{ $category->description }}
-                            </p>
-                        @endif
-
-                        <a
-                            href="{{ $categoryUrl }}"
-                            class="group mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#A9636F] transition hover:text-[#945763]"
-                        >
-                            {{ __('Voir toute la collection') }}
-                            <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                        </a>
-                    </div>
-                </div>
-
-                <div class="-mx-3 mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-3 pb-4 sm:-mx-5 sm:mt-12 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0">
-                    @foreach ($category->products as $product)
-                        @php
-                            $image = $product->getFirstMediaUrl('images');
-                            $productSlug = $product->getTranslation('slug', $locale, false)
-                                ?: $product->getTranslation('slug', 'fr', false);
-                            $productUrl = $productSlug
-                                ? route('shop.product', ['slug' => $productSlug])
-                                : $categoryUrl;
-                        @endphp
-
-                        <article class="group w-3/4 shrink-0 snap-start sm:w-2/5 lg:w-auto">
-                            <a href="{{ $productUrl }}" class="block">
-                                @if ($image)
-                                    <div class="aspect-[3/4] overflow-hidden rounded-3xl">
-                                        <img
-                                            src="{{ $image }}"
-                                            alt="{{ $product->name }}"
-                                            class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                                            loading="lazy"
-                                        >
-                                    </div>
-                                @endif
-
-                                <div class="pt-4">
-                                    @if ($product->tag)
-                                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
-                                            {{ $product->tag }}
-                                        </p>
-                                    @endif
-
-                                    <div class="mt-2 flex items-start justify-between gap-4">
-                                        <h3 class="font-['Playfair_Display'] text-xl font-medium leading-tight text-zinc-900 sm:text-2xl">
-                                            {{ $product->name }}
-                                        </h3>
-
-                                        <div class="shrink-0 pt-1 text-sm font-semibold text-zinc-900">
-                                            @if ($product->price)
-                                                {{ number_format((float) $product->price, 2, ',', ' ') }} €
-                                            @elseif ($product->price_min && $product->price_max)
-                                                {{ number_format((float) $product->price_min, 2, ',', ' ') }}–{{ number_format((float) $product->price_max, 2, ',', ' ') }} €
-                                            @elseif ($product->price_min)
-                                                {{ __('Dès :price €', ['price' => number_format((float) $product->price_min, 2, ',', ' ')]) }}
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </article>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-    @endforeach
 
 
     <section class="px-3 pb-6 pt-8 sm:px-5 sm:pb-8 sm:pt-12 lg:px-8 lg:pb-10 lg:pt-16">
