@@ -40,7 +40,7 @@
             </div>
         </section>
 
-        <section class="px-3 py-14 sm:px-5 sm:py-16 lg:px-8 lg:py-20">
+        <section class="px-3 pb-14 sm:px-5 sm:pb-16 lg:px-8 lg:pb-20">
             <div class="mx-auto max-w-[1560px]">
                 <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                     @foreach ($representatives as $representative)
