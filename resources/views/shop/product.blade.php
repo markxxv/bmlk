@@ -739,7 +739,7 @@
 
                             <article class="group/card w-3/4 shrink-0 snap-start sm:w-2/5 lg:w-auto">
                                 <a href="{{ $recommendedUrl }}" class="block">
-                                    <div class="aspect-[3/4] overflow-hidden rounded-2xl">
+                                    <div class="relative aspect-[3/4] overflow-hidden rounded-2xl">
                                         @if ($recommendedImage)
                                             <img
                                                 src="{{ $recommendedImage }}"
@@ -747,6 +747,10 @@
                                                 class="h-full w-full object-cover transition duration-500 group-hover/card:scale-105"
                                                 loading="lazy"
                                             >
+
+                                            <span class="pointer-events-none absolute left-1/2 top-1/2 z-10 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 scale-90 items-center justify-center rounded-full bg-white text-zinc-900 opacity-0 shadow-sm transition duration-300 group-hover/card:scale-100 group-hover/card:opacity-100 group-focus-within/card:scale-100 group-focus-within/card:opacity-100" aria-hidden="true">
+                                                <x-lucide-arrow-up-right class="h-5 w-5" stroke-width="1.5" />
+                                            </span>
                                         @endif
                                     </div>
 
