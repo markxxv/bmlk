@@ -103,10 +103,16 @@
                         @foreach ($products as $product)
                             @php
                                 $image = $product->getFirstMediaUrl('images', 'thumb');
+                                $productSlug = $product->getTranslation('slug', $locale, false)
+                                    ?: $product->getTranslation('slug', 'fr', false);
+                                $productUrl = $productSlug
+                                    ? route('shop.product', ['slug' => $productSlug])
+                                    : route('shop.index');
                             @endphp
 
                             <article class="group min-w-0">
-                                <div class="aspect-square overflow-hidden rounded-2xl bg-white">
+                                <a href="{{ $productUrl }}" class="block">
+                                    <div class="aspect-square overflow-hidden rounded-2xl bg-white">
                                     @if ($image)
                                         <img
                                             src="{{ $image }}"
@@ -145,6 +151,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                </a>
                             </article>
                         @endforeach
                     </div>
