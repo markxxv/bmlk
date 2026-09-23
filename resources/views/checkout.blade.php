@@ -240,16 +240,6 @@
                             <span x-show="isSubmitting">{{ __('Traitement…') }}</span>
                         </button>
 
-                        <div class="mt-5 flex items-center justify-center gap-2 text-emerald-700">
-                            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50">
-                                <x-lucide-lock-keyhole class="h-3.5 w-3.5" />
-                            </span>
-
-                            <span class="text-xs font-medium">
-                                {{ __('Secure Checkout') }}
-                            </span>
-                        </div>
-
                         <div class="mt-6 border-t border-zinc-100 pt-5">
                             <div class="flex items-center justify-center gap-2">
                                 <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
@@ -332,6 +322,11 @@
                             <span class="text-zinc-500">{{ __('Total') }}</span>
                             <span class="font-semibold text-zinc-900" x-text="formatPrice($store.cart.totalPrice)"></span>
                         </div>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-center gap-2 text-emerald-700">
+                        <x-lucide-shield-check class="h-4 w-4" />
+                        <span class="text-xs font-medium">{{ __('Secure Checkout') }}</span>
                     </div>
                 </aside>
             </div>
