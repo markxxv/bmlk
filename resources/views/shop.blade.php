@@ -136,7 +136,7 @@
                                     @endif
 
                                     <div class="mt-2 flex items-start justify-between gap-3">
-                                        <h2 class="min-w-0 font-['Playfair_Display'] text-lg font-medium leading-tight text-zinc-900 sm:text-xl">
+                                        <h2 class="min-w-0 font-medium leading-tight text-zinc-900 sm:text-xl">
                                             {{ $product->name }}
                                         </h2>
 
