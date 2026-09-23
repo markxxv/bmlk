@@ -333,7 +333,7 @@
             ];
         @endphp
 
-        <section id="events" class="px-3 pb-16 sm:px-5 sm:pb-20 lg:px-8 lg:pb-24">
+        <section id="events" class="pb-16 sm:px-5 sm:pb-20 lg:px-8 lg:pb-24">
             <div
                 x-data="{ filter: 'all' }"
                 class="mx-auto max-w-[1560px] rounded-3xl bg-white px-6 py-12 sm:px-10 sm:py-14 lg:px-14 lg:py-16 xl:px-16"
