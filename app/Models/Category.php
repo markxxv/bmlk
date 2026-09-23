@@ -17,11 +17,12 @@ class Category extends Model
 
     public array $translatable = [
         'name',
+        'slug',
         'description',
         'use',
         'price_label',
-         'meta_title',
-    'meta_description',
+        'meta_title',
+        'meta_description',
     ];
 
     public function parent(): BelongsTo
