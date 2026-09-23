@@ -81,18 +81,18 @@
         <div class="mx-auto max-w-[1560px]">
             <div class="grid gap-6 lg:grid-cols-2 lg:items-end">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                         {{ __('Coffrets BLACK MILK') }}
                     </p>
 
-                    <h2 class="mt-4 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
-                        {{ __('Compose') }}
-                        <span class="italic text-[#A9636F]">{{ __('ton') }}</span>
-                        {{ __('rituel') }}
+                    <h2 class="mt-4 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl" data-reveal-title data-reveal-title-duration="1" data-reveal-title-stagger="0.08">
+                        <span class="inline-block">{{ __('Compose') }}</span>
+                        <span class="inline-block italic text-[#A9636F]">{{ __('ton') }}</span>
+                        <span class="inline-block">{{ __('rituel') }}</span>
                     </h2>
                 </div>
 
-                <p class="max-w-xl text-base leading-7 text-zinc-600 lg:justify-self-end lg:text-lg">
+                <p class="max-w-xl text-base leading-7 text-zinc-600 lg:justify-self-end lg:text-lg" data-reveal data-reveal-y="16" data-reveal-duration="0.8" data-reveal-delay="0.16">
                     {{ __('Trois coffrets pensés pour chaque besoin — débuter, se réassortir avec les favoris, ou profiter d’une offre exceptionnelle.') }}
                 </p>
             </div>
