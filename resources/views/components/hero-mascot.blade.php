@@ -21,9 +21,14 @@
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const hover = window.matchMedia('(hover: hover)').matches;
 
+        // cx/cy — центр спрайта на исходнике 1402×1122
+        // size — базовый размер спрайта
+        // maskX/maskY — радиусы области, внутри которой глаз может двигаться
+        // moveX/moveY — максимальный ход взгляда по X/Y
+        // coverScale — размер мягкой неподвижной подложки, скрывающей исходный глаз
         const EYES = [
-            { src: root.dataset.eyeLeft, cx: 611, cy: 311, d: 86, rx: 48, ry: 45, mx: 8, my: 5, lid: 'rgb(73, 51, 49)' },
-            { src: root.dataset.eyeRight, cx: 811, cy: 354, d: 82, rx: 46, ry: 43, mx: 8, my: 5, lid: 'rgb(225, 190, 187)' },
+            { src: root.dataset.eyeLeft, cx: 630, cy: 315, size: 102, maskX: 48, maskY: 46, moveX: 5.5, moveY: 4, coverScale: 1.12, lid: 'rgb(73, 51, 49)' },
+            { src: root.dataset.eyeRight, cx: 821, cy: 362, size: 100, maskX: 47, maskY: 45, moveX: 5.5, moveY: 4, coverScale: 1.12, lid: 'rgb(225, 190, 187)' },
         ];
 
         const load = (src) => new Promise((resolve, reject) => {
@@ -59,24 +64,25 @@
             const drawEye = (eye, image) => {
                 const cx = eye.cx * scaleX;
                 const cy = eye.cy * scaleY;
-                const d = eye.d * eyeScale;
-                const rx = eye.rx * scaleX;
-                const ry = eye.ry * scaleY;
-                const ox = gx * eye.mx * scaleX;
-                const oy = gy * eye.my * scaleY;
+                const size = eye.size * eyeScale;
+                const rx = eye.maskX * scaleX;
+                const ry = eye.maskY * scaleY;
+                const ox = gx * eye.moveX * scaleX;
+                const oy = gy * eye.moveY * scaleY;
+                const coverSize = size * eye.coverScale;
 
                 ctx.save();
                 ctx.beginPath();
                 ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
                 ctx.clip();
 
-                ctx.globalAlpha = 0.9;
-                ctx.filter = `blur(${Math.max(1, 1.5 * eyeScale)}px)`;
-                ctx.drawImage(image, cx - d * 0.59, cy - d * 0.59, d * 1.18, d * 1.18);
+                ctx.globalAlpha = 0.92;
+                ctx.filter = `blur(${Math.max(0.6, 0.9 * eyeScale)}px)`;
+                ctx.drawImage(image, cx - coverSize / 2, cy - coverSize / 2, coverSize, coverSize);
 
                 ctx.globalAlpha = 1;
                 ctx.filter = 'none';
-                ctx.drawImage(image, cx - d * 0.52 + ox, cy - d * 0.52 + oy, d * 1.04, d * 1.04);
+                ctx.drawImage(image, cx - size / 2 + ox, cy - size / 2 + oy, size, size);
 
                 if (blink > 0.01) {
                     const h = ry * blink;
