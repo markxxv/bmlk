@@ -41,7 +41,7 @@ export function initReveal(root = document) {
         const x = number(element.dataset.revealX, 0);
         const y = number(element.dataset.revealY, 24);
         const scale = number(element.dataset.revealScale, 1);
-        const repeat = !boolean(element.dataset.revealOnce, true);
+        const repeat = !boolean(element.dataset.revealOnce, false);
 
         if (reducedMotion.matches) {
             resetStyles(element, {
@@ -97,7 +97,7 @@ export function initBlurReveal(root = document) {
         const amount = number(container.dataset.blurAmount, 0.2);
         const blur = number(container.dataset.blurPixels, 14);
         const y = number(container.dataset.blurY, 22);
-        const repeat = !boolean(container.dataset.blurOnce, true);
+        const repeat = !boolean(container.dataset.blurOnce, false);
 
         if (reducedMotion.matches) {
             targets.forEach((target) => resetStyles(target, {
@@ -178,7 +178,7 @@ export function initTitleReveal(root = document) {
         const duration = number(title.dataset.revealTitleDuration, 1.15);
         const staggerDelay = number(title.dataset.revealTitleStagger, 0.09);
         const amount = number(title.dataset.revealTitleAmount, 0.2);
-        const repeat = !boolean(title.dataset.revealTitleOnce, true);
+        const repeat = !boolean(title.dataset.revealTitleOnce, false);
 
         lines.forEach((line) => {
             line.style.willChange = 'transform';
@@ -231,7 +231,7 @@ export function initImageReveal(root = document) {
         const direction = element.dataset.imageReveal || 'bottom';
         const duration = number(element.dataset.imageRevealDuration, 1.05);
         const amount = number(element.dataset.imageRevealAmount, 0.2);
-        const repeat = !boolean(element.dataset.imageRevealOnce, true);
+        const repeat = !boolean(element.dataset.imageRevealOnce, false);
 
         const clips = {
             bottom: ['inset(100% 0 0 0)', 'inset(0% 0 0 0)'],
@@ -277,7 +277,7 @@ export function initLineReveal(root = document) {
         const duration = number(line.dataset.lineRevealDuration, 0.9);
         const delay = number(line.dataset.lineRevealDelay, 0);
         const amount = number(line.dataset.lineRevealAmount, 0.5);
-        const repeat = !boolean(line.dataset.lineRevealOnce, true);
+        const repeat = !boolean(line.dataset.lineRevealOnce, false);
         const property = vertical ? 'scaleY' : 'scaleX';
 
         line.style.transformOrigin = line.dataset.lineOrigin
@@ -353,7 +353,7 @@ export function initCountUp(root = document) {
         const duration = number(element.dataset.countDuration, 1.5);
         const prefix = element.dataset.countPrefix ?? '';
         const suffix = element.dataset.countSuffix ?? '';
-        const repeat = !boolean(element.dataset.countOnce, true);
+        const repeat = !boolean(element.dataset.countOnce, false);
 
         const render = (value) => {
             element.textContent = `${prefix}${value.toFixed(decimals)}${suffix}`;
