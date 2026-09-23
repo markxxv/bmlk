@@ -20,6 +20,13 @@
             default => 'fr-FR',
         };
 
+        $formatPrice = static function (mixed $value): string {
+            $price = round((float) $value, 2);
+            $decimals = abs($price - round($price)) < 0.00001 ? 0 : 2;
+
+            return number_format($price, $decimals, ',', ' ');
+        };
+
         $productName = $product->getTranslation('name', $locale, false)
             ?: $product->getTranslation('name', 'fr', false);
 
@@ -73,15 +80,15 @@
         $priceLabel = null;
 
         if ($product->price !== null) {
-            $priceLabel = number_format((float) $product->price, 2, ',', ' ').' €';
+            $priceLabel = $formatPrice($product->price).' €';
         } elseif ($product->price_min !== null && $product->price_max !== null) {
-            $priceLabel = number_format((float) $product->price_min, 2, ',', ' ')
+            $priceLabel = $formatPrice($product->price_min)
                 .'–'
-                .number_format((float) $product->price_max, 2, ',', ' ')
+                .$formatPrice($product->price_max)
                 .' €';
         } elseif ($product->price_min !== null) {
             $priceLabel = __('Dès :price €', [
-                'price' => number_format((float) $product->price_min, 2, ',', ' '),
+                'price' => $formatPrice($product->price_min),
             ]);
         }
 
@@ -294,10 +301,14 @@
                         return fallbackPriceLabel || selectOptionsLabel;
                     }
 
+                    const price = Number(this.currentPrice);
+
                     return new Intl.NumberFormat(numberLocale, {
                         style: 'currency',
                         currency: 'EUR',
-                    }).format(this.currentPrice);
+                        minimumFractionDigits: Number.isInteger(price) ? 0 : 2,
+                        maximumFractionDigits: 2,
+                    }).format(price);
                 },
 
                 addToCart() {
@@ -475,7 +486,7 @@
 
                                     @if ($product->compare_at_price !== null && $product->price !== null && (float) $product->compare_at_price > (float) $product->price)
                                         <p class="text-sm text-zinc-400 line-through">
-                                            {{ number_format((float) $product->compare_at_price, 2, ',', ' ') }} €
+                                            {{ $formatPrice($product->compare_at_price) }} €
                                         </p>
                                     @endif
                                 </div>
@@ -537,7 +548,7 @@
 
                                                         @if ($choice['price'] !== null)
                                                             <span class="ml-1 text-xs text-zinc-500">
-                                                                · {{ number_format((float) $choice['price'], 2, ',', ' ') }} €
+                                                                · {{ $formatPrice($choice['price']) }} €
                                                             </span>
                                                         @endif
                                                     </button>
@@ -757,11 +768,11 @@
 
                                             <div class="shrink-0 pt-1 text-sm font-semibold text-zinc-900">
                                                 @if ($recommendedProduct->price)
-                                                    {{ number_format((float) $recommendedProduct->price, 2, ',', ' ') }} €
+                                                    {{ $formatPrice($recommendedProduct->price) }} €
                                                 @elseif ($recommendedProduct->price_min && $recommendedProduct->price_max)
-                                                    {{ number_format((float) $recommendedProduct->price_min, 2, ',', ' ') }}–{{ number_format((float) $recommendedProduct->price_max, 2, ',', ' ') }} €
+                                                    {{ $formatPrice($recommendedProduct->price_min) }}–{{ $formatPrice($recommendedProduct->price_max) }} €
                                                 @elseif ($recommendedProduct->price_min)
-                                                    {{ __('Dès :price €', ['price' => number_format((float) $recommendedProduct->price_min, 2, ',', ' ')]) }}
+                                                    {{ __('Dès :price €', ['price' => $formatPrice($recommendedProduct->price_min)]) }}
                                                 @endif
                                             </div>
                                         </div>
