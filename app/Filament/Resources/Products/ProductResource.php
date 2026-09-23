@@ -9,7 +9,9 @@ use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TagsInput;
@@ -122,17 +124,71 @@ class ProductResource extends Resource
                                                     ->placeholder('18 × 3 cm'),
                                             ]),
 
-                                        Textarea::make('options')
-                                            ->label('Options JSON')
-                                            ->rows(12)
-                                            ->rule('json')
-                                            ->formatStateUsing(fn (mixed $state): ?string => blank($state)
-                                                ? null
-                                                : json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))
-                                            ->dehydrateStateUsing(fn (?string $state): ?array => blank($state)
-                                                ? null
-                                                : json_decode($state, true, 512, JSON_THROW_ON_ERROR))
-                                            ->extraInputAttributes(['class' => 'font-mono text-xs'])
+                                        Repeater::make('options')
+                                            ->label('Product options')
+                                            ->schema([
+                                                Grid::make([
+                                                    'default' => 1,
+                                                    'md' => 4,
+                                                ])
+                                                    ->schema([
+                                                        TextInput::make('id')
+                                                            ->label('Key')
+                                                            ->placeholder('diameter')
+                                                            ->required(),
+                                                        TextInput::make('label.FR')
+                                                            ->label('FR')
+                                                            ->placeholder('Diamètre')
+                                                            ->required(),
+                                                        TextInput::make('label.EN')
+                                                            ->label('EN')
+                                                            ->placeholder('Diameter'),
+                                                        TextInput::make('label.RO')
+                                                            ->label('RO')
+                                                            ->placeholder('Diametru'),
+                                                        Hidden::make('source'),
+                                                    ])
+                                                    ->columnSpanFull(),
+
+                                                Repeater::make('values')
+                                                    ->label('Values')
+                                                    ->table([
+                                                        TableColumn::make('Value')
+                                                            ->width('45%'),
+                                                        TableColumn::make('Quantity')
+                                                            ->width('20%'),
+                                                        TableColumn::make('Price')
+                                                            ->width('25%'),
+                                                    ])
+                                                    ->compact()
+                                                    ->schema([
+                                                        TextInput::make('value')
+                                                            ->placeholder('0,21 mm'),
+                                                        TextInput::make('quantity')
+                                                            ->numeric()
+                                                            ->minValue(1)
+                                                            ->placeholder('1'),
+                                                        TextInput::make('price')
+                                                            ->numeric()
+                                                            ->inputMode('decimal')
+                                                            ->minValue(0)
+                                                            ->prefix('€')
+                                                            ->placeholder('5,00'),
+                                                    ])
+                                                    ->defaultItems(0)
+                                                    ->addActionLabel('Add value')
+                                                    ->reorderable()
+                                                    ->columnSpanFull(),
+                                            ])
+                                            ->formatStateUsing(fn (mixed $state): array => static::optionsForForm($state))
+                                            ->dehydrateStateUsing(fn (mixed $state): ?array => static::optionsForStorage($state))
+                                            ->itemLabel(fn (array $state): ?string => data_get($state, 'label.FR')
+                                                ?: data_get($state, 'id')
+                                                ?: 'Option')
+                                            ->defaultItems(0)
+                                            ->addActionLabel('Add option')
+                                            ->collapsible()
+                                            ->reorderable()
                                             ->columnSpanFull(),
                                     ])
                                     ->columns(1),
@@ -401,6 +457,90 @@ class ProductResource extends Resource
                 ->columns(1),
             static::locales(),
         );
+    }
+
+    protected static function optionsForForm(mixed $options): array
+    {
+        if (! is_array($options)) {
+            return [];
+        }
+
+        return collect($options)
+            ->filter(fn (mixed $option): bool => is_array($option))
+            ->map(function (array $option): array {
+                $option['values'] = collect($option['values'] ?? [])
+                    ->map(function (mixed $value): array {
+                        if (is_array($value)) {
+                            return [
+                                'value' => null,
+                                'quantity' => data_get($value, 'quantity'),
+                                'price' => data_get($value, 'price.amount'),
+                            ];
+                        }
+
+                        return [
+                            'value' => $value,
+                            'quantity' => null,
+                            'price' => null,
+                        ];
+                    })
+                    ->values()
+                    ->all();
+
+                return $option;
+            })
+            ->values()
+            ->all();
+    }
+
+    protected static function optionsForStorage(mixed $options): ?array
+    {
+        if (! is_array($options) || $options === []) {
+            return null;
+        }
+
+        $normalized = collect($options)
+            ->filter(fn (mixed $option): bool => is_array($option))
+            ->map(function (array $option): array {
+                $values = collect($option['values'] ?? [])
+                    ->filter(fn (mixed $value): bool => is_array($value))
+                    ->map(function (array $value): mixed {
+                        $plainValue = data_get($value, 'value');
+                        $quantity = data_get($value, 'quantity');
+                        $price = data_get($value, 'price');
+
+                        if (filled($quantity) || filled($price)) {
+                            return [
+                                'quantity' => filled($quantity) ? (int) $quantity : null,
+                                'price' => [
+                                    'currency' => 'EUR',
+                                    'amount' => filled($price) ? (float) $price : null,
+                                ],
+                            ];
+                        }
+
+                        return filled($plainValue) ? $plainValue : null;
+                    })
+                    ->filter(fn (mixed $value): bool => $value !== null)
+                    ->values()
+                    ->all();
+
+                return [
+                    'id' => data_get($option, 'id'),
+                    'label' => array_filter([
+                        'FR' => data_get($option, 'label.FR'),
+                        'EN' => data_get($option, 'label.EN'),
+                        'RO' => data_get($option, 'label.RO'),
+                    ], fn (mixed $value): bool => filled($value)),
+                    'values' => $values,
+                    'source' => data_get($option, 'source') ?: 'filament',
+                ];
+            })
+            ->filter(fn (array $option): bool => filled($option['id']) || $option['values'] !== [])
+            ->values()
+            ->all();
+
+        return $normalized === [] ? null : $normalized;
     }
 
     protected static function locales(): array
