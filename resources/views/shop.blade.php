@@ -65,11 +65,11 @@
 
                 <nav
                     aria-label="{{ __('Catégories de produits') }}"
-                    class="-mx-3 mt-10 flex gap-7 overflow-x-auto border-b border-zinc-200 px-3 sm:-mx-5 sm:px-5 lg:mx-0 lg:px-0"
+                    class="-mx-3 mt-10 flex gap-2 overflow-x-auto px-3 pb-2 sm:-mx-5 sm:px-5 lg:mx-0 lg:px-0"
                 >
                     <a
                         href="{{ route('shop.index') }}"
-                        class="shrink-0 border-b-2 pb-4 text-xs font-semibold uppercase tracking-widest transition {{ $currentCategory ? 'border-transparent text-zinc-500 hover:text-zinc-900' : 'border-zinc-900 text-zinc-900' }}"
+                        class="shrink-0 rounded-full px-5 py-3 text-xs font-semibold uppercase tracking-widest transition {{ $currentCategory ? 'bg-white text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900' : 'bg-[#DDA1AA] text-zinc-900' }}"
                     >
                         {{ __('Tous les produits') }}
                     </a>
@@ -87,7 +87,7 @@
 
                         <a
                             href="{{ route('shop.category', ['slug' => $categorySlug]) }}"
-                            class="shrink-0 border-b-2 pb-4 text-xs font-semibold uppercase tracking-widest transition {{ $active ? 'border-zinc-900 text-zinc-900' : 'border-transparent text-zinc-500 hover:text-zinc-900' }}"
+                            class="shrink-0 rounded-full px-5 py-3 text-xs font-semibold uppercase tracking-widest transition {{ $active ? 'bg-[#DDA1AA] text-zinc-900' : 'bg-white text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900' }}"
                         >
                             {{ $categoryName }}
                         </a>
