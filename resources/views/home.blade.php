@@ -14,7 +14,7 @@
                         <h1 class="max-w-3xl font-['Playfair_Display'] text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl">
                             {{ __('Élève') }}
                             <span class="italic text-white">{{ __('ton') }}</span>
-                            {{ __('niveau.') }}
+                            {{ __('niveau') }}
                         </h1>
 
                         <p class="mt-7 max-w-xl text-base leading-7 text-zinc-800 sm:text-lg">
