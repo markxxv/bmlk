@@ -386,6 +386,83 @@ export function initCountUp(root = document) {
     });
 }
 
+export function initFilteredReveal(root = document) {
+    root.querySelectorAll('[data-filter-reveal]').forEach((container) => {
+        if (!once(container, 'FilterReveal')) return;
+
+        const duration = number(container.dataset.filterRevealDuration, 0.8);
+        const staggerDelay = number(container.dataset.filterRevealStagger, 0.08);
+        const y = number(container.dataset.filterRevealY, 18);
+        const blur = number(container.dataset.filterRevealBlur, 8);
+        const amount = number(container.dataset.filterRevealAmount, 0.15);
+        let isInView = false;
+
+        const visibleItems = () => [...container.querySelectorAll('[data-filter-reveal-item]')]
+            .filter((item) => getComputedStyle(item).display !== 'none' && !item.hidden);
+
+        const hide = (items = visibleItems()) => {
+            if (reducedMotion.matches) return;
+
+            items.forEach((item) => resetStyles(item, {
+                opacity: '0',
+                filter: `blur(${blur}px)`,
+                transform: `translate3d(0, ${y}px, 0)`,
+            }));
+        };
+
+        const reveal = () => {
+            const items = visibleItems();
+
+            if (!items.length) return;
+
+            if (reducedMotion.matches) {
+                items.forEach((item) => resetStyles(item, {
+                    opacity: '1',
+                    filter: 'none',
+                    transform: 'none',
+                }));
+
+                return;
+            }
+
+            hide(items);
+
+            animate(
+                items,
+                {
+                    opacity: [0, 1],
+                    filter: [`blur(${blur}px)`, 'blur(0px)'],
+                    transform: [
+                        `translate3d(0, ${y}px, 0)`,
+                        'translate3d(0, 0, 0)',
+                    ],
+                },
+                {
+                    duration,
+                    delay: stagger(staggerDelay),
+                    ease: editorialEase,
+                },
+            );
+        };
+
+        inView(container, () => {
+            isInView = true;
+            requestAnimationFrame(reveal);
+
+            return () => {
+                isInView = false;
+                hide();
+            };
+        }, { amount });
+
+        container.addEventListener('motion-filter-reveal', () => {
+            if (!isInView) return;
+
+            requestAnimationFrame(() => requestAnimationFrame(reveal));
+        });
+    });
+}
+
 export function initHorizontalRail(root = document) {
     if (reducedMotion.matches) return;
 
@@ -554,6 +631,7 @@ export function initAnimations(root = document) {
     initImageReveal(root);
     initLineReveal(root);
     initCountUp(root);
+    initFilteredReveal(root);
     initHorizontalRail(root);
     initScrollAccordion(root);
     initHoverText(root);

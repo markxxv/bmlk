@@ -365,27 +365,28 @@
             >
                 <div class="grid gap-8 lg:grid-cols-12 lg:items-end">
                     <div class="lg:col-span-7">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ __('Événements BLACK MILK') }}
                         </p>
 
-                        <h2 class="mt-4 max-w-4xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
-                            {{ __('Les prochains') }}
-                            <span class="italic text-[#DDA1AA]">{{ __('rendez-vous') }}</span>
+                        <h2 class="mt-4 max-w-4xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl" data-reveal-title data-reveal-title-duration="1" data-reveal-title-stagger="0.08">
+                            <span class="inline-block">{{ __('Les prochains') }}</span>
+                            <span class="inline-block italic text-[#DDA1AA]">{{ __('rendez-vous') }}</span>
                         </h2>
                     </div>
 
-                    <p class="max-w-xl text-base leading-7 text-zinc-600 lg:col-span-5 lg:justify-self-end lg:text-lg">
+                    <p class="max-w-xl text-base leading-7 text-zinc-600 lg:col-span-5 lg:justify-self-end lg:text-lg" data-reveal data-reveal-y="16" data-reveal-duration="0.8" data-reveal-delay="0.14">
                         {{ __('Formations, workshops et rencontres BLACK MILK en France et à l’international.') }}
                     </p>
                 </div>
 
-                <div class="-mx-2 mt-9 flex gap-2 overflow-x-auto px-2 pb-2">
+                <div class="-mx-2 mt-9 flex gap-2 overflow-x-auto px-2 pb-2" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.7" data-blur-y="10" data-blur-pixels="6">
                     <button
                         type="button"
-                        @click="filter = 'all'"
+                        @click="filter = 'all'; $nextTick(() => $dispatch('motion-filter-reveal'))"
                         :class="filter === 'all' ? 'bg-[#DDA1AA] text-zinc-900' : 'bg-[#F6ECEE] text-zinc-600 hover:bg-[#EFDDE0]'"
                         class="shrink-0 rounded-full px-5 py-3 text-xs font-semibold uppercase tracking-widest transition"
+                        data-blur-reveal-item
                     >
                         {{ __('Tous') }}
                     </button>
@@ -393,16 +394,17 @@
                     @foreach ($eventTypes as $type)
                         <button
                             type="button"
-                            @click="filter = '{{ $type }}'"
+                            @click="filter = '{{ $type }}'; $nextTick(() => $dispatch('motion-filter-reveal'))"
                             :class="filter === '{{ $type }}' ? 'bg-[#DDA1AA] text-zinc-900' : 'bg-[#F6ECEE] text-zinc-600 hover:bg-[#EFDDE0]'"
                             class="shrink-0 rounded-full px-5 py-3 text-xs font-semibold uppercase tracking-widest transition"
+                            data-blur-reveal-item
                         >
                             {{ $eventTypeLabels[$type] ?? $type }}
                         </button>
                     @endforeach
                 </div>
 
-                <div class="mt-8 space-y-3">
+                <div class="mt-8 space-y-3" data-filter-reveal data-filter-reveal-stagger="0.08" data-filter-reveal-duration="0.78" data-filter-reveal-y="18" data-filter-reveal-blur="8">
                     @foreach ($events as $event)
                         @php
                             $eventName = $event->getTranslation('name', $eventLocale, false)
@@ -449,6 +451,7 @@
                             x-cloak
                             x-show="filter === 'all' || filter === '{{ $event->type }}'"
                             class="grid gap-6 rounded-2xl bg-[#FCF8F4] p-6 sm:p-7 lg:grid-cols-12 lg:items-center"
+                            data-filter-reveal-item
                         >
                             <div class="lg:col-span-2">
                                 @if ($event->starts_at)
