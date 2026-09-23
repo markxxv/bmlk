@@ -10,6 +10,9 @@
         <loc>{{ route('shop.index') }}</loc>
     </url>
     <url>
+        <loc>{{ route('events') }}</loc>
+    </url>
+    <url>
         <loc>{{ route('where-to-buy') }}</loc>
     </url>
 
