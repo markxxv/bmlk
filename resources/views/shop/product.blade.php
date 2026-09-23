@@ -20,13 +20,6 @@
             default => 'fr-FR',
         };
 
-        $formatPrice = static function (mixed $value): string {
-            $price = round((float) $value, 2);
-            $decimals = abs($price - round($price)) < 0.00001 ? 0 : 2;
-
-            return number_format($price, $decimals, ',', ' ');
-        };
-
         $productName = $product->getTranslation('name', $locale, false)
             ?: $product->getTranslation('name', 'fr', false);
 
@@ -80,15 +73,15 @@
         $priceLabel = null;
 
         if ($product->price !== null) {
-            $priceLabel = $formatPrice($product->price).' €';
+            $priceLabel = $product->formatted_price.' €';
         } elseif ($product->price_min !== null && $product->price_max !== null) {
-            $priceLabel = $formatPrice($product->price_min)
+            $priceLabel = $product->formatted_price_min
                 .'–'
-                .$formatPrice($product->price_max)
+                .$product->formatted_price_max
                 .' €';
         } elseif ($product->price_min !== null) {
             $priceLabel = __('Dès :price €', [
-                'price' => $formatPrice($product->price_min),
+                'price' => $product->formatted_price_min,
             ]);
         }
 
@@ -111,6 +104,9 @@
                                 'value' => null,
                                 'quantity' => $quantity !== null ? (int) $quantity : null,
                                 'price' => $price !== null ? (float) $price : null,
+                                'formatted_price' => $price !== null
+                                    ? \App\Models\Product::formatPriceValue($price)
+                                    : null,
                                 'display' => $quantity !== null ? $quantity.' ×' : __('Option'),
                             ];
                         }
@@ -548,7 +544,7 @@
 
                                                         @if ($choice['price'] !== null)
                                                             <span class="ml-1 text-xs text-zinc-500">
-                                                                · {{ \App\Models\Product::formatPriceValue($choice['price']) }} €
+                                                                · {{ $choice['formatted_price'] }} €
                                                             </span>
                                                         @endif
                                                     </button>
