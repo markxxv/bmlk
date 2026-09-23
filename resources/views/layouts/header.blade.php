@@ -6,18 +6,18 @@
     <div class="mx-auto max-w-[1560px]">
         <div class="relative rounded-full bg-white px-4 shadow-xl shadow-zinc-800/10 sm:px-5 lg:px-7">
             <div class="grid min-h-20 grid-cols-[1fr_auto] items-center gap-4 lg:grid-cols-[1fr_auto_1fr]">
-                <nav class="hidden items-center gap-8 lg:flex">
-                    <a href="{{ route('shop.index') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
+                <nav class="hidden items-center gap-8 lg:flex" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
+                    <a href="{{ route('shop.index') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
                         {{ __('Produits') }}
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
 
-                    <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
+                    <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
                         {{ __('Soins') }}
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
 
-                    <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
+                    <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
                         {{ __('Outils') }}
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
@@ -40,13 +40,13 @@
                     </span>
                 </a>
 
-                <div class="hidden items-center justify-end gap-8 lg:flex">
-                    <a href="{{ route('where-to-buy') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
+                <div class="hidden items-center justify-end gap-8 lg:flex" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
+                    <a href="{{ route('where-to-buy') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
                         {{ __('Où acheter') }}
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
 
-                    <a href="{{ route('events') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
+                    <a href="{{ route('events') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
                         {{ __('Événements') }}
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
@@ -55,6 +55,7 @@
                         type="button"
                         @click="$store.cart.toggle()"
                         class="inline-flex h-11 items-center gap-2 rounded-full bg-[#A9636F] px-5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#945763]"
+                        data-blur-reveal-item
                     >
                         <x-lucide-shopping-bag class="h-4 w-4" />
                         {{ __('Panier') }}
@@ -69,6 +70,9 @@
                         @click="$store.cart.toggle()"
                         class="inline-flex h-10 min-w-10 items-center justify-center gap-2 rounded-full border border-zinc-200 px-3 text-xs font-semibold"
                         :aria-label="'{{ __('Panier') }} · ' + $store.cart.count"
+                        data-reveal
+                        data-reveal-y="8"
+                        data-reveal-duration="0.6"
                     >
                         <x-lucide-shopping-bag class="h-4 w-4" />
                         <span x-text="$store.cart.count">0</span>
@@ -95,6 +99,7 @@
         id="mobile-navigation"
         x-cloak
         x-show="open"
+        x-effect="if (open) $nextTick(() => $el.dispatchEvent(new CustomEvent('motion-toggle-reveal')))"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
@@ -103,6 +108,11 @@
         x-transition:leave-end="opacity-0"
         @keydown.escape.window="open = false"
         class="fixed inset-0 z-50 bg-[#DDA1AA] lg:hidden"
+        data-toggle-reveal
+        data-toggle-reveal-stagger="0.08"
+        data-toggle-reveal-duration="0.72"
+        data-toggle-reveal-y="20"
+        data-toggle-reveal-blur="7"
     >
         <div class="flex h-full flex-col px-5 py-5">
             <div class="flex items-center justify-between pt-2">
@@ -132,19 +142,19 @@
             </div>
 
             <nav class="flex flex-1 flex-col justify-center py-10">
-                <a href="{{ route('shop.index') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900">
+                <a href="{{ route('shop.index') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Produits') }}
                 </a>
-                <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900">
+                <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Soins') }}
                 </a>
-                <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900">
+                <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Outils') }}
                 </a>
-                <a href="{{ route('where-to-buy') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900">
+                <a href="{{ route('where-to-buy') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Où acheter') }}
                 </a>
-                <a href="{{ route('events') }}" @click="open = false" class="py-4 font-serif text-4xl text-zinc-900">
+                <a href="{{ route('events') }}" @click="open = false" class="py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Événements') }}
                 </a>
             </nav>
@@ -158,6 +168,7 @@
                     type="button"
                     @click="open = false; $store.cart.toggle()"
                     class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-900"
+                    data-toggle-reveal-item
                 >
                     <x-lucide-shopping-bag class="h-4 w-4" />
                     {{ __('Panier') }} · <span x-text="$store.cart.count">0</span>

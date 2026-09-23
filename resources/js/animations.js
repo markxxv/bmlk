@@ -484,6 +484,62 @@ export function initFilteredReveal(root = document) {
     });
 }
 
+export function initToggleReveal(root = document) {
+    root.querySelectorAll('[data-toggle-reveal]').forEach((container) => {
+        if (!once(container, 'ToggleReveal')) return;
+
+        const duration = number(container.dataset.toggleRevealDuration, 0.7);
+        const staggerDelay = number(container.dataset.toggleRevealStagger, 0.07);
+        const y = number(container.dataset.toggleRevealY, 18);
+        const blur = number(container.dataset.toggleRevealBlur, 8);
+
+        const items = () => [...container.querySelectorAll('[data-toggle-reveal-item]')];
+
+        const reveal = () => {
+            const elements = items();
+
+            if (!elements.length) return;
+
+            if (reducedMotion.matches) {
+                elements.forEach((element) => resetStyles(element, {
+                    opacity: '1',
+                    filter: 'none',
+                    transform: 'none',
+                }));
+
+                return;
+            }
+
+            elements.forEach((element) => resetStyles(element, {
+                opacity: '0',
+                filter: `blur(${blur}px)`,
+                transform: `translate3d(0, ${y}px, 0)`,
+            }));
+
+            requestAnimationFrame(() => {
+                animate(
+                    elements,
+                    {
+                        opacity: [0, 1],
+                        filter: [`blur(${blur}px)`, 'blur(0px)'],
+                        transform: [
+                            `translate3d(0, ${y}px, 0)`,
+                            'translate3d(0, 0, 0)',
+                        ],
+                    },
+                    {
+                        duration,
+                        delay: stagger(staggerDelay),
+                        ease: editorialEase,
+                    },
+                );
+            });
+        };
+
+        container.addEventListener('motion-toggle-reveal', reveal);
+    });
+}
+
 export function initHorizontalRail(root = document) {
     if (reducedMotion.matches) return;
 
@@ -653,6 +709,7 @@ export function initAnimations(root = document) {
     initLineReveal(root);
     initCountUp(root);
     initFilteredReveal(root);
+    initToggleReveal(root);
     initHorizontalRail(root);
     initScrollAccordion(root);
     initHoverText(root);
