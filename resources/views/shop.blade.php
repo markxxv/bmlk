@@ -5,6 +5,13 @@
 >
     @php
         $locale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true) ? app()->getLocale() : 'fr';
+
+        $formatPrice = static function (mixed $value): string {
+            $price = round((float) $value, 2);
+            $decimals = abs($price - round($price)) < 0.00001 ? 0 : 2;
+
+            return number_format($price, $decimals, ',', ' ');
+        };
         $pageTitle = $currentCategory
             ? ($currentCategory->getTranslation('name', $locale, false) ?: $currentCategory->getTranslation('name', 'fr', false))
             : __('Boutique');
@@ -142,11 +149,11 @@
 
                                         <div class="shrink-0 pt-1 text-xs font-semibold text-zinc-900 sm:text-sm">
                                             @if ($product->price)
-                                                {{ number_format((float) $product->price, 2, ',', ' ') }} €
+                                                {{ $formatPrice($product->price) }} €
                                             @elseif ($product->price_min && $product->price_max)
-                                                {{ number_format((float) $product->price_min, 2, ',', ' ') }}–{{ number_format((float) $product->price_max, 2, ',', ' ') }} €
+                                                {{ $formatPrice($product->price_min) }}–{{ $formatPrice($product->price_max) }} €
                                             @elseif ($product->price_min)
-                                                {{ __('Dès :price €', ['price' => number_format((float) $product->price_min, 2, ',', ' ')]) }}
+                                                {{ __('Dès :price €', ['price' => $formatPrice($product->price_min)]) }}
                                             @endif
                                         </div>
                                     </div>
