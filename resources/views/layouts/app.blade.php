@@ -62,5 +62,7 @@
     {{ $slot }}
 
     @include('layouts.footer')
+
+    @vite('resources/js/mascot.js')
 </body>
 </html>
