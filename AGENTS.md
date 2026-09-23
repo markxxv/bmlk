@@ -142,9 +142,20 @@ Category slugs are globally unique per locale and back the public SEO routes:
 ```text
 /shop
 /shop/category/{slug}
+/shop/product/{slug}
 ```
 
 Do not implement category filtering with a category query-string parameter. Category selection must resolve to its own canonical URL.
+
+Product pages use server-rendered semantic HTML, canonical URLs, Product/Offer JSON-LD, BreadcrumbList JSON-LD and Open Graph product metadata.
+
+Catalog discovery endpoint:
+
+```text
+/sitemap.xml
+```
+
+The sitemap includes category URLs, active product URLs and product images.
 
 ## Representative
 
