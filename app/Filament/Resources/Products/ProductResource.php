@@ -420,9 +420,8 @@ class ProductResource extends Resource
                     ->schema([
                         TextInput::make("slug.{$locale}")
                             ->label('Slug')
-                            ->required()
                             ->prefixIcon('lucide-link')
-                            ->helperText('Globally unique for this locale.')
+                            ->helperText('Generated from the name on creation when empty. It will not change automatically later.')
                             ->maxLength(190),
 
                         TextInput::make("meta_title.{$locale}")
