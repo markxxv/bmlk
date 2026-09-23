@@ -486,7 +486,7 @@
 
                                     @if ($product->compare_at_price !== null && $product->price !== null && (float) $product->compare_at_price > (float) $product->price)
                                         <p class="text-sm text-zinc-400 line-through">
-                                            {{ $formatPrice($product->compare_at_price) }} €
+                                            {{ $product->formatted_compare_at_price }} €
                                         </p>
                                     @endif
                                 </div>
@@ -548,7 +548,7 @@
 
                                                         @if ($choice['price'] !== null)
                                                             <span class="ml-1 text-xs text-zinc-500">
-                                                                · {{ $formatPrice($choice['price']) }} €
+                                                                · {{ \App\Models\Product::formatPriceValue($choice['price']) }} €
                                                             </span>
                                                         @endif
                                                     </button>
@@ -768,11 +768,11 @@
 
                                             <div class="shrink-0 pt-1 text-sm font-semibold text-zinc-900">
                                                 @if ($recommendedProduct->price)
-                                                    {{ $formatPrice($recommendedProduct->price) }} €
+                                                    {{ $recommendedProduct->formatted_price }} €
                                                 @elseif ($recommendedProduct->price_min && $recommendedProduct->price_max)
-                                                    {{ $formatPrice($recommendedProduct->price_min) }}–{{ $formatPrice($recommendedProduct->price_max) }} €
+                                                    {{ $recommendedProduct->formatted_price_min }}–{{ $recommendedProduct->formatted_price_max }} €
                                                 @elseif ($recommendedProduct->price_min)
-                                                    {{ __('Dès :price €', ['price' => $formatPrice($recommendedProduct->price_min)]) }}
+                                                    {{ __('Dès :price €', ['price' => $recommendedProduct->formatted_price_min]) }}
                                                 @endif
                                             </div>
                                         </div>
