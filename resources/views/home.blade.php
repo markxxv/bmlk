@@ -5,25 +5,25 @@
                 <div class="relative z-10 grid h-full lg:min-h-[720px] lg:grid-cols-12 xl:min-h-[760px]">
                     <div class="flex flex-col pb-7 pt-7 sm:px-10 sm:pb-10 sm:pt-12 lg:col-span-6 lg:px-14 lg:pb-10 lg:pt-14 xl:px-16 xl:pt-16">
                         <div class="flex items-center gap-2 sm:gap-3">
-                            <span class="h-px w-8 shrink-0 bg-zinc-800 sm:w-10"></span>
-                            <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-800 sm:text-xs sm:tracking-widest">
+                            <span class="h-px w-8 shrink-0 bg-zinc-800 sm:w-10" data-line-reveal data-line-reveal-duration="0.8"></span>
+                            <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-800 sm:text-xs sm:tracking-widest" data-reveal data-reveal-y="10" data-reveal-duration="0.7" data-reveal-delay="0.08">
                                 {{ __('Créé par une maître, pour les maîtres') }}
                             </p>
                         </div>
 
                         <div class="flex flex-1 items-center sm:py-16 lg:py-10">
                             <div>
-                                <h1 class="max-w-2xl font-serif text-4xl font-medium leading-[0.92] tracking-tight text-zinc-900 sm:text-6xl lg:text-6xl pt-10 md:pt-0">
+                                <h1 class="max-w-2xl font-serif text-4xl font-medium leading-[0.92] tracking-tight text-zinc-900 sm:text-6xl lg:text-6xl pt-10 md:pt-0" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
                                     <span class="block">{{ __('Gels professionnels') }}</span>
                                     <span class="block italic text-white">{{ __('Hema-free') }}</span>
                                     <span class="block">{{ __('pour les maîtres') }}</span>
                                 </h1>
 
-                                <p class="mt-5 max-w-lg text-sm leading-6 text-zinc-800 sm:mt-7 sm:text-lg sm:leading-7">
+                                <p class="mt-5 max-w-lg text-sm leading-6 text-zinc-800 sm:mt-7 sm:text-lg sm:leading-7" data-reveal data-reveal-y="18" data-reveal-duration="0.85" data-reveal-delay="0.18">
                                     {{ __('Bases, builder gels et soins pensés pour une pose précise, régulière et durable') }}
                                 </p>
 
-                                <div class="mt-6 flex gap-2 sm:mt-9 sm:flex-wrap sm:gap-3 relative z-10">
+                                <div class="mt-6 flex gap-2 sm:mt-9 sm:flex-wrap sm:gap-3 relative z-10" data-blur-reveal data-blur-duration="0.75" data-blur-delay="0.28" data-blur-y="14" data-blur-pixels="8">
                                     <a href="{{ route('shop.index') }}" class="group inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-zinc-900 px-5 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-zinc-800 sm:flex-none sm:gap-3 sm:px-6 sm:tracking-widest">
                                         {{ __('Découvrir la boutique') }}
                                         <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -42,8 +42,8 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-3 gap-2 md:border-t md:border-[#C98792] md:pt-5 sm:gap-5 lg:gap-4">
-                            <div class="flex items-start gap-3">
+                        <div class="grid grid-cols-3 gap-2 md:border-t md:border-[#C98792] md:pt-5 sm:gap-5 lg:gap-4" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.75" data-blur-y="12" data-blur-pixels="7">
+                            <div class="flex items-start gap-3" data-blur-reveal-item>
                                 <x-lucide-leaf class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
                                     <p class="text-[9px] font-semibold uppercase tracking-wider text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('HEMA-free') }}</p>
@@ -51,7 +51,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-start gap-3">
+                            <div class="flex items-start gap-3" data-blur-reveal-item>
                                 <x-lucide-globe-2 class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
                                     <p class="text-[9px] font-semibold uppercase tracking-wider text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('50+ pays') }}</p>
@@ -59,7 +59,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-start gap-3">
+                            <div class="flex items-start gap-3" data-blur-reveal-item>
                                 <x-lucide-graduation-cap class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
                                     <p class="text-[9px] font-semibold uppercase tracking-wider text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('Pour les professionnels') }}</p>
