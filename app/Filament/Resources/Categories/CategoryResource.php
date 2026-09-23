@@ -166,6 +166,12 @@ class CategoryResource extends Resource
                         ->prefixIcon('lucide-type')
                         ->maxLength(255),
 
+                    TextInput::make("slug.{$locale}")
+                        ->label('URL slug')
+                        ->required($locale === 'fr')
+                        ->prefixIcon('lucide-link')
+                        ->maxLength(255),
+
                     Textarea::make("description.{$locale}")
                         ->label('Description')
                         ->rows(5),
@@ -179,6 +185,16 @@ class CategoryResource extends Resource
                         ->prefixIcon('lucide-euro')
                         ->placeholder('from 15 €')
                         ->maxLength(100),
+
+                    TextInput::make("meta_title.{$locale}")
+                        ->label('Meta title')
+                        ->prefixIcon('lucide-heading')
+                        ->maxLength(70),
+
+                    Textarea::make("meta_description.{$locale}")
+                        ->label('Meta description')
+                        ->rows(3)
+                        ->maxLength(170),
                 ])
                 ->columns(1),
             static::locales(),
