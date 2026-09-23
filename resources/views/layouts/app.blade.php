@@ -3,6 +3,8 @@
     'metaDescription' => null,
     'canonical' => null,
     'robots' => 'index, follow',
+    'ogType' => 'website',
+    'ogImage' => null,
 ])
 
 <!DOCTYPE html>
@@ -23,7 +25,7 @@
     @endif
 
     <meta property="og:site_name" content="{{ __('BLACK MILK') }}">
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="{{ $ogType }}">
     <meta property="og:title" content="{{ $title ?? __('BLACK MILK') }}">
 
     @if ($metaDescription)
@@ -32,6 +34,12 @@
 
     @if ($canonical)
         <meta property="og:url" content="{{ $canonical }}">
+    @endif
+
+    @if ($ogImage)
+        <meta property="og:image" content="{{ $ogImage }}">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="{{ $ogImage }}">
     @endif
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
