@@ -192,7 +192,7 @@
                     >
                 </div>
 
-                <div class="flex items-center p-8 sm:p-10 lg:p-14 xl:p-16">
+                <div class="flex items-center p-16 sm:p-10 lg:p-14 xl:p-24">
                     <div class="max-w-xl">
                         <p class="text-xs font-semibold uppercase tracking-widest text-zinc-700" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ __('La maître derrière la marque') }}
