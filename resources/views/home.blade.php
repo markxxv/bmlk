@@ -84,10 +84,18 @@
                 @foreach ($coffrets as $product)
                     @php
                         $image = $product->getFirstMediaUrl('images');
+                        $coffretLocale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
+                            ? app()->getLocale()
+                            : 'fr';
+                        $coffretSlug = $product->getTranslation('slug', $coffretLocale, false)
+                            ?: $product->getTranslation('slug', 'fr', false);
+                        $coffretUrl = $coffretSlug
+                            ? route('shop.product', ['slug' => $coffretSlug])
+                            : route('shop.index');
                     @endphp
 
                     <article class="group w-4/5 shrink-0 snap-start sm:w-1/2 lg:w-auto @if ($loop->iteration === 2) lg:pt-12 @endif">
-                        <a href="#" class="block">
+                        <a href="{{ $coffretUrl }}" class="block">
                             <div class="overflow-hidden rounded-3xl bg-stone-100">
                                 @if ($image)
                                     <img
@@ -241,10 +249,15 @@
                     @foreach ($category->products as $product)
                         @php
                             $image = $product->getFirstMediaUrl('images');
+                            $productSlug = $product->getTranslation('slug', $locale, false)
+                                ?: $product->getTranslation('slug', 'fr', false);
+                            $productUrl = $productSlug
+                                ? route('shop.product', ['slug' => $productSlug])
+                                : $categoryUrl;
                         @endphp
 
                         <article class="group w-3/4 shrink-0 snap-start sm:w-2/5 lg:w-auto">
-                            <a href="{{ $categoryUrl }}" class="block">
+                            <a href="{{ $productUrl }}" class="block">
                                 @if ($image)
                                     <div class="overflow-hidden rounded-3xl bg-stone-100">
                                         <img
