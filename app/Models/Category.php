@@ -25,6 +25,16 @@ class Category extends Model
         'meta_description',
     ];
 
+    public function getTranslatableSlugSourceAttribute(): string
+    {
+        return 'name';
+    }
+
+    public function getTranslatableSlugTargetAttribute(): string
+    {
+        return 'slug';
+    }
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
