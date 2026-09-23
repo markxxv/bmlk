@@ -111,8 +111,8 @@
             </div>
         </div>
 
-        <div x-show="$store.cart.items.length > 0" class="border-t border-zinc-100 bg-white px-6 py-5">
-            <div class="mb-4 flex items-center justify-between">
+        <div x-show="$store.cart.items.length > 0" class="border-t border-zinc-100 px-5 py-4">
+            <div class="mb-3 flex items-center justify-between">
                 <span class="text-xs font-medium uppercase tracking-wider text-zinc-500">
                     {{ __('Total') }}
                 </span>
@@ -125,7 +125,7 @@
 
             <button
                 type="button"
-                class="block w-full rounded-xl bg-zinc-900 px-4 py-4 text-center text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-zinc-800"
+                class="block w-full rounded-lg bg-zinc-900 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-zinc-800"
             >
                 {{ __('Passer commande') }}
             </button>
