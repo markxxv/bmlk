@@ -4,7 +4,7 @@
     :canonical="$canonical"
 >
     <main>
-        <section class="px-3 pb-8 pt-4 sm:px-5 sm:pb-10 lg:px-8 lg:pb-12">
+        <section class="px-3 pb-8 pt-5 sm:px-5 sm:pb-10 lg:px-8 lg:pb-12">
             <div class="mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-[#DDA1AA]">
                 <div class="grid gap-12 px-7 py-12 sm:px-10 sm:py-16 lg:grid-cols-12 lg:px-14 lg:py-20 xl:px-16">
                     <div class="lg:col-span-8">
