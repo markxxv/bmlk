@@ -19,6 +19,10 @@ Route::get('/shop/product/{slug}', [FrontController::class, 'shopProduct'])
 Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
+Route::get('/api/delivery-cost/{code}', [CheckoutController::class, 'deliveryCost'])
+    ->where('code', '[A-Za-z0-9-]+')
+    ->name('api.delivery.cost');
+
 Route::get('/order/{orderNumber}', [CheckoutController::class, 'status'])
     ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
     ->name('order.status');
