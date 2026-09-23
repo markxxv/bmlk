@@ -8,6 +8,8 @@ const initProductGallery = (root) => {
     }
 
     const thumbs = [...root.querySelectorAll('[data-embla-thumb]')];
+    const prevButton = root.querySelector('[data-embla-prev]');
+    const nextButton = root.querySelector('[data-embla-next]');
 
     const embla = EmblaCarousel(viewport, {
         align: 'start',
@@ -16,7 +18,7 @@ const initProductGallery = (root) => {
         skipSnaps: false,
     });
 
-    const selectThumb = () => {
+    const updateControls = () => {
         const selectedIndex = embla.selectedScrollSnap();
 
         thumbs.forEach((thumb, index) => {
@@ -28,16 +30,27 @@ const initProductGallery = (root) => {
             thumb.classList.toggle('ring-zinc-200', ! active);
             thumb.setAttribute('aria-current', active ? 'true' : 'false');
         });
+
+        if (prevButton) {
+            prevButton.disabled = ! embla.canScrollPrev();
+        }
+
+        if (nextButton) {
+            nextButton.disabled = ! embla.canScrollNext();
+        }
     };
 
     thumbs.forEach((thumb, index) => {
         thumb.addEventListener('click', () => embla.scrollTo(index));
     });
 
-    embla.on('select', selectThumb);
-    embla.on('reInit', selectThumb);
+    prevButton?.addEventListener('click', () => embla.scrollPrev());
+    nextButton?.addEventListener('click', () => embla.scrollNext());
 
-    selectThumb();
+    embla.on('select', updateControls);
+    embla.on('reInit', updateControls);
+
+    updateControls();
 };
 
 document.querySelectorAll('[data-product-gallery]').forEach(initProductGallery);
