@@ -8,9 +8,9 @@
         };
     @endphp
 
-    <section class="px-3 pb-6 pt-3 sm:px-5 sm:pb-8 sm:pt-5 lg:px-8 lg:pb-10">
-        <div class="mx-auto max-w-[1560px]">
-            <div class="relative overflow-hidden rounded-3xl bg-[#DDA1AA] lg:min-h-[720px] xl:min-h-[760px]">
+    <section class="-mt-[92px] bg-[#DDA1AA] pb-6 pt-[92px] sm:-mt-[100px] sm:pb-8 sm:pt-[100px] lg:-mt-[104px] lg:pb-10 lg:pt-[104px]">
+        <div class="mx-auto max-w-[1560px] px-3 pt-3 sm:px-5 sm:pt-5 lg:px-8 lg:pt-6">
+            <div class="relative overflow-hidden lg:min-h-[720px] xl:min-h-[760px]">
                 <div class="relative z-10 grid h-full lg:min-h-[720px] lg:grid-cols-12 xl:min-h-[760px]">
                     <div class="flex flex-col px-7 pb-7 pt-9 sm:px-10 sm:pb-10 sm:pt-12 lg:col-span-5 lg:px-14 lg:pb-10 lg:pt-14 xl:px-16 xl:pt-16">
                         <div class="flex items-center gap-3">
