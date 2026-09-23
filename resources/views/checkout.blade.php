@@ -21,12 +21,69 @@
                 },
                 errors: {},
                 isSubmitting: false,
+                deliveryCost: 0,
+                delivery: null,
+
+                get isFreeDelivery() {
+                    return this.delivery?.free_from !== null
+                        && this.delivery?.free_from !== undefined
+                        && Number(this.$store.cart.totalPrice) >= Number(this.delivery.free_from);
+                },
+
+                get totalWithDelivery() {
+                    return Number(this.$store.cart.totalPrice)
+                        + (this.isFreeDelivery ? 0 : Number(this.deliveryCost || 0));
+                },
+
+                get deliveryCostDisplay() {
+                    if (! this.form.country) {
+                        return '—';
+                    }
+
+                    if (this.isFreeDelivery) {
+                        return @js(__('Offerte'));
+                    }
+
+                    return this.formatPrice(this.deliveryCost);
+                },
 
                 formatPrice(value) {
                     return new Intl.NumberFormat('fr-FR', {
                         style: 'currency',
                         currency: 'EUR',
                     }).format(Number(value || 0));
+                },
+
+                async updateDeliveryCost() {
+                    this.errors.country = null;
+                    this.delivery = null;
+                    this.deliveryCost = 0;
+
+                    if (! this.form.country) {
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/api/delivery-cost/${this.form.country}`, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                        });
+
+                        const data = await response.json();
+
+                        if (! response.ok || data.success !== true) {
+                            this.errors.country = [data.message || @js(__('Livraison indisponible.'))];
+
+                            return;
+                        }
+
+                        this.delivery = data;
+                        this.deliveryCost = Number(data.price || 0);
+                    } catch (error) {
+                        this.errors.country = [@js(__('Impossible de calculer la livraison.'))];
+                    }
                 },
 
                 async submit() {
@@ -162,15 +219,31 @@
                         </div>
 
                         <div class="mt-5 grid gap-4 sm:grid-cols-2">
-                            <div class="sm:col-span-2">
-                                <input
-                                    type="text"
+                            <div class="relative sm:col-span-2">
+                                <select
                                     x-model="form.country"
-                                    placeholder="{{ __('Pays') }}"
-                                    class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#A9636F]"
+                                    @change="updateDeliveryCost()"
+                                    class="w-full appearance-none rounded-xl border border-zinc-200 bg-white px-4 py-3 pr-10 text-sm text-zinc-700 outline-none transition focus:border-[#A9636F]"
                                     required
                                 >
+                                    <option value="" disabled>{{ __('Pays / zone de livraison') }}</option>
+
+                                    @foreach ($deliveries as $delivery)
+                                        <option value="{{ $delivery->code }}">
+                                            {{ $delivery->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                <x-lucide-chevron-down class="pointer-events-none absolute right-4 top-3.5 h-4 w-4 text-zinc-400" />
+
                                 <p x-show="errors.country" x-text="errors.country?.[0]" class="mt-1 text-xs text-red-500"></p>
+
+                                <div x-show="delivery" class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-zinc-400">
+                                    <span x-text="delivery?.carrier"></span>
+                                    <span x-show="delivery?.delay">·</span>
+                                    <span x-text="delivery?.delay"></span>
+                                </div>
                             </div>
 
                             <div>
@@ -234,7 +307,7 @@
                         <button
                             type="submit"
                             :disabled="isSubmitting || $store.cart.items.length === 0"
-                            class="mt-5 flex w-full items-center justify-center rounded-xl bg-zinc-900 px-5 py-4 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-300"
+                            class="mt-5 flex w-full items-center justify-center rounded-xl bg-[#A9636F] px-5 py-4 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-[#945763] disabled:cursor-not-allowed disabled:bg-zinc-300"
                         >
                             <span x-show="! isSubmitting">{{ __('Créer la commande') }}</span>
                             <span x-show="isSubmitting">{{ __('Traitement…') }}</span>
@@ -267,7 +340,7 @@
                     </section>
                 </form>
 
-                <aside class="rounded-2xl bg-white p-6 lg:sticky lg:top-6">
+                <aside class="rounded-2xl bg-[#EFDDE0] p-6 lg:sticky lg:top-6">
                     <div class="flex items-center justify-between">
                         <h2 class="text-base font-semibold text-zinc-900">
                             {{ __('Votre commande') }}
@@ -284,7 +357,7 @@
                         </div>
                     </template>
 
-                    <div class="mt-5 divide-y divide-zinc-100">
+                    <div class="mt-5 divide-y divide-[#D8C4C6]">
                         <template x-for="item in $store.cart.items" :key="item.id">
                             <article class="grid grid-cols-[64px_1fr_auto] gap-3 py-4 first:pt-0">
                                 <img :src="item.image" :alt="item.name" class="h-16 w-16 rounded-lg object-cover">
@@ -317,10 +390,29 @@
                         </template>
                     </div>
 
-                    <div x-show="$store.cart.items.length > 0" class="mt-4 border-t border-zinc-100 pt-4">
-                        <div class="flex items-center justify-between text-sm">
-                            <span class="text-zinc-500">{{ __('Total') }}</span>
-                            <span class="font-semibold text-zinc-900" x-text="formatPrice($store.cart.totalPrice)"></span>
+                    <div x-show="$store.cart.items.length > 0" class="mt-4 space-y-3 border-t border-[#D8C4C6] pt-4 text-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-zinc-600">{{ __('Sous-total') }}</span>
+                            <span class="font-medium text-zinc-900" x-text="formatPrice($store.cart.totalPrice)"></span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-zinc-600">{{ __('Livraison') }}</span>
+                            <span
+                                class="font-medium"
+                                :class="isFreeDelivery ? 'text-emerald-700' : 'text-zinc-900'"
+                                x-text="deliveryCostDisplay"
+                            ></span>
+                        </div>
+
+                        <div x-show="delivery?.free_from && ! isFreeDelivery" class="text-[11px] leading-5 text-[#7A5A60]">
+                            <span>{{ __('Livraison offerte dès') }}</span>
+                            <span x-text="formatPrice(delivery?.free_from)"></span>
+                        </div>
+
+                        <div class="flex items-center justify-between border-t border-[#D8C4C6] pt-3">
+                            <span class="font-semibold text-zinc-900">{{ __('Total') }}</span>
+                            <span class="text-base font-semibold text-zinc-900" x-text="formatPrice(totalWithDelivery)"></span>
                         </div>
                     </div>
 
