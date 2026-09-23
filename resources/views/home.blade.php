@@ -34,8 +34,8 @@
                                     </a>
                                 </div>
 
-                                <div class="relative -mx-5 mt-7 h-[300px] overflow-hidden sm:hidden">
-                                    <div class="absolute -bottom-8 left-1/2 w-[125%] -translate-x-1/2">
+                                <div class="relative -mx-5 -mt-1 sm:hidden">
+                                    <div class="relative left-1/2 w-[128%] -translate-x-1/2">
                                         <x-hero-mascot class="w-full" />
                                     </div>
                                 </div>
