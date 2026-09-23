@@ -9,7 +9,6 @@ use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
@@ -127,27 +126,11 @@ class ProductResource extends Resource
                                         Repeater::make('options')
                                             ->label('Product options')
                                             ->schema([
-                                                Grid::make([
-                                                    'default' => 1,
-                                                    'md' => 4,
-                                                ])
-                                                    ->schema([
-                                                        TextInput::make('id')
-                                                            ->label('Key')
-                                                            ->placeholder('diameter')
-                                                            ->required(),
-                                                        TextInput::make('label.FR')
-                                                            ->label('FR')
-                                                            ->placeholder('Diamètre')
-                                                            ->required(),
-                                                        TextInput::make('label.EN')
-                                                            ->label('EN')
-                                                            ->placeholder('Diameter'),
-                                                        TextInput::make('label.RO')
-                                                            ->label('RO')
-                                                            ->placeholder('Diametru'),
-                                                        Hidden::make('source'),
-                                                    ])
+                                                Select::make('type')
+                                                    ->label('Option type')
+                                                    ->options(static::productOptionTypeOptions())
+                                                    ->required()
+                                                    ->native(false)
                                                     ->columnSpanFull(),
 
                                                 Repeater::make('values')
@@ -182,9 +165,7 @@ class ProductResource extends Resource
                                             ])
                                             ->formatStateUsing(fn (mixed $state): array => static::optionsForForm($state))
                                             ->dehydrateStateUsing(fn (mixed $state): ?array => static::optionsForStorage($state))
-                                            ->itemLabel(fn (array $state): ?string => data_get($state, 'label.FR')
-                                                ?: data_get($state, 'id')
-                                                ?: 'Option')
+                                            ->itemLabel(fn (array $state): ?string => static::productOptionTypeOptions()[data_get($state, 'type')] ?? 'Option')
                                             ->defaultItems(0)
                                             ->addActionLabel('Add option')
                                             ->collapsible()
@@ -468,6 +449,8 @@ class ProductResource extends Resource
         return collect($options)
             ->filter(fn (mixed $option): bool => is_array($option))
             ->map(function (array $option): array {
+                $option['type'] = data_get($option, 'id');
+
                 $option['values'] = collect($option['values'] ?? [])
                     ->map(function (mixed $value): array {
                         if (is_array($value)) {
@@ -487,7 +470,10 @@ class ProductResource extends Resource
                     ->values()
                     ->all();
 
-                return $option;
+                return [
+                    'type' => $option['type'] ?? null,
+                    'values' => $option['values'],
+                ];
             })
             ->values()
             ->all();
@@ -525,22 +511,54 @@ class ProductResource extends Resource
                     ->values()
                     ->all();
 
+                $type = data_get($option, 'type');
+                $definition = static::productOptionTypes()[$type] ?? null;
+
+                if (! $definition) {
+                    return null;
+                }
+
                 return [
-                    'id' => data_get($option, 'id'),
-                    'label' => array_filter([
-                        'FR' => data_get($option, 'label.FR'),
-                        'EN' => data_get($option, 'label.EN'),
-                        'RO' => data_get($option, 'label.RO'),
-                    ], fn (mixed $value): bool => filled($value)),
+                    'id' => $type,
+                    'label' => $definition['label'],
                     'values' => $values,
-                    'source' => data_get($option, 'source') ?: 'filament',
+                    'source' => 'filament',
                 ];
             })
-            ->filter(fn (array $option): bool => filled($option['id']) || $option['values'] !== [])
+            ->filter()
             ->values()
             ->all();
 
         return $normalized === [] ? null : $normalized;
+    }
+
+    protected static function productOptionTypes(): array
+    {
+        return [
+            'diameter' => [
+                'label' => [
+                    'FR' => 'Diamètre',
+                    'EN' => 'Diameter',
+                    'RO' => 'Diametru',
+                ],
+            ],
+            'pack_quantity' => [
+                'label' => [
+                    'FR' => 'Conditionnement',
+                    'EN' => 'Pack size',
+                    'RO' => 'Ambalaj',
+                ],
+            ],
+        ];
+    }
+
+    protected static function productOptionTypeOptions(): array
+    {
+        return collect(static::productOptionTypes())
+            ->mapWithKeys(fn (array $definition, string $key): array => [
+                $key => $definition['label']['FR'],
+            ])
+            ->all();
     }
 
     protected static function locales(): array
