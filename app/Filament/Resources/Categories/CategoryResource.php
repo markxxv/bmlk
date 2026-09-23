@@ -168,8 +168,8 @@ class CategoryResource extends Resource
 
                     TextInput::make("slug.{$locale}")
                         ->label('URL slug')
-                        ->required($locale === 'fr')
                         ->prefixIcon('lucide-link')
+                        ->helperText('Generated from the name on creation when empty. It will not change automatically later.')
                         ->maxLength(255),
 
                     Textarea::make("description.{$locale}")
