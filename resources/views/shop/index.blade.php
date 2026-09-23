@@ -26,7 +26,7 @@
     <main>
         <section class="px-3 pb-10 pt-12 sm:px-5 sm:pb-14 sm:pt-16 lg:px-8 lg:pb-16 lg:pt-20">
             <div class="mx-auto max-w-[1560px]">
-                <nav aria-label="{{ __('Fil d’Ariane') }}" class="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
+                <nav aria-label="{{ __('Fil d’Ariane') }}" class="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500" data-reveal data-reveal-y="8" data-reveal-duration="0.65">
                     <a href="{{ route('home') }}" class="transition hover:text-zinc-900">
                         {{ __('Accueil') }}
                     </a>
@@ -48,17 +48,17 @@
 
                 <div class="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end">
                     <div class="lg:col-span-8">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ $currentCategory ? __('Collection BLACK MILK') : __('Catalogue professionnel') }}
                         </p>
 
-                        <h1 class="mt-4 max-w-5xl font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl">
+                        <h1 class="mt-4 max-w-5xl font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl" data-reveal-title data-reveal-title-duration="1">
                             {{ $pageTitle }}
                         </h1>
                     </div>
 
                     <div class="lg:col-span-4 lg:text-right">
-                        <p class="text-sm text-zinc-500">
+                        <p class="text-sm text-zinc-500" data-reveal data-reveal-y="10" data-reveal-duration="0.7" data-reveal-delay="0.12">
                             {{ trans_choice(':count produit|:count produits', $products->total(), ['count' => $products->total()]) }}
                         </p>
                     </div>
@@ -67,10 +67,16 @@
                 <nav
                     aria-label="{{ __('Catégories de produits') }}"
                     class="-mx-3 mt-10 flex gap-2 overflow-x-auto px-3 pb-2 sm:-mx-5 sm:px-5 lg:mx-0 lg:px-0"
+                    data-blur-reveal
+                    data-blur-stagger="0.05"
+                    data-blur-duration="0.65"
+                    data-blur-y="10"
+                    data-blur-pixels="5"
                 >
                     <a
                         href="{{ route('shop.index') }}"
                         class="shrink-0 rounded-full px-5 py-3 text-xs font-semibold uppercase tracking-widest transition {{ $currentCategory ? 'bg-white text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900' : 'bg-[#DDA1AA] text-zinc-900' }}"
+                        data-blur-reveal-item
                     >
                         {{ __('Tous les produits') }}
                     </a>
@@ -89,6 +95,7 @@
                         <a
                             href="{{ route('shop.category', ['slug' => $categorySlug]) }}"
                             class="shrink-0 rounded-full px-5 py-3 text-xs font-semibold uppercase tracking-widest transition {{ $active ? 'bg-[#DDA1AA] text-zinc-900' : 'bg-white text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900' }}"
+                            data-blur-reveal-item
                         >
                             {{ $categoryName }}
                         </a>
@@ -100,7 +107,7 @@
         <section class="px-3 pb-16 sm:px-5 sm:pb-20 lg:px-8 lg:pb-24">
             <div class="mx-auto max-w-[1560px]">
                 @if ($products->count())
-                    <div class="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 sm:gap-y-12 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-6">
+                    <div class="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 sm:gap-y-12 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-6" data-blur-reveal data-blur-stagger="0.04" data-blur-duration="0.72" data-blur-y="18" data-blur-pixels="7">
                         @foreach ($products as $product)
                             @php
                                 $image = $product->getFirstMediaUrl('images');
@@ -111,7 +118,7 @@
                                     : route('shop.index');
                             @endphp
 
-                            <article class="group min-w-0">
+                            <article class="group min-w-0" data-blur-reveal-item>
                                 <a href="{{ $productUrl }}" class="block">
                                     <div class="relative aspect-[3/4] overflow-hidden rounded-2xl">
                                         @if ($product->is_new)
@@ -173,7 +180,7 @@
                             $end = min($products->lastPage(), $products->currentPage() + 2);
                         @endphp
 
-                        <nav aria-label="{{ __('Pagination') }}" class="mt-16 flex items-center justify-center gap-2">
+                        <nav aria-label="{{ __('Pagination') }}" class="mt-16 flex items-center justify-center gap-2" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             @if ($products->onFirstPage())
                                 <span class="flex h-10 w-10 items-center justify-center rounded-full text-zinc-300">
                                     <x-lucide-arrow-left class="h-4 w-4" />
@@ -227,24 +234,24 @@
             <section class="border-t border-zinc-200 px-3 py-16 sm:px-5 sm:py-20 lg:px-8 lg:py-24">
                 <div class="mx-auto grid max-w-[1560px] gap-10 lg:grid-cols-12">
                     <div class="lg:col-span-4">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ __('À propos de la collection') }}
                         </p>
 
-                        <h2 class="mt-4 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl">
+                        <h2 class="mt-4 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl" data-reveal-title data-reveal-title-duration="0.95">
                             {{ $pageTitle }}
                         </h2>
                     </div>
 
-                    <div class="max-w-3xl lg:col-span-7 lg:col-start-6">
+                    <div class="max-w-3xl lg:col-span-7 lg:col-start-6" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.8" data-blur-y="14" data-blur-pixels="6">
                         @if ($currentCategory->description)
-                            <div class="text-base leading-8 text-zinc-600 sm:text-lg">
+                            <div class="text-base leading-8 text-zinc-600 sm:text-lg" data-blur-reveal-item>
                                 {{ $currentCategory->description }}
                             </div>
                         @endif
 
                         @if ($currentCategory->use)
-                            <div class="mt-10 border-t border-zinc-200 pt-8">
+                            <div class="mt-10 border-t border-zinc-200 pt-8" data-blur-reveal-item>
                                 <h3 class="text-xs font-semibold uppercase tracking-widest text-zinc-900">
                                     {{ __('Utilisation') }}
                                 </h3>
