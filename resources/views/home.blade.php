@@ -80,61 +80,65 @@
                 </p>
             </div>
 
-            <div class="-mx-3 mt-10 flex snap-x snap-mandatory scroll-px-3 gap-4 overflow-x-auto px-3 pb-3 sm:-mx-5 sm:mt-12 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible lg:px-0">
+            <div class="-mx-3 mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto px-3 pb-4 sm:-mx-5 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-8 lg:overflow-visible lg:px-0 lg:pb-0">
                 @foreach ($coffrets as $product)
                     @php
-                        $image = $product->getFirstMediaUrl('images', 'thumb');
+                        $image = $product->getFirstMediaUrl('images');
                     @endphp
 
-                    <article class="w-5/6 shrink-0 snap-start rounded-3xl border border-zinc-200 bg-white p-3 sm:w-1/2 lg:w-auto">
-                        <div class="aspect-square overflow-hidden rounded-2xl bg-stone-100">
-                            @if ($image)
-                                <img
-                                    src="{{ $image }}"
-                                    alt="{{ $product->name }}"
-                                    class="h-full w-full object-contain p-6"
-                                    loading="lazy"
-                                >
-                            @endif
-                        </div>
-
-                        <div class="flex min-h-52 flex-col p-3 pt-5">
-                            @if ($product->tag)
-                                <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
-                                    {{ $product->tag }}
-                                </p>
-                            @endif
-
-                            <div class="mt-2 flex items-start justify-between gap-4">
-                                <h3 class="font-['Playfair_Display'] text-2xl font-medium leading-tight text-zinc-900">
-                                    {{ $product->name }}
-                                </h3>
-
-                                <div class="shrink-0 text-sm font-semibold text-zinc-900">
-                                    @if ($product->price)
-                                        {{ number_format((float) $product->price, 2, ',', ' ') }} €
-                                    @elseif ($product->price_min && $product->price_max)
-                                        {{ number_format((float) $product->price_min, 2, ',', ' ') }}–{{ number_format((float) $product->price_max, 2, ',', ' ') }} €
-                                    @elseif ($product->price_min)
-                                        {{ __('Dès :price €', ['price' => number_format((float) $product->price_min, 2, ',', ' ')]) }}
-                                    @endif
-                                </div>
+                    <article class="group w-4/5 shrink-0 snap-start sm:w-1/2 lg:w-auto @if ($loop->iteration === 2) lg:pt-12 @endif">
+                        <a href="#" class="block">
+                            <div class="aspect-square overflow-hidden rounded-3xl bg-stone-100">
+                                @if ($image)
+                                    <img
+                                        src="{{ $image }}"
+                                        alt="{{ $product->name }}"
+                                        class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                                        loading="lazy"
+                                    >
+                                @endif
                             </div>
 
-                            @if ($product->description)
-                                <p class="mt-4 line-clamp-3 text-sm leading-6 text-zinc-600">
-                                    {{ $product->description }}
-                                </p>
-                            @endif
+                            <div class="pt-5">
+                                <div class="flex items-start justify-between gap-5">
+                                    <div class="min-w-0">
+                                        @if ($product->tag)
+                                            <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                                                {{ $product->tag }}
+                                            </p>
+                                        @endif
 
-                            <a href="#" class="mt-auto flex items-center justify-between border-t border-zinc-200 pt-5 text-xs font-semibold uppercase tracking-widest text-zinc-900">
-                                {{ __('Découvrir') }}
+                                        <h3 class="mt-2 font-['Playfair_Display'] text-2xl font-medium leading-tight text-zinc-900 sm:text-3xl">
+                                            {{ $product->name }}
+                                        </h3>
+                                    </div>
 
-                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </a>
-                        </div>
+                                    <div class="shrink-0 pt-1 text-sm font-semibold text-zinc-900">
+                                        @if ($product->price)
+                                            {{ number_format((float) $product->price, 2, ',', ' ') }} €
+                                        @elseif ($product->price_min && $product->price_max)
+                                            {{ number_format((float) $product->price_min, 2, ',', ' ') }}–{{ number_format((float) $product->price_max, 2, ',', ' ') }} €
+                                        @elseif ($product->price_min)
+                                            {{ __('Dès :price €', ['price' => number_format((float) $product->price_min, 2, ',', ' ')]) }}
+                                        @endif
+                                    </div>
+                                </div>
+
+                                @if ($product->description)
+                                    <p class="mt-3 max-w-md line-clamp-2 text-sm leading-6 text-zinc-600">
+                                        {{ $product->description }}
+                                    </p>
+                                @endif
+
+                                <span class="mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-900">
+                                    {{ __('Découvrir') }}
+
+                                    <svg class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M5 12h14M14 7l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </a>
                     </article>
                 @endforeach
             </div>
