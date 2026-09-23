@@ -96,7 +96,7 @@
         <div class="grid gap-10 border-t border-zinc-800 px-7 py-10 sm:px-10 lg:grid-cols-12 lg:px-14 xl:px-16">
             <div class="lg:col-span-7">
                 <nav class="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3">
-                    <a href="#" class="text-sm text-zinc-400 transition hover:text-white">
+                    <a href="{{ route('shop.index') }}" class="text-sm text-zinc-400 transition hover:text-white">
                         {{ __('Produits') }}
                     </a>
                     <a href="#coffrets" class="text-sm text-zinc-400 transition hover:text-white">
