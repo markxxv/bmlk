@@ -8,9 +8,9 @@
         };
     @endphp
 
-    <section class="-mt-[92px] bg-[#DDA1AA] pb-6 pt-[92px] sm:-mt-[100px] sm:pb-8 sm:pt-[100px] lg:-mt-[104px] lg:pb-10 lg:pt-[104px]">
-        <div class="mx-auto max-w-[1560px] px-3 pt-3 sm:px-5 sm:pt-5 lg:px-8 lg:pt-6">
-            <div class="relative overflow-hidden lg:min-h-[720px] xl:min-h-[760px]">
+    <section class="relative z-[41] -mt-[92px] overflow-hidden bg-[#DDA1AA] pb-6 pt-[92px] sm:-mt-[100px] sm:pb-8 sm:pt-[100px] lg:-mt-[104px] lg:pb-10 lg:pt-[104px]">
+        <div class="relative z-10 mx-auto max-w-[1560px] px-3 pt-3 sm:px-5 sm:pt-5 lg:px-8 lg:pt-6">
+            <div class="relative lg:min-h-[720px] xl:min-h-[760px]">
                 <div class="relative z-10 grid h-full lg:min-h-[720px] lg:grid-cols-12 xl:min-h-[760px]">
                     <div class="flex flex-col px-7 pb-7 pt-9 sm:px-10 sm:pb-10 sm:pt-12 lg:col-span-5 lg:px-14 lg:pb-10 lg:pt-14 xl:px-16 xl:pt-16">
                         <div class="flex items-center gap-3">
@@ -82,13 +82,13 @@
                                 </p>
                             </div>
                         </div>
-
-                        <div class="absolute inset-x-[-7%] bottom-[-5%] flex items-end justify-center sm:inset-x-[-2%] lg:inset-x-[-9%] lg:bottom-[-7%] lg:justify-end xl:inset-x-[-6%]">
-                            <x-hero-mascot class="w-full max-w-4xl lg:max-w-none" />
-                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="pointer-events-none absolute bottom-[-2%] right-[-6%] z-0 w-[112%] sm:right-[-2%] sm:w-[94%] lg:bottom-[-6%] lg:right-0 lg:w-[58vw] xl:w-[60vw] 2xl:w-[62vw]">
+            <x-hero-mascot class="w-full" />
         </div>
     </section>
 
