@@ -192,6 +192,19 @@
     </section>
 
     @foreach ($categories as $category)
+        @php
+            $locale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
+                ? app()->getLocale()
+                : 'fr';
+
+            $categorySlug = $category->getTranslation('slug', $locale, false)
+                ?: $category->getTranslation('slug', 'fr', false);
+
+            $categoryUrl = $categorySlug
+                ? route('shop.category', ['slug' => $categorySlug])
+                : route('shop.index');
+        @endphp
+
         <section class="overflow-hidden border-t border-zinc-200 px-3 py-16 sm:px-5 sm:py-20 lg:px-8 lg:py-24">
             <div class="mx-auto max-w-[1560px]">
                 <div class="grid gap-6 lg:grid-cols-2 lg:items-end">
@@ -219,7 +232,7 @@
                         @endphp
 
                         <article class="group w-3/4 shrink-0 snap-start sm:w-2/5 lg:w-auto">
-                            <a href="{{ route('shop.category', ['slug' => $category->slug]) }}" class="block">
+                            <a href="{{ $categoryUrl }}" class="block">
                                 @if ($image)
                                     <div class="overflow-hidden rounded-3xl bg-stone-100">
                                         <img
