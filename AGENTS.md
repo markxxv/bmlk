@@ -423,51 +423,35 @@ The product gallery uses `embla-carousel`. Do not import Embla into `resources/j
 
 `App\Models\Event`
 
-Sales modes:
-
-- `internal` — sold through BLACK MILK cart / one-click checkout
-- `external` — sold on an external ticket platform via `ticket_url`
-
-Core fields:
+Fields:
 
 - `active`
-- `confirmed`
 - `sort`
 - `name`
 - `url`
 - `type`
-- `status`
 - `description`
-- `cta`
-- `date_label`
 - `starts_at`
 - `ends_at`
 - `country`
 - `city`
-- `venue`
 - `address`
-- `postal_code`
 - `price`
-- `currency`
-- `sales_mode`
 - `ticket_url`
-- `meta_title`
-- `meta_description`
 
 Translatable JSONB fields:
 
 - `name`
 - `url`
-- `type`
-- `status`
 - `description`
-- `cta`
-- `date_label`
-- `country`
-- `city`
-- `venue`
-- `address`
-- `meta_title`
-- `meta_description`
+
+`type` is a stable non-translated code such as `training`, `workshop`, `international_tour`, or `event`; labels belong in translation files.
+
+Prices are always EUR, so no currency column is stored.
+
+Sales logic:
+
+- `ticket_url = null` — BLACK MILK sells the ticket internally.
+- `ticket_url != null` — ticket purchase goes to the external platform.
 
 `url` is reserved for future event detail pages and is unique per locale.
