@@ -283,7 +283,7 @@
                 <form
                     x-data
                     @submit.prevent
-                    class="mx-auto mt-10 flex max-w-2xl items-center border-b border-zinc-900 pb-3 text-left sm:mt-12"
+                    class="mx-auto mt-10 flex max-w-2xl items-center bg-white rounded-full py-2 px-6 text-left sm:mt-12"
                 >
                     <label for="newsletter-email" class="sr-only">
                         {{ __('Votre adresse e-mail') }}
