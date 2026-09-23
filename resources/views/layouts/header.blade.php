@@ -46,8 +46,8 @@
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
 
-                    <a href="#" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
-                        {{ __('Ambassadeur') }}
+                    <a href="{{ route('events') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800">
+                        {{ __('Événements') }}
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
 
@@ -146,8 +146,8 @@
                 <a href="{{ route('where-to-buy') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
                     {{ __('Où acheter') }}
                 </a>
-                <a href="#" @click="open = false" class="py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
-                    {{ __('Ambassadeur') }}
+                <a href="{{ route('events') }}" @click="open = false" class="py-4 font-['Playfair_Display'] text-4xl text-zinc-900">
+                    {{ __('Événements') }}
                 </a>
             </nav>
 
