@@ -417,3 +417,57 @@ It is a separate Vite entry and must only be loaded from the product detail view
 ```
 
 The product gallery uses `embla-carousel`. Do not import Embla into `resources/js/app.js`; pages other than product detail must not download the carousel bundle.
+
+
+## Event
+
+`App\Models\Event`
+
+Sales modes:
+
+- `internal` — sold through BLACK MILK cart / one-click checkout
+- `external` — sold on an external ticket platform via `ticket_url`
+
+Core fields:
+
+- `active`
+- `confirmed`
+- `sort`
+- `name`
+- `url`
+- `type`
+- `status`
+- `description`
+- `cta`
+- `date_label`
+- `starts_at`
+- `ends_at`
+- `country`
+- `city`
+- `venue`
+- `address`
+- `postal_code`
+- `price`
+- `currency`
+- `sales_mode`
+- `ticket_url`
+- `meta_title`
+- `meta_description`
+
+Translatable JSONB fields:
+
+- `name`
+- `url`
+- `type`
+- `status`
+- `description`
+- `cta`
+- `date_label`
+- `country`
+- `city`
+- `venue`
+- `address`
+- `meta_title`
+- `meta_description`
+
+`url` is reserved for future event detail pages and is unique per locale.
