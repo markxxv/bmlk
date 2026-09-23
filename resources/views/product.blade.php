@@ -14,6 +14,12 @@
 
         $localeKey = strtoupper($locale);
 
+        $numberLocale = match ($locale) {
+            'en' => 'en-GB',
+            'ro' => 'ro-RO',
+            default => 'fr-FR',
+        };
+
         $productName = $product->getTranslation('name', $locale, false)
             ?: $product->getTranslation('name', 'fr', false);
 
@@ -434,11 +440,7 @@
                             @js($cartProduct),
                             @js($productOptions),
                             @js($priceLabel),
-                            @js(match ($locale) {
-                                'en' => 'en-GB',
-                                'ro' => 'ro-RO',
-                                default => 'fr-FR',
-                            }),
+                            @js($numberLocale),
                             @js(__('Sélectionnez les options'))
                         )"
                     >
