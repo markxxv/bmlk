@@ -79,7 +79,7 @@
             </div>
         </div>
 
-        <div class="pointer-events-none absolute bottom-[-2%] right-[-6%] z-0 w-[112%] sm:right-[-2%] sm:w-[94%] lg:bottom-[-6%] lg:left-1/2 lg:right-auto lg:w-[52vw] xl:w-[54vw] 2xl:w-[1100px]">
+        <div class="pointer-events-none absolute bottom-[-2%] right-[-6%] z-0 w-[112%] sm:right-[-2%] sm:w-[94%] lg:bottom-auto lg:left-1/2 lg:right-auto lg:top-24 lg:w-[clamp(700px,54vw,1100px)]">
             <x-hero-mascot class="w-full" />
         </div>
     </section>
