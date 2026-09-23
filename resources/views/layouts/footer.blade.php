@@ -108,7 +108,7 @@
                     <a href="#" class="text-sm text-zinc-400 transition hover:text-white">
                         {{ __('Notre histoire') }}
                     </a>
-                    <a href="#" class="text-sm text-zinc-400 transition hover:text-white">
+                    <a href="{{ route('where-to-buy') }}" class="text-sm text-zinc-400 transition hover:text-white">
                         {{ __('Représentants') }}
                     </a>
                     <a href="#" class="text-sm text-zinc-400 transition hover:text-white">
