@@ -36,19 +36,7 @@ class FrontController extends Controller
             ->orderBy('id')
             ->get();
 
-        $events = Event::query()
-            ->where('active', true)
-            ->where(function ($query) {
-                $query
-                    ->whereNull('starts_at')
-                    ->orWhere('starts_at', '>=', now()->startOfDay())
-                    ->orWhere('ends_at', '>=', now()->startOfDay());
-            })
-            ->orderByRaw('starts_at IS NULL')
-            ->orderBy('starts_at')
-            ->orderBy('sort')
-            ->orderBy('id')
-            ->get();
+        $events = $this->upcomingEvents();
 
         return view('home', compact('coffrets', 'categories', 'events'));
     }
@@ -229,6 +217,16 @@ class FrontController extends Controller
         ]);
     }
 
+    public function events(): View
+    {
+        return view('events', [
+            'events' => $this->upcomingEvents(),
+            'metaTitle' => __('Événements BLACK MILK | Formations, workshops et rencontres'),
+            'metaDescription' => __('Découvrez les prochaines formations, workshops et rencontres BLACK MILK en France et à l’international.'),
+            'canonical' => route('events'),
+        ]);
+    }
+
     public function whereToBuy(): View
     {
         $representatives = Representative::query()
@@ -262,6 +260,23 @@ class FrontController extends Controller
         return response()
             ->view('sitemap', compact('categories', 'products'))
             ->header('Content-Type', 'application/xml; charset=UTF-8');
+    }
+
+    private function upcomingEvents(): Collection
+    {
+        return Event::query()
+            ->where('active', true)
+            ->where(function ($query) {
+                $query
+                    ->whereNull('starts_at')
+                    ->orWhere('starts_at', '>=', now()->startOfDay())
+                    ->orWhere('ends_at', '>=', now()->startOfDay());
+            })
+            ->orderByRaw('starts_at IS NULL')
+            ->orderBy('starts_at')
+            ->orderBy('sort')
+            ->orderBy('id')
+            ->get();
     }
 
     private function shopCategories(): Collection
