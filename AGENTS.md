@@ -146,6 +146,41 @@ Category slugs are globally unique per locale and back the public SEO routes:
 
 Do not implement category filtering with a category query-string parameter. Category selection must resolve to its own canonical URL.
 
+## Representative
+
+`App\Models\Representative`
+
+Uses:
+
+- `HasTranslations`
+
+Fields:
+
+- `active`
+- `sort`
+- `name`
+- `country`
+- `tag`
+- `city`
+- `cta`
+- `url`
+- `instagram`
+
+Translatable JSONB fields:
+
+- `country`
+- `tag`
+- `city`
+- `cta`
+
+Seed data is stored in:
+
+```text
+database/seeders/RepresentativeSeeder.php
+```
+
+The seeder is idempotent and can be safely re-run.
+
 ## Media
 
 Product images must always use Spatie Laravel Media Library.
