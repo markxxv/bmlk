@@ -10,59 +10,82 @@
 
     <section class="px-3 pb-6 pt-3 sm:px-5 sm:pb-8 sm:pt-5 lg:px-8 lg:pb-10">
         <div class="mx-auto max-w-[1560px]">
-            <div class="grid overflow-hidden rounded-3xl bg-[#DDA1AA] lg:grid-cols-2">
-                <div class="flex flex-col justify-between p-7 sm:p-10 lg:p-14 xl:p-16">
-                    <div class="flex items-center gap-3">
-                        <span class="h-px w-10 bg-zinc-800"></span>
-                        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-800">
-                            {{ __('Créé par une maître, pour les maîtres') }}
-                        </p>
-                    </div>
+            <div class="relative overflow-hidden rounded-3xl bg-[#DDA1AA] lg:min-h-[720px] xl:min-h-[760px]">
+                <div class="relative z-10 grid h-full lg:min-h-[720px] lg:grid-cols-12 xl:min-h-[760px]">
+                    <div class="flex flex-col px-7 pb-7 pt-9 sm:px-10 sm:pb-10 sm:pt-12 lg:col-span-5 lg:px-14 lg:pb-10 lg:pt-14 xl:px-16 xl:pt-16">
+                        <div class="flex items-center gap-3">
+                            <span class="h-px w-10 bg-zinc-800"></span>
+                            <p class="text-xs font-semibold uppercase tracking-widest text-zinc-800">
+                                {{ __('Créé par une maître, pour les maîtres') }}
+                            </p>
+                        </div>
 
-                    <div class="py-14 lg:py-20">
-                        <h1 class="max-w-3xl font-['Playfair_Display'] text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl">
-                            {{ __('Élève') }}
-                            <span class="italic text-white">{{ __('ton') }}</span>
-                            {{ __('niveau') }}
-                        </h1>
+                        <div class="flex flex-1 items-center py-14 sm:py-16 lg:py-10">
+                            <div>
+                                <h1 class="max-w-2xl font-['Playfair_Display'] text-6xl font-medium leading-[0.88] tracking-tight text-zinc-900 sm:text-7xl lg:text-7xl xl:text-8xl">
+                                    <span class="block">{{ __('Élève') }} <span class="italic text-white">{{ __('ton') }}</span></span>
+                                    <span class="block">{{ __('niveau') }}</span>
+                                </h1>
 
-                        <p class="mt-7 max-w-xl text-base leading-7 text-zinc-800 sm:text-lg">
-                            {{ __('La technique révolutionnaire à la cire et des produits professionnels HEMA-free pensés pour celles et ceux qui exigent plus de leur travail.') }}
-                        </p>
+                                <p class="mt-7 max-w-lg text-base leading-7 text-zinc-800 sm:text-lg">
+                                    {{ __('La technique révolutionnaire à la cire et des produits professionnels HEMA-free pensés pour celles et ceux qui exigent plus de leur travail.') }}
+                                </p>
 
-                        <div class="mt-9 flex flex-wrap gap-3">
-                            <a
-                                href="{{ route('shop.index') }}"
-                                class="inline-flex h-12 items-center justify-center rounded-full bg-zinc-900 px-6 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-zinc-800"
-                            >
-                                {{ __('Découvrir la boutique') }}
-                            </a>
+                                <div class="mt-9 flex flex-wrap gap-3">
+                                    <a href="{{ route('shop.index') }}" class="group inline-flex h-12 items-center justify-center gap-3 rounded-full bg-zinc-900 px-6 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-zinc-800">
+                                        {{ __('Découvrir la boutique') }}
+                                        <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                    </a>
 
-                            <a
-                                href="{{ route('where-to-buy') }}"
-                                class="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-xs font-semibold uppercase tracking-widest text-zinc-900 transition hover:bg-zinc-50"
-                            >
-                                {{ __('Où acheter') }}
-                            </a>
+                                    <a href="{{ route('where-to-buy') }}" class="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-xs font-semibold uppercase tracking-widest text-zinc-900 transition hover:bg-zinc-50">
+                                        {{ __('Où acheter') }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid gap-5 border-t border-[#C98792] pt-5 sm:grid-cols-3 lg:gap-4">
+                            <div class="flex items-start gap-3">
+                                <x-lucide-leaf class="mt-0.5 h-5 w-5 shrink-0 text-zinc-800" stroke-width="1.4" />
+                                <div>
+                                    <p class="text-[11px] font-semibold uppercase tracking-widest text-zinc-800">{{ __('HEMA-free') }}</p>
+                                    <p class="mt-1 text-[10px] uppercase tracking-[0.16em] text-zinc-700">{{ __('Sans compromis') }}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <x-lucide-globe-2 class="mt-0.5 h-5 w-5 shrink-0 text-zinc-800" stroke-width="1.4" />
+                                <div>
+                                    <p class="text-[11px] font-semibold uppercase tracking-widest text-zinc-800">{{ __('50+ pays') }}</p>
+                                    <p class="mt-1 text-[10px] uppercase tracking-[0.16em] text-zinc-700">{{ __('Dans le monde') }}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3">
+                                <x-lucide-graduation-cap class="mt-0.5 h-5 w-5 shrink-0 text-zinc-800" stroke-width="1.4" />
+                                <div>
+                                    <p class="text-[11px] font-semibold uppercase tracking-widest text-zinc-800">{{ __('Pour les professionnels') }}</p>
+                                    <p class="mt-1 text-[10px] uppercase tracking-[0.16em] text-zinc-700">{{ __('Résultats d’exception') }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-x-8 gap-y-3 border-t border-[#C98792] pt-5">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-800">
-                            {{ __('HEMA-free') }}
-                        </p>
-                        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-800">
-                            {{ __('50+ pays') }}
-                        </p>
-                        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-800">
-                            {{ __('Pour les professionnels') }}
-                        </p>
-                    </div>
-                </div>
+                    <div class="relative min-h-[430px] sm:min-h-[520px] lg:col-span-7 lg:min-h-0">
+                        <div class="absolute right-7 top-7 z-20 hidden items-start gap-5 lg:flex xl:right-12 xl:top-12">
+                            <span class="mt-1 h-14 w-px bg-zinc-700"></span>
+                            <div>
+                                <p class="text-[11px] font-semibold uppercase tracking-widest text-zinc-900">01 / BLACK MILK</p>
+                                <p class="mt-4 text-[10px] font-medium uppercase leading-5 tracking-[0.22em] text-zinc-700">
+                                    PROFESSIONAL<br>
+                                    NAIL SYSTEM
+                                </p>
+                            </div>
+                        </div>
 
-                <div class="flex items-center justify-center px-5 pb-8 sm:px-10 lg:px-8 lg:py-10 xl:px-14">
-                    <div class="">
-                        <x-hero-mascot class="w-full max-w-2xl" />
+                        <div class="absolute inset-x-[-7%] bottom-[-5%] flex items-end justify-center sm:inset-x-[-2%] lg:inset-x-[-9%] lg:bottom-[-7%] lg:justify-end xl:inset-x-[-6%]">
+                            <x-hero-mascot class="w-full max-w-4xl lg:max-w-none" />
+                        </div>
                     </div>
                 </div>
             </div>
