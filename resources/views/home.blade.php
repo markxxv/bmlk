@@ -443,7 +443,7 @@
                             </div>
 
                             <div class="lg:col-span-5">
-                                <h3 class="font-['Playfair_Display'] text-lg font-medium leading-tight text-zinc-900 sm:text-2xl">
+                                <h3 class="font-['Playfair_Display'] text-xl font-medium leading-tight text-zinc-900 sm:text-2xl">
                                     {{ $eventName }}
                                 </h3>
 
