@@ -94,17 +94,6 @@ class PageResource extends Resource
                                             ->minValue(0)
                                             ->prefixIcon('lucide-list-ordered'),
                                     ]),
-
-                                Section::make('Info')
-                                    ->icon('lucide-info')
-                                    ->schema([
-                                        TextInput::make('updated_at')
-                                            ->label('Last updated')
-                                            ->disabled()
-                                            ->dehydrated(false)
-                                            ->formatStateUsing(fn ($state): string => $state?->format('d M Y, H:i') ?? '—'),
-                                    ])
-                                    ->hiddenOn('create'),
                             ])
                             ->columnSpan([
                                 'default' => 1,
