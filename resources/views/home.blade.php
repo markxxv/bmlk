@@ -1,69 +1,75 @@
 <x-layout>
     <section class="relative z-[41] -mt-[92px] overflow-hidden bg-[#DDA1AA] pb-6 pt-[92px] sm:-mt-[100px] sm:pb-8 sm:pt-[100px] lg:-mt-[104px] lg:pb-10 lg:pt-[104px]">
-        <div class="relative z-10 mx-auto max-w-[1560px] px-3 pt-3 sm:px-5 sm:pt-5 lg:px-8 lg:pt-6">
+        <div class="relative z-10 mx-auto max-w-[1560px] px-5 pt-3 sm:px-5 sm:pt-5 lg:px-8 lg:pt-6">
             <div class="relative lg:min-h-[720px] xl:min-h-[760px]">
                 <div class="relative z-10 grid h-full lg:min-h-[720px] lg:grid-cols-12 xl:min-h-[760px]">
-                    <div class="flex flex-col px-7 pb-7 pt-9 sm:px-10 sm:pb-10 sm:pt-12 lg:col-span-5 lg:px-14 lg:pb-10 lg:pt-14 xl:px-16 xl:pt-16">
-                        <div class="flex items-center gap-3">
-                            <span class="h-px w-10 bg-zinc-800"></span>
-                            <p class="text-xs font-semibold uppercase tracking-widest text-zinc-800">
+                    <div class="flex flex-col pb-7 pt-7 sm:px-10 sm:pb-10 sm:pt-12 lg:col-span-5 lg:px-14 lg:pb-10 lg:pt-14 xl:px-16 xl:pt-16">
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <span class="h-px w-8 shrink-0 bg-zinc-800 sm:w-10"></span>
+                            <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-800 sm:text-xs sm:tracking-widest">
                                 {{ __('Créé par une maître, pour les maîtres') }}
                             </p>
                         </div>
 
-                        <div class="flex flex-1 items-center py-14 sm:py-16 lg:py-10">
+                        <div class="flex flex-1 items-center py-10 sm:py-16 lg:py-10">
                             <div>
-                                <h1 class="max-w-2xl font-['Playfair_Display'] text-5xl font-medium leading-[0.92] tracking-tight text-zinc-900 sm:text-6xl lg:text-6xl xl:text-7xl">
+                                <h1 class="max-w-2xl font-['Playfair_Display'] text-4xl font-medium leading-[0.92] tracking-tight text-zinc-900 sm:text-6xl lg:text-6xl xl:text-7xl">
                                     <span class="block">{{ __('Gels professionnels') }}</span>
                                     <span class="block italic text-white">{{ __('Hema-free') }}</span>
                                     <span class="block">{{ __('pour les maîtres') }}</span>
                                 </h1>
 
-                                <p class="mt-7 max-w-lg text-base leading-7 text-zinc-800 sm:text-lg">
+                                <p class="mt-5 max-w-lg text-sm leading-6 text-zinc-800 sm:mt-7 sm:text-lg sm:leading-7">
                                     {{ __('Bases, builder gels et soins pensés pour une pose précise, régulière et durable') }}
                                 </p>
 
-                                <div class="mt-9 flex flex-wrap gap-3">
-                                    <a href="{{ route('shop.index') }}" class="group inline-flex h-12 items-center justify-center gap-3 rounded-full bg-zinc-900 px-6 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-zinc-800">
+                                <div class="mt-6 flex gap-2 sm:mt-9 sm:flex-wrap sm:gap-3">
+                                    <a href="{{ route('shop.index') }}" class="group inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-zinc-900 px-5 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-zinc-800 sm:flex-none sm:gap-3 sm:px-6 sm:tracking-widest">
                                         {{ __('Découvrir la boutique') }}
                                         <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                     </a>
 
-                                    <a href="{{ route('where-to-buy') }}" class="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-xs font-semibold uppercase tracking-widest text-zinc-900 transition hover:bg-zinc-50">
+                                    <a href="{{ route('where-to-buy') }}" class="inline-flex h-12 shrink-0 items-center justify-center rounded-full bg-white px-5 text-xs font-semibold uppercase tracking-wider text-zinc-900 transition hover:bg-zinc-50 sm:px-6 sm:tracking-widest">
                                         {{ __('Où acheter') }}
                                     </a>
+                                </div>
+
+                                <div class="relative -mx-5 mt-7 h-[300px] overflow-hidden sm:hidden">
+                                    <div class="absolute -bottom-8 left-1/2 w-[125%] -translate-x-1/2">
+                                        <x-hero-mascot class="w-full" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="grid gap-5 border-t border-[#C98792] pt-5 sm:grid-cols-3 lg:gap-4">
+                        <div class="grid grid-cols-3 gap-2 border-t border-[#C98792] pt-5 sm:gap-5 lg:gap-4">
                             <div class="flex items-start gap-3">
-                                <x-lucide-leaf class="mt-0.5 h-5 w-5 shrink-0 text-zinc-800" stroke-width="1.4" />
+                                <x-lucide-leaf class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
-                                    <p class="text-[11px] font-semibold uppercase tracking-widest text-zinc-800">{{ __('HEMA-free') }}</p>
-                                    <p class="mt-1 text-[10px] uppercase tracking-[0.16em] text-zinc-700">{{ __('Sans compromis') }}</p>
+                                    <p class="text-[9px] font-semibold uppercase tracking-wider text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('HEMA-free') }}</p>
+                                    <p class="mt-1 hidden text-[10px] uppercase tracking-[0.16em] text-zinc-700 sm:block">{{ __('Sans compromis') }}</p>
                                 </div>
                             </div>
 
                             <div class="flex items-start gap-3">
-                                <x-lucide-globe-2 class="mt-0.5 h-5 w-5 shrink-0 text-zinc-800" stroke-width="1.4" />
+                                <x-lucide-globe-2 class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
-                                    <p class="text-[11px] font-semibold uppercase tracking-widest text-zinc-800">{{ __('50+ pays') }}</p>
-                                    <p class="mt-1 text-[10px] uppercase tracking-[0.16em] text-zinc-700">{{ __('Dans le monde') }}</p>
+                                    <p class="text-[9px] font-semibold uppercase tracking-wider text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('50+ pays') }}</p>
+                                    <p class="mt-1 hidden text-[10px] uppercase tracking-[0.16em] text-zinc-700 sm:block">{{ __('Dans le monde') }}</p>
                                 </div>
                             </div>
 
                             <div class="flex items-start gap-3">
-                                <x-lucide-graduation-cap class="mt-0.5 h-5 w-5 shrink-0 text-zinc-800" stroke-width="1.4" />
+                                <x-lucide-graduation-cap class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
-                                    <p class="text-[11px] font-semibold uppercase tracking-widest text-zinc-800">{{ __('Pour les professionnels') }}</p>
-                                    <p class="mt-1 text-[10px] uppercase tracking-[0.16em] text-zinc-700">{{ __('Résultats d’exception') }}</p>
+                                    <p class="text-[9px] font-semibold uppercase tracking-wider text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('Pour les professionnels') }}</p>
+                                    <p class="mt-1 hidden text-[10px] uppercase tracking-[0.16em] text-zinc-700 sm:block">{{ __('Résultats d’exception') }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="relative min-h-[430px] sm:min-h-[520px] lg:col-span-7 lg:min-h-0">
+                    <div class="hidden sm:relative sm:block sm:min-h-[520px] lg:col-span-7 lg:min-h-0">
                         <div class="absolute right-7 top-7 z-20 hidden items-start gap-5 lg:flex xl:right-12 xl:top-12">
                             <span class="mt-1 h-14 w-px bg-zinc-700"></span>
                             <div>
@@ -79,7 +85,7 @@
             </div>
         </div>
 
-        <div class="pointer-events-none absolute bottom-[-2%] right-[-6%] z-0 w-[112%] sm:right-[-2%] sm:w-[94%] lg:bottom-auto lg:left-1/2 lg:right-auto lg:top-24 lg:w-[clamp(700px,54vw,1100px)]">
+        <div class="pointer-events-none absolute bottom-[-2%] right-[-6%] z-0 hidden w-[112%] sm:block sm:right-[-2%] sm:w-[94%] lg:bottom-auto lg:left-1/2 lg:right-auto lg:top-24 lg:w-[clamp(700px,54vw,1100px)]">
             <x-hero-mascot class="w-full" />
         </div>
     </section>
