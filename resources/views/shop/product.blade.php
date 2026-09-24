@@ -397,7 +397,7 @@
                     <span class="text-zinc-900">{{ $productName }}</span>
                 </nav>
 
-                <div class="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
+                <div class="-mt-6 md:mt-8 grid gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
                     <div class="lg:col-span-6" data-product-gallery>
                         <div class="relative">
                             <div
