@@ -572,6 +572,24 @@ export function initNumberTrend(root = document) {
             window.clearTimeout(cleanupTimer);
         };
 
+        const measureWidth = (text) => {
+            const probe = document.createElement('span');
+
+            probe.textContent = text;
+            probe.style.position = 'absolute';
+            probe.style.visibility = 'hidden';
+            probe.style.whiteSpace = 'nowrap';
+            probe.style.pointerEvents = 'none';
+
+            element.append(probe);
+
+            const width = probe.getBoundingClientRect().width;
+
+            probe.remove();
+
+            return width;
+        };
+
         const format = (value, locale, currency) => {
             const number = Number(value);
             const formatter = new Intl.NumberFormat(locale, {
@@ -594,6 +612,9 @@ export function initNumberTrend(root = document) {
         };
 
         const render = (from, to, trend) => {
+            const fromNumberWidth = measureWidth(from.number);
+            const toNumberWidth = measureWidth(to.number);
+            const suffixOffset = fromNumberWidth - toNumberWidth;
             const length = Math.max(from.number.length, to.number.length);
             const fromChars = from.number.padStart(length, ' ').split('');
             const toChars = to.number.padStart(length, ' ').split('');
@@ -663,11 +684,30 @@ export function initNumberTrend(root = document) {
                 animations.push(nextAnimation);
             });
 
+            let suffix = null;
+
             if (to.suffix) {
-                fragment.append(document.createTextNode(to.suffix));
+                suffix = document.createElement('span');
+                suffix.textContent = to.suffix;
+                suffix.style.display = 'inline-block';
+                suffix.style.willChange = 'transform, opacity';
+
+                fragment.append(suffix);
             }
 
             element.replaceChildren(fragment);
+
+            if (suffix) {
+                const suffixAnimation = animate(suffix, {
+                    x: [suffixOffset, 0],
+                    opacity: [0.72, 1],
+                }, {
+                    duration: 0.5,
+                    ease: editorialEase,
+                });
+
+                animations.push(suffixAnimation);
+            }
         };
 
         element.addEventListener('motion-number-trend', (event) => {
