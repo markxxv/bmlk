@@ -177,7 +177,7 @@
 
             <nav class="flex flex-wrap gap-x-5 gap-y-2 text-xs">
                 <a href="/conditions-generales-de-vente" class="transition hover:text-white">{{ __('CGV') }}</a>
-                <a href="#" class="transition hover:text-white">{{ __('Mentions légales') }}</a>
+                <a href="/mentions-legales" class="transition hover:text-white">{{ __('Mentions légales') }}</a>
                 <a href="#" class="transition hover:text-white">{{ __('Confidentialité') }}</a>
                 <a href="#" class="transition hover:text-white">{{ __('Cookies') }}</a>
             </nav>
