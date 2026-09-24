@@ -54,6 +54,29 @@ const primeLazyImages = (elements) => {
     });
 };
 
+const preloadLazyImagesNearViewport = (elements) => {
+    const targets = Array.isArray(elements) ? elements : [elements];
+
+    if (!('IntersectionObserver' in window)) {
+        primeLazyImages(targets);
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+
+            primeLazyImages(entry.target);
+            observer.unobserve(entry.target);
+        });
+    }, {
+        rootMargin: '600px 0px',
+        threshold: 0,
+    });
+
+    targets.forEach((target) => observer.observe(target));
+};
+
 const transitionGuard = (elements) => {
     const targets = Array.isArray(elements) ? elements : [elements];
     const originalTransitions = new Map(targets.map((target) => [target, target.style.transition]));
@@ -167,6 +190,8 @@ export function initBlurReveal(root = document) {
         const repeat = !boolean(container.dataset.blurOnce, false);
         const perItem = boolean(container.dataset.blurPerItem, false);
         const transitions = transitionGuard(targets);
+
+        preloadLazyImagesNearViewport(targets);
 
         if (reducedMotion.matches) {
             animate(targets, {
