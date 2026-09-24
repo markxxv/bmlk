@@ -32,6 +32,28 @@ const resetStyles = (element, styles = {}) => {
     });
 };
 
+const primeLazyImages = (elements) => {
+    const targets = Array.isArray(elements) ? elements : [elements];
+
+    targets.forEach((target) => {
+        const images = target.matches?.('img[loading="lazy"]')
+            ? [target]
+            : [...target.querySelectorAll?.('img[loading="lazy"]') ?? []];
+
+        images.forEach((image) => {
+            image.loading = 'eager';
+
+            if (!image.complete) {
+                const src = image.getAttribute('src');
+
+                if (src) {
+                    image.src = src;
+                }
+            }
+        });
+    });
+};
+
 const transitionGuard = (elements) => {
     const targets = Array.isArray(elements) ? elements : [elements];
     const originalTransitions = new Map(targets.map((target) => [target, target.style.transition]));
@@ -180,6 +202,7 @@ export function initBlurReveal(root = document) {
                 inView(target, () => {
                     targetTransitions.disable();
                     animation?.stop();
+                    primeLazyImages(target);
 
                     animation = animate(target, {
                         opacity: 1,
@@ -225,6 +248,7 @@ export function initBlurReveal(root = document) {
         inView(container, () => {
             transitions.disable();
             animation?.stop();
+            primeLazyImages(targets);
 
             animation = animate(
                 targets,
