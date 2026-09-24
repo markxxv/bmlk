@@ -7,11 +7,17 @@
 
     <aside
         x-show="$store.cart.isOpen"
+        x-effect="if ($store.cart.isOpen) $nextTick(() => $el.dispatchEvent(new CustomEvent('motion-toggle-reveal')))"
         @keydown.escape.window="$store.cart.close()"
         class="fixed inset-y-0 right-0 z-[100] flex w-full max-w-md flex-col bg-white shadow-2xl md:bottom-4 md:right-4 md:top-4 md:rounded-2xl md:border md:border-zinc-100"
         aria-label="{{ __('Panier') }}"
+        data-toggle-reveal
+        data-toggle-reveal-stagger="0.07"
+        data-toggle-reveal-duration="0.68"
+        data-toggle-reveal-y="16"
+        data-toggle-reveal-blur="7"
     >
-        <div class="flex items-center justify-between border-b border-zinc-100 px-6 py-4">
+        <div class="flex items-center justify-between border-b border-zinc-100 px-6 py-4" data-toggle-reveal-item>
             <h2 class="text-lg font-medium tracking-wide text-zinc-900">
                 {{ __('Panier') }}
             </h2>
@@ -28,7 +34,7 @@
 
         <div class="flex-1 overflow-y-auto">
             <template x-if="$store.cart.items.length === 0">
-                <div class="flex h-full flex-col items-center justify-center px-6 py-16 text-center">
+                <div class="flex h-full flex-col items-center justify-center px-6 py-16 text-center" data-toggle-reveal-item>
                     <span class="flex h-14 w-14 items-center justify-center rounded-full bg-zinc-50 text-zinc-300">
                         <x-lucide-shopping-bag class="h-5 w-5" />
                     </span>
@@ -41,7 +47,7 @@
 
             <div class="px-6 py-4">
                 <template x-for="item in $store.cart.items" :key="item.id">
-                    <article class="grid grid-cols-[72px_1fr_auto] gap-4 border-b border-zinc-100 py-4 last:border-b-0">
+                    <article class="grid grid-cols-[72px_1fr_auto] gap-4 border-b border-zinc-100 py-4 last:border-b-0" data-toggle-reveal-item>
                         <a
                             :href="item.url"
                             @click="$store.cart.close()"
@@ -111,7 +117,7 @@
             </div>
         </div>
 
-        <div x-show="$store.cart.items.length > 0" class="border-t border-zinc-100 px-5 py-4">
+        <div x-show="$store.cart.items.length > 0" class="border-t border-zinc-100 px-5 py-4" data-toggle-reveal-item>
             <div class="mb-3 flex items-center justify-between">
                 <span class="text-xs font-medium uppercase tracking-wider text-zinc-500">
                     {{ __('Total') }}
