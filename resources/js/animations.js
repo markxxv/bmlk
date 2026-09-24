@@ -32,6 +32,37 @@ const resetStyles = (element, styles = {}) => {
     });
 };
 
+const transitionGuard = (elements) => {
+    const targets = Array.isArray(elements) ? elements : [elements];
+    const originalTransitions = new Map(targets.map((target) => [target, target.style.transition]));
+    let restoreTimer = null;
+
+    const disable = () => {
+        window.clearTimeout(restoreTimer);
+
+        targets.forEach((target) => {
+            target.style.transition = 'none';
+        });
+    };
+
+    const restore = () => {
+        targets.forEach((target) => {
+            target.style.transition = originalTransitions.get(target) ?? '';
+        });
+    };
+
+    const restoreAfter = (seconds = 0) => {
+        window.clearTimeout(restoreTimer);
+        restoreTimer = window.setTimeout(restore, Math.max(seconds * 1000, 0) + 50);
+    };
+
+    return {
+        disable,
+        restore,
+        restoreAfter,
+    };
+};
+
 export function initReveal(root = document) {
     root.querySelectorAll('[data-reveal]').forEach((element) => {
         if (!once(element, 'Reveal')) return;
@@ -42,6 +73,7 @@ export function initReveal(root = document) {
         const y = number(element.dataset.revealY, 24);
         const scale = number(element.dataset.revealScale, 1);
         const repeat = !boolean(element.dataset.revealOnce, false);
+        const transitions = transitionGuard(element);
 
         if (reducedMotion.matches) {
             resetStyles(element, {
@@ -57,10 +89,16 @@ export function initReveal(root = document) {
             transform: `translate3d(${x}px, ${y}px, 0) scale(${scale})`,
         };
 
+        transitions.disable();
         resetStyles(element, hidden);
 
+        let animation = null;
+
         inView(element, () => {
-            animate(
+            transitions.disable();
+            animation?.stop();
+
+            animation = animate(
                 element,
                 {
                     opacity: [0, 1],
@@ -76,9 +114,16 @@ export function initReveal(root = document) {
                 },
             );
 
+            transitions.restoreAfter(delay + duration);
+
             if (!repeat) return;
 
-            return () => resetStyles(element, hidden);
+            return () => {
+                animation?.stop();
+                transitions.disable();
+                resetStyles(element, hidden);
+                transitions.restoreAfter();
+            };
         }, {
             amount: number(element.dataset.revealAmount, 0.2),
         });
@@ -98,6 +143,7 @@ export function initBlurReveal(root = document) {
         const blur = number(container.dataset.blurPixels, 14);
         const y = number(container.dataset.blurY, 22);
         const repeat = !boolean(container.dataset.blurOnce, false);
+        const transitions = transitionGuard(targets);
 
         if (reducedMotion.matches) {
             animate(targets, {
@@ -111,18 +157,27 @@ export function initBlurReveal(root = document) {
             return;
         }
 
-        const reset = () => animate(targets, {
-            opacity: 0,
-            filter: `blur(${blur}px)`,
-            y,
-        }, {
-            duration: 0,
-        });
+        const reset = () => {
+            transitions.disable();
+
+            animate(targets, {
+                opacity: 0,
+                filter: `blur(${blur}px)`,
+                y,
+            }, {
+                duration: 0,
+            });
+        };
 
         reset();
 
+        let animation = null;
+
         inView(container, () => {
-            const animation = animate(
+            transitions.disable();
+            animation?.stop();
+
+            animation = animate(
                 targets,
                 {
                     opacity: 1,
@@ -136,11 +191,15 @@ export function initBlurReveal(root = document) {
                 },
             );
 
+            const totalDuration = delay + duration + Math.max(targets.length - 1, 0) * staggerDelay;
+            transitions.restoreAfter(totalDuration);
+
             if (!repeat) return;
 
             return () => {
-                animation.stop();
+                animation?.stop();
                 reset();
+                transitions.restoreAfter();
             };
         }, { amount });
     });
@@ -418,6 +477,7 @@ export function initFilteredReveal(root = document) {
         const y = number(container.dataset.filterRevealY, 18);
         const blur = number(container.dataset.filterRevealBlur, 8);
         const amount = number(container.dataset.filterRevealAmount, 0.15);
+        const transitions = transitionGuard([...container.querySelectorAll('[data-filter-reveal-item]')]);
         let isInView = false;
 
         const visibleItems = () => [...container.querySelectorAll('[data-filter-reveal-item]')]
@@ -425,6 +485,8 @@ export function initFilteredReveal(root = document) {
 
         const hide = (items = visibleItems()) => {
             if (reducedMotion.matches) return;
+
+            transitions.disable();
 
             items.forEach((item) => resetStyles(item, {
                 opacity: '0',
@@ -449,6 +511,7 @@ export function initFilteredReveal(root = document) {
             }
 
             hide(items);
+            transitions.disable();
 
             animate(
                 items,
@@ -466,6 +529,8 @@ export function initFilteredReveal(root = document) {
                     ease: editorialEase,
                 },
             );
+
+            transitions.restoreAfter(duration + Math.max(items.length - 1, 0) * staggerDelay);
         };
 
         inView(container, () => {
@@ -475,6 +540,7 @@ export function initFilteredReveal(root = document) {
             return () => {
                 isInView = false;
                 hide();
+                transitions.restoreAfter();
             };
         }, { amount });
 
@@ -494,6 +560,7 @@ export function initToggleReveal(root = document) {
         const staggerDelay = number(container.dataset.toggleRevealStagger, 0.07);
         const y = number(container.dataset.toggleRevealY, 18);
         const blur = number(container.dataset.toggleRevealBlur, 8);
+        const transitions = transitionGuard([...container.querySelectorAll('[data-toggle-reveal-item]')]);
 
         const items = () => [...container.querySelectorAll('[data-toggle-reveal-item]')];
 
@@ -511,6 +578,8 @@ export function initToggleReveal(root = document) {
 
                 return;
             }
+
+            transitions.disable();
 
             elements.forEach((element) => resetStyles(element, {
                 opacity: '0',
@@ -535,6 +604,8 @@ export function initToggleReveal(root = document) {
                         ease: editorialEase,
                     },
                 );
+
+                transitions.restoreAfter(duration + Math.max(elements.length - 1, 0) * staggerDelay);
             });
         };
 
