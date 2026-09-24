@@ -401,17 +401,17 @@
                     <div class="lg:col-span-6" data-product-gallery>
                         <div class="relative">
                             <div
-                                class="aspect-[3/4] overflow-hidden rounded-3xl bg-[#FCF8F4] lg:aspect-[4/3]"
+                                class="overflow-hidden rounded-3xl bg-white"
                                 data-embla-viewport
                                 role="region"
                                 aria-roledescription="{{ __('carrousel') }}"
                                 aria-label="{{ __('Galerie de :product', ['product' => $productName]) }}"
                             >
-                                <div class="flex h-full touch-pan-y">
+                                <div class="flex touch-pan-y">
                                 @if ($images->isNotEmpty())
                                     @foreach ($images as $index => $image)
                                         <div
-                                            class="relative aspect-[4/5] min-w-0 flex-[0_0_100%] sm:aspect-square lg:aspect-[4/3]"
+                                            class="relative aspect-square min-w-0 flex-[0_0_100%]"
                                             role="group"
                                             aria-roledescription="{{ __('diapositive') }}"
                                             aria-label="{{ ($index + 1).' / '.$images->count() }}"
@@ -419,7 +419,7 @@
                                             <img
                                                 src="{{ $image['url'] }}"
                                                 alt="{{ $productName }}{{ $images->count() > 1 ? ' — '.($index + 1) : '' }}"
-                                                class="h-full w-full select-none object-contain"
+                                                class="h-full w-full select-none object-contain p-6 sm:p-10 lg:p-12"
                                                 draggable="false"
                                                 @if ($index === 0)
                                                     fetchpriority="high"
@@ -436,7 +436,7 @@
                                         </div>
                                     @endforeach
                                 @else
-                                    <div class="flex aspect-[4/5] min-w-0 flex-[0_0_100%] items-center justify-center text-zinc-300 sm:aspect-square lg:aspect-[4/3]">
+                                    <div class="flex aspect-square min-w-0 flex-[0_0_100%] items-center justify-center text-zinc-300">
                                         <x-lucide-image-off class="h-8 w-8" />
                                         <span class="sr-only">{{ __('Image indisponible') }}</span>
                                     </div>
