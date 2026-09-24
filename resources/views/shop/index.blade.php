@@ -107,7 +107,7 @@
         <section class="px-3 pb-16 sm:px-5 sm:pb-20 lg:px-8 lg:pb-24">
             <div class="mx-auto max-w-[1560px]">
                 @if ($products->count())
-                    <div class="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 sm:gap-y-12 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-6" data-blur-reveal data-blur-stagger="0.04" data-blur-duration="0.72" data-blur-y="18" data-blur-pixels="7">
+                    <div class="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-5 sm:gap-y-12 md:grid-cols-3 xl:grid-cols-4 xl:gap-x-6" data-blur-reveal data-blur-stagger="0.04" data-blur-duration="0.72" data-blur-y="18" data-blur-pixels="7" data-blur-amount="0.01" data-blur-once="true">
                         @foreach ($products as $product)
                             @php
                                 $image = $product->getFirstMediaUrl('images');
