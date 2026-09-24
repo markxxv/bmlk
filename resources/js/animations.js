@@ -143,6 +143,7 @@ export function initBlurReveal(root = document) {
         const blur = number(container.dataset.blurPixels, 14);
         const y = number(container.dataset.blurY, 22);
         const repeat = !boolean(container.dataset.blurOnce, false);
+        const perItem = boolean(container.dataset.blurPerItem, false);
         const transitions = transitionGuard(targets);
 
         if (reducedMotion.matches) {
@@ -152,6 +153,54 @@ export function initBlurReveal(root = document) {
                 y: 0,
             }, {
                 duration: 0,
+            });
+
+            return;
+        }
+
+        if (perItem && targets.length > 1) {
+            targets.forEach((target) => {
+                const targetTransitions = transitionGuard(target);
+                let animation = null;
+
+                const resetTarget = () => {
+                    targetTransitions.disable();
+
+                    animate(target, {
+                        opacity: 0,
+                        filter: `blur(${blur}px)`,
+                        y,
+                    }, {
+                        duration: 0,
+                    });
+                };
+
+                resetTarget();
+
+                inView(target, () => {
+                    targetTransitions.disable();
+                    animation?.stop();
+
+                    animation = animate(target, {
+                        opacity: 1,
+                        filter: 'blur(0px)',
+                        y: 0,
+                    }, {
+                        duration,
+                        delay,
+                        ease: editorialEase,
+                    });
+
+                    targetTransitions.restoreAfter(delay + duration);
+
+                    if (!repeat) return;
+
+                    return () => {
+                        animation?.stop();
+                        resetTarget();
+                        targetTransitions.restoreAfter();
+                    };
+                }, { amount });
             });
 
             return;
