@@ -401,13 +401,13 @@
                     <div class="lg:col-span-6" data-product-gallery>
                         <div class="relative">
                             <div
-                                class="overflow-hidden rounded-3xl bg-white"
+                                class="aspect-[3/4] overflow-hidden rounded-3xl bg-[#FCF8F4] lg:aspect-[4/3]"
                                 data-embla-viewport
                                 role="region"
                                 aria-roledescription="{{ __('carrousel') }}"
                                 aria-label="{{ __('Galerie de :product', ['product' => $productName]) }}"
                             >
-                                <div class="flex touch-pan-y">
+                                <div class="flex h-full touch-pan-y">
                                 @if ($images->isNotEmpty())
                                     @foreach ($images as $index => $image)
                                         <div
@@ -419,7 +419,7 @@
                                             <img
                                                 src="{{ $image['url'] }}"
                                                 alt="{{ $productName }}{{ $images->count() > 1 ? ' — '.($index + 1) : '' }}"
-                                                class="h-full w-full select-none object-cover"
+                                                class="h-full w-full select-none object-contain"
                                                 draggable="false"
                                                 @if ($index === 0)
                                                     fetchpriority="high"
