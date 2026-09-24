@@ -248,8 +248,25 @@
 
                 init() {
                     options.forEach(option => {
-                        if (option.choices.length === 1) {
-                            this.selectOption(option.id, option.label, option.choices[0], false);
+                        const firstChoice = option.choices[0];
+
+                        if (! firstChoice) {
+                            return;
+                        }
+
+                        this.selected = {
+                            ...this.selected,
+                            [option.id]: {
+                                ...firstChoice,
+                                id: option.id,
+                                label: option.label,
+                            },
+                        };
+                    });
+
+                    this.$nextTick(() => {
+                        if (this.$refs.price) {
+                            this.$refs.price.textContent = this.displayPrice;
                         }
                     });
                 },
@@ -559,7 +576,9 @@
                                                 {{ $option['label'] }}
                                             </p>
 
-                                            <div class="mt-3 flex flex-wrap gap-2">
+                                            <div class="relative mt-3 inline-flex max-w-full flex-wrap gap-1 rounded-full bg-white p-1 shadow-sm" data-option-tabs>
+                                                <span class="pointer-events-none absolute left-0 top-0 z-0 rounded-full border border-[#A9636F] bg-[#A9636F]" data-option-indicator></span>
+
                                                 @foreach ($option['choices'] as $choice)
                                                     <button
                                                         type="button"
@@ -568,15 +587,21 @@
                                                             @js($option['label']),
                                                             @js($choice)
                                                         )"
+                                                        :data-selected="isSelected(@js($option['id']), @js($choice['key'])) ? 'true' : 'false'"
+                                                        :aria-pressed="isSelected(@js($option['id']), @js($choice['key']))"
                                                         :class="isSelected(@js($option['id']), @js($choice['key']))
-                                                            ? 'border-[#A9636F] bg-[#EFDDE0] text-zinc-900'
-                                                            : 'border-zinc-200 bg-white text-zinc-700 hover:border-[#DDA1AA]'"
-                                                        class="rounded-full border px-4 py-2 text-sm transition"
+                                                            ? 'text-white'
+                                                            : 'text-zinc-700 hover:text-zinc-900'"
+                                                        class="relative z-10 rounded-full border border-transparent px-4 py-2.5 text-sm transition-colors duration-200"
+                                                        data-option-tab
                                                     >
                                                         <span>{{ $choice['display'] }}</span>
 
                                                         @if ($choice['price'] !== null)
-                                                            <span class="ml-1 text-xs text-zinc-500">
+                                                            <span
+                                                                class="ml-1 text-xs transition-colors duration-200"
+                                                                :class="isSelected(@js($option['id']), @js($choice['key'])) ? 'text-zinc-100' : 'text-zinc-500'"
+                                                            >
                                                                 · {{ $choice['formatted_price'] }} €
                                                             </span>
                                                         @endif

@@ -474,6 +474,79 @@ export function initParallax(root = document) {
     });
 }
 
+export function initOptionTabs(root = document) {
+    root.querySelectorAll('[data-option-tabs]').forEach((group) => {
+        if (!once(group, 'OptionTabs')) return;
+
+        const indicator = group.querySelector('[data-option-indicator]');
+        const tabs = [...group.querySelectorAll('[data-option-tab]')];
+
+        if (!indicator || !tabs.length) return;
+
+        let currentTab = null;
+        let animation = null;
+
+        const geometry = (tab) => {
+            const groupRect = group.getBoundingClientRect();
+            const tabRect = tab.getBoundingClientRect();
+
+            return {
+                x: tabRect.left - groupRect.left,
+                y: tabRect.top - groupRect.top,
+                width: tabRect.width,
+                height: tabRect.height,
+            };
+        };
+
+        const move = (tab, immediate = false) => {
+            if (!tab) return;
+
+            currentTab = tab;
+            animation?.stop();
+
+            const target = geometry(tab);
+
+            animation = animate(indicator, target, immediate || reducedMotion.matches
+                ? { duration: 0 }
+                : {
+                    type: 'spring',
+                    stiffness: 460,
+                    damping: 38,
+                    mass: 0.7,
+                });
+        };
+
+        const selectedTab = () => tabs.find((tab) => tab.dataset.selected === 'true') ?? tabs[0];
+
+        requestAnimationFrame(() => requestAnimationFrame(() => move(selectedTab(), true)));
+
+        tabs.forEach((tab) => {
+            tab.addEventListener('click', () => move(tab));
+        });
+
+        const observer = new MutationObserver(() => {
+            const selected = selectedTab();
+
+            if (selected !== currentTab) {
+                move(selected);
+            }
+        });
+
+        tabs.forEach((tab) => observer.observe(tab, {
+            attributes: true,
+            attributeFilter: ['data-selected'],
+        }));
+
+        const resizeObserver = new ResizeObserver(() => {
+            if (currentTab) {
+                move(currentTab, true);
+            }
+        });
+
+        resizeObserver.observe(group);
+    });
+}
+
 export function initNumberTrend(root = document) {
     root.querySelectorAll('[data-number-trend]').forEach((element) => {
         if (!once(element, 'NumberTrend')) return;
@@ -1065,6 +1138,7 @@ export function initAnimations(root = document) {
     initTitleReveal(root);
     initImageReveal(root);
     initLineReveal(root);
+    initOptionTabs(root);
     initNumberTrend(root);
     initCountUp(root);
     initFilteredReveal(root);
