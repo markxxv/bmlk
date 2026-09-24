@@ -32,7 +32,7 @@ class FrontController extends Controller
                     ->where('active', true)
                     ->with('media')
                     ->orderBy('id')
-                    ->limit(4),
+                    ->limit(5),
             ])
             ->orderBy('id')
             ->get();
