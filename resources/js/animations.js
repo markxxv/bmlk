@@ -553,6 +553,18 @@ export function initNumberTrend(root = document) {
 
         let animations = [];
         let cleanupTimer = null;
+        let lockedHeight = null;
+
+        const lockHeight = () => {
+            if (lockedHeight !== null) return;
+
+            const height = element.getBoundingClientRect().height;
+
+            if (height > 0) {
+                lockedHeight = height;
+                element.style.height = `${height}px`;
+            }
+        };
 
         const stop = () => {
             animations.forEach((animation) => animation.stop());
@@ -667,6 +679,7 @@ export function initNumberTrend(root = document) {
             if (!Number.isFinite(toValue)) return;
 
             stop();
+            lockHeight();
 
             const to = format(toValue, locale, currency);
 
