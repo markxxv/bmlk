@@ -42,7 +42,7 @@
 
         <section class="px-3 pb-14 sm:px-5 sm:pb-16 lg:px-8 lg:pb-20">
             <div class="mx-auto max-w-[1560px]">
-                <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3" data-blur-reveal data-blur-stagger="0.05" data-blur-duration="0.75" data-blur-y="18" data-blur-pixels="7">
+                <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3" data-blur-reveal data-blur-duration="0.75" data-blur-y="18" data-blur-pixels="7" data-blur-amount="0.15" data-blur-once="true" data-blur-per-item="true">
                     @foreach ($representatives as $representative)
                         @php
                             $primaryUrl = $representative->url ?: 'mailto:office.blackmilk@gmail.com';
