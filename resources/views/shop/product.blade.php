@@ -249,12 +249,14 @@
                 init() {
                     options.forEach(option => {
                         if (option.choices.length === 1) {
-                            this.selectOption(option.id, option.label, option.choices[0]);
+                            this.selectOption(option.id, option.label, option.choices[0], false);
                         }
                     });
                 },
 
-                selectOption(optionId, optionLabel, choice) {
+                selectOption(optionId, optionLabel, choice, animatePrice = true) {
+                    const previousPrice = this.currentPrice;
+
                     this.selected = {
                         ...this.selected,
                         [optionId]: {
@@ -263,6 +265,36 @@
                             label: optionLabel,
                         },
                     };
+
+                    const nextPrice = this.currentPrice;
+
+                    this.$nextTick(() => {
+                        if (! this.$refs.price) {
+                            return;
+                        }
+
+                        if (
+                            animatePrice
+                            && previousPrice !== null
+                            && nextPrice !== null
+                            && Number.isFinite(Number(previousPrice))
+                            && Number.isFinite(Number(nextPrice))
+                            && Number(previousPrice) !== Number(nextPrice)
+                        ) {
+                            this.$refs.price.dispatchEvent(new CustomEvent('motion-number-trend', {
+                                detail: {
+                                    from: Number(previousPrice),
+                                    to: Number(nextPrice),
+                                    locale: numberLocale,
+                                    currency: 'EUR',
+                                },
+                            }));
+
+                            return;
+                        }
+
+                        this.$refs.price.textContent = this.displayPrice;
+                    });
                 },
 
                 isSelected(optionId, choiceKey) {
@@ -476,8 +508,9 @@
                             @if ($priceLabel || $productOptions !== [])
                                 <div class="mt-6 flex flex-wrap items-baseline gap-3">
                                     <p
+                                        x-ref="price"
                                         class="font-serif text-3xl font-medium text-zinc-900"
-                                        x-text="displayPrice"
+                                        data-number-trend
                                     >{{ $priceLabel ?: __('Sélectionnez les options') }}</p>
 
                                     @if ($product->compare_at_price !== null && $product->price !== null && (float) $product->compare_at_price > (float) $product->price)

@@ -474,6 +474,148 @@ export function initParallax(root = document) {
     });
 }
 
+export function initNumberTrend(root = document) {
+    root.querySelectorAll('[data-number-trend]').forEach((element) => {
+        if (!once(element, 'NumberTrend')) return;
+
+        let animations = [];
+        let cleanupTimer = null;
+
+        const stop = () => {
+            animations.forEach((animation) => animation.stop());
+            animations = [];
+            window.clearTimeout(cleanupTimer);
+        };
+
+        const format = (value, locale, currency) => {
+            const number = Number(value);
+            const formatter = new Intl.NumberFormat(locale, {
+                style: 'currency',
+                currency,
+                minimumFractionDigits: Number.isInteger(number) ? 0 : 2,
+                maximumFractionDigits: 2,
+            });
+            const parts = formatter.formatToParts(number);
+            const numericTypes = new Set(['integer', 'group', 'decimal', 'fraction']);
+            const firstNumeric = parts.findIndex((part) => numericTypes.has(part.type));
+            const lastNumeric = parts.findLastIndex((part) => numericTypes.has(part.type));
+
+            return {
+                text: formatter.format(number),
+                prefix: parts.slice(0, firstNumeric).map((part) => part.value).join(''),
+                number: parts.slice(firstNumeric, lastNumeric + 1).map((part) => part.value).join(''),
+                suffix: parts.slice(lastNumeric + 1).map((part) => part.value).join(''),
+            };
+        };
+
+        const render = (from, to, trend) => {
+            const length = Math.max(from.number.length, to.number.length);
+            const fromChars = from.number.padStart(length, ' ').split('');
+            const toChars = to.number.padStart(length, ' ').split('');
+            const fragment = document.createDocumentFragment();
+
+            if (to.prefix) {
+                fragment.append(document.createTextNode(to.prefix));
+            }
+
+            fromChars.forEach((fromChar, index) => {
+                const toChar = toChars[index];
+
+                if (fromChar === toChar) {
+                    fragment.append(document.createTextNode(toChar));
+                    return;
+                }
+
+                const slot = document.createElement('span');
+                const sizer = document.createElement('span');
+                const previous = document.createElement('span');
+                const next = document.createElement('span');
+                const sizeChar = toChar.trim() ? toChar : fromChar;
+
+                slot.style.position = 'relative';
+                slot.style.display = 'inline-block';
+                slot.style.overflow = 'hidden';
+                slot.style.verticalAlign = '-0.04em';
+
+                sizer.textContent = sizeChar || '\u00A0';
+                sizer.style.visibility = 'hidden';
+
+                [previous, next].forEach((layer) => {
+                    layer.style.position = 'absolute';
+                    layer.style.inset = '0';
+                    layer.style.display = 'flex';
+                    layer.style.alignItems = 'center';
+                    layer.style.justifyContent = 'center';
+                    layer.style.willChange = 'transform, opacity';
+                });
+
+                previous.textContent = fromChar.trim() ? fromChar : '\u00A0';
+                next.textContent = toChar.trim() ? toChar : '\u00A0';
+
+                slot.append(sizer, previous, next);
+                fragment.append(slot);
+
+                const offset = trend >= 0 ? 110 : -110;
+
+                animate(previous, {
+                    y: ['0%', `${-offset}%`],
+                    opacity: [1, 0.35],
+                }, {
+                    duration: 0.46,
+                    delay: index * 0.018,
+                    ease: editorialEase,
+                });
+
+                const nextAnimation = animate(next, {
+                    y: [`${offset}%`, '0%'],
+                    opacity: [0.35, 1],
+                }, {
+                    duration: 0.46,
+                    delay: index * 0.018,
+                    ease: editorialEase,
+                });
+
+                animations.push(nextAnimation);
+            });
+
+            if (to.suffix) {
+                fragment.append(document.createTextNode(to.suffix));
+            }
+
+            element.replaceChildren(fragment);
+        };
+
+        element.addEventListener('motion-number-trend', (event) => {
+            const fromValue = Number(event.detail?.from);
+            const toValue = Number(event.detail?.to);
+            const locale = event.detail?.locale || document.documentElement.lang || 'fr-FR';
+            const currency = event.detail?.currency || 'EUR';
+
+            if (!Number.isFinite(toValue)) return;
+
+            stop();
+
+            const to = format(toValue, locale, currency);
+
+            if (reducedMotion.matches || !Number.isFinite(fromValue) || fromValue === toValue) {
+                element.textContent = to.text;
+                return;
+            }
+
+            const from = format(fromValue, locale, currency);
+            const trend = toValue > fromValue ? 1 : -1;
+
+            render(from, to, trend);
+
+            const maxLength = Math.max(from.number.length, to.number.length);
+            cleanupTimer = window.setTimeout(() => {
+                stop();
+                element.textContent = to.text;
+            }, 520 + maxLength * 18);
+        });
+    });
+}
+
 export function initCountUp(root = document) {
     root.querySelectorAll('[data-count-up]').forEach((element) => {
         if (!once(element, 'CountUp')) return;
@@ -923,6 +1065,7 @@ export function initAnimations(root = document) {
     initTitleReveal(root);
     initImageReveal(root);
     initLineReveal(root);
+    initNumberTrend(root);
     initCountUp(root);
     initFilteredReveal(root);
     initToggleReveal(root);
