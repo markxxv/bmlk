@@ -64,7 +64,9 @@
                         </a>
 
                         <a
-                            href="#"
+                            href="https://www.instagram.com/black_milk_fr/"
+                            target="_blank"
+                            rel="noopener"
                             class="group flex items-center justify-between rounded-2xl bg-zinc-900 px-5 py-4 transition hover:bg-zinc-800"
                             data-blur-reveal-item
                         >
