@@ -526,15 +526,119 @@ export function initFilteredReveal(root = document) {
         const y = number(container.dataset.filterRevealY, 18);
         const blur = number(container.dataset.filterRevealBlur, 8);
         const amount = number(container.dataset.filterRevealAmount, 0.15);
-        const transitions = transitionGuard([...container.querySelectorAll('[data-filter-reveal-item]')]);
-        let isInView = false;
+        const perItem = boolean(container.dataset.filterRevealPerItem, false);
+        const allItems = [...container.querySelectorAll('[data-filter-reveal-item]')];
 
-        const visibleItems = () => [...container.querySelectorAll('[data-filter-reveal-item]')]
-            .filter((item) => getComputedStyle(item).display !== 'none' && !item.hidden);
+        const isVisible = (item) => getComputedStyle(item).display !== 'none' && !item.hidden;
+
+        const isInViewport = (item) => {
+            if (!isVisible(item)) return false;
+
+            const rect = item.getBoundingClientRect();
+
+            return rect.bottom > 0
+                && rect.top < window.innerHeight
+                && rect.right > 0
+                && rect.left < window.innerWidth;
+        };
+
+        if (reducedMotion.matches) {
+            allItems.forEach((item) => resetStyles(item, {
+                opacity: '1',
+                filter: 'none',
+                transform: 'none',
+            }));
+
+            return;
+        }
+
+        if (perItem) {
+            const states = new Map(allItems.map((item) => [
+                item,
+                {
+                    animation: null,
+                    transitions: transitionGuard(item),
+                },
+            ]));
+
+            const resetItem = (item) => {
+                const state = states.get(item);
+
+                state.transitions.disable();
+                state.animation?.stop();
+
+                animate(item, {
+                    opacity: 0,
+                    filter: `blur(${blur}px)`,
+                    y,
+                }, {
+                    duration: 0,
+                });
+
+                state.transitions.restoreAfter();
+            };
+
+            const revealItem = (item, itemDelay = 0) => {
+                if (!isVisible(item)) return;
+
+                const state = states.get(item);
+
+                state.transitions.disable();
+                state.animation?.stop();
+
+                state.animation = animate(item, {
+                    opacity: 1,
+                    filter: 'blur(0px)',
+                    y: 0,
+                }, {
+                    duration,
+                    delay: itemDelay,
+                    ease: editorialEase,
+                });
+
+                state.transitions.restoreAfter(itemDelay + duration);
+            };
+
+            allItems.forEach((item) => {
+                resetItem(item);
+
+                inView(item, () => {
+                    if (!isVisible(item)) return;
+
+                    revealItem(item);
+
+                    return () => {
+                        resetItem(item);
+                    };
+                }, { amount });
+            });
+
+            const replayVisible = () => {
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    const visibleInViewport = allItems.filter(isInViewport);
+
+                    allItems
+                        .filter((item) => isVisible(item) && !visibleInViewport.includes(item))
+                        .forEach(resetItem);
+
+                    visibleInViewport.forEach((item, index) => {
+                        resetItem(item);
+                        revealItem(item, index * staggerDelay);
+                    });
+                }));
+            };
+
+            window.addEventListener('motion-filter-reveal', replayVisible);
+
+            return;
+        }
+
+        const transitions = transitionGuard(allItems);
+        let isContainerInView = false;
+
+        const visibleItems = () => allItems.filter(isVisible);
 
         const hide = (items = visibleItems()) => {
-            if (reducedMotion.matches) return;
-
             transitions.disable();
 
             items.forEach((item) => resetStyles(item, {
@@ -548,16 +652,6 @@ export function initFilteredReveal(root = document) {
             const items = visibleItems();
 
             if (!items.length) return;
-
-            if (reducedMotion.matches) {
-                items.forEach((item) => resetStyles(item, {
-                    opacity: '1',
-                    filter: 'none',
-                    transform: 'none',
-                }));
-
-                return;
-            }
 
             hide(items);
             transitions.disable();
@@ -583,18 +677,18 @@ export function initFilteredReveal(root = document) {
         };
 
         inView(container, () => {
-            isInView = true;
+            isContainerInView = true;
             requestAnimationFrame(reveal);
 
             return () => {
-                isInView = false;
+                isContainerInView = false;
                 hide();
                 transitions.restoreAfter();
             };
         }, { amount });
 
-        container.addEventListener('motion-filter-reveal', () => {
-            if (!isInView) return;
+        window.addEventListener('motion-filter-reveal', () => {
+            if (!isContainerInView) return;
 
             requestAnimationFrame(() => requestAnimationFrame(reveal));
         });

@@ -404,7 +404,7 @@
                     @endforeach
                 </div>
 
-                <div class="mt-8 space-y-3" data-filter-reveal data-filter-reveal-stagger="0.08" data-filter-reveal-duration="0.78" data-filter-reveal-y="18" data-filter-reveal-blur="8">
+                <div class="mt-8 space-y-3" data-filter-reveal data-filter-reveal-stagger="0.08" data-filter-reveal-duration="0.78" data-filter-reveal-y="18" data-filter-reveal-blur="8" data-filter-reveal-amount="0.12" data-filter-reveal-per-item="true">
                     @foreach ($events as $event)
                         @php
                             $eventName = $event->getTranslation('name', $eventLocale, false)
