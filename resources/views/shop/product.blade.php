@@ -411,7 +411,7 @@
                                 @if ($images->isNotEmpty())
                                     @foreach ($images as $index => $image)
                                         <div
-                                            class="relative aspect-square min-w-0 flex-[0_0_100%]"
+                                            class="relative aspect-[3/4] min-w-0 flex-[0_0_100%]"
                                             role="group"
                                             aria-roledescription="{{ __('diapositive') }}"
                                             aria-label="{{ ($index + 1).' / '.$images->count() }}"
@@ -419,7 +419,7 @@
                                             <img
                                                 src="{{ $image['url'] }}"
                                                 alt="{{ $productName }}{{ $images->count() > 1 ? ' — '.($index + 1) : '' }}"
-                                                class="h-full w-full select-none object-contain p-6 sm:p-10 lg:p-12"
+                                                class="h-full w-full select-none object-cover"
                                                 draggable="false"
                                                 @if ($index === 0)
                                                     fetchpriority="high"
@@ -436,7 +436,7 @@
                                         </div>
                                     @endforeach
                                 @else
-                                    <div class="flex aspect-square min-w-0 flex-[0_0_100%] items-center justify-center text-zinc-300">
+                                    <div class="flex aspect-[3/4] min-w-0 flex-[0_0_100%] items-center justify-center text-zinc-300">
                                         <x-lucide-image-off class="h-8 w-8" />
                                         <span class="sr-only">{{ __('Image indisponible') }}</span>
                                     </div>
