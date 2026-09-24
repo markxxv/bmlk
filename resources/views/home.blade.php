@@ -277,7 +277,7 @@
                     </div>
                 </div>
 
-                <div class="-mx-3 mt-10 flex snap-x snap-mandatory gap-2 overflow-x-auto px-5 pb-4 sm:-mx-5 sm:mt-12 sm:gap-5 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0" data-blur-reveal data-blur-stagger="0.09" data-blur-duration="0.8" data-blur-y="20" data-blur-pixels="9">
+                <div class="-mx-3 mt-10 flex snap-x snap-mandatory gap-2 overflow-x-auto px-5 pb-4 sm:-mx-5 sm:mt-12 sm:gap-5 sm:px-5 lg:mx-0 lg:grid lg:grid-cols-5 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0" data-blur-reveal data-blur-stagger="0.09" data-blur-duration="0.8" data-blur-y="20" data-blur-pixels="9">
                     @foreach ($category->products as $product)
                         @php
                             $image = $product->getFirstMediaUrl('images');
