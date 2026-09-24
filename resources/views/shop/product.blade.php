@@ -756,13 +756,13 @@
 
                                     <div class="pt-4">
                                         @if ($recommendedProduct->tag)
-                                            <p class="truncate text-[9px] uppercase tracking-widest text-white">
+                                            <p class="truncate text-[11px] uppercase tracking-widest text-white">
                                                 {{ $recommendedProduct->tag }}
                                             </p>
                                         @endif
 
                                         <div class="mt-2 flex items-start justify-between gap-3">
-                                            <h3 class="font-serif text-xl font-medium leading-tight text-zinc-900">
+                                            <h3 class="font-serif font-medium leading-tight text-zinc-900">
                                                 {{ $recommendedProduct->name }}
                                             </h3>
 
