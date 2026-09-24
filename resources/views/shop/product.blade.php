@@ -372,7 +372,7 @@
             <div class="mx-auto max-w-[1560px]">
                 <nav
                     aria-label="{{ __('Fil d’Ariane') }}"
-                    class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500"
+                    class="hidden flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500 sm:flex"
                 >
                     <a href="{{ route('home') }}" class="transition hover:text-zinc-900">
                         {{ __('Accueil') }}
