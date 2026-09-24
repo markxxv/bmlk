@@ -25,7 +25,7 @@
             <button
                 type="button"
                 @click="$store.cart.close()"
-                class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-50 hover:text-zinc-700"
+                class="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900 text-white transition hover:bg-zinc-800"
                 aria-label="{{ __('Fermer le panier') }}"
             >
                 <x-lucide-x class="h-4 w-4" />
