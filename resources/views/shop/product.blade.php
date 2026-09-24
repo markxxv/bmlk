@@ -756,7 +756,7 @@
 
                                     <div class="pt-4">
                                         @if ($recommendedProduct->tag)
-                                            <p class="truncate text-xs font-semibold uppercase tracking-widest text-zinc-700">
+                                            <p class="truncate text-[9px] uppercase tracking-widest text-white">
                                                 {{ $recommendedProduct->tag }}
                                             </p>
                                         @endif
