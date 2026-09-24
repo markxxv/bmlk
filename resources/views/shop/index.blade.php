@@ -118,7 +118,7 @@
                                     : route('shop.index');
                             @endphp
 
-                            <article class="group min-w-0">
+                            <article class="group min-w-0" data-blur-reveal-item>
                                 <a href="{{ $productUrl }}" class="block">
                                     <div class="relative aspect-[3/4] overflow-hidden rounded-2xl">
                                         @if ($product->is_new)
