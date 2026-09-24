@@ -585,7 +585,7 @@
                                     :class="isReady
                                         ? 'bg-[#A9636F] text-white hover:bg-[#945763]'
                                         : 'cursor-not-allowed bg-zinc-200 text-zinc-400'"
-                                    class="flex h-13 flex-1 items-center justify-center gap-2 rounded-full px-7 text-xs font-semibold uppercase tracking-widest transition"
+                                    class="flex h-13 w-full shrink-0 items-center justify-center gap-2 rounded-full px-7 text-xs font-semibold uppercase tracking-widest transition sm:w-auto sm:flex-1"
                                 >
                                     <x-lucide-shopping-bag class="h-4 w-4" />
                                     <span x-show="isReady">{{ __('Ajouter au panier') }}</span>
