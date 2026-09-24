@@ -100,35 +100,34 @@ export function initBlurReveal(root = document) {
         const repeat = !boolean(container.dataset.blurOnce, false);
 
         if (reducedMotion.matches) {
-            targets.forEach((target) => resetStyles(target, {
-                opacity: '1',
-                filter: 'none',
-                transform: 'none',
-            }));
+            animate(targets, {
+                opacity: 1,
+                filter: 'blur(0px)',
+                y: 0,
+            }, {
+                duration: 0,
+            });
 
             return;
         }
 
-        const hide = () => {
-            targets.forEach((target) => resetStyles(target, {
-                opacity: '0',
-                filter: `blur(${blur}px)`,
-                transform: `translate3d(0, ${y}px, 0)`,
-            }));
-        };
+        const reset = () => animate(targets, {
+            opacity: 0,
+            filter: `blur(${blur}px)`,
+            y,
+        }, {
+            duration: 0,
+        });
 
-        hide();
+        reset();
 
         inView(container, () => {
-            animate(
+            const animation = animate(
                 targets,
                 {
-                    opacity: [0, 1],
-                    filter: [`blur(${blur}px)`, 'blur(0px)'],
-                    transform: [
-                        `translate3d(0, ${y}px, 0)`,
-                        'translate3d(0, 0, 0)',
-                    ],
+                    opacity: 1,
+                    filter: 'blur(0px)',
+                    y: 0,
                 },
                 {
                     duration,
@@ -139,7 +138,10 @@ export function initBlurReveal(root = document) {
 
             if (!repeat) return;
 
-            return hide;
+            return () => {
+                animation.stop();
+                reset();
+            };
         }, { amount });
     });
 }
