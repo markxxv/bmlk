@@ -397,8 +397,8 @@
                     <span class="text-zinc-900">{{ $productName }}</span>
                 </nav>
 
-                <div class="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-14 xl:gap-20">
-                    <div class="lg:col-span-7" data-product-gallery>
+                <div class="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
+                    <div class="lg:col-span-6" data-product-gallery>
                         <div class="relative">
                             <div
                                 class="overflow-hidden rounded-3xl bg-white"
@@ -411,7 +411,7 @@
                                 @if ($images->isNotEmpty())
                                     @foreach ($images as $index => $image)
                                         <div
-                                            class="relative aspect-[3/4] min-w-0 flex-[0_0_100%]"
+                                            class="relative aspect-[4/5] min-w-0 flex-[0_0_100%] sm:aspect-square lg:aspect-[4/3]"
                                             role="group"
                                             aria-roledescription="{{ __('diapositive') }}"
                                             aria-label="{{ ($index + 1).' / '.$images->count() }}"
@@ -436,7 +436,7 @@
                                         </div>
                                     @endforeach
                                 @else
-                                    <div class="flex aspect-[3/4] min-w-0 flex-[0_0_100%] items-center justify-center text-zinc-300">
+                                    <div class="flex aspect-[4/5] min-w-0 flex-[0_0_100%] items-center justify-center text-zinc-300 sm:aspect-square lg:aspect-[4/3]">
                                         <x-lucide-image-off class="h-8 w-8" />
                                         <span class="sr-only">{{ __('Image indisponible') }}</span>
                                     </div>
@@ -491,7 +491,7 @@
                     </div>
 
                     <div
-                        class="lg:col-span-5"
+                        class="lg:col-span-6"
                         x-data="blackMilkProduct(
                             @js($cartProduct),
                             @js($productOptions),
