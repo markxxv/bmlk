@@ -157,6 +157,7 @@ class FrontController extends Controller
             ->orderBy('starts_at')
             ->orderBy('sort')
             ->orderBy('id')
+            ->when($limit, fn ($query, int $limit) => $query->limit($limit))
             ->get();
     }
 
