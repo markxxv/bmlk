@@ -37,7 +37,7 @@ class FrontController extends Controller
             ->orderBy('id')
             ->get();
 
-        $events = $this->upcomingEvents();
+        $events = $this->upcomingEvents(4);
 
         return view('home', compact('coffrets', 'categories', 'events'));
     }
@@ -58,6 +58,7 @@ class FrontController extends Controller
             ->where('active', true)
             ->orderBy('sort')
             ->orderBy('id')
+            ->when($limit, fn ($query, int $limit) => $query->limit($limit))
             ->get();
 
         return view('where-to-buy', [
@@ -142,7 +143,7 @@ class FrontController extends Controller
             ->header('Content-Type', 'application/xml; charset=UTF-8');
     }
 
-    private function upcomingEvents(): Collection
+    private function upcomingEvents(?int $limit = null): Collection
     {
         return Event::query()
             ->where('active', true)
