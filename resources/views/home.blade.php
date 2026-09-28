@@ -537,6 +537,16 @@
                         </article>
                     @endforeach
                 </div>
+
+                <div class="mt-8 flex justify-end">
+                    <a
+                        href="{{ route('events') }}"
+                        class="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#A9636F] transition hover:text-[#945763]"
+                    >
+                        {{ __('Voir tous les événements') }}
+                        <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </a>
+                </div>
             </div>
         </section>
     @endif
