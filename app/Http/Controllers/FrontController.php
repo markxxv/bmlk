@@ -58,7 +58,6 @@ class FrontController extends Controller
             ->where('active', true)
             ->orderBy('sort')
             ->orderBy('id')
-            ->when($limit, fn ($query, int $limit) => $query->limit($limit))
             ->get();
 
         return view('where-to-buy', [
