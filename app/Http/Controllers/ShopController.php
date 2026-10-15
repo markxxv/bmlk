@@ -292,6 +292,10 @@ class ShopController extends Controller
         $discountAmount = round($discountAmount, 2);
         $totalAmount = round($subtotal - $discountAmount + $deliveryCost, 2);
 
+        // Private browser-only proof for finishing registration after returning
+        // from Stripe. The public order URL token must never authenticate a user.
+        $activationToken = Str::random(64);
+
         $order = Order::query()->create([
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'] ?? null,
@@ -314,6 +318,7 @@ class ShopController extends Controller
                 ? $request->user()->id : null,
             'payment_status' => 'unpaid',
             'access_token' => Str::random(48),
+            'onboarding_token_hash' => hash('sha256', $activationToken),
         ]);
 
         // Also authorize this browser to access its order if the query string is lost.
@@ -344,6 +349,8 @@ class ShopController extends Controller
                 ]),
                 'order_number' => $order->order_number,
                 'status_url' => route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token]),
+            'onboarding_token' => $activationToken,
+                'onboarding_token' => $activationToken,
             ], 503);
         }
 

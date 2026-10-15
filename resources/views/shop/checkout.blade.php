@@ -74,6 +74,9 @@
 
                     this.savedOrder = { number: data.order_number, url: data.status_url };
                     try {
+                        if (data.onboarding_token) {
+                            sessionStorage.setItem('bm_checkout_activation_' + data.order_number, data.onboarding_token);
+                        }
                         localStorage.setItem('bm_unpaid_order', JSON.stringify(this.savedOrder));
                         sessionStorage.setItem('bm_pending_order', data.order_number);
                     } catch (error) {
