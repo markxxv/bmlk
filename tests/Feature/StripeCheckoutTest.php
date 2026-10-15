@@ -73,17 +73,89 @@ class StripeCheckoutTest extends TestCase
         $this->assertSame($paidAt, $order->fresh()->paid_at);
     }
 
-    public function test_order_page_requires_a_secret_token(): void
+    public function test_legacy_order_link_without_token_shows_recovery_instead_of_404(): void
     {
         $order = $this->order();
 
         $this->get(route('order.status', ['orderNumber' => $order->order_number]))
-            ->assertNotFound();
+            ->assertOk()
+            ->assertSee(__('Reprendre votre commande'))
+            ->assertDontSee('Rue de Test 1');
 
         $this->get(route('order.status', [
             'orderNumber' => $order->order_number,
             'token' => $order->access_token,
-        ]))->assertOk();
+        ]))->assertOk()->assertSee('Rue de Test 1', false);
+    }
+
+    public function test_customer_can_recover_existing_order_without_rebuilding_cart(): void
+    {
+        $order = $this->order();
+        $order->update(['email' => 'Marie@example.com']);
+
+        $this->post(route('order.recover.submit'), [
+            'order_number' => $order->order_number,
+            'phone' => '01 02 03 04 05',
+            'email' => 'marie@example.com',
+        ])->assertRedirect(route('order.status', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+        ]));
+
+        $this->get(route('order.status', [
+            'orderNumber' => $order->order_number,
+        ]))->assertOk()->assertSee('Gel');
+    }
+
+    public function test_wrong_recovery_details_do_not_grant_access(): void
+    {
+        $order = $this->order();
+        $order->update(['email' => 'marie@example.com']);
+
+        $this->from(route('order.recover'))->post(route('order.recover.submit'), [
+            'order_number' => $order->order_number,
+            'phone' => '9999999999',
+            'email' => 'marie@example.com',
+        ])->assertRedirect(route('order.recover'))->assertSessionHasErrors('order_number');
+
+        $this->get(route('order.status', ['orderNumber' => $order->order_number]))
+            ->assertSee(__('Reprendre votre commande'))
+            ->assertDontSee('Rue de Test 1');
+    }
+
+    public function test_legacy_order_without_email_can_recover_with_delivery_city(): void
+    {
+        $order = $this->order();
+
+        $this->post(route('order.recover.submit'), [
+            'order_number' => $order->order_number,
+            'phone' => '0102030405',
+            'city' => 'paris',
+        ])->assertRedirect(route('order.status', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+        ]));
+    }
+
+    public function test_failed_delayed_payment_can_create_new_checkout_session(): void
+    {
+        $order = $this->order();
+        $order->update(['stripe_session_id' => 'cs_test_one', 'payment_status' => 'failed']);
+
+        Http::fake([
+            'https://api.stripe.com/v1/checkout/sessions/cs_test_one' => Http::response($this->session($order, 'unpaid')),
+            'https://api.stripe.com/v1/checkout/sessions' => Http::response([
+                'id' => 'cs_test_two',
+                'url' => 'https://checkout.stripe.com/c/pay/cs_test_two',
+            ]),
+        ]);
+
+        $url = app(StripeController::class)->checkoutUrl($order->fresh());
+
+        $this->assertSame('https://checkout.stripe.com/c/pay/cs_test_two', $url);
+        $this->assertSame('cs_test_two', $order->fresh()->stripe_session_id);
+        $this->assertSame('unpaid', $order->fresh()->payment_status);
+        Http::assertSentCount(2);
     }
 
     public function test_retry_reuses_an_open_checkout_session(): void
