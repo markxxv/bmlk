@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -181,6 +183,117 @@ class CustomerAccountsTest extends TestCase
         $this->get($fallback)->assertOk()
             ->assertSee($order->order_number)
             ->assertSee(__('Créer mon mot de passe'));
+    }
+
+    public function test_signed_verification_email_works_without_an_existing_login_session_and_claims_every_order(): void
+    {
+        $user = User::query()->create([
+            'name' => 'Marie',
+            'email' => 'marie@example.com',
+            'password' => 'ExistingSecurePassword123!',
+        ]);
+
+        $paid = $this->order();
+        $paid->update(['payment_status' => 'paid']);
+        $unpaid = $this->order();
+        $unpaid->update(['payment_status' => 'unpaid']);
+        $failed = $this->order();
+        $failed->update(['payment_status' => 'failed']);
+
+        $signedUrl = URL::temporarySignedRoute('verification.verify', now()->addHour(), [
+            'id' => $user->id,
+            'hash' => sha1($user->email),
+        ]);
+
+        $this->get($signedUrl)->assertRedirect(route('account.index'));
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertNotNull($user->fresh()->email_verified_at);
+
+        $this->get(route('account.index'))
+            ->assertOk()
+            ->assertSee($paid->order_number)
+            ->assertSee($unpaid->order_number)
+            ->assertSee($failed->order_number)
+            ->assertDontSee(__('Renvoyer le lien'));
+
+        $this->assertSame(3, $user->orders()->count());
+        foreach ([$paid, $unpaid, $failed] as $order) {
+            $this->assertSame($user->id, $order->fresh()->user_id);
+        }
+    }
+
+    public function test_first_password_setup_keeps_the_user_logged_in_even_if_referrer_was_login(): void
+    {
+        $user = User::query()->create([
+            'name' => 'Marie',
+            'email' => 'marie@example.com',
+        ]);
+
+        $this->actingAs($user)->from(route('account.login'))
+            ->post(route('account.password'), [
+                'password' => 'ANewVerySecurePassword123!',
+                'password_confirmation' => 'ANewVerySecurePassword123!',
+            ])->assertRedirect(route('account.index'));
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertTrue(Hash::check('ANewVerySecurePassword123!', $user->fresh()->password));
+    }
+
+    public function test_email_password_recovery_logs_customer_in_and_verifies_email_and_links_existing_orders(): void
+    {
+        $user = User::query()->create([
+            'name' => 'Marie',
+            'email' => 'marie@example.com',
+            'password' => 'old-password',
+        ]);
+
+        $older = $this->order();
+        $older->update(['payment_status' => 'paid']);
+
+        $token = Password::createToken($user);
+
+        $this->post(route('password.update'), [
+            'token' => $token,
+            'email' => 'marie@example.com',
+            'password' => 'NewUniqueSecurePassword123!',
+            'password_confirmation' => 'NewUniqueSecurePassword123!',
+        ])->assertRedirect(route('account.index'));
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertNotNull($user->fresh()->email_verified_at);
+        $this->assertTrue(Hash::check('NewUniqueSecurePassword123!', $user->fresh()->password));
+
+        $this->get(route('account.index'))
+            ->assertOk()
+            ->assertSee($older->order_number);
+        $this->assertSame($user->id, $older->fresh()->user_id);
+    }
+
+    public function test_unverified_customer_cannot_see_older_unassigned_orders_until_email_proof(): void
+    {
+        $user = User::query()->create(['name' => 'Marie', 'email' => 'marie@example.com']);
+
+        $current = $this->order();
+        $current->update(['user_id' => $user->id]);
+        $older = $this->order();
+        $older->update(['payment_status' => 'paid']);
+
+        $this->actingAs($user)->get(route('account.index'))
+            ->assertOk()
+            ->assertSee($current->order_number)
+            ->assertDontSee($older->order_number);
+
+        $signedUrl = URL::temporarySignedRoute('verification.verify', now()->addHour(), [
+            'id' => $user->id,
+            'hash' => sha1($user->email),
+        ]);
+
+        $this->get($signedUrl)->assertRedirect(route('account.index'));
+        $this->get(route('account.index'))
+            ->assertOk()
+            ->assertSee($current->order_number)
+            ->assertSee($older->order_number);
     }
 
     public function test_role_applications_coexist_and_influencer_code_is_immutable(): void
