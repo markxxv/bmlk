@@ -1,5 +1,11 @@
 <x-layout :title="__('Ma commande | BLACK MILK')" robots="noindex, nofollow">
     <main class="mx-auto max-w-3xl px-4 py-12 sm:py-20">
+        @auth
+            <a href="{{ route('account.index') }}" class="mb-6 inline-flex items-center gap-2 text-sm text-bmlk-brand hover:underline">
+                <x-lucide-arrow-left class="h-4 w-4" />
+                {{ __('Mes commandes') }}
+            </a>
+        @endauth
         <section class="rounded-3xl bg-white p-7 sm:p-10">
             <span class="flex h-12 w-12 items-center justify-center rounded-full bg-bmlk-soft text-bmlk-brand">
                 @if ($order->payment_status === 'paid')
