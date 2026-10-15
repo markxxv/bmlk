@@ -62,6 +62,7 @@ class AccountController extends Controller
     public function savePassword(Request $request): RedirectResponse
     {
         $data = $request->validate([
+            'current_password' => [$request->user()->password ? 'required' : 'nullable', 'current_password'],
             'password' => ['required', 'confirmed', PasswordRule::min(12)],
         ]);
         $request->user()->forceFill(['password' => $data['password']])->save();

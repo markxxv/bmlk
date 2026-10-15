@@ -15,6 +15,13 @@
     <p class="text-sm leading-6 text-zinc-500">
         {{ __('Créez votre mot de passe pour retrouver votre compte sur tous vos appareils. Votre navigateur peut le sauvegarder.') }}
     </p>
+    @if (auth()->user()->password)
+    <div>
+        <label for="current-password" class="mb-2 block text-sm font-medium">{{ __('Mot de passe actuel') }}</label>
+        <input id="current-password" name="current_password" type="password" autocomplete="current-password" required
+            class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none focus:border-bmlk-brand">
+    </div>
+    @endif
     <div>
         <label for="account-password" class="mb-2 block text-sm font-medium">{{ __('Mot de passe') }}</label>
         <input x-ref="password" id="account-password" name="password" :type="visible ? 'text' : 'password'"
