@@ -83,8 +83,9 @@ class AccountController extends Controller
 
     public function checkoutOrder(Request $request, string $orderNumber): View
     {
-        $order = Order::query()->where('order_number', $orderNumber)
-            ->where('payment_status', 'paid')->firstOrFail();
+        // The token is a private, unguessable viewing link—not an account login.
+        // It works for paid, failed and unpaid orders alike.
+        $order = Order::query()->where('order_number', $orderNumber)->firstOrFail();
 
         abort_unless($order->access_token
             && hash_equals($order->access_token, (string) $request->query('token', '')), 404);
