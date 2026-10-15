@@ -289,9 +289,9 @@ The second command manually sends currently pending emails; only run it after SM
 ## Customer accounts and partner roles
 
 - Checkout requires an email. Stripe confirmation creates a passwordless account when the email is new.
-- The original checkout browser is signed into the new account and redirected to `/account` after successful payment. Other browsers or forwarded payment links cannot sign in.
+- The original checkout browser is signed into the new account and redirected to `/account` after successful payment. Other browsers or forwarded payment links cannot sign in with an order URL alone.
 - Customers set or generate a password in their account; browsers can save it. Email verification and forgotten-password links use standard Laravel mail notifications.
-- Existing accounts are never accessed through a guest checkout. After signing in and verifying email, customers can claim paid orders matching that email.
+- Existing accounts are never accessed through a guest checkout. After the email is verified, **all matching historical orders** (paid, unpaid and failed) are linked to the customer.
 - Existing Filament users retain admin access when the migration runs; new checkout customers cannot access `/admin`.
 - Wholesale and influencer statuses are independent, can coexist, and are requested at `/account/roles`.
 - Admins approve applications in Filament > Shop > Partner applications, or set both statuses in Shop > Customers.
@@ -320,3 +320,14 @@ To grant admin access to a newly created Filament user, explicitly set its `is_a
 On the Stripe thank-you page, the customer sees a direct account button and is redirected after 5 seconds. The checkout stores a **separate, browser-only one-time activation token** in sessionStorage; the thank-you page exchanges it through `POST /account/complete-checkout`. Only a newly created passwordless account for that specific paid order can be authenticated using this proof. Missing/lost browser sessions do **not** redirect to login: `/account/checkout/{orderNumber}` shows only the current purchased order. Existing email accounts are never authenticated based solely on a new guest purchase; customers can create or reset a password by a secure email link.
 
 Deploy migration `2026_10_15_000004_add_checkout_activation_token_to_orders.php` with `php artisan migrate --force` before testing a new checkout. Existing orders from before this migration do not have the one-time browser proof, so they use the safe current-order view.
+
+
+### Account continuity and email verification
+
+- Saving the first password **keeps the user signed in** and redirects straight to `/account`, even when the previous page was a login screen.
+- A successfully used password-reset link automatically signs in and confirms the email address; the link itself proves mailbox ownership.
+- Email verification links are temporary and cryptographically signed. They work in any browser without an existing session, then sign the recipient in automatically.
+- After email confirmation, the app attaches **all** previously unassigned orders with the same normalized email address (including unpaid and failed orders). It never takes orders already assigned to another user.
+- New customers can see their current attached paid order even before confirming email, but older unassigned orders remain hidden until email ownership is proven.
+- Guest requests to customer-only pages redirect to `/account/login`; no accidental Filament login redirects.
+- Test with `php artisan test --filter=CustomerAccountsTest`.
