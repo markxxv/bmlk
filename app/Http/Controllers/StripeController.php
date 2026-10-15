@@ -34,7 +34,8 @@ class StripeController extends Controller
                     return null; // Avoid another charge while Stripe cannot be reached.
                 }
 
-                if (($session['status'] ?? null) === 'complete') {
+                if (($session['status'] ?? null) === 'complete'
+                    && ($session['payment_status'] ?? null) === 'paid') {
                     $this->sync($session, 'checkout.session.completed');
                     $order->refresh();
                 }
@@ -47,9 +48,12 @@ class StripeController extends Controller
                     return $session['url'] ?? null;
                 }
 
-                if (($session['status'] ?? null) === 'complete') {
-                    return null; // An asynchronous payment is being processed.
+                if (($session['status'] ?? null) === 'complete'
+                    && $order->payment_status !== 'failed') {
+                    return null; // An asynchronous payment is still being processed.
                 }
+
+                // A completed checkout with confirmed failed payment needs a new session.
             }
 
             $order->increment('payment_attempts');
@@ -244,7 +248,7 @@ class StripeController extends Controller
                 'updated_at' => now(),
             ]);
         } elseif ($event === 'checkout.session.completed') {
-            Order::query()->whereKey($order->id)->where('payment_status', '!=', 'paid')
+            Order::query()->whereKey($order->id)->whereNotIn('payment_status', ['paid', 'failed'])
                 ->update(['payment_status' => 'processing', 'updated_at' => now()]);
         } elseif (in_array($event, ['checkout.session.async_payment_failed', 'checkout.session.expired'], true)) {
             Order::query()->whereKey($order->id)->where('payment_status', '!=', 'paid')

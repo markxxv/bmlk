@@ -26,6 +26,13 @@ Route::get('/api/delivery-cost/{code}', [ShopController::class, 'deliveryCost'])
 
 Route::post('/stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
 
+Route::get('/order/recover', [ShopController::class, 'recoveryForm'])
+    ->name('order.recover');
+
+Route::post('/order/recover', [ShopController::class, 'recoverOrder'])
+    ->middleware('throttle:5,1')
+    ->name('order.recover.submit');
+
 Route::post('/order/{orderNumber}/pay', [StripeController::class, 'retry'])
     ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
     ->name('order.pay');

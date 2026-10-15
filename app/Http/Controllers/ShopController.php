@@ -300,6 +300,7 @@ class ShopController extends Controller
                     'token' => $order->access_token,
                 ]),
                 'order_number' => $order->order_number,
+                'status_url' => route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token]),
             ], 503);
         }
 
@@ -307,6 +308,7 @@ class ShopController extends Controller
             'success' => true,
             'redirect' => $paymentUrl,
             'order_number' => $order->order_number,
+            'status_url' => route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token]),
         ]);
     }
 
@@ -337,20 +339,77 @@ class ShopController extends Controller
         ]);
     }
 
+    public function recoveryForm(Request $request, ?string $orderNumber = null): View
+    {
+        return view('shop.recover-order', [
+            'orderNumber' => $orderNumber ?: (string) $request->query('order', ''),
+            'metaTitle' => __('Reprendre une commande | BLACK MILK'),
+        ]);
+    }
+
+    public function recoverOrder(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'order_number' => ['required', 'string', 'regex:/^BM-[0-9]{8}-[0-9]{6}$/'],
+            'phone' => ['required', 'string', 'max:50'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'city' => ['nullable', 'string', 'max:120'],
+        ]);
+
+        $order = Order::query()->where('order_number', $data['order_number'])->first();
+        $phone = preg_replace('/\D+/', '', $data['phone']);
+        $storedPhone = preg_replace('/\D+/', '', $order?->phone ?? '');
+
+        // Legacy orders with no email can be verified using the delivery city.
+        $contactMatches = $order && filled($order->email)
+            ? hash_equals(
+                Str::lower(trim($order->email)),
+                Str::lower(trim($data['email'] ?? '')),
+            )
+            : ($order && hash_equals(
+                Str::lower(trim($order->city)),
+                Str::lower(trim($data['city'] ?? '')),
+            ));
+
+        if (! $order || ! $order->access_token || strlen($phone) < 6
+            || ! hash_equals($storedPhone, $phone) || ! $contactMatches) {
+            throw ValidationException::withMessages([
+                'order_number' => __('Commande introuvable ou informations incorrectes.'),
+            ]);
+        }
+
+        $request->session()->put("bmlk_orders.{$order->id}", $order->access_token);
+
+        return redirect()->route('order.status', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+        ]);
+    }
+
     public function orderStatus(Request $request, string $orderNumber): View|RedirectResponse
     {
-        $order = Order::query()->where('order_number', $orderNumber)->firstOrFail();
+        $order = Order::query()->where('order_number', $orderNumber)->first();
 
         $token = (string) $request->query('token', '');
-        $sessionToken = (string) $request->session()->get("bmlk_orders.{$order->id}", '');
+        $sessionToken = $order
+            ? (string) $request->session()->get("bmlk_orders.{$order->id}", '')
+            : '';
 
-        abort_unless($order->access_token && (
+        $authorized = $order && $order->access_token && (
             hash_equals($order->access_token, $token) ||
             hash_equals($order->access_token, $sessionToken)
-        ), 404);
+        );
+
+        if (! $authorized) {
+            // Show a generic recovery form without revealing whether the order exists.
+            return $this->recoveryForm($request, $orderNumber);
+        }
 
         if ($order->payment_status === 'paid') {
-            return redirect()->route('order.thanks', ['orderNumber' => $order->order_number, 'token' => $order->access_token]);
+            return redirect()->route('order.thanks', [
+                'orderNumber' => $order->order_number,
+                'token' => $order->access_token,
+            ]);
         }
 
         return view('shop.order-status', [
