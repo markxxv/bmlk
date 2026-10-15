@@ -6,3 +6,8 @@
 html.fi {
     --sidebar-width: 15rem;
 }
+
+.fi-main {
+  padding-inline: unset!important;
+  padding-right: 1rem!important;
+}
