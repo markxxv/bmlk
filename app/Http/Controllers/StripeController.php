@@ -33,8 +33,10 @@ class StripeController extends Controller
                     return null; // Avoid another charge while Stripe cannot be reached.
                 }
 
-                $this->sync($session, 'checkout.session.completed');
-                $order->refresh();
+                if (($session['status'] ?? null) === 'complete') {
+                    $this->sync($session, 'checkout.session.completed');
+                    $order->refresh();
+                }
 
                 if ($order->payment_status === 'paid') {
                     return $this->thanksUrl($order);
@@ -102,12 +104,16 @@ class StripeController extends Controller
                 return null;
             }
 
-            $order->update([
-                'stripe_session_id' => $response->json('id'),
-                'payment_status' => 'unpaid',
-            ]);
+            $changed = Order::query()
+                ->whereKey($order->id)
+                ->where('payment_status', '!=', 'paid')
+                ->update([
+                    'stripe_session_id' => $response->json('id'),
+                    'payment_status' => 'unpaid',
+                    'updated_at' => now(),
+                ]);
 
-            return $response->json('url');
+            return $changed ? $response->json('url') : $this->thanksUrl($order);
         } catch (Throwable $e) {
             Log::warning('Stripe Checkout unavailable.', ['order_id' => $order->id, 'error' => $e->getMessage()]);
             return null;
