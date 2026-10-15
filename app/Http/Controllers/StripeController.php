@@ -169,6 +169,8 @@ class StripeController extends Controller
         // Only the browser which started THIS checkout may receive a new
         // passwordless customer's account session. A forwarded payment link
         // or an order recovered by email never grants account access.
+        $this->createCustomerForPaidOrder($order);
+        $order->refresh();
         $user = $order->user;
         $onboardingToken = (string) $request->session()->pull("bmlk_auto_login.{$order->id}", '');
 

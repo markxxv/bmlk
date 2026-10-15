@@ -216,6 +216,12 @@ class OrderResource extends Resource
         $html .= '<div class="mt-5 space-y-3 border-t border-gray-200 pt-5 text-sm dark:border-gray-700">';
         $html .= '<div class="flex justify-between gap-4"><span class="text-gray-500 dark:text-gray-400">Subtotal</span>'
             .'<span class="font-medium">'.number_format((float) $record->subtotal, 2, ',', ' ').' €</span></div>';
+        if ((float) $record->discount_amount > 0) {
+            $html .= '<div class="flex justify-between gap-4 text-[#A9636F]"><span>Discount'
+                .($record->promo_code ? ' · '.e($record->promo_code) : '').'</span>'
+                .'<span>− '.number_format((float) $record->discount_amount, 2, ',', ' ').' €</span></div>';
+        }
+
         $html .= '<div class="flex justify-between gap-4"><span class="text-gray-500 dark:text-gray-400">Delivery'
             .($record->country ? ' ('.e($record->country).')' : '').'</span>'
             .'<span class="font-medium">'.number_format((float) $record->delivery_cost, 2, ',', ' ').' €</span></div>';
