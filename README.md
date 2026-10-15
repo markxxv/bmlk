@@ -313,3 +313,10 @@ php artisan test --filter=CustomerAccountsTest
 SMTP must be configured for email verification and password reset. No extra workers are needed.
 
 To grant admin access to a newly created Filament user, explicitly set its `is_admin` field to `true` (e.g. via `php artisan tinker`). This flag is **never** granted during customer checkout.
+
+
+### Seamless post-payment onboarding
+
+On the Stripe thank-you page, the customer sees a direct account button and is redirected after 5 seconds. The checkout stores a **separate, browser-only one-time activation token** in sessionStorage; the thank-you page exchanges it through `POST /account/complete-checkout`. Only a newly created passwordless account for that specific paid order can be authenticated using this proof. Missing/lost browser sessions do **not** redirect to login: `/account/checkout/{orderNumber}` shows only the current purchased order. Existing email accounts are never authenticated based solely on a new guest purchase; customers can create or reset a password by a secure email link.
+
+Deploy migration `2026_10_15_000004_add_checkout_activation_token_to_orders.php` with `php artisan migrate --force` before testing a new checkout. Existing orders from before this migration do not have the one-time browser proof, so they use the safe current-order view.

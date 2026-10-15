@@ -78,8 +78,11 @@ class CustomerAccountsTest extends TestCase
                 'token' => $order->access_token,
                 'session_id' => 'cs_test_customer',
             ]))->assertOk()
-                ->assertSee(__('Se connecter à mon espace'))
-                ->assertSee(route('account.login'), false);
+                ->assertSee(__('Accéder à mon espace'))
+                ->assertSee(route('account.checkout', [
+                    'orderNumber' => $order->order_number,
+                    'token' => $order->access_token,
+                ]), false);
 
         $this->assertGuest();
         $this->assertNull($order->fresh()->user_id);
