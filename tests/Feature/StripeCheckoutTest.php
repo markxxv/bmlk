@@ -73,9 +73,10 @@ class StripeCheckoutTest extends TestCase
         $this->assertSame($paidAt, $order->fresh()->paid_at);
     }
 
-    public function test_legacy_order_link_without_token_shows_recovery_instead_of_404(): void
+    public function test_order_with_email_asks_only_for_email_without_a_token(): void
     {
         $order = $this->order();
+        $order->update(['email' => 'marie@example.com']);
 
         $this->get(route('order.status', ['orderNumber' => $order->order_number]))
             ->assertOk()
@@ -95,7 +96,6 @@ class StripeCheckoutTest extends TestCase
 
         $this->post(route('order.recover.submit'), [
             'order_number' => $order->order_number,
-            'phone' => '01 02 03 04 05',
             'email' => 'marie@example.com',
         ])->assertRedirect(route('order.status', [
             'orderNumber' => $order->order_number,
@@ -114,8 +114,7 @@ class StripeCheckoutTest extends TestCase
 
         $this->from(route('order.recover'))->post(route('order.recover.submit'), [
             'order_number' => $order->order_number,
-            'phone' => '9999999999',
-            'email' => 'marie@example.com',
+            'email' => 'wrong@example.com',
         ])->assertRedirect(route('order.recover'))->assertSessionHasErrors('order_number');
 
         $this->get(route('order.status', ['orderNumber' => $order->order_number]))
@@ -123,14 +122,16 @@ class StripeCheckoutTest extends TestCase
             ->assertDontSee('Rue de Test 1');
     }
 
-    public function test_legacy_order_without_email_can_recover_with_delivery_city(): void
+    public function test_legacy_order_without_email_opens_directly_by_number(): void
     {
         $order = $this->order();
 
+        $this->get(route('order.status', [
+            'orderNumber' => $order->order_number,
+        ]))->assertOk()->assertSee('Gel');
+
         $this->post(route('order.recover.submit'), [
             'order_number' => $order->order_number,
-            'phone' => '0102030405',
-            'city' => 'paris',
         ])->assertRedirect(route('order.status', [
             'orderNumber' => $order->order_number,
             'token' => $order->access_token,

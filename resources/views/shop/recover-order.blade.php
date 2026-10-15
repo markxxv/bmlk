@@ -9,7 +9,7 @@
                 {{ __('Reprendre votre commande') }}
             </h1>
             <p class="mt-3 text-sm leading-6 text-zinc-500">
-                {{ __('Retrouvez votre commande et reprenez le paiement sans refaire votre panier. Indiquez le numéro de commande et le téléphone utilisé, ainsi que votre e-mail ou, si vous n’en avez pas fourni, votre ville de livraison.') }}
+                {{ __('Indiquez votre numéro de commande. Si vous avez renseigné un e-mail lors de l’achat, saisissez-le pour retrouver votre commande et reprendre le paiement.') }}
             </p>
 
             <form method="POST" action="{{ route('order.recover.submit') }}" class="mt-8 space-y-4">
@@ -27,31 +27,11 @@
                 </div>
 
                 <div>
-                    <label for="order-phone" class="mb-2 block text-sm font-medium text-zinc-800">{{ __('Téléphone') }}</label>
-                    <input id="order-phone" name="phone" type="tel" maxlength="50" value="{{ old('phone') }}"
-                        autocomplete="tel" required
-                        class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none focus:border-[#A9636F]">
-                    @error('phone')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
-                    <label for="order-email" class="mb-2 block text-sm font-medium text-zinc-800">{{ __('E-mail (si renseigné lors de la commande)') }}</label>
+                    <label for="order-email" class="mb-2 block text-sm font-medium text-zinc-800">{{ __('E-mail (si renseigné)') }}</label>
                     <input id="order-email" name="email" type="email" maxlength="255" value="{{ old('email') }}"
                         autocomplete="email"
                         class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none focus:border-[#A9636F]">
                     @error('email')
-                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
-                    <label for="order-city" class="mb-2 block text-sm font-medium text-zinc-800">{{ __('Ville de livraison (si aucun e-mail)') }}</label>
-                    <input id="order-city" name="city" type="text" maxlength="120" value="{{ old('city') }}"
-                        autocomplete="address-level2"
-                        class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none focus:border-[#A9636F]">
-                    @error('city')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>

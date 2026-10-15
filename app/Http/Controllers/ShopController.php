@@ -351,28 +351,17 @@ class ShopController extends Controller
     {
         $data = $request->validate([
             'order_number' => ['required', 'string', 'regex:/^BM-[0-9]{8}-[0-9]{6}$/'],
-            'phone' => ['required', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
-            'city' => ['nullable', 'string', 'max:120'],
         ]);
 
         $order = Order::query()->where('order_number', $data['order_number'])->first();
-        $phone = preg_replace('/\D+/', '', $data['phone']);
-        $storedPhone = preg_replace('/\D+/', '', $order?->phone ?? '');
 
-        // Legacy orders with no email can be verified using the delivery city.
-        $contactMatches = $order && filled($order->email)
-            ? hash_equals(
+        if (! $order || ! $order->access_token || (
+            filled($order->email) && ! hash_equals(
                 Str::lower(trim($order->email)),
                 Str::lower(trim($data['email'] ?? '')),
             )
-            : ($order && hash_equals(
-                Str::lower(trim($order->city)),
-                Str::lower(trim($data['city'] ?? '')),
-            ));
-
-        if (! $order || ! $order->access_token || strlen($phone) < 6
-            || ! hash_equals($storedPhone, $phone) || ! $contactMatches) {
+        )) {
             throw ValidationException::withMessages([
                 'order_number' => __('Commande introuvable ou informations incorrectes.'),
             ]);
@@ -400,8 +389,13 @@ class ShopController extends Controller
             hash_equals($order->access_token, $sessionToken)
         );
 
+        if (! $authorized && $order && $order->access_token && blank($order->email)) {
+            // Older orders without an email can be resumed using their order number.
+            $request->session()->put("bmlk_orders.{$order->id}", $order->access_token);
+            $authorized = true;
+        }
+
         if (! $authorized) {
-            // Show a generic recovery form without revealing whether the order exists.
             return $this->recoveryForm($request, $orderNumber);
         }
 
