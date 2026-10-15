@@ -331,3 +331,8 @@ Deploy migration `2026_10_15_000004_add_checkout_activation_token_to_orders.php`
 - New customers can see their current attached paid order even before confirming email, but older unassigned orders remain hidden until email ownership is proven.
 - Guest requests to customer-only pages redirect to `/account/login`; no accidental Filament login redirects.
 - Test with `php artisan test --filter=CustomerAccountsTest`.
+
+
+### Payment email receipts and guest order links
+
+Payment confirmation, failed-payment and next-day reminder emails show the saved order's products, variants, quantities, unit/line prices, subtotal, discount, delivery and total. Each email contains **Voir ma commande** linked to `/account/checkout/{orderNumber}?token=...`. This is a private bearer link: it displays only that order to anyone with the link, without signing them into an account. Do not publish or expose the token. On unpaid or failed orders, the details screen provides the existing Stripe payment retry. The original `/order/{orderNumber}?token=...` link also redirects paid orders to the full order details, rather than to the temporary Stripe thank-you page. No migrations or new workers are needed for this change.
