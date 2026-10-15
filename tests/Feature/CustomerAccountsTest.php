@@ -40,6 +40,8 @@ class CustomerAccountsTest extends TestCase
                 'session_id' => 'cs_test_customer',
             ]))->assertOk()
                 ->assertSee(__('Merci pour votre commande'))
+                ->assertSee(__('Accéder à mon espace'))
+                ->assertSee('}, 5000);', false)
                 ->assertSee(route('account.index'), false);
 
         $user = User::query()->where('email', 'marie@example.com')->firstOrFail();
@@ -75,7 +77,9 @@ class CustomerAccountsTest extends TestCase
                 'orderNumber' => $order->order_number,
                 'token' => $order->access_token,
                 'session_id' => 'cs_test_customer',
-            ]))->assertOk();
+            ]))->assertOk()
+                ->assertSee(__('Se connecter à mon espace'))
+                ->assertSee(route('account.login'), false);
 
         $this->assertGuest();
         $this->assertNull($order->fresh()->user_id);
@@ -113,6 +117,9 @@ class CustomerAccountsTest extends TestCase
 
         $this->assertTrue(Hash::check('MyUniquePassword123!', $user->fresh()->password));
         $this->assertFalse($user->fresh()->is_admin);
+
+        $this->get(route('account.index'))
+            ->assertDontSee(__('Protégez votre compte'));
     }
 
     public function test_influencer_discount_is_recalculated_from_catalog_and_reflected_in_stripe_order(): void
