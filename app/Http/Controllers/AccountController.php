@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password as PasswordRule;
@@ -16,6 +18,83 @@ use Illuminate\View\View;
 
 class AccountController extends Controller
 {
+    /**
+     * Complete checkout onboarding with a browser-only secret returned to
+     * the original first-party checkout. The order's URL token is not enough
+     * to sign in. Existing accounts are never taken over from a guest order.
+     */
+    public function completeCheckout(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'order_number' => ['required', 'string', 'regex:/^BM-[0-9]{8}-[0-9]{6}$/'],
+            'token' => ['required', 'string', 'size:64'],
+        ]);
+
+        $order = Order::query()
+            ->where('order_number', $data['order_number'])
+            ->where('payment_status', 'paid')
+            ->first();
+
+        if (! $order || ! $order->onboarding_token_hash || ! hash_equals(
+            $order->onboarding_token_hash,
+            hash('sha256', $data['token']),
+        )) {
+            return response()->json(['message' => __('Lien de session expiré.')], 403);
+        }
+
+        $user = $order->user;
+
+        // Never sign in somebody who used the same email for an older
+        // registered account (or an admin account). That would be a takeover.
+        if ($user && (int) $user->onboarding_order_id === $order->id
+            && blank($user->password) && ! $user->is_admin) {
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            $order->forceFill(['onboarding_token_hash' => null])->save();
+            if (! $user->hasVerifiedEmail()) {
+                try {
+                    $user->sendEmailVerificationNotification();
+                } catch (\Throwable $exception) {
+                    Log::warning('Account verification email failed', [
+                        'user_id' => $user->id,
+                        'error' => $exception->getMessage(),
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'url' => route('account.index'),
+                'authenticated' => true,
+            ]);
+        }
+
+        // The original purchaser can always see this ONE paid order.
+        // An existing account requires its own authenticated login.
+        return response()->json([
+            'url' => route('account.checkout', [
+                'orderNumber' => $order->order_number,
+                'token' => $order->access_token,
+            ]),
+            'authenticated' => false,
+        ]);
+    }
+
+    public function checkoutOrder(Request $request, string $orderNumber): View
+    {
+        $order = Order::query()->where('order_number', $orderNumber)
+            ->where('payment_status', 'paid')->firstOrFail();
+
+        abort_unless($order->access_token
+            && hash_equals($order->access_token, (string) $request->query('token', '')), 404);
+
+        if (Auth::check() && $order->user_id === Auth::id()) {
+            return view('account.order', ['order' => $order]);
+        }
+
+        return view('account.checkout-order', ['order' => $order]);
+    }
+
     public function loginForm(): View { return view('account.login'); }
 
     public function login(Request $request): RedirectResponse

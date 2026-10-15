@@ -195,7 +195,12 @@ class StripeController extends Controller
         return view('shop.thanks', [
             'order' => $order,
             'accountReady' => $accountReady,
-            'accountUrl' => $accountReady ? route('account.index') : route('account.login'),
+            'accountUrl' => $accountReady
+                ? route('account.index')
+                : route('account.checkout', [
+                    'orderNumber' => $order->order_number,
+                    'token' => $order->access_token,
+                ]),
             'metaTitle' => __('Merci pour votre commande | BLACK MILK'),
         ]);
     }

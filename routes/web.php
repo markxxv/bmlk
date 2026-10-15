@@ -52,6 +52,12 @@ Route::get('/order/{orderNumber}', [ShopController::class, 'orderStatus'])
     ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
     ->name('order.status');
 
+Route::post('/account/complete-checkout', [AccountController::class, 'completeCheckout'])
+    ->middleware('throttle:6,1')->name('account.complete_checkout');
+Route::get('/account/checkout/{orderNumber}', [AccountController::class, 'checkoutOrder'])
+    ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
+    ->name('account.checkout');
+
 Route::middleware('guest')->group(function (): void {
     Route::get('/account/login', [AccountController::class, 'loginForm'])->name('account.login');
     Route::post('/account/login', [AccountController::class, 'login'])->middleware('throttle:5,1')->name('account.login.submit');
