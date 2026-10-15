@@ -45,9 +45,16 @@ class AccountController extends Controller
     public function index(Request $request): View
     {
         $this->claimOrders($request);
+        $user = $request->user();
+
         return view('account.index', [
-            'user' => $request->user(),
-            'orders' => $request->user()->orders()->latest()->paginate(12),
+            'user' => $user,
+            // The originating paid order is visible immediately, even while
+            // the new customer's email still awaits verification.
+            'currentOrder' => $user->orders()
+                ->whereKey($user->onboarding_order_id)
+                ->first(),
+            'orders' => $user->orders()->latest()->paginate(12),
         ]);
     }
 

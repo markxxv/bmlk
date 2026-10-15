@@ -12,9 +12,15 @@
                     localStorage.removeItem('bm_unpaid_order');
                 }
             } catch (error) {
-                // A paid order remains confirmed even if browser storage is unavailable.
+                // Payment confirmation is not affected by browser storage.
             }
         });
+
+        // Give the customer time to read the confirmation. The link works
+        // immediately and is also a fallback when JavaScript is disabled.
+        window.setTimeout(() => {
+            window.location.assign(@js($accountUrl));
+        }, 5000);
     </script>
 
     <main class="px-3 py-16 sm:px-5 sm:py-24 lg:px-8">
@@ -23,7 +29,7 @@
                 <x-lucide-check class="h-6 w-6" />
             </span>
 
-            <p class="mt-7 text-sm font-medium text-[#A9636F]">{{ __('Paiement confirmé') }}</p>
+            <p class="mt-7 text-sm font-medium text-bmlk-brand">{{ __('Paiement confirmé') }}</p>
             <h1 class="mt-2 font-serif text-4xl font-medium tracking-tight text-zinc-900">
                 {{ __('Merci pour votre commande') }}
             </h1>
@@ -31,16 +37,16 @@
                 {{ __('Votre paiement a été reçu. Nous préparons votre commande.') }}
             </p>
 
-            <div class="mt-8 space-y-4 rounded-2xl bg-[#FCF8F4] p-5">
+            <div class="mt-8 space-y-4 rounded-2xl bg-bmlk-page p-5">
                 <div class="flex items-center justify-between gap-4 text-sm">
                     <span class="text-zinc-500">{{ __('Numéro de commande') }}</span>
                     <span class="font-medium text-zinc-900">{{ $order->order_number }}</span>
                 </div>
                 @if ((float) $order->discount_amount > 0)
-                <div class="flex items-center justify-between gap-4 text-sm">
-                    <span class="text-[#A9636F]">{{ __('Réduction') }} · {{ $order->promo_code }}</span>
-                    <span class="text-[#A9636F]">− {{ number_format($order->discount_amount, 2, ',', ' ') }} €</span>
-                </div>
+                    <div class="flex items-center justify-between gap-4 text-sm">
+                        <span class="text-bmlk-brand">{{ __('Réduction') }} · {{ $order->promo_code }}</span>
+                        <span class="text-bmlk-brand">− {{ number_format($order->discount_amount, 2, ',', ' ') }} €</span>
+                    </div>
                 @endif
                 <div class="flex items-center justify-between gap-4 text-sm">
                     <span class="text-zinc-500">{{ __('Total payé') }}</span>
@@ -48,8 +54,27 @@
                 </div>
             </div>
 
+            <div class="mt-8">
+                <a href="{{ $accountUrl }}"
+                    class="inline-flex items-center gap-2 rounded-full bg-bmlk-brand px-6 py-3.5 text-sm font-semibold text-white transition hover:opacity-90">
+                    <x-lucide-user-round class="h-4 w-4" />
+                    {{ $accountReady ? __('Accéder à mon espace') : __('Se connecter à mon espace') }}
+                    <x-lucide-arrow-right class="h-4 w-4" />
+                </a>
+
+                <p class="mt-4 text-xs leading-5 text-zinc-500">
+                    {{ __('Redirection automatique dans 5 secondes.') }}
+                </p>
+
+                @unless ($accountReady)
+                    <p class="mt-2 text-xs leading-5 text-zinc-500">
+                        {{ __('Un compte existe déjà avec cet e-mail ? Connectez-vous pour accéder à vos commandes.') }}
+                    </p>
+                @endunless
+            </div>
+
             <a href="{{ route('shop.index') }}"
-                class="mt-8 inline-flex rounded-full bg-zinc-900 px-6 py-3 text-sm font-medium text-white transition hover:bg-zinc-800">
+                class="mt-7 inline-flex text-sm text-zinc-500 transition hover:text-zinc-900">
                 {{ __('Continuer mes achats') }}
             </a>
         </div>

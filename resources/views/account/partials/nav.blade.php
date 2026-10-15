@@ -28,7 +28,7 @@
 @if ($errors->any())
     <p class="mb-6 text-sm text-red-600">{{ $errors->first() }}</p>
 @endif
-@if (! auth()->user()->hasVerifiedEmail())
+@if (! auth()->user()->hasVerifiedEmail() && ! (request()->routeIs('account.index') && blank(auth()->user()->password)))
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white px-5 py-4 text-sm">
         <p class="text-zinc-600">{{ __('Confirmez votre e-mail pour accéder aux programmes partenaires et à tout votre historique.') }}</p>
         <form method="POST" action="{{ route('verification.send') }}">@csrf

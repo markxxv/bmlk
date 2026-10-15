@@ -188,12 +188,14 @@ class StripeController extends Controller
             }
         }
 
-        if (Auth::check() && Auth::id() === $order->user_id) {
-            return redirect()->route('account.index')->with('success', __('Paiement confirmé. Bienvenue dans votre espace.'));
-        }
+        // Always display the confirmation page. It offers the account link and
+        // redirects after five seconds, rather than skipping the thank-you screen.
+        $accountReady = Auth::check() && Auth::id() === $order->user_id;
 
         return view('shop.thanks', [
             'order' => $order,
+            'accountReady' => $accountReady,
+            'accountUrl' => $accountReady ? route('account.index') : route('account.login'),
             'metaTitle' => __('Merci pour votre commande | BLACK MILK'),
         ]);
     }

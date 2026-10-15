@@ -38,13 +38,22 @@ class CustomerAccountsTest extends TestCase
                 'orderNumber' => $order->order_number,
                 'token' => $order->access_token,
                 'session_id' => 'cs_test_customer',
-            ]))->assertRedirect(route('account.index'));
+            ]))->assertOk()
+                ->assertSee(__('Merci pour votre commande'))
+                ->assertSee(route('account.index'), false);
 
         $user = User::query()->where('email', 'marie@example.com')->firstOrFail();
         $this->assertAuthenticatedAs($user);
         $this->assertNull($user->password);
         $this->assertFalse($user->is_admin);
         $this->assertSame($user->id, $order->fresh()->user_id);
+        $this->assertFalse($user->hasVerifiedEmail());
+
+        $this->get(route('account.index'))
+            ->assertOk()
+            ->assertSee(__('Protégez votre compte'))
+            ->assertSee($order->order_number)
+            ->assertSee(__('Générer un mot de passe'));
 
         Auth::logout();
         $this->get(route('order.thanks', [
