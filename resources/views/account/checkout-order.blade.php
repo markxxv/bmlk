@@ -81,6 +81,18 @@
                 </div>
             </div>
 
+            @if ($order->address || $order->city)
+                <section class="mt-9 border-t border-zinc-100 pt-7">
+                    <h2 class="font-serif text-xl text-zinc-900">{{ __('Adresse de livraison') }}</h2>
+                    <p class="mt-3 text-sm leading-7 text-zinc-600">
+                        {{ trim($order->first_name.' '.$order->last_name) }}
+                        <span class="block">{{ $order->address }}</span>
+                        <span class="block">{{ trim($order->zip.' '.$order->city) }}</span>
+                        <span class="block">{{ $order->country }}</span>
+                    </p>
+                </section>
+            @endif
+
             @if ($order->payment_status !== 'paid' && $order->payment_status !== 'processing')
                 <form method="POST" action="{{ route('order.pay', ['orderNumber' => $order->order_number, 'token' => $order->access_token]) }}" class="mt-8">
                     @csrf
