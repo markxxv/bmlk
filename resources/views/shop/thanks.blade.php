@@ -1,7 +1,10 @@
 <x-layout :title="$metaTitle" robots="noindex, nofollow">
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.store('cart').clearCart();
+            if (sessionStorage.getItem('bm_pending_order') === @js($order->order_number)) {
+                Alpine.store('cart').clearCart();
+                sessionStorage.removeItem('bm_pending_order');
+            }
         });
     </script>
 
