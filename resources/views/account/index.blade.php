@@ -103,6 +103,42 @@
                         <x-lucide-arrow-up-right class="h-4 w-4" />
                     </a>
                 </section>
+
+                @if ($user->is_influencer)
+                    <section class="mt-5 rounded-3xl bg-white p-6">
+                        <div class="flex items-center gap-2.5 text-bmlk-brand">
+                            <x-lucide-ticket-percent class="h-5 w-5" aria-hidden="true" />
+                            <h3 class="font-serif text-xl text-zinc-900">{{ __('Votre code permanent') }}</h3>
+                        </div>
+
+                        @if (filled($user->influencer_code))
+                            <div class="mt-5 flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-2xl bg-bmlk-soft p-3.5 pl-4"
+                                x-data="{ copied: false }">
+                                <span class="min-w-0 break-all font-serif text-xl font-medium tracking-wide text-zinc-900">
+                                    {{ $user->influencer_code }}
+                                </span>
+                                <button
+                                    type="button"
+                                    @click="navigator.clipboard.writeText(@js($user->influencer_code)).then(() => copied = true).catch(() => copied = false)"
+                                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs font-medium text-bmlk-brand transition hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bmlk-brand"
+                                    aria-label="{{ __('Copier le code') }}"
+                                >
+                                    <x-lucide-copy x-show="!copied" class="h-4 w-4" aria-hidden="true" />
+                                    <x-lucide-check x-show="copied" x-cloak class="h-4 w-4" aria-hidden="true" />
+                                    <span x-show="!copied">{{ __('Copier') }}</span>
+                                    <span x-show="copied" x-cloak role="status">{{ __('Copié !') }}</span>
+                                </button>
+                            </div>
+                        @else
+                            <a href="{{ route('account.influencer') }}"
+                                class="mt-5 inline-flex items-center gap-2 text-sm font-medium text-bmlk-brand transition hover:underline">
+                                <x-lucide-plus class="h-4 w-4" aria-hidden="true" />
+                                {{ __('Choisissez votre code unique') }}
+                                <x-lucide-arrow-up-right class="h-4 w-4" aria-hidden="true" />
+                            </a>
+                        @endif
+                    </section>
+                @endif
             </aside>
         </div>
     </main>
