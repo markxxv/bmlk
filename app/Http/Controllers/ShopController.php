@@ -212,7 +212,7 @@ class ShopController extends Controller
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['nullable', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:50'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
             'country' => ['required', 'string', 'max:120'],
             'zip' => ['nullable', 'string', 'max:30'],
             'city' => ['required', 'string', 'max:120'],
@@ -282,12 +282,15 @@ class ShopController extends Controller
             'delivery_cost' => $deliveryCost,
             'total_amount' => $totalAmount,
             'status' => 'pending',
+            'user_id' => $request->user() && Str::lower($request->user()->email) === Str::lower($validated['email'])
+                ? $request->user()->id : null,
             'payment_status' => 'unpaid',
             'access_token' => Str::random(48),
         ]);
 
         // Also authorize this browser to access its order if the query string is lost.
         $request->session()->put("bmlk_orders.{$order->id}", $order->access_token);
+        $request->session()->put("bmlk_auto_login.{$order->id}", $order->access_token);
 
         $paymentUrl = app(StripeController::class)->checkoutUrl($order);
 

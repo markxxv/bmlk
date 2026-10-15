@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -164,6 +166,30 @@ class StripeController extends Controller
             return redirect()->to($this->statusUrl($order));
         }
 
+        // Only the browser which started THIS checkout may receive a new
+        // passwordless customer's account session. A forwarded payment link
+        // or an order recovered by email never grants account access.
+        $user = $order->user;
+        $onboardingToken = (string) $request->session()->pull("bmlk_auto_login.{$order->id}", '');
+
+        if (! Auth::check() && $user && $user->onboarding_order_id === $order->id
+            && $onboardingToken !== '' && hash_equals($order->access_token, $onboardingToken)) {
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            if (! $user->hasVerifiedEmail()) {
+                try {
+                    $user->sendEmailVerificationNotification();
+                } catch (Throwable $e) {
+                    Log::warning('Verification email failed.', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+                }
+            }
+        }
+
+        if (Auth::check() && Auth::id() === $order->user_id) {
+            return redirect()->route('account.index')->with('success', __('Paiement confirmé. Bienvenue dans votre espace.'));
+        }
+
         return view('shop.thanks', [
             'order' => $order,
             'metaTitle' => __('Merci pour votre commande | BLACK MILK'),
@@ -256,6 +282,7 @@ class StripeController extends Controller
                 'paid_at' => now(),
                 'updated_at' => now(),
             ]);
+            $this->createCustomerForPaidOrder($order->fresh());
         } elseif ($event === 'checkout.session.completed') {
             Order::query()->whereKey($order->id)->whereNotIn('payment_status', ['paid', 'failed'])
                 ->update(['payment_status' => 'processing', 'updated_at' => now()]);
@@ -267,6 +294,28 @@ class StripeController extends Controller
                     'payment_failed_at' => now(),
                     'updated_at' => now(),
                 ]);
+        }
+    }
+
+    private function createCustomerForPaidOrder(Order $order): void
+    {
+        if ($order->user_id || blank($order->email)) {
+            return;
+        }
+
+        $email = Str::lower(trim($order->email));
+        // Existing accounts are NEVER claimed by an anonymous purchase.
+        $user = User::query()->firstOrCreate(
+            ['email' => $email],
+            [
+                'name' => trim($order->first_name.' '.$order->last_name),
+                'password' => null,
+                'onboarding_order_id' => $order->id,
+            ],
+        );
+
+        if ($user->onboarding_order_id === $order->id) {
+            $order->forceFill(['user_id' => $user->id])->save();
         }
     }
 

@@ -267,6 +267,7 @@
                                     type="email"
                                     x-model="form.email"
                                     placeholder="{{ __('E-mail') }}"
+                                    autocomplete="email" required
                                     class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#A9636F]"
                                 >
                                 <p x-show="errors.email" x-text="errors.email?.[0]" class="mt-1 text-xs text-red-500"></p>
