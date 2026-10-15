@@ -132,6 +132,13 @@ class OrderResource extends Resource
                                     ->prefixIcon('lucide-mailbox')
                                     ->disabled(),
 
+                                TextInput::make('tracking_number')
+                                    ->label('Tracking number')
+                                    ->prefixIcon('lucide-package-search')
+                                    ->maxLength(190)
+                                    ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? trim($state) : null)
+                                    ->columnSpanFull(),
+
                                 Textarea::make('address')
                                     ->label('Address')
                                     ->hintIcon('lucide-map-pinned')
@@ -249,6 +256,10 @@ class OrderResource extends Resource
                     default => 'gray',
                 }),
             TextColumn::make('status')->label('Order status')->badge()->color('gray'),
+            TextColumn::make('tracking_number')->label('Tracking')
+                ->placeholder('—')
+                ->copyable()
+                ->toggleable(),
         ])
         ->filters([
             SelectFilter::make('payment_status')->options([

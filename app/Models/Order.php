@@ -26,6 +26,28 @@ class Order extends Model
         ];
     }
 
+    public function customerStatusLabel(): string
+    {
+        return match ($this->status) {
+            'pending' => __('En attente de préparation'),
+            'processing' => __('En préparation'),
+            'shipped' => __('Expédiée'),
+            'completed' => __('Terminée'),
+            'cancelled' => __('Annulée'),
+            default => __('En attente'),
+        };
+    }
+
+    public function customerPaymentStatusLabel(): string
+    {
+        return match ($this->payment_status) {
+            'paid' => __('Payée'),
+            'processing' => __('Paiement en cours'),
+            'failed' => __('Paiement échoué'),
+            default => __('Paiement en attente'),
+        };
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

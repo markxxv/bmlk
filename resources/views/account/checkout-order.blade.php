@@ -21,7 +21,7 @@
             <h1 class="mt-2 font-serif text-3xl text-zinc-900 sm:text-4xl">{{ __('Votre commande') }}</h1>
             <p class="mt-3 text-sm leading-6 text-zinc-500">
                 {{ $order->payment_status === 'paid'
-                    ? __('Votre paiement a été reçu. Nous préparons votre commande.')
+                    ? __('Votre paiement a été reçu. Retrouvez le statut de votre commande ci-dessous.')
                     : __('Votre commande est enregistrée. Vos articles sont conservés et vous pouvez reprendre le paiement sans refaire votre panier.') }}
             </p>
 
@@ -31,6 +31,30 @@
                     <strong class="mt-1 block text-sm text-zinc-900">{{ $order->order_number }}</strong>
                 </div>
                 <strong class="text-lg text-zinc-900">{{ number_format((float) $order->total_amount, 2, ',', ' ') }} €</strong>
+            </div>
+
+            <div class="mt-5 grid gap-3 {{ filled($order->tracking_number) ? 'sm:grid-cols-2' : '' }}">
+                <div class="flex min-w-0 items-start gap-3 rounded-2xl bg-zinc-50 px-4 py-4">
+                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-bmlk-brand">
+                        <x-lucide-package-check class="h-4 w-4" aria-hidden="true" />
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-xs text-zinc-500">{{ __('Statut de la commande') }}</p>
+                        <p class="mt-1 text-sm font-medium text-zinc-900">{{ $order->customerStatusLabel() }}</p>
+                        <p class="mt-1 text-xs text-zinc-500">{{ $order->customerPaymentStatusLabel() }}</p>
+                    </div>
+                </div>
+                @if (filled($order->tracking_number))
+                    <div class="flex min-w-0 items-start gap-3 rounded-2xl bg-zinc-50 px-4 py-4">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-bmlk-brand">
+                            <x-lucide-truck class="h-4 w-4" aria-hidden="true" />
+                        </span>
+                        <div class="min-w-0">
+                            <p class="text-xs text-zinc-500">{{ __('Numéro de suivi') }}</p>
+                            <p class="mt-1 break-all text-sm font-semibold text-zinc-900">{{ $order->tracking_number }}</p>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <h2 class="mt-9 font-serif text-2xl text-zinc-900">{{ __('Articles commandés') }}</h2>
@@ -115,7 +139,8 @@
                             <x-lucide-key-round class="h-4 w-4" />
                             {{ __('Créer mon mot de passe') }}
                         </a>
-                        <a href="{{ route('account.login') }}" class="font-medium text-bmlk-brand">
+                        <a href="{{ route('account.login') }}" class="inline-flex items-center gap-2 font-medium text-bmlk-brand">
+                            <x-lucide-log-in class="h-4 w-4" aria-hidden="true" />
                             {{ __('J’ai déjà un compte') }}
                         </a>
                     </div>

@@ -37,7 +37,8 @@
                         </p>
                         <form method="POST" action="{{ route('verification.send') }}" class="mt-2">
                             @csrf
-                            <button type="submit" class="text-xs font-medium text-bmlk-brand hover:underline">
+                            <button type="submit" class="inline-flex items-center gap-2 text-xs font-medium text-bmlk-brand hover:underline">
+                                <x-lucide-mail-check class="h-3.5 w-3.5" aria-hidden="true" />
                                 {{ __('Renvoyer l’e-mail de vérification') }}
                             </button>
                         </form>
@@ -59,16 +60,30 @@
                 </div>
 
                 @forelse ($orders as $order)
-                    <a href="{{ route('account.order', $order) }}" class="mt-5 flex items-center justify-between gap-4 border-b border-zinc-100 pb-5 last:border-0">
-                        <span>
-                            <strong class="block text-sm font-medium text-zinc-900">{{ $order->order_number }}</strong>
-                            <span class="mt-1 block text-xs text-zinc-500">
-                                {{ $order->created_at->format('d.m.Y') }} · {{ $order->payment_status === 'paid' ? __('Payée') : __('Paiement en attente') }}
+                    <a href="{{ route('account.order', $order) }}" class="group mt-5 flex flex-wrap items-start justify-between gap-4 border-b border-zinc-100 pb-5 transition last:border-0">
+                        <span class="min-w-0 flex-1">
+                            <span class="flex flex-wrap items-center gap-2.5">
+                                <strong class="text-sm font-semibold text-zinc-900">{{ $order->order_number }}</strong>
+                                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium {{ in_array($order->status, ['shipped', 'completed']) ? 'bg-emerald-50 text-emerald-700' : ($order->status === 'cancelled' ? 'bg-red-50 text-red-700' : 'bg-zinc-100 text-zinc-600') }}">
+                                    <x-lucide-package-check class="h-3.5 w-3.5" aria-hidden="true" />
+                                    {{ $order->customerStatusLabel() }}
+                                </span>
                             </span>
+                            <span class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500">
+                                <span>{{ $order->created_at->format('d.m.Y') }}</span>
+                                <span aria-hidden="true">·</span>
+                                <span>{{ $order->customerPaymentStatusLabel() }}</span>
+                            </span>
+                            @if (filled($order->tracking_number))
+                                <span class="mt-2 flex min-w-0 items-start gap-1.5 text-xs text-zinc-600">
+                                    <x-lucide-truck class="mt-0.5 h-3.5 w-3.5 shrink-0 text-bmlk-brand" aria-hidden="true" />
+                                    <span class="min-w-0 break-all">{{ __('Numéro de suivi') }} : <span class="font-medium text-zinc-900">{{ $order->tracking_number }}</span></span>
+                                </span>
+                            @endif
                         </span>
-                        <span class="flex shrink-0 items-center gap-3 text-sm font-medium text-zinc-900">
+                        <span class="flex shrink-0 items-center gap-3 text-sm font-semibold text-zinc-900">
                             {{ number_format($order->total_amount, 2, ',', ' ') }} €
-                            <x-lucide-chevron-right class="h-4 w-4 text-zinc-400" />
+                            <x-lucide-chevron-right class="h-4 w-4 text-zinc-400 transition group-hover:translate-x-0.5 group-hover:text-bmlk-brand" aria-hidden="true" />
                         </span>
                     </a>
                 @empty
@@ -83,6 +98,7 @@
                     <h2 class="mt-4 font-serif text-xl text-zinc-900">{{ __('Bienvenue, :name', ['name' => $user->name]) }}</h2>
                     <p class="mt-2 break-all text-sm text-zinc-500">{{ $user->email }}</p>
                     <a href="{{ route('account.roles') }}" class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-bmlk-brand">
+                        <x-lucide-handshake class="h-4 w-4" aria-hidden="true" />
                         {{ __('Découvrir les partenariats') }}
                         <x-lucide-arrow-up-right class="h-4 w-4" />
                     </a>
