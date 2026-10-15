@@ -58,6 +58,11 @@ Route::get('/account/checkout/{orderNumber}', [AccountController::class, 'checko
     ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
     ->name('account.checkout');
 
+// Verification works even if the email link opens on a different device.
+Route::get('/account/verify-email/{id}/{hash}', [AccountController::class, 'verify'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
 Route::middleware('guest')->group(function (): void {
     Route::get('/account/login', [AccountController::class, 'loginForm'])->name('account.login');
     Route::post('/account/login', [AccountController::class, 'login'])->middleware('throttle:5,1')->name('account.login.submit');
@@ -73,8 +78,6 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/account/orders/{order}', [AccountController::class, 'order'])->name('account.order');
     Route::get('/account/profile', [AccountController::class, 'profile'])->name('account.profile');
     Route::post('/account/password', [AccountController::class, 'savePassword'])->middleware('throttle:5,1')->name('account.password');
-    Route::get('/account/verify-email/{id}/{hash}', [AccountController::class, 'verify'])
-        ->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
     Route::post('/account/verification-notification', [AccountController::class, 'resendVerification'])
         ->middleware('throttle:2,1')->name('verification.send');
     Route::get('/account/roles', [AccountController::class, 'roles'])->name('account.roles');

@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Models\User;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -155,16 +156,47 @@ class AccountController extends Controller
             'current_password' => [$request->user()->password ? 'required' : 'nullable', 'current_password'],
             'password' => ['required', 'confirmed', PasswordRule::min(12)],
         ]);
-        $request->user()->forceFill(['password' => $data['password']])->save();
+        $user = $request->user();
+        $user->forceFill(['password' => $data['password']])->save();
+
+        // Changing a password must not turn a logged-in customer into a guest,
+        // nor send them back to a pre-payment or sign-in form via Referer.
+        Auth::login($user);
         $request->session()->regenerate();
-        return back()->with('success', __('Mot de passe enregistré.'));
+
+        return redirect()->route('account.index')
+            ->with('success', __('Votre mot de passe est enregistré. Votre espace est prêt.'));
     }
 
-    public function verify(EmailVerificationRequest $request): RedirectResponse
+    /**
+     * Laravel's temporary signed verification URL is proof of mailbox access.
+     * Do not require the original checkout/login session: the customer may
+     * open the email in another browser or on another device.
+     */
+    public function verify(Request $request, string $id, string $hash): RedirectResponse
     {
-        $request->fulfill();
+        $user = User::query()->findOrFail($id);
+
+        abort_unless(hash_equals(sha1($user->getEmailForVerification()), $hash), 403);
+
+        if (Auth::check() && Auth::id() !== $user->id) {
+            abort(403, 'Please sign out of the other account before verifying this address.');
+        }
+
+        if (! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+            event(new Verified($user));
+        }
+
+        if (! Auth::check()) {
+            Auth::login($user);
+            $request->session()->regenerate();
+        }
+
         $this->claimOrders($request);
-        return redirect()->route('account.index')->with('success', __('E-mail confirmé.'));
+
+        return redirect()->route('account.index')
+            ->with('success', __('Adresse e-mail confirmée. Vos commandes sont disponibles.'));
     }
 
     public function resendVerification(Request $request): RedirectResponse
@@ -191,6 +223,10 @@ class AccountController extends Controller
         return view('account.reset', ['token' => $token, 'email' => $request->query('email')]);
     }
 
+    /**
+     * A valid password-reset token also proves ownership of the email address.
+     * Sign in immediately rather than requesting the same credentials twice.
+     */
     public function resetPassword(Request $request): RedirectResponse
     {
         $data = $request->validate([
@@ -198,15 +234,33 @@ class AccountController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', PasswordRule::min(12)],
         ]);
-        $status = Password::reset($data, function ($user, $password): void {
+
+        $resetUser = null;
+
+        $status = Password::reset($data, function (User $user, string $password) use (&$resetUser): void {
             $user->forceFill(['password' => $password])->save();
             $user->setRememberToken(Str::random(60));
+
+            if (! $user->hasVerifiedEmail()) {
+                $user->markEmailAsVerified();
+                event(new Verified($user));
+            }
+
             $user->save();
             event(new PasswordReset($user));
+            $resetUser = $user;
         });
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('account.login')->with('success', __('Mot de passe créé. Connectez-vous.'))
-            : back()->withErrors(['email' => __($status)]);
+
+        if ($status !== Password::PASSWORD_RESET || ! $resetUser) {
+            return back()->withErrors(['email' => __($status)]);
+        }
+
+        Auth::login($resetUser);
+        $request->session()->regenerate();
+        $this->claimOrders($request);
+
+        return redirect()->route('account.index')
+            ->with('success', __('Mot de passe enregistré. Bienvenue dans votre espace.'));
     }
 
     public function roles(Request $request): View
@@ -269,9 +323,12 @@ class AccountController extends Controller
         $user = $request->user();
         if (! $user?->hasVerifiedEmail()) return;
 
+        // Once the email is verified, its owner can access all orders made
+        // with it, including failed and unpaid orders that can be retried.
+        // Never reassign an order already owned by somebody else.
         Order::query()->whereNull('user_id')
-            ->whereRaw('LOWER(email) = ?', [Str::lower($user->email)])
-            ->where('payment_status', 'paid')
+            ->whereNotNull('email')
+            ->whereRaw('LOWER(TRIM(email)) = ?', [Str::lower(trim($user->email))])
             ->update(['user_id' => $user->id]);
     }
 }
