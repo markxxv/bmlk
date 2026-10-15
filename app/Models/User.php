@@ -44,6 +44,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             'is_wholesale' => 'boolean',
             'is_influencer' => 'boolean',
             'influencer_discount' => 'decimal:2',
+            'onboarding_order_id' => 'integer',
         ];
     }
 }

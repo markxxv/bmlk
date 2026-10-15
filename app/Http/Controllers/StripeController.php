@@ -172,7 +172,7 @@ class StripeController extends Controller
         $user = $order->user;
         $onboardingToken = (string) $request->session()->pull("bmlk_auto_login.{$order->id}", '');
 
-        if (! Auth::check() && $user && $user->onboarding_order_id === $order->id
+        if (! Auth::check() && $user && (int) $user->onboarding_order_id === $order->id
             && $onboardingToken !== '' && hash_equals($order->access_token, $onboardingToken)) {
             Auth::login($user);
             $request->session()->regenerate();
@@ -305,14 +305,18 @@ class StripeController extends Controller
 
         $email = Str::lower(trim($order->email));
         // Existing accounts are NEVER claimed by an anonymous purchase.
-        $user = User::query()->firstOrCreate(
-            ['email' => $email],
-            [
-                'name' => trim($order->first_name.' '.$order->last_name),
-                'password' => null,
-                'onboarding_order_id' => $order->id,
-            ],
-        );
+        $user = User::query()->whereRaw('LOWER(email) = ?', [$email])->first();
+
+        if (! $user) {
+            $user = User::query()->firstOrCreate(
+                ['email' => $email],
+                [
+                    'name' => trim($order->first_name.' '.$order->last_name),
+                    'password' => null,
+                    'onboarding_order_id' => $order->id,
+                ],
+            );
+        }
 
         if ($user->onboarding_order_id === $order->id) {
             $order->forceFill(['user_id' => $user->id])->save();
