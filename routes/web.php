@@ -1,5 +1,6 @@
-use App\Http\Controllers\AccountController;
 <?php
+
+use App\Http\Controllers\AccountController;
 
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\ShopController;
