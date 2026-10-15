@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
+use App\Models\Delivery;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -101,6 +104,62 @@ class CustomerAccountsTest extends TestCase
 
         $this->assertTrue(Hash::check('MyUniquePassword123!', $user->fresh()->password));
         $this->assertFalse($user->fresh()->is_admin);
+    }
+
+    public function test_influencer_discount_is_recalculated_from_catalog_and_reflected_in_stripe_order(): void
+    {
+        $user = User::query()->create(['name' => 'Influenceuse', 'email' => 'influenceuse@example.com']);
+        $user->forceFill([
+            'is_influencer' => true,
+            'email_verified_at' => now(),
+            'influencer_code' => 'BMLOVER',
+            'influencer_discount' => 30,
+        ])->save();
+
+        $category = Category::query()->create(['name' => ['fr' => 'Gels']]);
+        $product = Product::query()->create([
+            'category_id' => $category->id,
+            'name' => ['fr' => 'Gel'],
+            'slug' => ['fr' => 'gel'],
+            'price' => 12,
+            'options' => [],
+            'active' => true,
+        ]);
+        Delivery::query()->create([
+            'code' => 'fr',
+            'name' => 'France',
+            'price' => 3,
+            'active' => true,
+        ]);
+
+        Http::fake(['api.stripe.com/*' => Http::response([
+            'id' => 'cs_test_coupon',
+            'url' => 'https://checkout.stripe.com/c/pay/cs_test_coupon',
+        ])]);
+
+        $this->postJson(route('checkout.store'), [
+            'first_name' => 'Lou',
+            'phone' => '0102030405',
+            'email' => 'lou@example.com',
+            'country' => 'fr',
+            'city' => 'Paris',
+            'address' => 'Rue Test',
+            'privacy' => 1,
+            'promo_code' => 'bmlover',
+            'cart_items' => json_encode([[
+                'product_id' => $product->id,
+                'quantity' => 1,
+                'unit_price' => 100,
+                'options' => [],
+            ]]),
+        ])->assertOk()->assertJsonPath('redirect', 'https://checkout.stripe.com/c/pay/cs_test_coupon');
+
+        $order = Order::query()->latest('id')->firstOrFail();
+        $this->assertSame(12.0, (float) $order->subtotal);
+        $this->assertSame(3.6, (float) $order->discount_amount);
+        $this->assertSame(11.4, (float) $order->total_amount);
+        $this->assertSame('BMLOVER', $order->promo_code);
+        $this->assertEquals(8.4, $order->items[0]['discounted_unit_price']);
     }
 
     private function order(): Order
