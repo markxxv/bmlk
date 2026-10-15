@@ -27,6 +27,7 @@
                 deliveryCost: 0,
                 promoPercent: null,
                 promoError: '',
+                promoOpen: false,
 
                 get discountPreview() {
                     if (this.promoPercent === null) return 0;
@@ -270,45 +271,57 @@
 
                         <div class="mt-7 grid gap-x-4 gap-y-5 sm:grid-cols-2">
                             <div>
-                                <input
-                                    type="text"
-                                    x-model="form.first_name"
-                                    placeholder="{{ __('Prénom') }}"
-                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
-                                    required
-                                >
+                                <div class="group relative">
+                                    <x-lucide-user-round class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <input
+                                                                        type="text"
+                                                                        x-model="form.first_name"
+                                                                        placeholder="{{ __('Prénom') }}"
+                                                                        class="w-full rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
+                                                                        required
+                                                                    >
+                                </div>
                                 <p x-show="errors.first_name" x-text="errors.first_name?.[0]" class="mt-1 text-xs text-red-500"></p>
                             </div>
 
                             <div>
-                                <input
-                                    type="text"
-                                    x-model="form.last_name"
-                                    placeholder="{{ __('Nom') }}"
-                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
-                                >
+                                <div class="group relative">
+                                    <x-lucide-signature class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <input
+                                                                        type="text"
+                                                                        x-model="form.last_name"
+                                                                        placeholder="{{ __('Nom') }}"
+                                                                        class="w-full rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
+                                                                    >
+                                </div>
                                 <p x-show="errors.last_name" x-text="errors.last_name?.[0]" class="mt-1 text-xs text-red-500"></p>
                             </div>
 
                             <div>
-                                <input
-                                    type="tel"
-                                    x-model="form.phone"
-                                    placeholder="{{ __('Téléphone') }}"
-                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
-                                    required
-                                >
+                                <div class="group relative">
+                                    <x-lucide-phone class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <input
+                                                                        type="tel"
+                                                                        x-model="form.phone"
+                                                                        placeholder="{{ __('Téléphone') }}"
+                                                                        class="w-full rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
+                                                                        required
+                                                                    >
+                                </div>
                                 <p x-show="errors.phone" x-text="errors.phone?.[0]" class="mt-1 text-xs text-red-500"></p>
                             </div>
 
                             <div>
-                                <input
-                                    type="email"
-                                    x-model="form.email"
-                                    placeholder="{{ __('E-mail') }}"
-                                    autocomplete="email" required
-                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
-                                >
+                                <div class="group relative">
+                                    <x-lucide-mail class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <input
+                                                                        type="email"
+                                                                        x-model="form.email"
+                                                                        placeholder="{{ __('E-mail') }}"
+                                                                        autocomplete="email" required
+                                                                        class="w-full rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
+                                                                    >
+                                </div>
                                 <p x-show="errors.email" x-text="errors.email?.[0]" class="mt-1 text-xs text-red-500"></p>
                             </div>
                         </div>
@@ -326,11 +339,12 @@
                         </div>
 
                         <div class="mt-7 grid gap-x-4 gap-y-5 sm:grid-cols-2">
-                            <div class="relative sm:col-span-2">
+                            <div class="group relative sm:col-span-2">
+                                <x-lucide-globe-2 class="pointer-events-none absolute left-4 top-4 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
                                 <select
                                     x-model="form.country"
                                     @change="updateDeliveryCost()"
-                                    class="w-full appearance-none rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 pr-10 text-sm text-zinc-700 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
+                                    class="w-full appearance-none rounded-xl border border-transparent bg-zinc-50 pl-11 py-3.5 pr-10 text-sm text-zinc-700 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                     required
                                 >
                                     <option value="" disabled>{{ __('Pays / zone de livraison') }}</option>
@@ -354,44 +368,56 @@
                             </div>
 
                             <div>
-                                <input
-                                    type="text"
-                                    x-model="form.city"
-                                    placeholder="{{ __('Ville') }}"
-                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
-                                    required
-                                >
+                                <div class="group relative">
+                                    <x-lucide-building-2 class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <input
+                                                                        type="text"
+                                                                        x-model="form.city"
+                                                                        placeholder="{{ __('Ville') }}"
+                                                                        class="w-full rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
+                                                                        required
+                                                                    >
+                                </div>
                                 <p x-show="errors.city" x-text="errors.city?.[0]" class="mt-1 text-xs text-red-500"></p>
                             </div>
 
                             <div>
-                                <input
-                                    type="text"
-                                    x-model="form.zip"
-                                    placeholder="{{ __('Code postal') }}"
-                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
-                                >
+                                <div class="group relative">
+                                    <x-lucide-hash class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <input
+                                                                        type="text"
+                                                                        x-model="form.zip"
+                                                                        placeholder="{{ __('Code postal') }}"
+                                                                        class="w-full rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
+                                                                    >
+                                </div>
                                 <p x-show="errors.zip" x-text="errors.zip?.[0]" class="mt-1 text-xs text-red-500"></p>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <textarea
-                                    x-model="form.address"
-                                    rows="3"
-                                    placeholder="{{ __('Adresse complète') }}"
-                                    class="w-full resize-none rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
-                                    required
-                                ></textarea>
+                                <div class="group relative">
+                                    <x-lucide-map-pin class="pointer-events-none absolute left-4 top-4.5 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <textarea
+                                                                        x-model="form.address"
+                                                                        rows="3"
+                                                                        placeholder="{{ __('Adresse complète') }}"
+                                                                        class="w-full resize-none rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
+                                                                        required
+                                                                    ></textarea>
+                                </div>
                                 <p x-show="errors.address" x-text="errors.address?.[0]" class="mt-1 text-xs text-red-500"></p>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <textarea
-                                    x-model="form.message"
-                                    rows="3"
-                                    placeholder="{{ __('Commentaire pour la commande') }}"
-                                    class="w-full resize-none rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
-                                ></textarea>
+                                <div class="group relative">
+                                    <x-lucide-message-square-text class="pointer-events-none absolute left-4 top-4.5 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <textarea
+                                                                        x-model="form.message"
+                                                                        rows="3"
+                                                                        placeholder="{{ __('Commentaire pour la commande') }}"
+                                                                        class="w-full resize-none rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
+                                                                    ></textarea>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -502,16 +528,42 @@
                         </div>
 
                         <div class="pt-2">
-                            <label for="order-promo" class="mb-2.5 block text-xs font-medium text-zinc-500">{{ __('Code promotionnel') }}</label>
-                            <div class="flex items-center gap-3 border-b border-dashed border-zinc-300 pb-2.5 transition-colors focus-within:border-[#A9636F]">
-                                <x-lucide-ticket-percent class="h-4.5 w-4.5 shrink-0 text-[#A9636F]" />
-                                <input id="order-promo" type="text" x-model="form.promo_code" @input.debounce.400ms="updatePromo()"
-                                    maxlength="32" autocomplete="off" placeholder="{{ __('Votre code') }}"
-                                    class="min-w-0 flex-1 border-0 bg-transparent px-0 py-1 text-sm font-medium uppercase tracking-wide text-zinc-900 placeholder:font-normal placeholder:normal-case placeholder:tracking-normal placeholder:text-zinc-400 outline-none">
-                                <x-lucide-check x-show="promoPercent !== null" x-cloak class="h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
+                            <button
+                                type="button"
+                                @click="promoOpen = !promoOpen; if (promoOpen) $nextTick(() => $refs.promoInput?.focus())"
+                                :aria-expanded="promoOpen.toString()"
+                                aria-controls="order-promo-panel"
+                                class="flex w-full items-center justify-between gap-3 border-b border-dashed border-zinc-300 pb-3 text-left text-sm text-zinc-600 transition-colors hover:border-[#A9636F] hover:text-[#A9636F] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A9636F]"
+                            >
+                                <span class="flex min-w-0 items-center gap-3">
+                                    <x-lucide-ticket-percent class="h-4.5 w-4.5 shrink-0 text-[#A9636F]" aria-hidden="true" />
+                                    <span>{{ __('Code promotionnel') }}</span>
+                                </span>
+                                <span class="flex items-center gap-2">
+                                    <span x-show="promoPercent !== null" x-cloak x-text="promoPercent + ' %'" class="text-xs font-medium text-emerald-700"></span>
+                                    <x-lucide-chevron-down class="h-4 w-4 shrink-0 text-zinc-400 transition-transform duration-200" x-bind:class="promoOpen ? 'rotate-180' : ''" aria-hidden="true" />
+                                </span>
+                            </button>
+                            <div id="order-promo-panel" x-show="promoOpen" x-cloak x-transition.opacity.duration.150ms class="pt-4">
+                                <label for="order-promo" class="sr-only">{{ __('Code promotionnel') }}</label>
+                                <div class="group relative">
+                                    <x-lucide-ticket class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <input
+                                        id="order-promo"
+                                        x-ref="promoInput"
+                                        type="text"
+                                        x-model="form.promo_code"
+                                        @input.debounce.400ms="updatePromo()"
+                                        maxlength="32"
+                                        autocomplete="off"
+                                        placeholder="{{ __('Votre code') }}"
+                                        class="w-full rounded-xl border border-transparent bg-zinc-50 py-3 pl-11 pr-10 text-sm font-medium uppercase tracking-wide text-zinc-900 placeholder:font-normal placeholder:normal-case placeholder:tracking-normal placeholder:text-zinc-400 outline-none transition focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
+                                    >
+                                    <x-lucide-check x-show="promoPercent !== null" x-cloak class="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-600" aria-hidden="true" />
+                                </div>
+                                <p x-show="promoError" x-text="promoError" role="status" class="mt-2 text-xs text-red-600"></p>
+                                <p x-show="promoPercent !== null" role="status" class="mt-2 text-xs text-emerald-700">{{ __('Code appliqué :') }} <span x-text="promoPercent + ' %'"></span></p>
                             </div>
-                            <p x-show="promoError" x-text="promoError" role="status" class="mt-2 text-xs text-red-600"></p>
-                            <p x-show="promoPercent !== null" role="status" class="mt-2 text-xs text-emerald-700">{{ __('Code appliqué :') }} <span x-text="promoPercent + ' %'"></span></p>
                         </div>
 
                         <div x-show="discountPreview > 0" class="flex items-center justify-between text-bmlk-brand">
