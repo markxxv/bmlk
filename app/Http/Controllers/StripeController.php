@@ -178,6 +178,7 @@ class StripeController extends Controller
             && $onboardingToken !== '' && hash_equals($order->access_token, $onboardingToken)) {
             Auth::login($user);
             $request->session()->regenerate();
+            $order->forceFill(['onboarding_token_hash' => null])->save();
 
             if (! $user->hasVerifiedEmail()) {
                 try {

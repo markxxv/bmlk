@@ -25,7 +25,14 @@
             // The handoff token was saved by the original first-party checkout,
             // not by Stripe's return URL, email links or order recovery.
             const activate = async () => {
-                if (authenticated) return;
+                if (authenticated) {
+                    try {
+                        sessionStorage.removeItem('bm_checkout_activation_' + orderNumber);
+                    } catch (error) {
+                        // Browser storage is optional.
+                    }
+                    return;
+                }
 
                 let token;
                 try {
