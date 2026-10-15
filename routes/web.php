@@ -21,6 +21,11 @@ Route::get('/shop/product/{slug}', [ShopController::class, 'product'])
 Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
 Route::post('/checkout', [ShopController::class, 'processOrder'])->name('checkout.store');
 
+Route::get('/api/promo/{code}', [ShopController::class, 'promo'])
+    ->middleware('throttle:15,1')
+    ->where('code', '[A-Za-z0-9_-]{4,32}')
+    ->name('api.promo');
+
 Route::get('/api/delivery-cost/{code}', [ShopController::class, 'deliveryCost'])
     ->where('code', '[A-Za-z0-9-]+')
     ->name('api.delivery.cost');

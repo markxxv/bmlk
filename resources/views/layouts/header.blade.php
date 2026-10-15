@@ -51,6 +51,12 @@
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-[#A9636F] transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
 
+                    <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}"
+                        class="inline-flex h-11 items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-800 transition hover:text-[#A9636F]"
+                        data-blur-reveal-item>
+                        <x-lucide-user-round class="h-4 w-4" />{{ __('Mon espace') }}
+                    </a>
+
                     <button
                         type="button"
                         @click="$store.cart.toggle()"
@@ -65,6 +71,11 @@
                 </div>
 
                 <div class="flex items-center justify-self-end gap-2 lg:hidden">
+                    <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}"
+                        class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200"
+                        aria-label="{{ __('Mon espace') }}">
+                        <x-lucide-user-round class="h-4 w-4" />
+                    </a>
                     <button
                         type="button"
                         @click="$store.cart.toggle()"
@@ -142,6 +153,9 @@
             </div>
 
             <nav class="flex flex-1 flex-col justify-center py-10">
+                <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
+                    {{ __('Mon espace') }}
+                </a>
                 <a href="{{ route('shop.index') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Produits') }}
                 </a>

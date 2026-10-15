@@ -18,12 +18,47 @@
                     address: '',
                     message: '',
                     privacy: false,
+                    promo_code: '',
                 },
                 errors: {},
                 isSubmitting: false,
                 paymentRetryUrl: null,
                 savedOrder: null,
                 deliveryCost: 0,
+                promoPercent: null,
+                promoError: '',
+
+                get discountPreview() {
+                    if (this.promoPercent === null) return 0;
+                    return this.$store.cart.items.reduce((total, item) => {
+                        const cents = Math.round(Number(item.unit_price) * 100);
+                        const discounted = Math.round(cents * (100 - this.promoPercent) / 100);
+                        return total + (cents - discounted) * Number(item.quantity || 1) / 100;
+                    }, 0);
+                },
+
+                async updatePromo() {
+                    this.promoPercent = null;
+                    this.promoError = '';
+                    const code = this.form.promo_code.trim().toUpperCase();
+                    if (!code) return;
+
+                    try {
+                        const response = await fetch('/api/promo/' + encodeURIComponent(code), {
+                            headers: { Accept: 'application/json' },
+                        });
+                        if (!response.ok) {
+                            this.promoError = @js(__('Code promotionnel invalide.'));
+                            return;
+                        }
+                        const data = await response.json();
+                        if (this.form.promo_code.trim().toUpperCase() !== code) return;
+                        this.form.promo_code = data.code;
+                        this.promoPercent = Number(data.percent);
+                    } catch (error) {
+                        this.promoError = @js(__('Impossible de vérifier le code.'));
+                    }
+                },
 
                 init() {
                     try {
@@ -55,6 +90,7 @@
 
                 get totalWithDelivery() {
                     return Number(this.$store.cart.totalPrice)
+                        - this.discountPreview
                         + (this.isFreeDelivery ? 0 : Number(this.deliveryCost || 0));
                 },
 
@@ -369,6 +405,7 @@
                         </label>
 
                         <p x-show="errors.privacy" x-text="errors.privacy?.[0]" class="mt-2 text-xs text-red-500"></p>
+                        <p x-show="errors.promo_code" x-text="errors.promo_code?.[0]" class="mt-2 text-xs text-red-500"></p>
                         <p x-show="errors.cart_items" x-text="errors.cart_items?.[0]" class="mt-2 text-xs text-red-500"></p>
                         <p x-show="errors.general" x-text="errors.general" class="mt-2 text-xs text-red-500"></p>
 
@@ -459,6 +496,20 @@
                         <div class="flex items-center justify-between">
                             <span class="text-zinc-600">{{ __('Sous-total') }}</span>
                             <span class="font-medium text-zinc-900" x-text="formatPrice($store.cart.totalPrice)"></span>
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="order-promo" class="mb-2 block text-xs font-medium text-zinc-700">{{ __('Code promotionnel') }}</label>
+                            <input id="order-promo" type="text" x-model="form.promo_code" @input.debounce.400ms="updatePromo()"
+                                maxlength="32" autocomplete="off" placeholder="{{ __('Votre code') }}"
+                                class="w-full rounded-xl border border-[#D8C4C6] bg-white px-4 py-3 text-sm uppercase outline-none focus:border-bmlk-brand">
+                            <p x-show="promoError" x-text="promoError" class="mt-2 text-xs text-red-600"></p>
+                            <p x-show="promoPercent !== null" class="mt-2 text-xs text-emerald-700">{{ __('Code appliqué :') }} <span x-text="promoPercent + ' %'"></span></p>
+                        </div>
+
+                        <div x-show="discountPreview > 0" class="flex items-center justify-between text-bmlk-brand">
+                            <span>{{ __('Réduction') }}</span>
+                            <span x-text="'− ' + formatPrice(discountPreview)"></span>
                         </div>
 
                         <div class="flex items-center justify-between">

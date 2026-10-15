@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -220,6 +221,7 @@ class ShopController extends Controller
             'message' => ['nullable', 'string', 'max:2000'],
             'privacy' => ['accepted'],
             'cart_items' => ['required', 'string'],
+            'promo_code' => ['nullable', 'string', 'max:32'],
         ]);
 
         try {
@@ -264,7 +266,31 @@ class ShopController extends Controller
                 ? 0.0
                 : (float) $delivery->price;
 
-        $totalAmount = round($subtotal + $deliveryCost, 2);
+        $promoCode = Str::upper(trim((string) ($validated['promo_code'] ?? '')));
+        $influencer = $promoCode !== ''
+            ? User::query()->where('influencer_code', $promoCode)->where('is_influencer', true)
+                ->whereNotNull('email_verified_at')->first()
+            : null;
+
+        if ($promoCode !== '' && ! $influencer) {
+            throw ValidationException::withMessages(['promo_code' => __('Code promotionnel invalide.')]);
+        }
+
+        $percent = $influencer ? (float) $influencer->influencer_discount : 0;
+        $discountAmount = 0.0;
+
+        if ($influencer) {
+            $items = $items->map(function (array $item) use ($percent, &$discountAmount): array {
+                $originalCents = (int) round($item['unit_price'] * 100);
+                $discountedCents = (int) round($originalCents * (100 - $percent) / 100);
+                $item['discounted_unit_price'] = $discountedCents / 100;
+                $discountAmount += ($originalCents - $discountedCents) * $item['quantity'] / 100;
+                return $item;
+            });
+        }
+
+        $discountAmount = round($discountAmount, 2);
+        $totalAmount = round($subtotal - $discountAmount + $deliveryCost, 2);
 
         $order = Order::query()->create([
             'first_name' => $validated['first_name'],
@@ -281,6 +307,8 @@ class ShopController extends Controller
             'subtotal' => $subtotal,
             'delivery_cost' => $deliveryCost,
             'total_amount' => $totalAmount,
+            'promo_code' => $influencer?->influencer_code,
+            'discount_amount' => $discountAmount,
             'status' => 'pending',
             'user_id' => $request->user() && Str::lower($request->user()->email) === Str::lower($validated['email'])
                 ? $request->user()->id : null,
@@ -325,6 +353,21 @@ class ShopController extends Controller
             'order_number' => $order->order_number,
             'status_url' => route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token]),
         ]);
+    }
+
+    public function promo(string $code): JsonResponse
+    {
+        $influencer = User::query()
+            ->where('influencer_code', Str::upper($code))
+            ->where('is_influencer', true)
+            ->whereNotNull('email_verified_at')
+            ->first();
+
+        if (! $influencer) {
+            return response()->json(['message' => __('Code promotionnel invalide.')], 404);
+        }
+
+        return response()->json(['code' => $influencer->influencer_code, 'percent' => (float) $influencer->influencer_discount]);
     }
 
     public function deliveryCost(string $code): JsonResponse

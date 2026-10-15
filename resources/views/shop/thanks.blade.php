@@ -36,6 +36,12 @@
                     <span class="text-zinc-500">{{ __('Numéro de commande') }}</span>
                     <span class="font-medium text-zinc-900">{{ $order->order_number }}</span>
                 </div>
+                @if ((float) $order->discount_amount > 0)
+                <div class="flex items-center justify-between gap-4 text-sm">
+                    <span class="text-[#A9636F]">{{ __('Réduction') }} · {{ $order->promo_code }}</span>
+                    <span class="text-[#A9636F]">− {{ number_format($order->discount_amount, 2, ',', ' ') }} €</span>
+                </div>
+                @endif
                 <div class="flex items-center justify-between gap-4 text-sm">
                     <span class="text-zinc-500">{{ __('Total payé') }}</span>
                     <span class="font-semibold text-zinc-900">{{ number_format((float) $order->total_amount, 2, ',', ' ') }} €</span>

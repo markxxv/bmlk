@@ -41,7 +41,7 @@ class CustomerResource extends Resource
                     ->prefixIcon('lucide-ticket-percent')->disabled(),
                 TextInput::make('influencer_discount')->label('Discount, %')
                     ->prefixIcon('lucide-percent')->numeric()->step(0.01)
-                    ->minValue(0)->maxValue(100)->required()->default(30),
+                    ->minValue(0)->maxValue(95)->required()->default(30),
             ]),
         ]);
     }

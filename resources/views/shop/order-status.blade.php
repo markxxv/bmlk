@@ -74,6 +74,12 @@
             </div>
 
             <div class="mt-6 space-y-3">
+                @if ((float) $order->discount_amount > 0)
+                    <div class="flex items-center justify-between text-sm text-[#A9636F]">
+                        <span>{{ __('Réduction') }} · {{ $order->promo_code }}</span>
+                        <span>− {{ number_format($order->discount_amount, 2, ',', ' ') }} €</span>
+                    </div>
+                @endif
                 <div class="flex items-center justify-between text-sm">
                     <span class="text-zinc-500">{{ __('Sous-total') }}</span>
                     <span class="font-medium text-zinc-900">

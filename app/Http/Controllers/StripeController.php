@@ -65,7 +65,7 @@ class StripeController extends Controller
                 return [
                     'price_data' => [
                         'currency' => 'eur',
-                        'unit_amount' => (int) round((float) $item['unit_price'] * 100),
+                        'unit_amount' => (int) round((float) ($item['discounted_unit_price'] ?? $item['unit_price']) * 100),
                         'product_data' => ['name' => Str::limit($item['name'].($options ? ' — '.$options : ''), 150)],
                     ],
                     'quantity' => (int) $item['quantity'],
