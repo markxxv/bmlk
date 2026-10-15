@@ -116,8 +116,14 @@ class CustomerAccountsTest extends TestCase
         // URL access tokens alone must never log a visitor into the account.
         $this->postJson(route('account.complete_checkout'), [
             'order_number' => $order->order_number,
-            'token' => $order->access_token,
+            'token' => str_repeat('x', 64),
         ])->assertForbidden();
+
+        $this->get(route('account.checkout', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+        ]))->assertOk();
+        $this->assertGuest();
 
         $this->postJson(route('account.complete_checkout'), [
             'order_number' => $order->order_number,
