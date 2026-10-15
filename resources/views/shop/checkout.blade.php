@@ -230,14 +230,14 @@
         });
     </script>
 
-    <main class="px-3 py-10 sm:px-5 sm:py-14 lg:px-8 lg:py-16">
-        <div class="mx-auto max-w-[1280px]" x-data="checkoutPage()">
-            <div class="mb-8">
+    <main class="px-3 pb-16 pt-10 sm:px-5 sm:pb-20 sm:pt-14 lg:px-8 lg:pb-24 lg:pt-16">
+        <div class="mx-auto max-w-[1360px]" x-data="checkoutPage()">
+            <div class="mb-9 sm:mb-11">
                 <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
                     {{ __('Commande') }}
                 </p>
 
-                <h1 class="mt-3 font-serif text-4xl font-medium tracking-tight text-zinc-900 sm:text-5xl">
+                <h1 class="mt-4 font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl">
                     {{ __('Finaliser la commande') }}
                 </h1>
 
@@ -255,26 +255,26 @@
                 </a>
             </div>
 
-            <div class="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-start">
-                <form @submit.prevent="submit()" class="space-y-5">
-                    <section class="rounded-2xl bg-white p-6 sm:p-8">
+            <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start xl:grid-cols-[minmax(0,1fr)_420px] xl:gap-8">
+                <form @submit.prevent="submit()" class="min-w-0 rounded-3xl bg-white px-5 py-7 sm:px-9 sm:py-9 lg:px-10 lg:py-10">
+                    <section class="border-b border-zinc-100 pb-9 sm:pb-10">
                         <div class="flex items-center gap-3">
-                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
                                 <x-lucide-user class="h-4 w-4" />
                             </span>
 
-                            <h2 class="text-base font-semibold text-zinc-900">
+                            <h2 class="font-serif text-2xl font-medium tracking-tight text-zinc-900">
                                 {{ __('Coordonnées') }}
                             </h2>
                         </div>
 
-                        <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                        <div class="mt-7 grid gap-x-4 gap-y-5 sm:grid-cols-2">
                             <div>
                                 <input
                                     type="text"
                                     x-model="form.first_name"
                                     placeholder="{{ __('Prénom') }}"
-                                    class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#A9636F]"
+                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                     required
                                 >
                                 <p x-show="errors.first_name" x-text="errors.first_name?.[0]" class="mt-1 text-xs text-red-500"></p>
@@ -285,7 +285,7 @@
                                     type="text"
                                     x-model="form.last_name"
                                     placeholder="{{ __('Nom') }}"
-                                    class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#A9636F]"
+                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                 >
                                 <p x-show="errors.last_name" x-text="errors.last_name?.[0]" class="mt-1 text-xs text-red-500"></p>
                             </div>
@@ -295,7 +295,7 @@
                                     type="tel"
                                     x-model="form.phone"
                                     placeholder="{{ __('Téléphone') }}"
-                                    class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#A9636F]"
+                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                     required
                                 >
                                 <p x-show="errors.phone" x-text="errors.phone?.[0]" class="mt-1 text-xs text-red-500"></p>
@@ -307,30 +307,30 @@
                                     x-model="form.email"
                                     placeholder="{{ __('E-mail') }}"
                                     autocomplete="email" required
-                                    class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#A9636F]"
+                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                 >
                                 <p x-show="errors.email" x-text="errors.email?.[0]" class="mt-1 text-xs text-red-500"></p>
                             </div>
                         </div>
                     </section>
 
-                    <section class="rounded-2xl bg-white p-6 sm:p-8">
+                    <section class="border-b border-zinc-100 py-9 sm:py-10">
                         <div class="flex items-center gap-3">
-                            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
                                 <x-lucide-map-pin class="h-4 w-4" />
                             </span>
 
-                            <h2 class="text-base font-semibold text-zinc-900">
+                            <h2 class="font-serif text-2xl font-medium tracking-tight text-zinc-900">
                                 {{ __('Adresse de livraison') }}
                             </h2>
                         </div>
 
-                        <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                        <div class="mt-7 grid gap-x-4 gap-y-5 sm:grid-cols-2">
                             <div class="relative sm:col-span-2">
                                 <select
                                     x-model="form.country"
                                     @change="updateDeliveryCost()"
-                                    class="w-full appearance-none rounded-xl border border-zinc-200 bg-white px-4 py-3 pr-10 text-sm text-zinc-700 outline-none transition focus:border-[#A9636F]"
+                                    class="w-full appearance-none rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 pr-10 text-sm text-zinc-700 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                     required
                                 >
                                     <option value="" disabled>{{ __('Pays / zone de livraison') }}</option>
@@ -342,7 +342,7 @@
                                     @endforeach
                                 </select>
 
-                                <x-lucide-chevron-down class="pointer-events-none absolute right-4 top-3.5 h-4 w-4 text-zinc-400" />
+                                <x-lucide-chevron-down class="pointer-events-none absolute right-4 top-4 h-4 w-4 text-zinc-400" />
 
                                 <p x-show="errors.country" x-text="errors.country?.[0]" class="mt-1 text-xs text-red-500"></p>
 
@@ -358,7 +358,7 @@
                                     type="text"
                                     x-model="form.city"
                                     placeholder="{{ __('Ville') }}"
-                                    class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#A9636F]"
+                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                     required
                                 >
                                 <p x-show="errors.city" x-text="errors.city?.[0]" class="mt-1 text-xs text-red-500"></p>
@@ -369,7 +369,7 @@
                                     type="text"
                                     x-model="form.zip"
                                     placeholder="{{ __('Code postal') }}"
-                                    class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#A9636F]"
+                                    class="w-full rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                 >
                                 <p x-show="errors.zip" x-text="errors.zip?.[0]" class="mt-1 text-xs text-red-500"></p>
                             </div>
@@ -379,7 +379,7 @@
                                     x-model="form.address"
                                     rows="3"
                                     placeholder="{{ __('Adresse complète') }}"
-                                    class="w-full resize-none rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#A9636F]"
+                                    class="w-full resize-none rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                     required
                                 ></textarea>
                                 <p x-show="errors.address" x-text="errors.address?.[0]" class="mt-1 text-xs text-red-500"></p>
@@ -390,18 +390,18 @@
                                     x-model="form.message"
                                     rows="3"
                                     placeholder="{{ __('Commentaire pour la commande') }}"
-                                    class="w-full resize-none rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#A9636F]"
+                                    class="w-full resize-none rounded-xl border border-transparent bg-zinc-50 px-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                 ></textarea>
                             </div>
                         </div>
                     </section>
 
-                    <section class="rounded-2xl bg-white p-6 sm:p-8">
+                    <section class="pt-8 sm:pt-10">
                         <label class="flex items-start gap-3 text-sm leading-6 text-zinc-600">
                             <input
                                 type="checkbox"
                                 x-model="form.privacy"
-                                class="mt-1 h-4 w-4 rounded border-zinc-300"
+                                class="mt-1 h-4 w-4 shrink-0 rounded border-zinc-300 accent-[#A9636F]"
                                 required
                             >
                             <span>{{ __('J’accepte le traitement de mes données pour la gestion de cette commande.') }}</span>
@@ -415,7 +415,7 @@
                         <button
                             type="submit"
                             :disabled="isSubmitting || ($store.cart.items.length === 0 && !paymentRetryUrl)"
-                            class="mt-5 flex w-full items-center justify-center rounded-xl bg-[#A9636F] px-5 py-4 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-[#945763] disabled:cursor-not-allowed disabled:bg-zinc-300"
+                            class="mt-7 flex w-full items-center justify-center rounded-full bg-[#A9636F] px-6 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#945763] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A9636F] disabled:cursor-not-allowed disabled:bg-zinc-300"
                         >
                             <span x-show="!isSubmitting && !paymentRetryUrl">{{ __('Payer la commande') }}</span>
                             <span x-show="!isSubmitting && paymentRetryUrl">{{ __('Réessayer le paiement') }}</span>
@@ -445,12 +445,12 @@
                     </section>
                 </form>
 
-                <aside class="rounded-2xl bg-[#EFDDE0] p-6 lg:sticky lg:top-6">
+                <aside class="min-w-0 rounded-3xl bg-white p-6 sm:p-8 lg:sticky lg:top-6">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-base font-semibold text-zinc-900">
+                        <h2 class="font-serif text-2xl font-medium tracking-tight text-zinc-900">
                             {{ __('Votre commande') }}
                         </h2>
-                        <span class="text-xs text-zinc-400" x-text="$store.cart.count + ' ×'"></span>
+                        <span class="rounded-full bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-500" x-text="$store.cart.count + ' ×'"></span>
                     </div>
 
                     <template x-if="$store.cart.items.length === 0">
@@ -462,10 +462,10 @@
                         </div>
                     </template>
 
-                    <div class="mt-5 divide-y divide-[#D8C4C6]">
+                    <div class="mt-6 divide-y divide-zinc-100">
                         <template x-for="item in $store.cart.items" :key="item.id">
-                            <article class="grid grid-cols-[64px_1fr_auto] gap-3 py-4 first:pt-0">
-                                <img :src="item.image" :alt="item.name" class="h-16 w-16 rounded-lg object-cover">
+                            <article class="grid grid-cols-[60px_minmax(0,1fr)_auto] gap-3 py-4 first:pt-0 sm:grid-cols-[72px_minmax(0,1fr)_auto] sm:gap-4">
+                                <img :src="item.image" :alt="item.name" class="h-[60px] w-[60px] rounded-xl bg-zinc-50 object-cover sm:h-[72px] sm:w-[72px]">
 
                                 <div class="min-w-0">
                                     <p class="truncate text-sm font-medium text-zinc-900" x-text="item.name"></p>
@@ -488,26 +488,30 @@
                                 </div>
 
                                 <p
-                                    class="text-sm font-medium text-zinc-900"
+                                    class="whitespace-nowrap text-sm font-semibold text-zinc-900"
                                     x-text="formatPrice(item.unit_price * item.quantity)"
                                 ></p>
                             </article>
                         </template>
                     </div>
 
-                    <div x-show="$store.cart.items.length > 0" class="mt-4 space-y-3 border-t border-[#D8C4C6] pt-4 text-sm">
+                    <div x-show="$store.cart.items.length > 0" class="mt-5 space-y-4 border-t border-zinc-100 pt-5 text-sm">
                         <div class="flex items-center justify-between">
                             <span class="text-zinc-600">{{ __('Sous-total') }}</span>
                             <span class="font-medium text-zinc-900" x-text="formatPrice($store.cart.totalPrice)"></span>
                         </div>
 
-                        <div class="mt-4">
-                            <label for="order-promo" class="mb-2 block text-xs font-medium text-zinc-700">{{ __('Code promotionnel') }}</label>
-                            <input id="order-promo" type="text" x-model="form.promo_code" @input.debounce.400ms="updatePromo()"
-                                maxlength="32" autocomplete="off" placeholder="{{ __('Votre code') }}"
-                                class="w-full rounded-xl border border-[#D8C4C6] bg-white px-4 py-3 text-sm uppercase outline-none focus:border-bmlk-brand">
-                            <p x-show="promoError" x-text="promoError" class="mt-2 text-xs text-red-600"></p>
-                            <p x-show="promoPercent !== null" class="mt-2 text-xs text-emerald-700">{{ __('Code appliqué :') }} <span x-text="promoPercent + ' %'"></span></p>
+                        <div class="pt-2">
+                            <label for="order-promo" class="mb-2.5 block text-xs font-medium text-zinc-500">{{ __('Code promotionnel') }}</label>
+                            <div class="flex items-center gap-3 border-b border-dashed border-zinc-300 pb-2.5 transition-colors focus-within:border-[#A9636F]">
+                                <x-lucide-ticket-percent class="h-4.5 w-4.5 shrink-0 text-[#A9636F]" />
+                                <input id="order-promo" type="text" x-model="form.promo_code" @input.debounce.400ms="updatePromo()"
+                                    maxlength="32" autocomplete="off" placeholder="{{ __('Votre code') }}"
+                                    class="min-w-0 flex-1 border-0 bg-transparent px-0 py-1 text-sm font-medium uppercase tracking-wide text-zinc-900 placeholder:font-normal placeholder:normal-case placeholder:tracking-normal placeholder:text-zinc-400 outline-none">
+                                <x-lucide-check x-show="promoPercent !== null" x-cloak class="h-4 w-4 shrink-0 text-emerald-600" aria-hidden="true" />
+                            </div>
+                            <p x-show="promoError" x-text="promoError" role="status" class="mt-2 text-xs text-red-600"></p>
+                            <p x-show="promoPercent !== null" role="status" class="mt-2 text-xs text-emerald-700">{{ __('Code appliqué :') }} <span x-text="promoPercent + ' %'"></span></p>
                         </div>
 
                         <div x-show="discountPreview > 0" class="flex items-center justify-between text-bmlk-brand">
@@ -524,14 +528,14 @@
                             ></span>
                         </div>
 
-                        <div x-show="delivery?.free_from && ! isFreeDelivery" class="text-[11px] leading-5 text-[#7A5A60]">
+                        <div x-show="delivery?.free_from && ! isFreeDelivery" class="text-[11px] leading-5 text-zinc-500">
                             <span>{{ __('Livraison offerte dès') }}</span>
                             <span x-text="formatPrice(delivery?.free_from)"></span>
                         </div>
 
-                        <div class="flex items-center justify-between border-t border-[#D8C4C6] pt-3">
+                        <div class="flex items-center justify-between border-t border-zinc-100 pt-5">
                             <span class="font-semibold text-zinc-900">{{ __('Total') }}</span>
-                            <span class="text-base font-semibold text-zinc-900" x-text="formatPrice(totalWithDelivery)"></span>
+                            <span class="font-serif text-2xl font-medium tracking-tight text-zinc-900" x-text="formatPrice(totalWithDelivery)"></span>
                         </div>
                     </div>
 
