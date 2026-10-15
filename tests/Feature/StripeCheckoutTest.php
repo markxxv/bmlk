@@ -106,6 +106,37 @@ class StripeCheckoutTest extends TestCase
         Http::assertSentCount(1);
     }
 
+    public function test_failed_stripe_creation_keeps_order_for_retry(): void
+    {
+        $order = $this->order();
+
+        Http::fake(['api.stripe.com/*' => Http::response([
+            'error' => ['message' => 'Invalid API key'],
+        ], 401)]);
+
+        $url = route('order.pay', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+        ]);
+
+        $this->postJson($url)->assertStatus(503)
+            ->assertJsonPath('message', __('Stripe ne répond pas pour le moment. Veuillez réessayer.'));
+
+        $this->assertSame(1, Order::query()->count());
+        $this->assertSame('unpaid', $order->fresh()->payment_status);
+    }
+
+    public function test_browser_session_can_recover_order_without_a_query_token(): void
+    {
+        $order = $this->order();
+
+        $this->withSession([
+            "bmlk_orders.{$order->id}" => $order->access_token,
+        ])->get(route('order.status', [
+            'orderNumber' => $order->order_number,
+        ]))->assertOk();
+    }
+
     private function order(): Order
     {
         return Order::query()->create([
