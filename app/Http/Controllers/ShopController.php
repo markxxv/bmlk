@@ -349,7 +349,6 @@ class ShopController extends Controller
                 ]),
                 'order_number' => $order->order_number,
                 'status_url' => route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token]),
-            'onboarding_token' => $activationToken,
                 'onboarding_token' => $activationToken,
             ], 503);
         }
@@ -359,6 +358,7 @@ class ShopController extends Controller
             'redirect' => $paymentUrl,
             'order_number' => $order->order_number,
             'status_url' => route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token]),
+            'onboarding_token' => $activationToken,
         ]);
     }
 
