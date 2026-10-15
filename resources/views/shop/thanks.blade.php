@@ -16,11 +16,72 @@
             }
         });
 
-        // Give the customer time to read the confirmation. The link works
-        // immediately and is also a fallback when JavaScript is disabled.
-        window.setTimeout(() => {
-            window.location.assign(@js($accountUrl));
-        }, 5000);
+        document.addEventListener('DOMContentLoaded', () => {
+            let destination = @js($accountUrl);
+            const link = document.getElementById('checkout-account-link');
+            const orderNumber = @js($order->order_number);
+            const authenticated = @js($accountReady);
+
+            // The handoff token was saved by the original first-party checkout,
+            // not by Stripe's return URL, email links or order recovery.
+            const activate = async () => {
+                if (authenticated) return;
+
+                let token;
+                try {
+                    token = sessionStorage.getItem('bm_checkout_activation_' + orderNumber);
+                } catch (error) {
+                    return;
+                }
+
+                if (!token) return;
+
+                const abort = new AbortController();
+                const maxWait = window.setTimeout(() => abort.abort(), 3500);
+
+                try {
+                    const response = await fetch(@js(route('account.complete_checkout')), {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        signal: abort.signal,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                        body: JSON.stringify({ order_number: orderNumber, token }),
+                    });
+
+                    if (!response.ok) return;
+
+                    const data = await response.json();
+                    if (!data.url) return;
+
+                    destination = data.url;
+                    link.href = destination;
+                    if (data.authenticated) {
+                        sessionStorage.removeItem('bm_checkout_activation_' + orderNumber);
+                    }
+                } catch (error) {
+                    // The confirmation is still available in the private order
+                    // view; a failed handoff never forces the login screen.
+                } finally {
+                    window.clearTimeout(maxWait);
+                }
+            };
+
+            const activation = activate();
+
+            link.addEventListener('click', async event => {
+                event.preventDefault();
+                await activation;
+                window.location.assign(destination);
+            });
+
+            window.setTimeout(() => {
+                window.location.assign(destination);
+            }, 5000);
+        });
     </script>
 
     <main class="px-3 py-16 sm:px-5 sm:py-24 lg:px-8">
@@ -55,10 +116,10 @@
             </div>
 
             <div class="mt-8">
-                <a href="{{ $accountUrl }}"
+                <a id="checkout-account-link" href="{{ $accountUrl }}"
                     class="inline-flex items-center gap-2 rounded-full bg-bmlk-brand px-6 py-3.5 text-sm font-semibold text-white transition hover:opacity-90">
                     <x-lucide-user-round class="h-4 w-4" />
-                    {{ $accountReady ? __('Accéder à mon espace') : __('Se connecter à mon espace') }}
+                    {{ __('Accéder à mon espace') }}
                     <x-lucide-arrow-right class="h-4 w-4" />
                 </a>
 
@@ -66,11 +127,7 @@
                     {{ __('Redirection automatique dans 5 secondes.') }}
                 </p>
 
-                @unless ($accountReady)
-                    <p class="mt-2 text-xs leading-5 text-zinc-500">
-                        {{ __('Un compte existe déjà avec cet e-mail ? Connectez-vous pour accéder à vos commandes.') }}
-                    </p>
-                @endunless
+
             </div>
 
             <a href="{{ route('shop.index') }}"
