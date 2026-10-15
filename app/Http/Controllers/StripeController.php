@@ -138,7 +138,9 @@ class StripeController extends Controller
                 ], 503);
         }
 
-        return redirect()->away($url ?: $this->statusUrl($order));
+        return $url
+            ? redirect()->away($url)
+            : redirect()->to($this->statusUrl($order).'&retry_failed=1');
     }
 
     public function thanks(Request $request, string $orderNumber): View|RedirectResponse

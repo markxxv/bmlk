@@ -85,7 +85,7 @@ class StripeCheckoutTest extends TestCase
         $this->get(route('order.status', [
             'orderNumber' => $order->order_number,
             'token' => $order->access_token,
-        ]))->assertOk()->assertSee('Rue de Test 1', false);
+        ]))->assertOk()->assertSee('Gel');
     }
 
     public function test_customer_can_recover_existing_order_without_rebuilding_cart(): void

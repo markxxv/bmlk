@@ -33,6 +33,10 @@
                     : __('Votre commande est enregistrée mais pas encore payée. Vous pouvez reprendre le paiement sans ressaisir vos informations.') }}
             </p>
 
+            @if (request()->boolean('retry_failed'))
+                <p class="mt-4 text-sm text-red-600">{{ __('Le paiement est temporairement indisponible. Veuillez réessayer.') }}</p>
+            @endif
+
             <div class="mt-8 divide-y divide-zinc-100 border-y border-zinc-100">
                 @foreach ($order->items as $item)
                     <article class="grid grid-cols-[64px_1fr_auto] gap-4 py-4">
