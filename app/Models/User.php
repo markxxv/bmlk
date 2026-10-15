@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'is_wholesale', 'is_influencer', 'influencer_code', 'influencer_discount'])]
+#[Fillable(['name', 'email', 'password', 'is_wholesale', 'is_influencer', 'influencer_code', 'influencer_discount', 'onboarding_order_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
