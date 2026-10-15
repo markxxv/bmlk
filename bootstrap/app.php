@@ -13,6 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->validateCsrfTokens(except: ['stripe/webhook']);
+        $middleware->redirectGuestsTo(fn (Request $request) => route('account.login'));
+        $middleware->redirectUsersTo(fn (Request $request) => route('account.index'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

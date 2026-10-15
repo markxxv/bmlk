@@ -178,19 +178,15 @@ class AccountController extends Controller
 
         abort_unless(hash_equals(sha1($user->getEmailForVerification()), $hash), 403);
 
-        if (Auth::check() && Auth::id() !== $user->id) {
-            abort(403, 'Please sign out of the other account before verifying this address.');
-        }
-
         if (! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
             event(new Verified($user));
         }
 
-        if (! Auth::check()) {
-            Auth::login($user);
-            $request->session()->regenerate();
-        }
+        // The signed email link is an explicit authentication credential,
+        // even when another account was previously active in this browser.
+        Auth::login($user);
+        $request->session()->regenerate();
 
         $this->claimOrders($request);
 

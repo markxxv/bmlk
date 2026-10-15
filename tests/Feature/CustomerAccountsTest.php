@@ -255,6 +255,39 @@ class CustomerAccountsTest extends TestCase
         $this->assertNull($order->fresh()->onboarding_token_hash);
     }
 
+    public function test_email_verification_link_can_switch_from_previous_browser_user_without_reentering_credentials(): void
+    {
+        $previousUser = User::query()->create([
+            'name' => 'Previous session',
+            'email' => 'previous@example.com',
+            'password' => 'PreviousPassword123!',
+        ]);
+        $customer = User::query()->create([
+            'name' => 'Marie',
+            'email' => 'marie@example.com',
+            'password' => 'CustomerPassword123!',
+        ]);
+        $order = $this->order();
+
+        $link = URL::temporarySignedRoute('verification.verify', now()->addHour(), [
+            'id' => $customer->id,
+            'hash' => sha1($customer->email),
+        ]);
+
+        $this->actingAs($previousUser)->get($link)
+            ->assertRedirect(route('account.index'));
+
+        $this->assertAuthenticatedAs($customer);
+        $this->assertNotNull($customer->fresh()->email_verified_at);
+        $this->assertSame($customer->id, $order->fresh()->user_id);
+    }
+
+    public function test_guest_account_page_redirects_to_customer_login(): void
+    {
+        $this->get(route('account.index'))
+            ->assertRedirect(route('account.login'));
+    }
+
     public function test_first_password_setup_keeps_the_user_logged_in_even_if_referrer_was_login(): void
     {
         $user = User::query()->create([
