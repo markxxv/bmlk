@@ -18,7 +18,7 @@
                 pattern="[A-Za-z0-9_-]{4,24}" autocomplete="off" placeholder="MONCODE"
                 class="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm uppercase outline-none focus:border-bmlk-brand">
             <p class="text-xs leading-5 text-zinc-500">{{ __('De 4 à 24 caractères. Lettres, chiffres, tirets et underscores. Ce code ne peut plus être modifié.') }}</p>
-            <button class="rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white">{{ __('Enregistrer mon code') }}</button>
+            <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white"><x-lucide-badge-check class="h-4 w-4" aria-hidden="true" />{{ __('Enregistrer mon code') }}</button>
         </form>
     @endif
 </section>

@@ -21,7 +21,7 @@
     <div class="mt-5 flex justify-between border-t border-zinc-100 pt-5 font-medium"><span>{{ __('Total') }}</span><span>{{ number_format($order->total_amount, 2, ',', ' ') }} €</span></div>
     @if ($order->payment_status !== 'paid' && $order->payment_status !== 'processing')
         <form action="{{ route('order.pay', ['orderNumber' => $order->order_number, 'token' => $order->access_token]) }}" method="POST" class="mt-8">@csrf
-            <button class="rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white">{{ __('Reprendre le paiement') }}</button>
+            <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white"><x-lucide-credit-card class="h-4 w-4" aria-hidden="true" />{{ __('Reprendre le paiement') }}</button>
         </form>
     @endif
 </div>

@@ -10,7 +10,7 @@
     <form method="POST" action="{{ route('password.email') }}" class="mt-6 space-y-4">@csrf
         <input type="email" name="email" value="{{ old('email', request('email')) }}" placeholder="{{ __('E-mail') }}" autocomplete="email" required class="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm outline-none focus:border-bmlk-brand">
         @if ($errors->any())<p class="text-sm text-red-600">{{ $errors->first() }}</p>@endif
-        <button class="w-full rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white">{{ __('Envoyer le lien') }}</button>
+        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white"><x-lucide-mail-check class="h-4 w-4" aria-hidden="true" />{{ __('Envoyer le lien') }}</button>
     </form>
 </section>
 

@@ -38,9 +38,10 @@
         <button type="button" @click="makePassword()" class="inline-flex items-center gap-2 text-sm font-medium text-bmlk-brand">
             <x-lucide-shuffle class="h-4 w-4" />{{ __('Générer un mot de passe') }}
         </button>
-        <button type="button" @click="visible = !visible" class="text-sm text-zinc-500">{{ __('Afficher / masquer') }}</button>
+        <button type="button" @click="visible = !visible" class="inline-flex items-center gap-2 text-sm text-zinc-500 transition hover:text-bmlk-brand"><x-lucide-eye class="h-4 w-4" aria-hidden="true" />{{ __('Afficher / masquer') }}</button>
     </div>
-    <button type="submit" class="rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white hover:opacity-90">
+    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white hover:opacity-90">
+        <x-lucide-lock-keyhole class="h-4 w-4" aria-hidden="true" />
         {{ __('Enregistrer mon mot de passe') }}
     </button>
 </form>

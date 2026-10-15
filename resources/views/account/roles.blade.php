@@ -12,7 +12,7 @@
             <p class="mt-3 text-sm leading-6 text-zinc-500">{{ $details['description'] }}</p>
             @if ($user->{$details['field']})
                 <p class="mt-6 text-sm font-semibold text-emerald-700">{{ __('Statut approuvé') }}</p>
-                <a class="mt-4 inline-block text-sm font-medium text-bmlk-brand" href="{{ $role === 'wholesale' ? route('account.wholesale') : route('account.influencer') }}">{{ __('Ouvrir mon espace') }} →</a>
+                <a class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-bmlk-brand" href="{{ $role === 'wholesale' ? route('account.wholesale') : route('account.influencer') }}"><x-lucide-arrow-up-right class="h-4 w-4" aria-hidden="true" />{{ __('Ouvrir mon espace') }}</a>
             @elseif (optional($applications->get($role))->status === 'pending')
                 <p class="mt-6 text-sm text-bmlk-brand">{{ __('Demande en cours d’examen') }}</p>
             @elseif (! $user->hasVerifiedEmail())
@@ -21,7 +21,7 @@
                 <form method="POST" action="{{ route('account.roles.apply') }}" class="mt-6 space-y-3">@csrf
                     <input type="hidden" name="role" value="{{ $role }}">
                     <textarea name="message" rows="3" maxlength="2000" placeholder="{{ __('Parlez-nous de votre activité (facultatif)') }}" class="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm outline-none focus:border-bmlk-brand"></textarea>
-                    <button class="rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white">{{ __('Envoyer ma demande') }}</button>
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white"><x-lucide-send class="h-4 w-4" aria-hidden="true" />{{ __('Envoyer ma demande') }}</button>
                 </form>
             @endif
         </section>
