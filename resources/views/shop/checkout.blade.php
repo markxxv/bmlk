@@ -22,7 +22,29 @@
                 errors: {},
                 isSubmitting: false,
                 paymentRetryUrl: null,
+                savedOrder: null,
                 deliveryCost: 0,
+
+                init() {
+                    try {
+                        const saved = JSON.parse(localStorage.getItem('bm_unpaid_order') || 'null');
+                        if (saved?.number && saved?.url) this.savedOrder = saved;
+                    } catch (error) {
+                        this.savedOrder = null;
+                    }
+                },
+
+                rememberOrder(data) {
+                    if (! data.order_number || ! data.status_url) return;
+
+                    this.savedOrder = { number: data.order_number, url: data.status_url };
+                    try {
+                        localStorage.setItem('bm_unpaid_order', JSON.stringify(this.savedOrder));
+                        sessionStorage.setItem('bm_pending_order', data.order_number);
+                    } catch (error) {
+                        // Browser storage can be disabled. Recovery by order number still works.
+                    }
+                },
                 delivery: null,
 
                 get isFreeDelivery() {
@@ -145,7 +167,7 @@
                         if (! response.ok) {
                             if (data.retry_url && data.order_number) {
                                 this.paymentRetryUrl = data.retry_url;
-                                sessionStorage.setItem('bm_pending_order', data.order_number);
+                                this.rememberOrder(data);
                             }
 
                             this.errors = data.errors || {
@@ -155,7 +177,7 @@
                             return;
                         }
 
-                        sessionStorage.setItem('bm_pending_order', data.order_number);
+                        this.rememberOrder(data);
                         window.location.href = data.redirect;
                     } catch (error) {
                         this.errors = {
@@ -179,6 +201,19 @@
                 <h1 class="mt-3 font-serif text-4xl font-medium tracking-tight text-zinc-900 sm:text-5xl">
                     {{ __('Finaliser la commande') }}
                 </h1>
+
+                <div x-show="savedOrder?.url" x-cloak class="mt-5 flex flex-wrap items-center gap-2 text-sm">
+                    <x-lucide-receipt-text class="h-4 w-4 text-[#A9636F]" />
+                    <span class="text-zinc-500">{{ __('Commande non finalisée :') }}</span>
+                    <a :href="savedOrder?.url" class="font-medium text-[#A9636F] underline-offset-4 hover:underline">
+                        <span x-text="savedOrder?.number"></span> · {{ __('Reprendre le paiement') }}
+                    </a>
+                </div>
+
+                <a href="{{ route('order.recover') }}" class="mt-3 inline-flex items-center gap-1.5 text-xs text-zinc-500 transition hover:text-[#A9636F]">
+                    <x-lucide-refresh-ccw class="h-3.5 w-3.5" />
+                    {{ __('Déjà passé commande ? Retrouvez-la ici') }}
+                </a>
             </div>
 
             <div class="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-start">

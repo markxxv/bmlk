@@ -1,9 +1,18 @@
 <x-layout :title="$metaTitle" robots="noindex, nofollow">
     <script>
         document.addEventListener('alpine:init', () => {
-            if (sessionStorage.getItem('bm_pending_order') === @js($order->order_number)) {
-                Alpine.store('cart').clearCart();
-                sessionStorage.removeItem('bm_pending_order');
+            try {
+                if (sessionStorage.getItem('bm_pending_order') === @js($order->order_number)) {
+                    Alpine.store('cart').clearCart();
+                    sessionStorage.removeItem('bm_pending_order');
+                }
+
+                const saved = JSON.parse(localStorage.getItem('bm_unpaid_order') || 'null');
+                if (saved?.number === @js($order->order_number)) {
+                    localStorage.removeItem('bm_unpaid_order');
+                }
+            } catch (error) {
+                // A paid order remains confirmed even if browser storage is unavailable.
             }
         });
     </script>

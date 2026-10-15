@@ -2,6 +2,17 @@
     :title="$metaTitle"
     robots="noindex, nofollow"
 >
+    <script>
+        // Preserve a private direct link in this browser for later payment retries.
+        try {
+            localStorage.setItem('bm_unpaid_order', JSON.stringify({
+                number: @js($order->order_number),
+                url: @js(route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token])),
+            }));
+        } catch (error) {
+            // The user may still bookmark the URL or use recovery.
+        }
+    </script>
     <main class="px-3 py-14 sm:px-5 sm:py-20 lg:px-8">
         <div class="mx-auto max-w-3xl rounded-3xl bg-white p-7 sm:p-10">
             <span class="flex h-12 w-12 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
