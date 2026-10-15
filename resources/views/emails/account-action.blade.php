@@ -7,7 +7,7 @@
             {{ __('Bonjour :name,', ['name' => $name ?: '']) }}
         </p>
         <p style="margin:12px 0 0;color:{{ config('email.colors.copy') }};font-size:14px;line-height:1.8">
-            {{ $message }}
+            {{ $bodyText }}
         </p>
     </td></tr>
 

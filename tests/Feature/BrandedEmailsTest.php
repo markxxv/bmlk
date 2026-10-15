@@ -56,6 +56,51 @@ class BrandedEmailsTest extends TestCase
         $this->assertStringNotContainsString('Hello!', $html);
     }
 
+    public function test_verification_notification_reaches_the_real_mail_renderer(): void
+    {
+        // A direct view()->render() misses Laravel Mailer's reserved $message
+        // variable. Exercise the actual notification mail channel instead.
+        config()->set('mail.default', 'array');
+
+        $user = User::factory()->create([
+            'name' => 'Marie',
+            'email' => 'marie@example.com',
+            'email_verified_at' => null,
+        ]);
+
+        $user->sendEmailVerificationNotification();
+
+        $this->assertTrue(true);
+    }
+
+    public function test_password_reset_notification_reaches_the_real_mail_renderer(): void
+    {
+        config()->set('mail.default', 'array');
+
+        $user = User::factory()->create([
+            'name' => 'Marie',
+            'email' => 'marie@example.com',
+        ]);
+
+        $user->sendPasswordResetNotification('test-reset-token');
+
+        $this->assertTrue(true);
+    }
+
+    public function test_forgot_password_form_sends_branded_email_without_internal_error(): void
+    {
+        config()->set('mail.default', 'array');
+
+        User::factory()->create([
+            'name' => 'Marie',
+            'email' => 'marie@example.com',
+        ]);
+
+        $this->post(route('password.email'), ['email' => 'marie@example.com'])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+    }
+
     public function test_order_email_reuses_the_same_brand_layout(): void
     {
         $order = Order::query()->create([

@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
                 ->view('emails.account-action', [
                     'title' => 'Confirmez votre adresse e-mail',
                     'name' => $notifiable->name,
-                    'message' => 'Confirmez votre adresse e-mail pour sécuriser votre compte BLACK MILK et retrouver toutes vos commandes.',
+                    'bodyText' => 'Confirmez votre adresse e-mail pour sécuriser votre compte BLACK MILK et retrouver toutes vos commandes.',
                     'actionLabel' => 'Confirmer mon adresse e-mail',
                     'actionUrl' => $verificationUrl,
                     'expiry' => 'Ce lien est valable pendant '.config('auth.verification.expire', 60).' minutes.',
@@ -58,7 +58,7 @@ class AppServiceProvider extends ServiceProvider
                 ->view('emails.account-action', [
                     'title' => 'Votre mot de passe',
                     'name' => $notifiable->name,
-                    'message' => 'Vous pouvez définir un nouveau mot de passe pour accéder à votre espace BLACK MILK et consulter vos commandes.',
+                    'bodyText' => 'Vous pouvez définir un nouveau mot de passe pour accéder à votre espace BLACK MILK et consulter vos commandes.',
                     'actionLabel' => 'Créer mon mot de passe',
                     'actionUrl' => $resetUrl,
                     'expiry' => 'Ce lien est valable pendant '.config('auth.passwords.users.expire', 60).' minutes.',
