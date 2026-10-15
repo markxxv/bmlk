@@ -228,3 +228,59 @@ Grid::make([
 ```
 
 Important: the root `Grid` must always end with `->columnSpanFull()`. Without it, Filament v5 can constrain the entire 2/3 + 1/3 layout into a narrow schema column.
+
+
+## Payment emails — cron only
+
+Payment emails are sent **synchronously by Laravel Scheduler**. No queues, workers, Supervisor or external scheduler are required.
+
+- **Paid:** one confirmation after Stripe confirms the payment (within the next minute).
+- **Failed:** one message after a failed/expired Stripe checkout, or when the initial payment session cannot be created.
+- **Reminder:** one follow-up on the **next calendar day after 10:00, Europe/Paris**, if the order remains unpaid. No subsequent reminders.
+- Failed-payment emails include a private link to pay the **same order**, without rebuilding the cart.
+- Orders without an email address are skipped. Historical paid/failed orders are excluded from initial mailouts.
+
+### 1. Configure SMTP
+
+In the production `.env`, configure a real SMTP provider with verified sender credentials:
+
+```dotenv
+APP_URL=https://blackmilk.dak.ink
+MAIL_MAILER=smtp
+MAIL_HOST=your-smtp-host
+MAIL_PORT=587
+MAIL_USERNAME=your-smtp-username
+MAIL_PASSWORD=your-smtp-password
+MAIL_FROM_ADDRESS=your-verified-sender@example.com
+MAIL_FROM_NAME="BLACK MILK"
+```
+
+`MAIL_MAILER=log` is for development only; it does not deliver real email.
+
+### 2. Deploy
+
+```bash
+git pull origin main
+php artisan migrate --force
+php artisan optimize:clear
+php artisan config:cache
+```
+
+### 3. Install one cron entry
+
+Edit the production user's crontab with `crontab -e` and add:
+
+```cron
+* * * * * cd /absolute/path/to/bmlk && php artisan schedule:run >> storage/logs/scheduler.log 2>&1
+```
+
+Replace `/absolute/path/to/bmlk` with the actual Laravel directory. The command runs once a minute; the reminder cutoff is checked in **Europe/Paris** time (including daylight saving). No queue worker is needed.
+
+### 4. Verify
+
+```bash
+php artisan schedule:list
+php artisan orders:payment-emails
+```
+
+The second command manually sends currently pending emails; only run it after SMTP is correctly configured. Email timestamps are stored on `orders` to prevent repeated mail. SMTP failures are written to `storage/logs/laravel.log` and retried on the next cron run.
