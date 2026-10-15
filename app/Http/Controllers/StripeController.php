@@ -233,9 +233,11 @@ class StripeController extends Controller
                 'updated_at' => now(),
             ]);
         } elseif ($event === 'checkout.session.completed') {
-            $order->update(['payment_status' => 'processing']);
+            Order::query()->whereKey($order->id)->where('payment_status', '!=', 'paid')
+                ->update(['payment_status' => 'processing', 'updated_at' => now()]);
         } elseif (in_array($event, ['checkout.session.async_payment_failed', 'checkout.session.expired'], true)) {
-            $order->update(['payment_status' => 'failed']);
+            Order::query()->whereKey($order->id)->where('payment_status', '!=', 'paid')
+                ->update(['payment_status' => 'failed', 'updated_at' => now()]);
         }
     }
 
