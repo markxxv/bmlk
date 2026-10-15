@@ -284,3 +284,30 @@ php artisan orders:payment-emails
 ```
 
 The second command manually sends currently pending emails; only run it after SMTP is correctly configured. Email timestamps are stored on `orders` to prevent repeated mail. SMTP failures are written to `storage/logs/laravel.log` and retried on the next cron run.
+
+
+## Customer accounts and partner roles
+
+- Checkout requires an email. Stripe confirmation creates a passwordless account when the email is new.
+- The original checkout browser is signed into the new account and redirected to `/account` after successful payment. Other browsers or forwarded payment links cannot sign in.
+- Customers set or generate a password in their account; browsers can save it. Email verification and forgotten-password links use standard Laravel mail notifications.
+- Existing accounts are never accessed through a guest checkout. After signing in and verifying email, customers can claim paid orders matching that email.
+- Existing Filament users retain admin access when the migration runs; new checkout customers cannot access `/admin`.
+- Wholesale and influencer statuses are independent, can coexist, and are requested at `/account/roles`.
+- Admins approve applications in Filament > Shop > Partner applications, or set both statuses in Shop > Customers.
+- Approved verified influencers choose one permanent unique code. The default discount is 30%, adjustable by admins from 0 to 95%.
+- Checkout coupons discount products only; shipping is calculated separately. The server uses current catalog prices and Stripe receives the discounted line prices.
+- Approved status pages are `/account/wholesale` and `/account/influencer`. Wholesale pricing and influencer statistics are left for later.
+
+### Deploy customer accounts
+
+```bash
+git pull origin main
+php artisan migrate --force
+npm run build
+php artisan optimize:clear
+php artisan config:cache
+php artisan test --filter=CustomerAccountsTest
+```
+
+SMTP must be configured for email verification and password reset. No extra workers are needed.
