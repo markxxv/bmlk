@@ -241,6 +241,13 @@ class StripeController extends Controller
             return; // Idempotent for repeated and out-of-order webhooks.
         }
 
+        // Checkout may collect an email even when the order form did not.
+        $stripeEmail = data_get($session, 'customer_details.email');
+        if (blank($order->email) && is_string($stripeEmail)
+            && filter_var($stripeEmail, FILTER_VALIDATE_EMAIL)) {
+            $order->forceFill(['email' => $stripeEmail])->save();
+        }
+
         if ($paid) {
             Order::query()->whereKey($order->id)->where('payment_status', '!=', 'paid')->update([
                 'payment_status' => 'paid',
@@ -253,8 +260,13 @@ class StripeController extends Controller
             Order::query()->whereKey($order->id)->whereNotIn('payment_status', ['paid', 'failed'])
                 ->update(['payment_status' => 'processing', 'updated_at' => now()]);
         } elseif (in_array($event, ['checkout.session.async_payment_failed', 'checkout.session.expired'], true)) {
-            Order::query()->whereKey($order->id)->where('payment_status', '!=', 'paid')
-                ->update(['payment_status' => 'failed', 'updated_at' => now()]);
+            Order::query()->whereKey($order->id)
+                ->whereNotIn('payment_status', ['paid', 'failed'])
+                ->update([
+                    'payment_status' => 'failed',
+                    'payment_failed_at' => now(),
+                    'updated_at' => now(),
+                ]);
         }
     }
 

@@ -292,6 +292,18 @@ class ShopController extends Controller
         $paymentUrl = app(StripeController::class)->checkoutUrl($order);
 
         if (! $paymentUrl) {
+            // A failed first attempt is still an order: email it, and allow retry.
+            // Never override an existing Stripe session or a confirmed payment.
+            if (config('services.stripe.secret')) {
+                Order::query()->whereKey($order->id)
+                    ->where('payment_status', 'unpaid')
+                    ->whereNull('stripe_session_id')
+                    ->update([
+                        'payment_status' => 'failed',
+                        'payment_failed_at' => now(),
+                    ]);
+            }
+
             return response()->json([
                 'success' => false,
                 'message' => __('Le paiement est temporairement indisponible. Votre commande est enregistrée, veuillez réessayer.'),
