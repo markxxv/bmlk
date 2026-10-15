@@ -328,13 +328,9 @@
                                 </div>
                             </div>
 
-                            <div class="mt-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-3">
-                                <img src="/img/visa.svg" alt="Visa" class="w-8">
-                                <img src="/img/mastercard.svg" alt="Mastercard" class="w-8">
-                                <img src="/img/amex.svg" alt="American Express" class="w-8">
-                                <img src="/img/paypal.svg" alt="PayPal" class="w-8">
-                                <img src="/img/apple-pay.svg" alt="Apple Pay" class="w-8">
-                            </div>
+                            <p class="mt-4 text-center text-[11px] text-zinc-400">
+                                {{ __('Les moyens de paiement disponibles seront affichés sur Stripe.') }}
+                            </p>
                         </div>
                     </section>
                 </form>
