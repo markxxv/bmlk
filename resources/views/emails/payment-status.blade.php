@@ -1,20 +1,6 @@
-<!doctype html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BLACK MILK · {{ $order->order_number }}</title>
-</head>
-<body style="margin:0;padding:0;background:#fcf8f4;color:#3a2e30;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%">
-    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;background:#fcf8f4">
-        <tr>
-            <td align="center" style="padding:32px 16px 48px">
-                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;border-collapse:collapse;background:#ffffff">
-                    <tr><td style="padding:36px 32px 0">
-                        <p style="margin:0;color:#a9636f;font-size:14px;font-weight:700;letter-spacing:3px">BLACK MILK</p>
-                    </td></tr>
+<x-mail.layout :title="'BLACK MILK · '.$order->order_number">
                     <tr><td style="padding:32px 32px 0">
-                        <h1 style="margin:0;color:#3a2e30;font-family:Georgia,'Times New Roman',serif;font-size:30px;font-weight:400;line-height:1.25">
+                        <h1 style="margin:0;color:{{ config('email.colors.ink') }};font-family:Georgia,'Times New Roman',serif;font-size:30px;font-weight:400;line-height:1.25">
                             @if ($kind === 'paid')
                                 {{ __('Paiement confirmé') }}
                             @elseif ($kind === 'reminder')
@@ -23,10 +9,10 @@
                                 {{ __('Paiement non finalisé') }}
                             @endif
                         </h1>
-                        <p style="margin:20px 0 0;color:#52525b;font-size:14px;line-height:1.8">
+                        <p style="margin:20px 0 0;color:{{ config('email.colors.copy') }};font-size:14px;line-height:1.8">
                             {{ __('Bonjour :name,', ['name' => $order->first_name ?: '']) }}
                         </p>
-                        <p style="margin:12px 0 0;color:#52525b;font-size:14px;line-height:1.8">
+                        <p style="margin:12px 0 0;color:{{ config('email.colors.copy') }};font-size:14px;line-height:1.8">
                             @if ($kind === 'paid')
                                 {{ __('Nous avons bien reçu votre paiement. Votre commande est confirmée et nous allons la préparer.') }}
                             @elseif ($kind === 'reminder')
@@ -38,16 +24,16 @@
                     </td></tr>
 
                     <tr><td style="padding:28px 32px 0">
-                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;background:#fcf8f4">
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;background:{{ config('email.colors.canvas') }}">
                             <tr>
-                                <td style="padding:16px 18px;color:#71717a;font-size:12px">{{ __('Commande') }}</td>
-                                <td align="right" style="padding:16px 18px;color:#3a2e30;font-size:13px;font-weight:700">{{ $order->order_number }}</td>
+                                <td style="padding:16px 18px;color:{{ config('email.colors.muted') }};font-size:12px">{{ __('Commande') }}</td>
+                                <td align="right" style="padding:16px 18px;color:{{ config('email.colors.ink') }};font-size:13px;font-weight:700">{{ $order->order_number }}</td>
                             </tr>
                         </table>
                     </td></tr>
 
                     <tr><td style="padding:30px 32px 0">
-                        <h2 style="margin:0 0 12px;color:#3a2e30;font-family:Georgia,'Times New Roman',serif;font-size:21px;font-weight:400">
+                        <h2 style="margin:0 0 12px;color:{{ config('email.colors.ink') }};font-family:Georgia,'Times New Roman',serif;font-size:21px;font-weight:400">
                             {{ __('Articles commandés') }}
                         </h2>
 
@@ -65,7 +51,7 @@
                                     $lineTotal = (float) data_get($item, 'line_total', $unitPrice * $quantity);
                                 @endphp
                                 <tr>
-                                    <td valign="top" style="padding:15px 0;border-bottom:1px solid #f1e9e8">
+                                    <td valign="top" style="padding:15px 0;border-bottom:1px solid {{ config('email.colors.divider') }}">
                                         <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse">
                                             <tr>
                                                 @if ($imageUrl)
@@ -74,18 +60,18 @@
                                                             style="display:block;width:62px;height:62px;object-fit:cover;border-radius:8px;border:0">
                                                     </td>
                                                 @endif
-                                                <td valign="top" style="padding:0;color:#3a2e30;font-size:13px;line-height:1.6">
+                                                <td valign="top" style="padding:0;color:{{ config('email.colors.ink') }};font-size:13px;line-height:1.6">
                                                     <strong style="font-weight:600">{{ data_get($item, 'name', __('Produit')) }}</strong>
                                                     @foreach (data_get($item, 'options', []) as $option)
-                                                        <span style="display:block;color:#858087;font-size:11px;line-height:1.7">
+                                                        <span style="display:block;color:{{ config('email.colors.subtle') }};font-size:11px;line-height:1.7">
                                                             {{ data_get($option, 'label') }}{{ data_get($option, 'label') && data_get($option, 'display') ? ' · ' : '' }}{{ data_get($option, 'display') }}
                                                         </span>
                                                     @endforeach
-                                                    <span style="display:block;margin-top:4px;color:#71717a;font-size:12px">
+                                                    <span style="display:block;margin-top:4px;color:{{ config('email.colors.muted') }};font-size:12px">
                                                         {{ $quantity }} × {{ number_format($unitPrice, 2, ',', ' ') }} €
                                                     </span>
                                                 </td>
-                                                <td valign="top" align="right" width="92" style="padding:0 0 0 10px;width:92px;white-space:nowrap;color:#3a2e30;font-size:13px;font-weight:700">
+                                                <td valign="top" align="right" width="92" style="padding:0 0 0 10px;width:92px;white-space:nowrap;color:{{ config('email.colors.ink') }};font-size:13px;font-weight:700">
                                                     {{ number_format($lineTotal, 2, ',', ' ') }} €
                                                 </td>
                                             </tr>
@@ -99,51 +85,42 @@
                     <tr><td style="padding:20px 32px 0">
                         <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse">
                             <tr>
-                                <td style="padding:7px 0;color:#71717a;font-size:13px">{{ __('Sous-total') }}</td>
-                                <td align="right" style="padding:7px 0;color:#3a2e30;font-size:13px">{{ number_format((float) $order->subtotal, 2, ',', ' ') }} €</td>
+                                <td style="padding:7px 0;color:{{ config('email.colors.muted') }};font-size:13px">{{ __('Sous-total') }}</td>
+                                <td align="right" style="padding:7px 0;color:{{ config('email.colors.ink') }};font-size:13px">{{ number_format((float) $order->subtotal, 2, ',', ' ') }} €</td>
                             </tr>
                             @if ((float) $order->discount_amount > 0)
                                 <tr>
-                                    <td style="padding:7px 0;color:#a9636f;font-size:13px">{{ __('Réduction') }}{{ $order->promo_code ? ' · '.$order->promo_code : '' }}</td>
-                                    <td align="right" style="padding:7px 0;color:#a9636f;font-size:13px">− {{ number_format((float) $order->discount_amount, 2, ',', ' ') }} €</td>
+                                    <td style="padding:7px 0;color:{{ config('email.colors.accent') }};font-size:13px">{{ __('Réduction') }}{{ $order->promo_code ? ' · '.$order->promo_code : '' }}</td>
+                                    <td align="right" style="padding:7px 0;color:{{ config('email.colors.accent') }};font-size:13px">− {{ number_format((float) $order->discount_amount, 2, ',', ' ') }} €</td>
                                 </tr>
                             @endif
                             <tr>
-                                <td style="padding:7px 0;color:#71717a;font-size:13px">{{ __('Livraison') }}</td>
-                                <td align="right" style="padding:7px 0;color:#3a2e30;font-size:13px">
+                                <td style="padding:7px 0;color:{{ config('email.colors.muted') }};font-size:13px">{{ __('Livraison') }}</td>
+                                <td align="right" style="padding:7px 0;color:{{ config('email.colors.ink') }};font-size:13px">
                                     {{ (float) $order->delivery_cost === 0.0 ? __('Offerte') : number_format((float) $order->delivery_cost, 2, ',', ' ').' €' }}
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding:16px 0 0;border-top:1px solid #e9dedf;color:#3a2e30;font-size:16px;font-weight:700">{{ __('Total') }}</td>
-                                <td align="right" style="padding:16px 0 0;border-top:1px solid #e9dedf;color:#3a2e30;font-size:17px;font-weight:700">{{ number_format((float) $order->total_amount, 2, ',', ' ') }} €</td>
+                                <td style="padding:16px 0 0;border-top:1px solid {{ config('email.colors.dividerStrong') }};color:{{ config('email.colors.ink') }};font-size:16px;font-weight:700">{{ __('Total') }}</td>
+                                <td align="right" style="padding:16px 0 0;border-top:1px solid {{ config('email.colors.dividerStrong') }};color:{{ config('email.colors.ink') }};font-size:17px;font-weight:700">{{ number_format((float) $order->total_amount, 2, ',', ' ') }} €</td>
                             </tr>
                         </table>
                     </td></tr>
 
                     <tr><td style="padding:30px 32px 0">
-                        <a href="{{ route('account.checkout', ['orderNumber' => $order->order_number, 'token' => $order->access_token]) }}"
-                            style="display:inline-block;background:#a9636f;color:#ffffff;padding:15px 23px;border-radius:24px;text-decoration:none;font-size:13px;font-weight:700">
+                        <x-mail.button :href="route('account.checkout', ['orderNumber' => $order->order_number, 'token' => $order->access_token])">
                             {{ __('Voir ma commande') }} →
-                        </a>
+                        </x-mail.button>
                         @if ($kind !== 'paid')
                             <p style="margin:18px 0 0">
                                 <a href="{{ route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token]) }}"
-                                    style="color:#a9636f;font-size:13px;font-weight:700;text-decoration:underline">
+                                    style="color:{{ config('email.colors.accent') }};font-size:13px;font-weight:700;text-decoration:underline">
                                     {{ __('Reprendre le paiement') }} →
                                 </a>
                             </p>
                         @endif
-                        <p style="margin:17px 0 0;color:#858087;font-size:11px;line-height:1.8">
+                        <p style="margin:17px 0 0;color:{{ config('email.colors.subtle') }};font-size:11px;line-height:1.8">
                             {{ __('Ce lien privé vous permet de consulter cette commande sans créer de compte. Conservez cet e-mail.') }}
                         </p>
                     </td></tr>
-                    <tr><td style="padding:35px 32px 36px;color:#a1a1aa;font-size:12px;line-height:1.6">
-                        {{ __('BLACK MILK · Merci pour votre confiance.') }}
-                    </td></tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
+</x-mail.layout>
