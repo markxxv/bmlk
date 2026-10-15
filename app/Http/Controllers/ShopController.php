@@ -282,11 +282,15 @@ class ShopController extends Controller
             'delivery_cost' => $deliveryCost,
             'total_amount' => $totalAmount,
             'status' => 'pending',
+            'payment_status' => 'unpaid',
+            'access_token' => Str::random(48),
         ]);
+
+        $statusUrl = route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token]);
 
         return response()->json([
             'success' => true,
-            'redirect' => route('order.status', ['orderNumber' => $order->order_number]),
+            'redirect' => app(StripeController::class)->checkoutUrl($order) ?: $statusUrl,
         ]);
     }
 
@@ -317,11 +321,15 @@ class ShopController extends Controller
         ]);
     }
 
-    public function orderStatus(string $orderNumber): View
+    public function orderStatus(Request $request, string $orderNumber): View|RedirectResponse
     {
-        $order = Order::query()
-            ->where('order_number', $orderNumber)
-            ->firstOrFail();
+        $order = Order::query()->where('order_number', $orderNumber)->firstOrFail();
+
+        abort_unless($order->access_token && hash_equals($order->access_token, (string) $request->query('token', '')), 404);
+
+        if ($order->payment_status === 'paid') {
+            return redirect()->route('order.thanks', ['orderNumber' => $order->order_number, 'token' => $order->access_token]);
+        }
 
         return view('shop.order-status', [
             'order' => $order,

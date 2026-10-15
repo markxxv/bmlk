@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\StripeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontController::class, 'home'])->name('home');
@@ -22,6 +23,16 @@ Route::post('/checkout', [ShopController::class, 'processOrder'])->name('checkou
 Route::get('/api/delivery-cost/{code}', [ShopController::class, 'deliveryCost'])
     ->where('code', '[A-Za-z0-9-]+')
     ->name('api.delivery.cost');
+
+Route::post('/stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
+
+Route::post('/order/{orderNumber}/pay', [StripeController::class, 'retry'])
+    ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
+    ->name('order.pay');
+
+Route::get('/order/{orderNumber}/thanks', [StripeController::class, 'thanks'])
+    ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
+    ->name('order.thanks');
 
 Route::get('/order/{orderNumber}', [ShopController::class, 'orderStatus'])
     ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')

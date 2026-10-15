@@ -117,13 +117,12 @@
 
                         if (! response.ok) {
                             this.errors = data.errors || {
-                                general: @js(__('Impossible de créer la commande.')),
+                                general: @js(__('Impossible de démarrer le paiement.')),
                             };
 
                             return;
                         }
 
-                        this.$store.cart.clearCart();
                         window.location.href = data.redirect;
                     } catch (error) {
                         this.errors = {
@@ -309,7 +308,7 @@
                             :disabled="isSubmitting || $store.cart.items.length === 0"
                             class="mt-5 flex w-full items-center justify-center rounded-xl bg-[#A9636F] px-5 py-4 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-[#945763] disabled:cursor-not-allowed disabled:bg-zinc-300"
                         >
-                            <span x-show="! isSubmitting">{{ __('Créer la commande') }}</span>
+                            <span x-show="! isSubmitting">{{ __('Payer la commande') }}</span>
                             <span x-show="isSubmitting">{{ __('Traitement…') }}</span>
                         </button>
 
@@ -321,10 +320,10 @@
 
                                 <div>
                                     <div class="text-xs font-medium text-zinc-900">
-                                        {{ __('Secure payments') }}
+                                        {{ __('Paiement sécurisé par Stripe') }}
                                     </div>
                                     <div class="mt-0.5 text-[10px] text-zinc-400">
-                                        {{ __('Your payment information is protected') }}
+                                        {{ __('Vos informations bancaires sont traitées par Stripe.') }}
                                     </div>
                                 </div>
                             </div>

@@ -4,21 +4,22 @@
 >
     <main class="px-3 py-14 sm:px-5 sm:py-20 lg:px-8">
         <div class="mx-auto max-w-3xl rounded-3xl bg-white p-7 sm:p-10">
-            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[#EFDDE0] text-[#A9636F]">
-                <x-lucide-check class="h-5 w-5" />
-            </div>
+            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
+                <x-lucide-credit-card class="h-5 w-5" />
+            </span>
 
-            <p class="mt-6 text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
-                {{ __('Commande enregistrée') }}
+            <p class="mt-6 text-sm font-medium text-[#A9636F]">
+                {{ __('Commande') }} {{ $order->order_number }}
             </p>
 
-            <h1 class="mt-2 text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">
-                {{ __('Merci pour votre commande') }}
+            <h1 class="mt-2 font-serif text-3xl font-medium tracking-tight text-zinc-900 sm:text-4xl">
+                {{ $order->payment_status === 'processing' ? __('Paiement en cours de confirmation') : __('Paiement non finalisé') }}
             </h1>
 
             <p class="mt-3 text-sm leading-6 text-zinc-500">
-                {{ __('Numéro de commande') }}:
-                <span class="font-semibold text-zinc-900">{{ $order->order_number }}</span>
+                {{ $order->payment_status === 'processing'
+                    ? __('Nous attendons la confirmation de votre paiement. Votre commande est conservée.')
+                    : __('Votre commande est enregistrée mais pas encore payée. Vous pouvez reprendre le paiement sans ressaisir vos informations.') }}
             </p>
 
             <div class="mt-8 divide-y divide-zinc-100 border-y border-zinc-100">
@@ -82,11 +83,20 @@
                 </div>
             </div>
 
-            <a
-                href="{{ route('shop.index') }}"
-                class="mt-8 inline-flex rounded-full bg-zinc-900 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-zinc-800"
-            >
-                {{ __('Continuer mes achats') }}
+            @if ($order->payment_status !== 'processing')
+                <form method="POST" action="{{ route('order.pay', ['orderNumber' => $order->order_number, 'token' => $order->access_token]) }}" class="mt-8">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-[#A9636F] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#945763]">
+                        <x-lucide-lock-keyhole class="h-4 w-4" />
+                        {{ __('Réessayer le paiement') }}
+                    </button>
+                </form>
+            @else
+                <p class="mt-8 text-sm text-zinc-500">{{ __('Actualisez cette page dans quelques instants pour vérifier le statut.') }}</p>
+            @endif
+
+            <a href="{{ route('shop.index') }}" class="mt-5 inline-block text-sm text-zinc-500 hover:text-zinc-900">
+                {{ __('Retour à la boutique') }}
             </a>
         </div>
     </main>
