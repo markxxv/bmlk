@@ -174,7 +174,7 @@ class StripeController extends Controller
         $user = $order->user;
         $onboardingToken = (string) $request->session()->pull("bmlk_auto_login.{$order->id}", '');
 
-        if (! Auth::check() && $user && (int) $user->onboarding_order_id === $order->id
+        if ($user && (int) $user->onboarding_order_id === $order->id
             && $onboardingToken !== '' && hash_equals($order->access_token, $onboardingToken)) {
             Auth::login($user);
             $request->session()->regenerate();

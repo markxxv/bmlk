@@ -223,6 +223,38 @@ class CustomerAccountsTest extends TestCase
         }
     }
 
+    public function test_a_valid_paid_checkout_can_open_its_new_customer_even_with_an_old_browser_session(): void
+    {
+        $oldSessionUser = User::query()->create([
+            'name' => 'Previous session',
+            'email' => 'previous@example.com',
+            'password' => 'OldStrongPassword123!',
+        ]);
+
+        $order = $this->order();
+        $order->update([
+            'payment_status' => 'paid',
+            'onboarding_token_hash' => hash('sha256', str_repeat('f', 64)),
+        ]);
+
+        $buyer = User::query()->create([
+            'name' => 'Marie',
+            'email' => 'marie@example.com',
+            'onboarding_order_id' => $order->id,
+        ]);
+        $order->update(['user_id' => $buyer->id]);
+
+        $this->actingAs($oldSessionUser)
+            ->postJson(route('account.complete_checkout'), [
+                'order_number' => $order->order_number,
+                'token' => str_repeat('f', 64),
+            ])->assertOk()
+            ->assertJsonPath('authenticated', true);
+
+        $this->assertAuthenticatedAs($buyer);
+        $this->assertNull($order->fresh()->onboarding_token_hash);
+    }
+
     public function test_first_password_setup_keeps_the_user_logged_in_even_if_referrer_was_login(): void
     {
         $user = User::query()->create([

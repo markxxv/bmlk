@@ -48,8 +48,7 @@ class AccountController extends Controller
         // Never sign in somebody who used the same email for an older
         // registered account (or an admin account). That would be a takeover.
         if ($user && (int) $user->onboarding_order_id === $order->id
-            && blank($user->password) && ! $user->is_admin
-            && (! Auth::check() || Auth::id() === $user->id)) {
+            && blank($user->password) && ! $user->is_admin) {
             Auth::login($user);
             $request->session()->regenerate();
 
