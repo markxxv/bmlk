@@ -111,6 +111,90 @@ class PaymentEmailsTest extends TestCase
         Mail::assertSent(PaymentStatusMail::class, fn ($mail): bool => $mail->kind === 'reminder');
     }
 
+    public function test_paid_email_contains_items_options_amounts_and_private_order_link(): void
+    {
+        $order = $this->order();
+        $order->update([
+            'payment_status' => 'paid',
+            'items' => [[
+                'name' => 'Gel BLACK MILK',
+                'quantity' => 2,
+                'unit_price' => 6,
+                'line_total' => 12,
+                'options' => [['label' => 'Taille', 'display' => '100 ml']],
+            ]],
+        ]);
+
+        $html = view('emails.payment-status', [
+            'order' => $order,
+            'kind' => 'paid',
+        ])->render();
+
+        $this->assertStringContainsString('Gel BLACK MILK', $html);
+        $this->assertStringContainsString('100 ml', $html);
+        $this->assertStringContainsString('2 ×', $html);
+        $this->assertStringContainsString(__('Livraison'), $html);
+        $this->assertStringContainsString(__('Voir ma commande'), $html);
+        $this->assertStringContainsString(route('account.checkout', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+        ]), $html);
+    }
+
+    public function test_failed_mail_and_reminder_link_to_existing_order_and_retry(): void
+    {
+        $order = $this->order();
+        $order->update(['payment_status' => 'failed']);
+
+        foreach (['failed', 'reminder'] as $kind) {
+            $html = view('emails.payment-status', compact('order', 'kind'))->render();
+
+            $this->assertStringContainsString('Gel', $html);
+            $this->assertStringContainsString(__('Reprendre le paiement'), $html);
+            $this->assertStringContainsString(route('account.checkout', [
+                'orderNumber' => $order->order_number,
+                'token' => $order->access_token,
+            ]), $html);
+            $this->assertStringContainsString(route('order.status', [
+                'orderNumber' => $order->order_number,
+                'token' => $order->access_token,
+            ]), $html);
+        }
+    }
+
+    public function test_guest_can_view_paid_and_failed_orders_but_not_without_private_token(): void
+    {
+        $order = $this->order();
+        $order->update(['payment_status' => 'paid']);
+
+        $url = route('account.checkout', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+        ]);
+
+        $this->get($url)->assertOk()
+            ->assertSee('Gel')
+            ->assertSee(__('Sous-total'))
+            ->assertSee(__('Livraison'));
+        $this->assertGuest();
+
+        $this->get(route('account.checkout', [
+            'orderNumber' => $order->order_number,
+            'token' => 'invalid',
+        ]))->assertNotFound();
+
+        $this->get(route('order.status', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+        ]))->assertRedirect($url);
+
+        $order->update(['payment_status' => 'failed']);
+        $this->get($url)->assertOk()
+            ->assertSee(__('Reprendre le paiement'))
+            ->assertSee('Gel');
+        $this->assertGuest();
+    }
+
     private function order(): Order
     {
         return Order::query()->create([
