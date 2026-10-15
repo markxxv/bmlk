@@ -2,3 +2,7 @@
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
+
+:root {
+    --sidebar-width: 15rem; 
+}
