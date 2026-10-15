@@ -465,7 +465,7 @@ class ShopController extends Controller
         }
 
         if ($order->payment_status === 'paid') {
-            return redirect()->route('order.thanks', [
+            return redirect()->route('account.checkout', [
                 'orderNumber' => $order->order_number,
                 'token' => $order->access_token,
             ]);
