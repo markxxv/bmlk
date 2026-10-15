@@ -123,6 +123,7 @@
                             return;
                         }
 
+                        sessionStorage.setItem('bm_pending_order', data.order_number);
                         window.location.href = data.redirect;
                     } catch (error) {
                         this.errors = {
