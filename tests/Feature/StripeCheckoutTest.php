@@ -1,0 +1,149 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Http\Controllers\StripeController;
+use App\Models\Order;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use Tests\TestCase;
+
+class StripeCheckoutTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->withoutVite();
+
+        config()->set('services.stripe.secret', 'sk_test_fake');
+        config()->set('services.stripe.webhook_secret', 'whsec_test');
+    }
+
+    public function test_checkout_creates_a_session_and_keeps_the_order_unpaid(): void
+    {
+        $order = $this->order();
+
+        Http::fake(['api.stripe.com/*' => Http::response([
+            'id' => 'cs_test_one',
+            'url' => 'https://checkout.stripe.com/c/pay/cs_test_one',
+        ])]);
+
+        $url = app(StripeController::class)->checkoutUrl($order);
+
+        $this->assertSame('https://checkout.stripe.com/c/pay/cs_test_one', $url);
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'payment_status' => 'unpaid',
+            'stripe_session_id' => 'cs_test_one',
+        ]);
+    }
+
+    public function test_only_valid_stripe_webhooks_confirm_payment(): void
+    {
+        $order = $this->order();
+        $order->update(['stripe_session_id' => 'cs_test_one']);
+
+        $event = [
+            'type' => 'checkout.session.completed',
+            'data' => ['object' => $this->session($order)],
+        ];
+
+        $this->withHeader('Stripe-Signature', 't=1,v1=wrong')
+            ->postJson('/stripe/webhook', $event)->assertStatus(400);
+
+        $this->assertSame('unpaid', $order->fresh()->payment_status);
+
+        $body = json_encode($event);
+        $timestamp = time();
+        $signature = hash_hmac('sha256', $timestamp.'.'.$body, 'whsec_test');
+
+        $this->withHeader('Stripe-Signature', "t={$timestamp},v1={$signature}")
+            ->postJson('/stripe/webhook', $event)->assertOk();
+
+        $this->assertSame('paid', $order->fresh()->payment_status);
+        $this->assertNotNull($order->fresh()->paid_at);
+
+        // Duplicate events must not change an already paid order.
+        $paidAt = $order->fresh()->paid_at;
+        $this->postJson('/stripe/webhook', $event)->assertOk();
+        $this->assertSame($paidAt, $order->fresh()->paid_at);
+    }
+
+    public function test_order_page_requires_a_secret_token(): void
+    {
+        $order = $this->order();
+
+        $this->get(route('order.status', ['orderNumber' => $order->order_number]))
+            ->assertNotFound();
+
+        $this->get(route('order.status', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+        ]))->assertOk();
+    }
+
+    public function test_retry_reuses_an_open_checkout_session(): void
+    {
+        $order = $this->order();
+        $order->update(['stripe_session_id' => 'cs_test_one']);
+
+        Http::fake(['api.stripe.com/*' => Http::response(
+            $this->session($order, 'unpaid') + [
+                'status' => 'open',
+                'url' => 'https://checkout.stripe.com/c/pay/cs_test_one',
+            ],
+        )]);
+
+        $this->post(route('order.pay', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+        ]))->assertRedirect('https://checkout.stripe.com/c/pay/cs_test_one');
+
+        Http::assertSentCount(1);
+    }
+
+    private function order(): Order
+    {
+        return Order::query()->create([
+            'access_token' => Str::random(48),
+            'first_name' => 'Marie',
+            'phone' => '0102030405',
+            'country' => 'France',
+            'city' => 'Paris',
+            'address' => 'Rue de Test 1',
+            'items' => [[
+                'product_id' => 1,
+                'name' => 'Gel',
+                'unit_price' => 12,
+                'quantity' => 1,
+                'line_total' => 12,
+            ]],
+            'subtotal' => 12,
+            'delivery_cost' => 3,
+            'total_amount' => 15,
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+        ]);
+    }
+
+    private function session(Order $order, string $paymentStatus = 'paid'): array
+    {
+        return [
+            'id' => 'cs_test_one',
+            'mode' => 'payment',
+            'status' => $paymentStatus === 'paid' ? 'complete' : 'open',
+            'payment_status' => $paymentStatus,
+            'currency' => 'eur',
+            'amount_total' => 1500,
+            'payment_intent' => 'pi_test_one',
+            'metadata' => [
+                'order_id' => (string) $order->id,
+                'order_number' => $order->order_number,
+            ],
+        ];
+    }
+}
