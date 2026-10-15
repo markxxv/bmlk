@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -120,10 +121,20 @@ class StripeController extends Controller
         }
     }
 
-    public function retry(Request $request, string $orderNumber): RedirectResponse
+    public function retry(Request $request, string $orderNumber): RedirectResponse|JsonResponse
     {
         $order = $this->authorizedOrder($request, $orderNumber);
-        return redirect()->away($this->checkoutUrl($order) ?: $this->statusUrl($order));
+        $url = $this->checkoutUrl($order);
+
+        if ($request->expectsJson()) {
+            return $url
+                ? response()->json(['redirect' => $url])
+                : response()->json([
+                    'message' => __('Stripe ne répond pas pour le moment. Veuillez réessayer.'),
+                ], 503);
+        }
+
+        return redirect()->away($url ?: $this->statusUrl($order));
     }
 
     public function thanks(Request $request, string $orderNumber): View|RedirectResponse

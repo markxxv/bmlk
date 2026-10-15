@@ -21,6 +21,7 @@
                 },
                 errors: {},
                 isSubmitting: false,
+                paymentRetryUrl: null,
                 deliveryCost: 0,
                 delivery: null,
 
@@ -87,12 +88,38 @@
                 },
 
                 async submit() {
-                    if (this.isSubmitting || this.$store.cart.items.length === 0) {
+                    if (this.isSubmitting || (this.$store.cart.items.length === 0 && ! this.paymentRetryUrl)) {
                         return;
                     }
 
                     this.errors = {};
                     this.isSubmitting = true;
+
+                    if (this.paymentRetryUrl) {
+                        try {
+                            const response = await fetch(this.paymentRetryUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                },
+                            });
+                            const data = await response.json();
+
+                            if (! response.ok || ! data.redirect) {
+                                this.errors.general = data.message || @js(__('Le paiement est temporairement indisponible. Veuillez réessayer.'));
+                                return;
+                            }
+
+                            window.location.href = data.redirect;
+                        } catch (error) {
+                            this.errors.general = @js(__('Le paiement est temporairement indisponible. Veuillez réessayer.'));
+                        } finally {
+                            this.isSubmitting = false;
+                        }
+                        return;
+                    }
 
                     const body = new FormData();
 
@@ -116,8 +143,13 @@
                         const data = await response.json();
 
                         if (! response.ok) {
+                            if (data.retry_url && data.order_number) {
+                                this.paymentRetryUrl = data.retry_url;
+                                sessionStorage.setItem('bm_pending_order', data.order_number);
+                            }
+
                             this.errors = data.errors || {
-                                general: @js(__('Impossible de démarrer le paiement.')),
+                                general: data.message || @js(__('Impossible de démarrer le paiement.')),
                             };
 
                             return;
@@ -306,10 +338,11 @@
 
                         <button
                             type="submit"
-                            :disabled="isSubmitting || $store.cart.items.length === 0"
+                            :disabled="isSubmitting || ($store.cart.items.length === 0 && !paymentRetryUrl)"
                             class="mt-5 flex w-full items-center justify-center rounded-xl bg-[#A9636F] px-5 py-4 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-[#945763] disabled:cursor-not-allowed disabled:bg-zinc-300"
                         >
-                            <span x-show="! isSubmitting">{{ __('Payer la commande') }}</span>
+                            <span x-show="!isSubmitting && !paymentRetryUrl">{{ __('Payer la commande') }}</span>
+                            <span x-show="!isSubmitting && paymentRetryUrl">{{ __('Réessayer le paiement') }}</span>
                             <span x-show="isSubmitting">{{ __('Traitement…') }}</span>
                         </button>
 

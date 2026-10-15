@@ -286,11 +286,26 @@ class ShopController extends Controller
             'access_token' => Str::random(48),
         ]);
 
-        $statusUrl = route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token]);
+        // Also authorize this browser to access its order if the query string is lost.
+        $request->session()->put("bmlk_orders.{$order->id}", $order->access_token);
+
+        $paymentUrl = app(StripeController::class)->checkoutUrl($order);
+
+        if (! $paymentUrl) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Le paiement est temporairement indisponible. Votre commande est enregistrée, veuillez réessayer.'),
+                'retry_url' => route('order.pay', [
+                    'orderNumber' => $order->order_number,
+                    'token' => $order->access_token,
+                ]),
+                'order_number' => $order->order_number,
+            ], 503);
+        }
 
         return response()->json([
             'success' => true,
-            'redirect' => app(StripeController::class)->checkoutUrl($order) ?: $statusUrl,
+            'redirect' => $paymentUrl,
             'order_number' => $order->order_number,
         ]);
     }
@@ -326,7 +341,13 @@ class ShopController extends Controller
     {
         $order = Order::query()->where('order_number', $orderNumber)->firstOrFail();
 
-        abort_unless($order->access_token && hash_equals($order->access_token, (string) $request->query('token', '')), 404);
+        $token = (string) $request->query('token', '');
+        $sessionToken = (string) $request->session()->get("bmlk_orders.{$order->id}", '');
+
+        abort_unless($order->access_token && (
+            hash_equals($order->access_token, $token) ||
+            hash_equals($order->access_token, $sessionToken)
+        ), 404);
 
         if ($order->payment_status === 'paid') {
             return redirect()->route('order.thanks', ['orderNumber' => $order->order_number, 'token' => $order->access_token]);
