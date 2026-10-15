@@ -291,6 +291,7 @@ class ShopController extends Controller
         return response()->json([
             'success' => true,
             'redirect' => app(StripeController::class)->checkoutUrl($order) ?: $statusUrl,
+            'order_number' => $order->order_number,
         ]);
     }
 
