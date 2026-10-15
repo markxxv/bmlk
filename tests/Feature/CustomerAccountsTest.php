@@ -86,6 +86,94 @@ class CustomerAccountsTest extends TestCase
         $this->assertDatabaseCount('users', 1);
     }
 
+    public function test_original_checkout_browser_completes_passwordless_sign_in_even_without_its_old_session(): void
+    {
+        $order = $this->order();
+        $order->update([
+            'stripe_session_id' => 'cs_test_customer',
+            'onboarding_token_hash' => hash('sha256', str_repeat('a', 64)),
+        ]);
+
+        Http::fake(['api.stripe.com/*' => Http::response($this->paidSession($order))]);
+
+        $this->get(route('order.thanks', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+            'session_id' => 'cs_test_customer',
+        ]))->assertOk()
+            ->assertSee(__('Accéder à mon espace'))
+            ->assertDontSee(__('Se connecter à mon espace'));
+
+        $this->assertGuest();
+        $this->assertDatabaseHas('users', [
+            'email' => 'marie@example.com',
+            'onboarding_order_id' => $order->id,
+        ]);
+
+        // URL access tokens alone must never log a visitor into the account.
+        $this->postJson(route('account.complete_checkout'), [
+            'order_number' => $order->order_number,
+            'token' => $order->access_token,
+        ])->assertForbidden();
+
+        $this->postJson(route('account.complete_checkout'), [
+            'order_number' => $order->order_number,
+            'token' => str_repeat('a', 64),
+        ])->assertOk()->assertJsonPath('authenticated', true)
+            ->assertJsonPath('url', route('account.index'));
+
+        $user = User::query()->where('email', 'marie@example.com')->firstOrFail();
+        $this->assertAuthenticatedAs($user);
+        $this->assertNull($order->fresh()->onboarding_token_hash);
+
+        $this->get(route('account.index'))
+            ->assertOk()
+            ->assertSee(__('Protégez votre compte'))
+            ->assertSee($order->order_number);
+    }
+
+    public function test_repeated_guest_checkout_on_existing_email_shows_current_order_not_login(): void
+    {
+        $original = User::query()->create([
+            'name' => 'Marie',
+            'email' => 'marie@example.com',
+            'password' => 'already-registered',
+        ]);
+        $order = $this->order();
+        $order->update([
+            'stripe_session_id' => 'cs_test_customer',
+            'onboarding_token_hash' => hash('sha256', str_repeat('b', 64)),
+        ]);
+
+        Http::fake(['api.stripe.com/*' => Http::response($this->paidSession($order))]);
+
+        $fallback = route('account.checkout', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+        ]);
+
+        $this->get(route('order.thanks', [
+            'orderNumber' => $order->order_number,
+            'token' => $order->access_token,
+            'session_id' => 'cs_test_customer',
+        ]))->assertOk()->assertSee($fallback, false)
+            ->assertDontSee(__('Se connecter à mon espace'));
+
+        $this->postJson(route('account.complete_checkout'), [
+            'order_number' => $order->order_number,
+            'token' => str_repeat('b', 64),
+        ])->assertOk()->assertJsonPath('authenticated', false)
+            ->assertJsonPath('url', $fallback);
+
+        $this->assertGuest();
+        $this->assertNull($order->fresh()->user_id);
+        $this->assertSame($original->id, User::query()->where('email', 'marie@example.com')->value('id'));
+
+        $this->get($fallback)->assertOk()
+            ->assertSee($order->order_number)
+            ->assertSee(__('Créer mon mot de passe'));
+    }
+
     public function test_role_applications_coexist_and_influencer_code_is_immutable(): void
     {
         $user = User::query()->create(['name' => 'Marie', 'email' => 'marie@example.com']);
