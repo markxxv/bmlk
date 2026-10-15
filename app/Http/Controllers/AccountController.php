@@ -90,10 +90,6 @@ class AccountController extends Controller
         abort_unless($order->access_token
             && hash_equals($order->access_token, (string) $request->query('token', '')), 404);
 
-        if (Auth::check() && $order->user_id === Auth::id()) {
-            return view('account.order', ['order' => $order]);
-        }
-
         return view('account.checkout-order', ['order' => $order]);
     }
 
@@ -142,7 +138,7 @@ class AccountController extends Controller
     public function order(Request $request, Order $order): View
     {
         abort_unless($order->user_id === $request->user()->id, 404);
-        return view('account.order', compact('order'));
+        return view('account.checkout-order', compact('order'));
     }
 
     public function profile(Request $request): View
