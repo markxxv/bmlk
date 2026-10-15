@@ -22,7 +22,10 @@ class AccountController extends Controller
     {
         $data = $request->validate(['email' => ['required', 'email'], 'password' => ['required', 'string']]);
 
-        if (! Auth::attempt(['email' => Str::lower(trim($data['email'])), 'password' => $data['password']], $request->boolean('remember'))) {
+        $email = Str::lower(trim($data['email']));
+        $canonical = \App\Models\User::query()->whereRaw('LOWER(email) = ?', [$email])->value('email') ?? $email;
+
+        if (! Auth::attempt(['email' => $canonical, 'password' => $data['password']], $request->boolean('remember'))) {
             return back()->withErrors(['email' => __('Identifiants incorrects.')])->onlyInput('email');
         }
 
@@ -90,7 +93,9 @@ class AccountController extends Controller
     public function sendResetLink(Request $request): RedirectResponse
     {
         $data = $request->validate(['email' => ['required', 'email']]);
-        Password::sendResetLink(['email' => Str::lower(trim($data['email']))]);
+        $email = Str::lower(trim($data['email']));
+        $canonical = \App\Models\User::query()->whereRaw('LOWER(email) = ?', [$email])->value('email') ?? $email;
+        Password::sendResetLink(['email' => $canonical]);
         return back()->with('success', __('Si ce compte existe, un lien vous a été envoyé.'));
     }
 

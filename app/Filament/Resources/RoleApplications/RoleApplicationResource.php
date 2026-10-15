@@ -7,6 +7,7 @@ use App\Models\RoleApplication;
 use BackedEnum;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -30,8 +31,10 @@ class RoleApplicationResource extends Resource
     {
         return $schema->components([
             Section::make('Application')->icon('lucide-clipboard-check')->columns(2)->schema([
-                TextInput::make('user.name')->label('Customer')->prefixIcon('lucide-user')->disabled()->dehydrated(false),
-                TextInput::make('user.email')->label('Email')->prefixIcon('lucide-mail')->disabled()->dehydrated(false),
+                Placeholder::make('customer_name')->label('Customer')
+                    ->content(fn (?RoleApplication $record): string => $record?->user?->name ?? '—'),
+                Placeholder::make('customer_email')->label('Email')
+                    ->content(fn (?RoleApplication $record): string => $record?->user?->email ?? '—'),
                 Select::make('role')->label('Program')->options([
                     'wholesale' => 'Wholesale', 'influencer' => 'Influencer',
                 ])->disabled()->dehydrated(false)->prefixIcon('lucide-badge-check'),

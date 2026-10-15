@@ -311,3 +311,5 @@ php artisan test --filter=CustomerAccountsTest
 ```
 
 SMTP must be configured for email verification and password reset. No extra workers are needed.
+
+To grant admin access to a newly created Filament user, explicitly set its `is_admin` field to `true` (e.g. via `php artisan tinker`). This flag is **never** granted during customer checkout.
