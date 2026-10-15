@@ -336,3 +336,27 @@ Deploy migration `2026_10_15_000004_add_checkout_activation_token_to_orders.php`
 ### Payment email receipts and guest order links
 
 Payment confirmation, failed-payment and next-day reminder emails show the saved order's products, variants, quantities, unit/line prices, subtotal, discount, delivery and total. Each email contains **Voir ma commande** linked to `/account/checkout/{orderNumber}?token=...`. This is a private bearer link: it displays only that order to anyone with the link, without signing them into an account. Do not publish or expose the token. On unpaid or failed orders, the details screen provides the existing Stripe payment retry. The original `/order/{orderNumber}?token=...` link also redirects paid orders to the full order details, rather than to the temporary Stripe thank-you page. No migrations or new workers are needed for this change.
+
+
+### Transactional email design
+
+All customer emails now use one responsive, inline-styled **French BLACK MILK** design:
+
+- Order success, failure, and one-time reminder: `resources/views/emails/payment-status.blade.php`.
+- Email verification and password creation/reset: `resources/views/emails/account-action.blade.php`.
+- Shared logo/header, paper background and footer: `resources/views/components/mail/layout.blade.php`.
+- Shared button: `resources/views/components/mail/button.blade.php`.
+- Email palette: `config/email.php` (keep it aligned with the Tailwind tokens in `resources/css/app.css`).
+
+Laravel's built-in signed verification and password-reset notifications are customized in `AppServiceProvider::boot()`. No new queues, workers, frontend build or migrations are required. Existing SMTP settings and secure link expiry remain unchanged.
+
+Deploy and verify:
+
+```bash
+git pull origin main
+php artisan optimize:clear
+php artisan test --filter=BrandedEmailsTest
+php artisan test --filter=PaymentEmailsTest
+```
+
+Send a new verification or password-reset email to check the styling. Previously delivered messages cannot change.
