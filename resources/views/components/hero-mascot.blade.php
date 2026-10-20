@@ -2,7 +2,7 @@
     'src' => asset('img/hero_cow_mascot.webp'),
 ])
 
-<div {{ $attributes->merge(['class' => 'relative mx-auto w-full']) }} style="max-width: 496px;" data-hero-mascot data-src="{{ $src }}" data-eye-left="{{ asset('img/hero_cow_eye_left.webp') }}" data-eye-right="{{ asset('img/hero_cow_eye_right.webp') }}" aria-hidden="true">
+<div {{ $attributes->merge(['class' => 'relative mx-auto w-full']) }} style="max-width: 496px;" data-hero-mascot data-src="{{ $src }}" aria-hidden="true">
     <img src="{{ $src }}" alt="" draggable="false" class="mx-auto block h-auto w-full select-none" data-hero-mascot-fallback>
     <canvas class="pointer-events-none absolute inset-0 h-full w-full opacity-0 transition-opacity duration-300" data-hero-mascot-canvas></canvas>
 </div>
@@ -21,14 +21,11 @@
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const hover = window.matchMedia('(hover: hover)').matches;
 
-        // cx/cy — центр спрайта на исходнике 1402×1122
-        // size — базовый размер спрайта
-        // maskX/maskY — радиусы области, внутри которой глаз может двигаться
-        // moveX/moveY — максимальный ход взгляда по X/Y
-        // coverScale — размер мягкой неподвижной подложки, скрывающей исходный глаз
+        // Eye positions on hero_cow_mascot.webp (1200 × 1200).
+        // Animate the original blue irises instead of overlaying sprites from the old cow.
         const EYES = [
-            { src: root.dataset.eyeLeft, cx: 630, cy: 315, size: 102, maskX: 48, maskY: 46, moveX: 5.5, moveY: 4, coverScale: 1.12, lid: 'rgb(73, 51, 49)' },
-            { src: root.dataset.eyeRight, cx: 821, cy: 362, size: 100, maskX: 47, maskY: 45, moveX: 5.5, moveY: 4, coverScale: 1.12, lid: 'rgb(225, 190, 187)' },
+            { cx: 491, cy: 376, radiusX: 75, radiusY: 71, moveX: 8, moveY: 5 },
+            { cx: 756, cy: 347, radiusX: 75, radiusY: 71, moveX: 8, moveY: 5 },
         ];
 
         const load = (src) => new Promise((resolve, reject) => {
@@ -39,12 +36,11 @@
             image.src = src;
         });
 
-        Promise.all([load(root.dataset.src), ...EYES.map((eye) => load(eye.src))]).then(([base, ...eyes]) => {
+        load(root.dataset.src).then((base) => {
             const baseWidth = base.naturalWidth;
             const baseHeight = base.naturalHeight;
-            const scaleX = baseWidth / 1402;
-            const scaleY = baseHeight / 1122;
-            const eyeScale = (scaleX + scaleY) / 2;
+            const scaleX = baseWidth / 1200;
+            const scaleY = baseHeight / 1200;
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
             canvas.width = Math.round(baseWidth * dpr);
@@ -61,37 +57,69 @@
             let blink = 0;
             let blinkAt = performance.now() + 2800;
 
-            const drawEye = (eye, image) => {
+            // Feathered patches move the eye artwork within its socket. Unlike an
+            // iris overlay, this keeps the native texture, highlights and blue colour.
+            // Each patch is blended at its edges so the eyelids and eyelashes stay fixed.
+            const eyePatches = EYES.map((eye) => {
                 const cx = eye.cx * scaleX;
                 const cy = eye.cy * scaleY;
-                const size = eye.size * eyeScale;
-                const rx = eye.maskX * scaleX;
-                const ry = eye.maskY * scaleY;
+                const rx = eye.radiusX * scaleX;
+                const ry = eye.radiusY * scaleY;
+                const x = Math.floor(cx - rx);
+                const y = Math.floor(cy - ry);
+                const width = Math.ceil(cx + rx) - x;
+                const height = Math.ceil(cy + ry) - y;
+
+                const patch = document.createElement('canvas');
+                patch.width = width;
+                patch.height = height;
+
+                const mask = document.createElement('canvas');
+                mask.width = width;
+                mask.height = height;
+                const maskCtx = mask.getContext('2d');
+                maskCtx.save();
+                maskCtx.translate(cx - x, cy - y);
+                maskCtx.scale(rx, ry);
+                const feather = maskCtx.createRadialGradient(0, 0, 0, 0, 0, 1);
+                feather.addColorStop(0, 'rgba(0,0,0,1)');
+                feather.addColorStop(0.8, 'rgba(0,0,0,1)');
+                feather.addColorStop(1, 'rgba(0,0,0,0)');
+                maskCtx.fillStyle = feather;
+                maskCtx.beginPath();
+                maskCtx.arc(0, 0, 1, 0, Math.PI * 2);
+                maskCtx.fill();
+                maskCtx.restore();
+
+                return { eye, cx, cy, rx, ry, x, y, patch, mask, ctx: patch.getContext('2d') };
+            });
+
+            const drawEye = ({ eye, cx, cy, rx, ry, x, y, patch, mask, ctx: patchCtx }) => {
                 const ox = gx * eye.moveX * scaleX;
                 const oy = gy * eye.moveY * scaleY;
-                const coverSize = size * eye.coverScale;
 
-                ctx.save();
-                ctx.beginPath();
-                ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-                ctx.clip();
+                patchCtx.clearRect(0, 0, patch.width, patch.height);
+                patchCtx.drawImage(base, -x + ox, -y + oy, baseWidth, baseHeight);
+                patchCtx.globalCompositeOperation = 'destination-in';
+                patchCtx.drawImage(mask, 0, 0);
+                patchCtx.globalCompositeOperation = 'source-over';
+                ctx.drawImage(patch, x, y);
 
-                ctx.globalAlpha = 0.92;
-                ctx.filter = `blur(${Math.max(0.6, 0.9 * eyeScale)}px)`;
-                ctx.drawImage(image, cx - coverSize / 2, cy - coverSize / 2, coverSize, coverSize);
-
-                ctx.globalAlpha = 1;
-                ctx.filter = 'none';
-                ctx.drawImage(image, cx - size / 2 + ox, cy - size / 2 + oy, size, size);
-
+                // Blink using a narrow strip of this cow's own upper/lower eyelid,
+                // rather than painting flat-colour rectangles over the eyes.
                 if (blink > 0.01) {
-                    const h = ry * blink;
-                    ctx.fillStyle = eye.lid;
-                    ctx.fillRect(cx - rx, cy - ry - 1, rx * 2, h + 2);
-                    ctx.fillRect(cx - rx, cy + ry - h - 1, rx * 2, h + 2);
+                    const lidStrip = Math.max(5, 12 * scaleY);
+                    const h = (ry + 1) * blink;
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy, rx * 0.94, ry * 0.94, 0, 0, Math.PI * 2);
+                    ctx.clip();
+                    ctx.drawImage(base, cx - rx, cy - ry - lidStrip * 0.3, rx * 2, lidStrip,
+                        cx - rx, cy - ry, rx * 2, h);
+                    ctx.drawImage(base, cx - rx, cy + ry - lidStrip * 0.7, rx * 2, lidStrip,
+                        cx - rx, cy + ry - h, rx * 2, h);
+                    ctx.restore();
                 }
-
-                ctx.restore();
             };
 
             const draw = (now = 0) => {
@@ -115,7 +143,7 @@
 
                 ctx.clearRect(0, 0, baseWidth, baseHeight);
                 ctx.drawImage(base, 0, 0, baseWidth, baseHeight);
-                EYES.forEach((eye, index) => drawEye(eye, eyes[index]));
+                eyePatches.forEach(drawEye);
 
                 if (!reduceMotion) {
                     const breathe = Math.sin(now / 2600) * 0.65;
