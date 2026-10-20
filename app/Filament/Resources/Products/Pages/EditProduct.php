@@ -19,6 +19,13 @@ class EditProduct extends EditRecord
         return $data;
     }
 
+    protected function afterSave(): void
+    {
+        // Refresh just the options field, so invalid old placeholders also disappear
+        // immediately after saving without resetting the other form inputs.
+        $this->data['options'] = ProductResource::optionsForForm($this->record->refresh()->options);
+    }
+
     protected function getHeaderActions(): array
     {
         return [

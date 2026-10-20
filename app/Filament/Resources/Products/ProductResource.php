@@ -450,33 +450,49 @@ class ProductResource extends Resource
 
         return collect($options)
             ->filter(fn (mixed $option): bool => is_array($option))
-            ->map(function (array $option): array {
-                $option['type'] = data_get($option, 'id');
+            ->map(function (array $option): ?array {
+                $type = data_get($option, 'id');
 
-                $option['values'] = collect($option['values'] ?? [])
-                    ->map(function (mixed $value): array {
+                // Legacy catalog data can contain placeholder options with no usable type.
+                if (! is_string($type) || ! array_key_exists($type, static::productOptionTypes())) {
+                    return null;
+                }
+
+                $values = collect(is_array($option['values'] ?? null) ? $option['values'] : [])
+                    ->map(function (mixed $value): ?array {
                         if (is_array($value)) {
+                            $quantity = data_get($value, 'quantity');
+                            $price = data_get($value, 'price.amount');
+                            $plainValue = data_get($value, 'value');
+
+                            if (blank($plainValue) && blank($quantity) && blank($price)) {
+                                return null;
+                            }
+
                             return [
-                                'value' => null,
-                                'quantity' => data_get($value, 'quantity'),
-                                'price' => data_get($value, 'price.amount'),
+                                'value' => $plainValue,
+                                'quantity' => $quantity,
+                                'price' => $price,
                             ];
                         }
 
-                        return [
+                        return filled($value) ? [
                             'value' => $value,
                             'quantity' => null,
                             'price' => null,
-                        ];
+                        ] : null;
                     })
+                    ->filter()
                     ->values()
                     ->all();
 
-                return [
-                    'type' => $option['type'] ?? null,
-                    'values' => $option['values'],
+                // Never render an empty option as a new Repeater item on edit.
+                return $values === [] ? null : [
+                    'type' => $type,
+                    'values' => $values,
                 ];
             })
+            ->filter()
             ->values()
             ->all();
     }
