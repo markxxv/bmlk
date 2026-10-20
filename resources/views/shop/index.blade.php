@@ -48,7 +48,7 @@
 
                 <div class="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end">
                     <div class="lg:col-span-8">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ $currentCategory ? __('Collection BLACK MILK') : __('Catalogue professionnel') }}
                         </p>
 
@@ -148,7 +148,7 @@
 
                                 <div class="pt-4">
                                     @if ($product->tag)
-                                        <p class="truncate text-[9px] font-semibold uppercase tracking-widest text-[#A9636F]">
+                                        <p class="truncate text-[9px] font-semibold uppercase tracking-widest text-bmlk-brand">
                                             {{ $product->tag }}
                                         </p>
                                     @endif
@@ -234,7 +234,7 @@
             <section class="border-t border-zinc-200 px-3 py-16 sm:px-5 sm:py-20 lg:px-8 lg:py-24">
                 <div class="mx-auto grid max-w-[1560px] gap-10 lg:grid-cols-12">
                     <div class="lg:col-span-4">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ __('À propos de la collection') }}
                         </p>
 

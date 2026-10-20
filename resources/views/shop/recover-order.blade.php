@@ -1,7 +1,7 @@
 <x-layout :title="$metaTitle" robots="noindex, nofollow">
     <main class="px-4 py-16 sm:py-24">
         <div class="mx-auto max-w-lg rounded-3xl bg-white p-7 sm:p-10">
-            <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
+            <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#F6ECEE] text-bmlk-brand">
                 <x-lucide-receipt-text class="h-5 w-5" />
             </span>
 
@@ -20,7 +20,7 @@
                     <input id="order-number" name="order_number" type="text" maxlength="24"
                         value="{{ old('order_number', $orderNumber) }}"
                         placeholder="BM-20261015-000001" autocomplete="off" required
-                        class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none focus:border-[#A9636F]">
+                        class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none focus:border-bmlk-brand">
                     @error('order_number')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -30,14 +30,14 @@
                     <label for="order-email" class="mb-2 block text-sm font-medium text-zinc-800">{{ __('E-mail (si renseigné)') }}</label>
                     <input id="order-email" name="email" type="email" maxlength="255" value="{{ old('email') }}"
                         autocomplete="email"
-                        class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none focus:border-[#A9636F]">
+                        class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none focus:border-bmlk-brand">
                     @error('email')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <button type="submit"
-                    class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[#A9636F] px-5 py-4 text-sm font-medium text-white transition hover:bg-[#945763]">
+                    class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-bmlk-brand px-5 py-4 text-sm font-medium text-white transition hover:bg-[#945763]">
                     <x-lucide-arrow-right class="h-4 w-4" />
                     {{ __('Retrouver ma commande') }}
                 </button>

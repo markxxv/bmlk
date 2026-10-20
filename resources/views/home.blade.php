@@ -89,13 +89,13 @@
         <div class="mx-auto max-w-[1560px]">
             <div class="grid gap-6 lg:grid-cols-2 lg:items-end">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                         {{ __('Coffrets BLACK MILK') }}
                     </p>
 
                     <h2 class="mt-4 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl" data-reveal-title data-reveal-title-duration="1" data-reveal-title-stagger="0.08">
                         <span class="inline-block">{{ __('Compose') }}</span>
-                        <span class="inline-block italic text-[#A9636F]">{{ __('ton') }}</span>
+                        <span class="inline-block italic text-bmlk-brand">{{ __('ton') }}</span>
                         <span class="inline-block">{{ __('rituel') }}</span>
                     </h2>
                 </div>
@@ -145,7 +145,7 @@
                                 <div class="flex items-start justify-between gap-5">
                                     <div class="min-w-0">
                                         @if ($product->tag)
-                                            <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                                            <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand">
                                                 {{ $product->tag }}
                                             </p>
                                         @endif
@@ -256,12 +256,12 @@
             <div class="mx-auto max-w-[1560px]">
                 <div class="grid gap-6 lg:grid-cols-2 lg:items-end">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ __('Collection') }}
                         </p>
 
                         <h2 class="mt-4 max-w-3xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl" data-reveal-title data-reveal-title-duration="1" data-reveal-title-stagger="0.08">
-                            <a href="{{ $categoryUrl }}" class="transition hover:text-[#A9636F]">
+                            <a href="{{ $categoryUrl }}" class="transition hover:text-bmlk-brand">
                                 {{ $category->name }}
                             </a>
                         </h2>
@@ -276,7 +276,7 @@
 
                         <a
                             href="{{ $categoryUrl }}"
-                            class="group mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#A9636F] transition hover:text-[#945763]"
+                            class="group mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-bmlk-brand transition hover:text-[#945763]"
                             data-blur-reveal-item
                         >
                             {{ __('Voir toute la collection') }}
@@ -321,7 +321,7 @@
 
                                 <div class="pt-4">
                                     @if ($product->tag)
-                                        <p class="text-[9px] font-semibold uppercase tracking-widest text-[#A9636F]">
+                                        <p class="text-[9px] font-semibold uppercase tracking-widest text-bmlk-brand">
                                             {{ $product->tag }}
                                         </p>
                                     @endif
@@ -373,7 +373,7 @@
             >
                 <div class="grid gap-8 lg:grid-cols-12 lg:items-end">
                     <div class="lg:col-span-7">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ __('Événements BLACK MILK') }}
                         </p>
 
@@ -478,7 +478,7 @@
                                             </p>
 
                                             @if ($endLabel)
-                                                <p class="mt-2 text-xs font-medium text-[#A9636F]">
+                                                <p class="mt-2 text-xs font-medium text-bmlk-brand">
                                                     — {{ $endLabel }}
                                                 </p>
                                             @endif
@@ -510,14 +510,14 @@
                             <div class="space-y-3 lg:col-span-3">
                                 @if ($eventLocation)
                                     <div class="flex items-start gap-2 text-sm leading-6 text-zinc-600">
-                                        <x-lucide-map-pin class="mt-1 h-4 w-4 shrink-0 text-[#A9636F]" />
+                                        <x-lucide-map-pin class="mt-1 h-4 w-4 shrink-0 text-bmlk-brand" />
                                         <span>{{ $eventLocation }}</span>
                                     </div>
                                 @endif
 
                                 @if ($event->address)
                                     <div class="flex items-start gap-2 text-sm leading-6 text-zinc-500">
-                                        <x-lucide-navigation class="mt-1 h-4 w-4 shrink-0 text-[#A9636F]" />
+                                        <x-lucide-navigation class="mt-1 h-4 w-4 shrink-0 text-bmlk-brand" />
                                         <span>{{ $event->address }}</span>
                                     </div>
                                 @endif
@@ -535,7 +535,7 @@
                                         href="{{ $event->ticket_url }}"
                                         target="_blank"
                                         rel="noopener"
-                                        class="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#A9636F] transition hover:text-[#945763]"
+                                        class="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-bmlk-brand transition hover:text-[#945763]"
                                     >
                                         {{ __('Billets') }}
                                         <x-lucide-arrow-up-right class="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
@@ -549,7 +549,7 @@
                 <div class="mt-8 flex justify-end">
                     <a
                         href="{{ route('events') }}"
-                        class="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#A9636F] transition hover:text-[#945763]"
+                        class="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-bmlk-brand transition hover:text-[#945763]"
                     >
                         {{ __('Voir tous les événements') }}
                         <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -563,13 +563,13 @@
     <section class="px-3 pb-6 pt-8 sm:px-5 sm:pb-8 sm:pt-12 lg:px-8 lg:pb-10 lg:pt-16">
         <div class="mx-auto max-w-[1560px] rounded-3xl bg-[#EFDDE0] px-6 py-20 text-center sm:px-10 sm:py-24 lg:px-16 lg:py-28">
             <div class="mx-auto max-w-4xl">
-                <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                     {{ __('BLACK MILK Journal') }}
                 </p>
 
                 <h2 class="mt-5 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl" data-reveal-title data-reveal-title-duration="1" data-reveal-title-stagger="0.08">
                     <span class="inline-block">{{ __('Reste') }}</span>
-                    <span class="inline-block italic text-[#A9636F]">{{ __('au') }}</span>
+                    <span class="inline-block italic text-bmlk-brand">{{ __('au') }}</span>
                     <span class="inline-block">{{ __('courant') }}</span>
                 </h2>
 

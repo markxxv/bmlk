@@ -224,7 +224,7 @@ class OrderResource extends Resource
         $html .= '<div class="flex justify-between gap-4"><span class="text-gray-500 dark:text-gray-400">Subtotal</span>'
             .'<span class="font-medium">'.number_format((float) $record->subtotal, 2, ',', ' ').' €</span></div>';
         if ((float) $record->discount_amount > 0) {
-            $html .= '<div class="flex justify-between gap-4 text-[#A9636F]"><span>Discount'
+            $html .= '<div class="flex justify-between gap-4 text-bmlk-brand"><span>Discount'
                 .($record->promo_code ? ' · '.e($record->promo_code) : '').'</span>'
                 .'<span>− '.number_format((float) $record->discount_amount, 2, ',', ' ').' €</span></div>';
         }

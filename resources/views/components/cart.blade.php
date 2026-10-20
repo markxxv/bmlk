@@ -43,7 +43,7 @@
                         {{ __('Votre panier est vide') }}
                     </p>
                     <a href="{{ route('order.recover') }}" @click="$store.cart.close()"
-                        class="mt-4 text-sm font-medium text-[#A9636F] underline-offset-4 hover:underline">
+                        class="mt-4 text-sm font-medium text-bmlk-brand underline-offset-4 hover:underline">
                         {{ __('Reprendre une commande existante') }}
                     </a>
                 </div>

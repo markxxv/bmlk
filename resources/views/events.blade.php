@@ -23,13 +23,13 @@
             <div class="mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-[#EFDDE0]">
                 <div class="grid gap-12 px-7 py-12 sm:px-10 sm:py-16 lg:grid-cols-12 lg:px-14 lg:py-20 xl:px-16">
                     <div class="lg:col-span-8">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ __('Événements BLACK MILK') }}
                         </p>
 
                         <h1 class="mt-6 max-w-5xl font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
                             <span class="inline-block">{{ __('Les prochains') }}</span>
-                            <span class="inline-block italic text-[#A9636F]">{{ __('rendez-vous') }}</span>
+                            <span class="inline-block italic text-bmlk-brand">{{ __('rendez-vous') }}</span>
                         </h1>
                     </div>
 
@@ -51,7 +51,7 @@
             >
                 <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ __('Calendrier') }}
                         </p>
 
@@ -156,7 +156,7 @@
                                                 </p>
 
                                                 @if ($endLabel)
-                                                    <p class="mt-2 text-xs font-medium text-[#A9636F]">
+                                                    <p class="mt-2 text-xs font-medium text-bmlk-brand">
                                                         — {{ $endLabel }}
                                                     </p>
                                                 @endif
@@ -188,14 +188,14 @@
                                 <div class="space-y-3 lg:col-span-3">
                                     @if ($eventLocation)
                                         <div class="flex items-start gap-2 text-sm leading-6 text-zinc-600">
-                                            <x-lucide-map-pin class="mt-1 h-4 w-4 shrink-0 text-[#A9636F]" />
+                                            <x-lucide-map-pin class="mt-1 h-4 w-4 shrink-0 text-bmlk-brand" />
                                             <span>{{ $eventLocation }}</span>
                                         </div>
                                     @endif
 
                                     @if ($event->address)
                                         <div class="flex items-start gap-2 text-sm leading-6 text-zinc-500">
-                                            <x-lucide-navigation class="mt-1 h-4 w-4 shrink-0 text-[#A9636F]" />
+                                            <x-lucide-navigation class="mt-1 h-4 w-4 shrink-0 text-bmlk-brand" />
                                             <span>{{ $event->address }}</span>
                                         </div>
                                     @endif
@@ -213,7 +213,7 @@
                                             href="{{ $event->ticket_url }}"
                                             target="_blank"
                                             rel="noopener"
-                                            class="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#A9636F] transition hover:text-[#945763]"
+                                            class="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-bmlk-brand transition hover:text-[#945763]"
                                         >
                                             {{ __('Billets') }}
                                             <x-lucide-arrow-up-right class="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />

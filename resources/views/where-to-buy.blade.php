@@ -52,7 +52,7 @@
                             <div>
                                 <div class="flex items-start justify-between gap-5">
                                     <div>
-                                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand">
                                             {{ $representative->country }}
                                         </p>
 
@@ -61,7 +61,7 @@
                                         </p>
                                     </div>
 
-                                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#F3E4E7] text-[#A9636F]">
+                                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#F3E4E7] text-bmlk-brand">
                                         <x-lucide-store class="h-5 w-5" />
                                     </span>
                                 </div>
@@ -93,7 +93,7 @@
                                         href="{{ $representative->instagram }}"
                                         target="_blank"
                                         rel="noopener"
-                                        class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition hover:bg-[#F3E4E7] hover:text-[#A9636F]"
+                                        class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition hover:bg-[#F3E4E7] hover:text-bmlk-brand"
                                         aria-label="{{ __('Instagram de :name', ['name' => $representative->name]) }}"
                                     >
                                         <x-lucide-instagram class="h-4 w-4" />
@@ -110,13 +110,13 @@
             <div class="mx-auto max-w-[1560px]">
                 <div class="grid overflow-hidden rounded-3xl bg-[#EFDDE0] lg:grid-cols-12">
                     <div class="px-7 py-10 sm:px-10 sm:py-12 lg:col-span-8 lg:px-14 lg:py-14 xl:px-16">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ __('Développe BLACK MILK dans ta région') }}
                         </p>
 
                         <h2 class="mt-4 max-w-3xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl" data-reveal-title data-reveal-title-duration="0.95" data-reveal-title-stagger="0.08">
                             <span class="inline-block">{{ __('Ton pays') }}</span>
-                            <span class="inline-block italic text-[#A9636F]">{{ __('n’est pas') }}</span>
+                            <span class="inline-block italic text-bmlk-brand">{{ __('n’est pas') }}</span>
                             <span class="inline-block">{{ __('dans la liste ?') }}</span>
                         </h2>
                     </div>

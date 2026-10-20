@@ -15,11 +15,11 @@
     </script>
     <main class="px-3 py-14 sm:px-5 sm:py-20 lg:px-8">
         <div class="mx-auto max-w-3xl rounded-3xl bg-white p-7 sm:p-10">
-            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
+            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-[#F6ECEE] text-bmlk-brand">
                 <x-lucide-credit-card class="h-5 w-5" />
             </span>
 
-            <p class="mt-6 text-sm font-medium text-[#A9636F]">
+            <p class="mt-6 text-sm font-medium text-bmlk-brand">
                 {{ __('Commande') }} {{ $order->order_number }}
             </p>
 
@@ -75,7 +75,7 @@
 
             <div class="mt-6 space-y-3">
                 @if ((float) $order->discount_amount > 0)
-                    <div class="flex items-center justify-between text-sm text-[#A9636F]">
+                    <div class="flex items-center justify-between text-sm text-bmlk-brand">
                         <span>{{ __('Réduction') }} · {{ $order->promo_code }}</span>
                         <span>− {{ number_format($order->discount_amount, 2, ',', ' ') }} €</span>
                     </div>
@@ -107,7 +107,7 @@
             @if ($order->payment_status !== 'processing')
                 <form method="POST" action="{{ route('order.pay', ['orderNumber' => $order->order_number, 'token' => $order->access_token]) }}" class="mt-8">
                     @csrf
-                    <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-[#A9636F] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#945763]">
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white transition hover:bg-[#945763]">
                         <x-lucide-lock-keyhole class="h-4 w-4" />
                         {{ __('Réessayer le paiement') }}
                     </button>

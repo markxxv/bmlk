@@ -234,7 +234,7 @@
     <main class="px-3 pb-16 pt-10 sm:px-5 sm:pb-20 sm:pt-14 lg:px-8 lg:pb-24 lg:pt-16">
         <div class="mx-auto max-w-[1360px]" x-data="checkoutPage()">
             <div class="mb-9 sm:mb-11">
-                <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand">
                     {{ __('Commande') }}
                 </p>
 
@@ -243,14 +243,14 @@
                 </h1>
 
                 <div x-show="savedOrder?.url" x-cloak class="mt-5 flex flex-wrap items-center gap-2 text-sm">
-                    <x-lucide-receipt-text class="h-4 w-4 text-[#A9636F]" />
+                    <x-lucide-receipt-text class="h-4 w-4 text-bmlk-brand" />
                     <span class="text-zinc-500">{{ __('Commande non finalisée :') }}</span>
-                    <a :href="savedOrder?.url" class="font-medium text-[#A9636F] underline-offset-4 hover:underline">
+                    <a :href="savedOrder?.url" class="font-medium text-bmlk-brand underline-offset-4 hover:underline">
                         <span x-text="savedOrder?.number"></span> · {{ __('Reprendre le paiement') }}
                     </a>
                 </div>
 
-                <a href="{{ route('order.recover') }}" class="mt-3 inline-flex items-center gap-1.5 text-xs text-zinc-500 transition hover:text-[#A9636F]">
+                <a href="{{ route('order.recover') }}" class="mt-3 inline-flex items-center gap-1.5 text-xs text-zinc-500 transition hover:text-bmlk-brand">
                     <x-lucide-refresh-ccw class="h-3.5 w-3.5" />
                     {{ __('Déjà passé commande ? Retrouvez-la ici') }}
                 </a>
@@ -260,7 +260,7 @@
                 <form @submit.prevent="submit()" class="min-w-0 rounded-3xl bg-white px-5 py-7 sm:px-9 sm:py-9 lg:px-10 lg:py-10">
                     <section class="border-b border-zinc-100 pb-9 sm:pb-10">
                         <div class="flex items-center gap-3">
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F6ECEE] text-bmlk-brand">
                                 <x-lucide-user class="h-4 w-4" />
                             </span>
 
@@ -272,7 +272,7 @@
                         <div class="mt-7 grid gap-x-4 gap-y-5 sm:grid-cols-2">
                             <div>
                                 <div class="group relative">
-                                    <x-lucide-user-round class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <x-lucide-user-round class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                     <input
                                         type="text"
                                         x-model="form.first_name"
@@ -286,7 +286,7 @@
 
                             <div>
                                 <div class="group relative">
-                                    <x-lucide-signature class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <x-lucide-signature class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                     <input
                                         type="text"
                                         x-model="form.last_name"
@@ -299,7 +299,7 @@
 
                             <div>
                                 <div class="group relative">
-                                    <x-lucide-phone class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <x-lucide-phone class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                     <input
                                         type="tel"
                                         x-model="form.phone"
@@ -313,7 +313,7 @@
 
                             <div>
                                 <div class="group relative">
-                                    <x-lucide-mail class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <x-lucide-mail class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                     <input
                                         type="email"
                                         x-model="form.email"
@@ -329,7 +329,7 @@
 
                     <section class="border-b border-zinc-100 py-9 sm:py-10">
                         <div class="flex items-center gap-3">
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F6ECEE] text-[#A9636F]">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F6ECEE] text-bmlk-brand">
                                 <x-lucide-map-pin class="h-4 w-4" />
                             </span>
 
@@ -340,7 +340,7 @@
 
                         <div class="mt-7 grid gap-x-4 gap-y-5 sm:grid-cols-2">
                             <div class="group relative sm:col-span-2">
-                                <x-lucide-globe-2 class="pointer-events-none absolute left-4 top-4 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                <x-lucide-globe-2 class="pointer-events-none absolute left-4 top-4 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                 <select
                                     x-model="form.country"
                                     @change="updateDeliveryCost()"
@@ -369,7 +369,7 @@
 
                             <div>
                                 <div class="group relative">
-                                    <x-lucide-building-2 class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <x-lucide-building-2 class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                     <input
                                         type="text"
                                         x-model="form.city"
@@ -383,7 +383,7 @@
 
                             <div>
                                 <div class="group relative">
-                                    <x-lucide-hash class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <x-lucide-hash class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                     <input
                                         type="text"
                                         x-model="form.zip"
@@ -396,7 +396,7 @@
 
                             <div class="sm:col-span-2">
                                 <div class="group relative">
-                                    <x-lucide-map-pin class="pointer-events-none absolute left-4 top-4.5 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <x-lucide-map-pin class="pointer-events-none absolute left-4 top-4.5 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                     <textarea
                                         x-model="form.address"
                                         rows="3"
@@ -410,7 +410,7 @@
 
                             <div class="sm:col-span-2">
                                 <div class="group relative">
-                                    <x-lucide-message-square-text class="pointer-events-none absolute left-4 top-4.5 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <x-lucide-message-square-text class="pointer-events-none absolute left-4 top-4.5 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                     <textarea
                                         x-model="form.message"
                                         rows="3"
@@ -427,7 +427,7 @@
                             <input
                                 type="checkbox"
                                 x-model="form.privacy"
-                                class="mt-1 h-4 w-4 shrink-0 rounded border-zinc-300 accent-[#A9636F]"
+                                class="mt-1 h-4 w-4 shrink-0 rounded border-zinc-300 accent-bmlk-brand"
                                 required
                             >
                             <span>{{ __('J’accepte le traitement de mes données pour la gestion de cette commande.') }}</span>
@@ -441,7 +441,7 @@
                         <button
                             type="submit"
                             :disabled="isSubmitting || ($store.cart.items.length === 0 && !paymentRetryUrl)"
-                            class="mt-7 flex w-full items-center justify-center rounded-full bg-[#A9636F] px-6 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#945763] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A9636F] disabled:cursor-not-allowed disabled:bg-zinc-300"
+                            class="mt-7 flex w-full items-center justify-center rounded-full bg-bmlk-brand px-6 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#945763] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bmlk-brand disabled:cursor-not-allowed disabled:bg-zinc-300"
                         >
                             <span x-show="!isSubmitting && !paymentRetryUrl">{{ __('Payer la commande') }}</span>
                             <span x-show="!isSubmitting && paymentRetryUrl">{{ __('Réessayer le paiement') }}</span>
@@ -482,7 +482,7 @@
                     <template x-if="$store.cart.items.length === 0">
                         <div class="py-12 text-center">
                             <p class="text-sm text-zinc-500">{{ __('Votre panier est vide') }}</p>
-                            <a href="{{ route('shop.index') }}" class="mt-3 inline-block text-sm font-medium text-[#A9636F]">
+                            <a href="{{ route('shop.index') }}" class="mt-3 inline-block text-sm font-medium text-bmlk-brand">
                                 {{ __('Retour à la boutique') }}
                             </a>
                         </div>
@@ -533,10 +533,10 @@
                                 @click="promoOpen = !promoOpen; if (promoOpen) $nextTick(() => $refs.promoInput?.focus())"
                                 :aria-expanded="promoOpen.toString()"
                                 aria-controls="order-promo-panel"
-                                class="flex w-full items-center justify-between gap-3 border-b border-dashed border-zinc-300 pb-3 text-left text-sm text-zinc-600 transition-colors hover:border-[#A9636F] hover:text-[#A9636F] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A9636F]"
+                                class="flex w-full items-center justify-between gap-3 border-b border-dashed border-zinc-300 pb-3 text-left text-sm text-zinc-600 transition-colors hover:border-bmlk-brand hover:text-bmlk-brand focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-bmlk-brand"
                             >
                                 <span class="flex min-w-0 items-center gap-3">
-                                    <x-lucide-ticket-percent class="h-4.5 w-4.5 shrink-0 text-[#A9636F]" aria-hidden="true" />
+                                    <x-lucide-ticket-percent class="h-4.5 w-4.5 shrink-0 text-bmlk-brand" aria-hidden="true" />
                                     <span>{{ __('Code promotionnel') }}</span>
                                 </span>
                                 <span class="flex items-center gap-2">
@@ -547,7 +547,7 @@
                             <div id="order-promo-panel" x-show="promoOpen" x-cloak x-transition.opacity.duration.150ms class="pt-4">
                                 <label for="order-promo" class="sr-only">{{ __('Code promotionnel') }}</label>
                                 <div class="group relative">
-                                    <x-lucide-ticket class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-[#A9636F]" aria-hidden="true" />
+                                    <x-lucide-ticket class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                     <input
                                         id="order-promo"
                                         x-ref="promoInput"

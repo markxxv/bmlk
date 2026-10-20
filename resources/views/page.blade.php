@@ -51,7 +51,7 @@
         }
 
         .page-content a {
-            color: #A9636F;
+            color: var(--color-bmlk-brand);
             text-decoration: underline;
             text-underline-offset: 3px;
         }

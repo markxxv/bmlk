@@ -505,7 +505,7 @@
                                 @if ($categoryName)
                                     <a
                                         href="{{ $categoryUrl }}"
-                                        class="rounded-full bg-[#EFDDE0] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[#A9636F] transition hover:bg-[#DDA1AA] hover:text-zinc-900"
+                                        class="rounded-full bg-[#EFDDE0] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-bmlk-brand transition hover:bg-[#DDA1AA] hover:text-zinc-900"
                                     >
                                         {{ $categoryName }}
                                     </a>
@@ -577,7 +577,7 @@
                                             </p>
 
                                             <div class="relative mt-3 inline-flex max-w-full flex-wrap gap-1 rounded-full bg-white p-1 shadow-sm" data-option-tabs>
-                                                <span class="pointer-events-none absolute left-0 top-0 z-0 rounded-full border border-[#A9636F] bg-[#A9636F]" data-option-indicator></span>
+                                                <span class="pointer-events-none absolute left-0 top-0 z-0 rounded-full border border-bmlk-brand bg-bmlk-brand" data-option-indicator></span>
 
                                                 @foreach ($option['choices'] as $choice)
                                                     <button
@@ -618,7 +618,7 @@
                                     <button
                                         type="button"
                                         @click="qty = Math.max(1, qty - 1)"
-                                        class="flex h-10 w-10 items-center justify-center rounded-full text-[#A9636F] transition hover:bg-[#F3E4E7]"
+                                        class="flex h-10 w-10 items-center justify-center rounded-full text-bmlk-brand transition hover:bg-[#F3E4E7]"
                                         aria-label="{{ __('Réduire la quantité') }}"
                                     >
                                         <x-lucide-minus class="h-4 w-4" />
@@ -629,7 +629,7 @@
                                     <button
                                         type="button"
                                         @click="qty++"
-                                        class="flex h-10 w-10 items-center justify-center rounded-full text-[#A9636F] transition hover:bg-[#F3E4E7]"
+                                        class="flex h-10 w-10 items-center justify-center rounded-full text-bmlk-brand transition hover:bg-[#F3E4E7]"
                                         aria-label="{{ __('Augmenter la quantité') }}"
                                     >
                                         <x-lucide-plus class="h-4 w-4" />
@@ -641,7 +641,7 @@
                                     @click="addToCart()"
                                     :disabled="! isReady"
                                     :class="isReady
-                                        ? 'bg-[#A9636F] text-white hover:bg-[#945763]'
+                                        ? 'bg-bmlk-brand text-white hover:bg-[#945763]'
                                         : 'cursor-not-allowed bg-zinc-200 text-zinc-400'"
                                     class="flex h-13 w-full shrink-0 items-center justify-center gap-2 rounded-full px-7 text-xs font-semibold uppercase tracking-widest transition sm:w-auto sm:flex-1"
                                 >
@@ -653,12 +653,12 @@
 
                             <div class="mt-5 grid gap-3 text-sm leading-6 text-zinc-500 sm:grid-cols-2">
                                 <div class="flex gap-3">
-                                    <x-lucide-package-check class="mt-1 h-4 w-4 shrink-0 text-[#A9636F]" />
+                                    <x-lucide-package-check class="mt-1 h-4 w-4 shrink-0 text-bmlk-brand" />
                                     <span>{{ __('Expédition sous 1 à 3 jours ouvrés') }}</span>
                                 </div>
 
                                 <div class="flex gap-3">
-                                    <x-lucide-shield-check class="mt-1 h-4 w-4 shrink-0 text-[#A9636F]" />
+                                    <x-lucide-shield-check class="mt-1 h-4 w-4 shrink-0 text-bmlk-brand" />
                                     <span>{{ __('Produit professionnel BLACK MILK') }}</span>
                                 </div>
                             </div>
@@ -672,7 +672,7 @@
             <section class="border-t border-zinc-200 px-3 py-16 sm:px-5 sm:py-20 lg:px-8 lg:py-24">
                 <div class="mx-auto grid max-w-[1560px] gap-10 lg:grid-cols-12 lg:gap-16">
                     <div class="lg:col-span-4">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-[#A9636F]">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand">
                             {{ __('Détails du produit') }}
                         </p>
 
@@ -685,7 +685,7 @@
                         @if ($contents !== [])
                             <div class="mb-10 rounded-3xl bg-white p-6 sm:p-8">
                                 <div class="flex items-center gap-3">
-                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#EFDDE0] text-[#A9636F]">
+                                    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#EFDDE0] text-bmlk-brand">
                                         <x-lucide-package-open class="h-4 w-4" />
                                     </span>
 
@@ -697,7 +697,7 @@
                                 <ul class="mt-6 grid gap-3 sm:grid-cols-2">
                                     @foreach ($contents as $item)
                                         <li class="flex gap-3 text-sm leading-6 text-zinc-600">
-                                            <x-lucide-check class="mt-1 h-4 w-4 shrink-0 text-[#A9636F]" />
+                                            <x-lucide-check class="mt-1 h-4 w-4 shrink-0 text-bmlk-brand" />
                                             <span>{{ is_array($item) ? json_encode($item, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $item }}</span>
                                         </li>
                                     @endforeach
@@ -719,7 +719,7 @@
                                                 {{ $detailTitle ?: __('Informations') }}
                                             </h3>
 
-                                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EFDDE0] text-[#A9636F]">
+                                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EFDDE0] text-bmlk-brand">
                                                 <x-lucide-plus class="h-4 w-4 group-open:hidden" />
                                                 <x-lucide-minus class="hidden h-4 w-4 group-open:block" />
                                             </span>
@@ -741,7 +741,7 @@
                                             {{ __('Utilisation') }}
                                         </h3>
 
-                                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EFDDE0] text-[#A9636F]">
+                                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#EFDDE0] text-bmlk-brand">
                                             <x-lucide-plus class="h-4 w-4 group-open:hidden" />
                                             <x-lucide-minus class="hidden h-4 w-4 group-open:block" />
                                         </span>
