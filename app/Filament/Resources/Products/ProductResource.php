@@ -83,6 +83,7 @@ class ProductResource extends Resource
                                         SpatieMediaLibraryFileUpload::make('images')
                                             ->label('Product images')
                                             ->collection('images')
+                                            ->disk('public')
                                             ->conversion('thumb')
                                             ->image()
                                             ->multiple()

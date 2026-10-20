@@ -65,6 +65,22 @@ Conversion:
 thumb: 400x400 WebP, quality 82
 ```
 
+Product images are always stored on Laravel's `public` disk (`storage/app/public`),
+regardless of `FILESYSTEM_DISK`. Both the Filament upload field and the Product
+media collection explicitly select this disk.
+
+If images were previously uploaded with `FILESYSTEM_DISK=local`, repair them after
+deploying:
+
+```bash
+php artisan media:repair-product-disks --dry-run
+php artisan media:repair-product-disks
+```
+
+The command copies existing product originals and conversions from the private
+`local` disk to `public`, verifies copied sizes, then updates the media records.
+It retains the private copies as a rollback backup.
+
 For Filament v5:
 
 ```php
