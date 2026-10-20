@@ -35,7 +35,7 @@
                                 </div>
 
                                 <div class="relative mx-auto mt-2 w-full sm:hidden">
-                                    <div class="relative mx-auto w-full max-w-[400px]">
+                                    <div class="relative mx-auto w-full max-w-[320px]">
                                         <x-hero-mascot class="w-full" />
                                     </div>
                                 </div>
