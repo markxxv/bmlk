@@ -36,7 +36,7 @@
 
                                 <div class="relative mx-auto mt-2 w-full sm:hidden">
                                     <div class="relative mx-auto flex aspect-square w-full max-w-[400px] items-center justify-center">
-                                        <img src="{{ asset('img/blackmilk_circle_background.svg') }}" alt="" aria-hidden="true" draggable="false" class="pointer-events-none absolute inset-0 h-full w-full select-none">
+                                        <img src="{{ asset('img/blackmilk_circle_background.svg') }}" alt="" aria-hidden="true" draggable="false" class="pointer-events-none absolute left-1/2 top-1/4 h-auto w-1/2 -translate-x-1/2 -translate-y-1/2 select-none">
                                         <div class="relative z-10 w-[80%]">
                                             <x-hero-mascot class="w-full" />
                                         </div>
@@ -77,7 +77,7 @@
 
         <div class="pointer-events-none absolute bottom-[-2%] right-[-6%] z-0 hidden w-[112%] sm:block sm:right-[-2%] sm:w-[94%] lg:inset-y-0 lg:left-1/2 lg:right-auto lg:flex lg:w-[clamp(700px,54vw,1100px)] lg:items-center">
             <div class="relative mx-auto flex aspect-square w-full max-w-[620px] items-center justify-center">
-                <img src="{{ asset('img/blackmilk_circle_background.svg') }}" alt="" aria-hidden="true" draggable="false" class="pointer-events-none absolute inset-0 h-full w-full select-none">
+                <img src="{{ asset('img/blackmilk_circle_background.svg') }}" alt="" aria-hidden="true" draggable="false" class="pointer-events-none absolute left-1/2 top-1/4 h-auto w-1/2 -translate-x-1/2 -translate-y-1/2 select-none">
                 <div class="relative z-10 w-[80%]">
                     <x-hero-mascot class="w-full" />
                 </div>
