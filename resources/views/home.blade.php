@@ -34,8 +34,8 @@
                                     </a>
                                 </div>
 
-                                <div class="relative -mx-5 -mt-9 sm:-mt-1 sm:hidden">
-                                    <div class="relative left-1/2 w-[128%] -translate-x-1/2">
+                                <div class="relative mx-auto mt-2 w-full sm:hidden">
+                                    <div class="relative mx-auto w-full max-w-[400px]">
                                         <x-hero-mascot class="w-full" />
                                     </div>
                                 </div>
@@ -72,7 +72,7 @@
             </div>
         </div>
 
-        <div class="pointer-events-none absolute bottom-[-2%] right-[-6%] z-0 hidden w-[112%] sm:block sm:right-[-2%] sm:w-[94%] lg:bottom-auto lg:left-1/2 lg:right-auto lg:top-24 lg:w-[clamp(700px,54vw,1100px)]">
+        <div class="pointer-events-none absolute bottom-[-2%] right-[-6%] z-0 hidden w-[112%] sm:block sm:right-[-2%] sm:w-[94%] lg:inset-y-0 lg:left-1/2 lg:right-auto lg:flex lg:w-[clamp(700px,54vw,1100px)] lg:items-center">
             <x-hero-mascot class="w-full" />
         </div>
     </section>
