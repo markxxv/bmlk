@@ -136,7 +136,7 @@
             <a
                 href="{{ route('checkout') }}"
                 @click="$store.cart.close()"
-                class="block w-full rounded-lg bg-[#A9636F] px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-[#945763]"
+                class="block w-full rounded-lg bg-accent px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-accent/90"
             >
                 {{ __('Passer commande') }}
             </a>
