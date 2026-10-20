@@ -2,7 +2,7 @@
     'src' => asset('img/hero_cow_mascot.webp'),
 ])
 
-<div {{ $attributes->merge(['class' => 'relative mx-auto w-full']) }} style="max-width: 620px;" data-hero-mascot data-src="{{ $src }}" data-eye-left="{{ asset('img/hero_cow_eye_left.webp') }}" data-eye-right="{{ asset('img/hero_cow_eye_right.webp') }}" aria-hidden="true">
+<div {{ $attributes->merge(['class' => 'relative mx-auto w-full']) }} style="max-width: 496px;" data-hero-mascot data-src="{{ $src }}" data-eye-left="{{ asset('img/hero_cow_eye_left.webp') }}" data-eye-right="{{ asset('img/hero_cow_eye_right.webp') }}" aria-hidden="true">
     <img src="{{ $src }}" alt="" draggable="false" class="mx-auto block h-auto w-full select-none" data-hero-mascot-fallback>
     <canvas class="pointer-events-none absolute inset-0 h-full w-full opacity-0 transition-opacity duration-300" data-hero-mascot-canvas></canvas>
 </div>
