@@ -1,4 +1,7 @@
 @theme {
     --color-bmlk-brand: #A9636F;
     --color-bmlk-brand-hover: #945763;
+    --color-bmlk-footer: #E4C0CB;
+    --color-bmlk-footer-muted: #604050;
+    --color-bmlk-footer-line: #C49BAA;
 }
