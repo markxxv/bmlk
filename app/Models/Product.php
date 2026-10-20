@@ -155,5 +155,15 @@ class Product extends Model implements HasMedia
             ->format('webp')
             ->quality(85)
             ->nonQueued();
+
+        // The product gallery occupies up to roughly half the desktop content
+        // width. Give Retina screens a true 2x source without forcing large
+        // downloads on 1x displays.
+        $this->addMediaConversion('detail_retina')
+            ->performOnCollections('images')
+            ->fit(Fit::Max, 2400, 2400)
+            ->format('webp')
+            ->quality(85)
+            ->nonQueued();
     }
 }

@@ -66,17 +66,23 @@
                 $detail = $media->hasGeneratedConversion('detail')
                     ? $media->getUrl('detail')
                     : null;
+                $retina = $media->hasGeneratedConversion('detail_retina')
+                    ? $media->getUrl('detail_retina')
+                    : null;
                 $thumb = $media->hasGeneratedConversion('thumb')
                     ? $media->getUrl('thumb')
                     : null;
 
-                if ($detail === null && $thumb === null) {
+                if ($detail === null && $retina === null && $thumb === null) {
                     return null;
                 }
 
                 return [
-                    'url' => $detail ?? $thumb,
-                    'thumb' => $thumb ?? $detail,
+                    'url' => $detail ?? $retina ?? $thumb,
+                    'srcset' => $detail !== null && $retina !== null
+                        ? $detail.' 1x, '.$retina.' 2x'
+                        : null,
+                    'thumb' => $thumb ?? $detail ?? $retina,
                 ];
             })
             ->filter()
@@ -432,6 +438,9 @@
                                         >
                                             <img
                                                 src="{{ $image['url'] }}"
+                                                @if ($image['srcset'])
+                                                    srcset="{{ $image['srcset'] }}"
+                                                @endif
                                                 alt="{{ $productName }}{{ $images->count() > 1 ? ' — '.($index + 1) : '' }}"
                                                 class="h-full w-full select-none object-contain p-6 sm:p-10 lg:p-12"
                                                 draggable="false"

@@ -64,17 +64,22 @@ Conversion:
 ```php
 thumb: 400x400 WebP, quality 82 (Filament previews, gallery thumbnails and cart)
 card: maximum 800x1067 WebP, quality 80 (home, catalog and recommendations)
-detail: maximum 1200x1200 WebP, quality 85 (product gallery and OG images)
+detail: maximum 1200x1200 WebP, quality 85 (1x product gallery and OG images)
+detail_retina: maximum 2400x2400 WebP, quality 85 (2x product gallery)
 ```
 
 Storefront views use generated variants only. If a new conversion is not yet
 available, they temporarily use an existing optimized thumbnail, never a raw
-original. New images generate all three conversions synchronously.
+original. New images generate all four conversions synchronously. Product
+gallery images use `srcset` resolution descriptors to select `detail` on
+standard-density displays and `detail_retina` on high-density displays.
+When the Retina variant is not yet generated, the existing `detail` remains
+usable without a broken URL.
 
 **After deploying the conversion definitions, regenerate existing product media**:
 
 ```bash
-php artisan media-library:regenerate 'App\Models\Product' --only=thumb --only=card --only=detail
+php artisan media-library:regenerate 'App\Models\Product' --only=thumb --only=card --only=detail --only=detail_retina
 ```
 
 If older files were accidentally saved on the private `local` disk, first run
