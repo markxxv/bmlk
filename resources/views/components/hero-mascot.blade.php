@@ -1,5 +1,5 @@
 @props([
-    'src' => asset('img/hero_cow.webp'),
+    'src' => asset('img/hero_cow_mascot.webp'),
 ])
 
 <div {{ $attributes->merge(['class' => 'relative ml-auto w-full']) }} style="max-width: 1100px;" data-hero-mascot data-src="{{ $src }}" data-eye-left="{{ asset('img/hero_cow_eye_left.webp') }}" data-eye-right="{{ asset('img/hero_cow_eye_right.webp') }}" aria-hidden="true">
