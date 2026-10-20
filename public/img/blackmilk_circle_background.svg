@@ -1,24 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 700 700" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 700" role="img" aria-labelledby="title desc">
   <title id="title">Black Milk — striped circular backdrop</title>
-  <desc id="desc">Warm white circular center with a fine outline and vintage powder-blue stripes around the edge. Transparent exterior.</desc>
+  <desc id="desc">Striped circular medallion with a warm ivory center, thin outlines and soft powder-blue vertical stripes around the edge.</desc>
 
   <defs>
-    <!-- The stripes stay strictly within the outer medallion. -->
     <clipPath id="outer-disc">
       <circle cx="350" cy="350" r="333"/>
     </clipPath>
-    <pattern id="powder-blue-stripes" width="91" height="700" patternUnits="userSpaceOnUse" x="17">
-      <rect x="0" y="0" width="33" height="700" fill="#829BA9"/>
+    <pattern id="powder-blue-stripes" width="46" height="700" patternUnits="userSpaceOnUse" x="5">
+      <rect x="0" y="0" width="19" height="700" fill="#86A4B5"/>
+      <rect x="19" y="0" width="27" height="700" fill="#F8F4E9"/>
     </pattern>
   </defs>
 
-  <!-- Transparent beyond this outer circular silhouette. -->
   <g clip-path="url(#outer-disc)">
-    <circle cx="350" cy="350" r="333" fill="#F9F6EB"/>
+    <rect x="0" y="0" width="700" height="700" fill="#F8F4E9"/>
     <rect x="0" y="0" width="700" height="700" fill="url(#powder-blue-stripes)"/>
   </g>
 
-  <!-- Outer rim and the large white central circle. -->
-  <circle cx="350" cy="350" r="333" fill="none" stroke="#CE9E98" stroke-width="1.8" opacity="0.75"/>
-  <circle cx="350" cy="350" r="294" fill="#FBF8EE" stroke="#89817B" stroke-width="1.35"/>
+  <circle cx="350" cy="350" r="333" fill="none" stroke="#C88E95" stroke-width="2.2" opacity="0.95"/>
+  <circle cx="350" cy="350" r="292" fill="#FBF8EE"/>
+  <circle cx="350" cy="350" r="292" fill="none" stroke="#8B817D" stroke-width="1.5"/>
+  <circle cx="350" cy="350" r="286" fill="none" stroke="#D7B1B0" stroke-width="1.1" opacity="0.9"/>
 </svg>
