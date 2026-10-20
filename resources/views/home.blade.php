@@ -36,7 +36,7 @@
 
                                 <div class="relative mx-auto mt-2 w-full sm:hidden">
                                     <div class="relative mx-auto flex aspect-square w-full max-w-[400px] items-center justify-center">
-                                        <img src="{{ asset('img/blackmilk_circle_background.svg') }}" alt="" aria-hidden="true" draggable="false" class="pointer-events-none absolute left-1/2 top-[54%] h-auto w-[76%] -translate-x-1/2 -translate-y-1/2 select-none">
+                                        <img src="{{ asset('img/blackmilk_circle_background.svg') }}" alt="" aria-hidden="true" draggable="false" class="pointer-events-none absolute left-1/2 top-[54%] h-auto w-[66%] -translate-x-1/2 -translate-y-1/2 select-none">
                                         <div class="relative z-10 w-[80%]">
                                             <x-hero-mascot class="w-full" />
                                         </div>
