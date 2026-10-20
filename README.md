@@ -62,8 +62,24 @@ images
 Conversion:
 
 ```php
-thumb: 400x400 WebP, quality 82
+thumb: 400x400 WebP, quality 82 (Filament previews, gallery thumbnails and cart)
+card: maximum 800x1067 WebP, quality 80 (home, catalog and recommendations)
+detail: maximum 1200x1200 WebP, quality 85 (product gallery and OG images)
 ```
+
+Storefront views use generated variants only. If a new conversion is not yet
+available, they temporarily use an existing optimized thumbnail, never a raw
+original. New images generate all three conversions synchronously.
+
+**After deploying the conversion definitions, regenerate existing product media**:
+
+```bash
+php artisan media-library:regenerate 'App\Models\Product' --only=thumb --only=card --only=detail
+```
+
+If older files were accidentally saved on the private `local` disk, first run
+`php artisan media:repair-product-disks` as described below. The regeneration
+command writes the conversions to each media record's configured conversion disk.
 
 Product images are always stored on Laravel's `public` disk (`storage/app/public`),
 regardless of `FILESYSTEM_DISK`. Both the Filament upload field and the Product
@@ -86,6 +102,7 @@ For Filament v5:
 ```php
 SpatieMediaLibraryFileUpload::make('images')
     ->collection('images')
+    ->disk('public')
     ->multiple()
     ->reorderable()
     ->conversion('thumb');

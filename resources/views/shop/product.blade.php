@@ -62,10 +62,24 @@
         $contents = is_array($contents) ? $contents : [];
 
         $images = $product->getMedia('images')
-            ->map(fn ($media) => [
-                'url' => $media->getUrl(),
-                'thumb' => $media->getUrl('thumb'),
-            ])
+            ->map(function ($media): ?array {
+                $detail = $media->hasGeneratedConversion('detail')
+                    ? $media->getUrl('detail')
+                    : null;
+                $thumb = $media->hasGeneratedConversion('thumb')
+                    ? $media->getUrl('thumb')
+                    : null;
+
+                if ($detail === null && $thumb === null) {
+                    return null;
+                }
+
+                return [
+                    'url' => $detail ?? $thumb,
+                    'thumb' => $thumb ?? $detail,
+                ];
+            })
+            ->filter()
             ->values();
 
         $sizeLabel = data_get($product->size, 'raw');
@@ -136,7 +150,7 @@
             'id' => $product->id,
             'name' => $productName,
             'url' => $canonical,
-            'image' => $product->getFirstMediaUrl('images', 'thumb') ?: $product->getFirstMediaUrl('images'),
+            'image' => $product->storefrontImageUrl('thumb'),
             'price' => $product->price !== null ? (float) $product->price : null,
         ];
 
@@ -792,7 +806,7 @@
                                     ? route('shop.product', ['slug' => $recommendedSlug])
                                     : route('shop.index');
 
-                                $recommendedImage = $recommendedProduct->getFirstMediaUrl('images');
+                                $recommendedImage = $recommendedProduct->storefrontImageUrl('card');
                             @endphp
 
                             <article class="group/card w-3/4 shrink-0 snap-start sm:w-2/5 lg:w-auto">

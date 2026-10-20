@@ -111,6 +111,27 @@ class Product extends Model implements HasMedia
         $this->addMediaCollection('images')->useDisk('public');
     }
 
+    /**
+     * Serve generated WebP variants only. Existing thumbnails keep the storefront
+     * functional until new conversions have been regenerated on older media.
+     */
+    public function storefrontImageUrl(string $conversion = 'card'): string
+    {
+        $media = $this->getFirstMedia('images');
+
+        if ($media === null) {
+            return '';
+        }
+
+        foreach (array_unique([$conversion, 'thumb']) as $name) {
+            if ($media->hasGeneratedConversion($name)) {
+                return $media->getUrl($name);
+            }
+        }
+
+        return '';
+    }
+
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
@@ -118,6 +139,21 @@ class Product extends Model implements HasMedia
             ->fit(Fit::Contain, 400, 400)
             ->format('webp')
             ->quality(82)
+            ->nonQueued();
+
+        // Preserve the source image ratio; storefront CSS handles cropping.
+        $this->addMediaConversion('card')
+            ->performOnCollections('images')
+            ->fit(Fit::Max, 800, 1067)
+            ->format('webp')
+            ->quality(80)
+            ->nonQueued();
+
+        $this->addMediaConversion('detail')
+            ->performOnCollections('images')
+            ->fit(Fit::Max, 1200, 1200)
+            ->format('webp')
+            ->quality(85)
             ->nonQueued();
     }
 }

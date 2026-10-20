@@ -190,7 +190,7 @@ class ShopController extends Controller
             'metaTitle' => $metaTitle,
             'metaDescription' => $metaDescription,
             'canonical' => $canonical,
-            'ogImage' => $product->getFirstMediaUrl('images'),
+            'ogImage' => $product->storefrontImageUrl('detail'),
         ]);
     }
 
@@ -630,8 +630,7 @@ class ShopController extends Controller
                 'url' => $slug
                     ? route('shop.product', ['slug' => $slug])
                     : route('shop.index'),
-                'image' => $product->getFirstMediaUrl('images', 'thumb')
-                    ?: $product->getFirstMediaUrl('images'),
+                'image' => $product->storefrontImageUrl('thumb'),
                 'options' => $normalizedOptions,
                 'quantity' => $quantity,
                 'unit_price' => $unitPrice,
