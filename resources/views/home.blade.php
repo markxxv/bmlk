@@ -24,7 +24,7 @@
                                 </p>
 
                                 <div class="mt-6 flex gap-2 sm:mt-9 sm:flex-wrap sm:gap-3 relative z-10" data-blur-reveal data-blur-duration="0.75" data-blur-delay="0.28" data-blur-y="14" data-blur-pixels="8">
-                                    <a href="{{ route('shop.index') }}" class="group inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-zinc-900 px-5 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-zinc-800 sm:flex-none sm:gap-3 sm:px-6 sm:tracking-widest">
+                                    <a href="{{ route('shop.index') }}" class="group inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-accent px-5 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-accent/90 sm:flex-none sm:gap-3 sm:px-6 sm:tracking-widest">
                                         {{ __('Découvrir la boutique') }}
                                         <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                     </a>
@@ -600,7 +600,7 @@
 
                     <button
                         type="submit"
-                        class="ml-4 -mr-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition bg-zinc-800 hover:bg-zinc-900 text-white"
+                        class="ml-4 -mr-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition bg-accent hover:bg-accent/90 text-white"
                         aria-label="{{ __('S’inscrire à la newsletter') }}"
                     >
                         <x-lucide-arrow-right class="h-5 w-5" />
