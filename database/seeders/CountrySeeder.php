@@ -286,6 +286,8 @@ class CountrySeeder extends Seeder
         }
 
         // Safe to re-run: existing admin changes are never overwritten.
-        Country::query()->insertOrIgnore($rows);
+        foreach (array_chunk($rows, 100) as $batch) {
+            Country::query()->insertOrIgnore($batch);
+        }
     }
 }
