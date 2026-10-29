@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Categories;
 
 use App\Filament\Resources\Categories\Pages;
+use App\Filament\Support\DeliveryFields;
 use App\Models\Category;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -51,47 +52,58 @@ class CategoryResource extends Resource
     {
         return $schema
             ->components([
-                Grid::make([
-                    'default' => 1,
-                    'xl' => 3,
-                    '2xl' => 3,
-                ])
-                    ->schema([
-                        Grid::make(1)
+                Tabs::make('Category details')
+                    ->tabs([
+                        Tab::make('General')
+                            ->icon('lucide-layout-grid')
                             ->schema([
-                                Section::make('Content')
-                                    ->icon('lucide-languages')
+                                Grid::make([
+                                    'default' => 1,
+                                    'xl' => 3,
+                                    '2xl' => 3,
+                                ])
                                     ->schema([
-                                        Tabs::make('Translations')
-                                            ->tabs(static::translationTabs()),
-                                    ]),
-                            ])
-                            ->columnSpan([
-                                'default' => 1,
-                                'xl' => 2,
-                                '2xl' => 2,
-                            ]),
+                                        Grid::make(1)
+                                            ->schema([
+                                                Section::make('Content')
+                                                    ->icon('lucide-languages')
+                                                    ->schema([
+                                                        Tabs::make('Translations')
+                                                            ->tabs(static::translationTabs()),
+                                                    ]),
+                                            ])
+                                            ->columnSpan([
+                                                'default' => 1,
+                                                'xl' => 2,
+                                                '2xl' => 2,
+                                            ]),
 
-                        Grid::make(1)
-                            ->schema([
-                                Section::make('Structure')
-                                    ->icon('lucide-folder-tree')
-                                    ->schema([
-                                        Select::make('parent_id')
-                                            ->label('Parent category')
-                                            ->options(fn (?Category $record): array => static::parentOptions($record))
-                                            ->searchable()
-                                            ->preload()
-                                            ->native(false)
-                                            ->prefixIcon('lucide-folder')
-                                            ->placeholder('Root category'),
-                                    ]),
-                            ])
-                            ->columnSpan([
-                                'default' => 1,
-                                'xl' => 1,
-                                '2xl' => 1,
+                                        Grid::make(1)
+                                            ->schema([
+                                                Section::make('Structure')
+                                                    ->icon('lucide-folder-tree')
+                                                    ->schema([
+                                                        Select::make('parent_id')
+                                                            ->label('Parent category')
+                                                            ->options(fn (?Category $record): array => static::parentOptions($record))
+                                                            ->searchable()
+                                                            ->preload()
+                                                            ->native(false)
+                                                            ->prefixIcon('lucide-folder')
+                                                            ->placeholder('Root category'),
+                                                    ]),
+                                            ])
+                                            ->columnSpan([
+                                                'default' => 1,
+                                                'xl' => 1,
+                                                '2xl' => 1,
+                                            ]),
+                                    ])
+                                    ->columnSpanFull(),
                             ]),
+                        Tab::make('Delivery')
+                            ->icon('lucide-truck')
+                            ->schema(DeliveryFields::schema(false)),
                     ])
                     ->columnSpanFull(),
             ]);
