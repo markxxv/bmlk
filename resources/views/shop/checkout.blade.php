@@ -34,6 +34,7 @@
                 isCalculating: false,
                 isLoadingPoints: false,
                 shippingError: '',
+                shippingCartError: false,
                 shippingRequest: null,
                 shippingRevision: 0,
                 promoPercent: null,
@@ -156,6 +157,7 @@
                     this.delivery = null;
                     this.deliveryCost = 0;
                     this.shippingError = '';
+                    this.shippingCartError = false;
                     this.form.shipping_option = '';
                     this.form.shipping_contract_id = '';
                     this.form.shipping_quoted_price = '';
@@ -188,6 +190,7 @@
                         const data = await response.json();
                         if (revision !== this.shippingRevision) return;
                         if (!response.ok) {
+                            this.shippingCartError = Boolean(data.errors?.cart_items);
                             this.shippingError = Object.values(data.errors || {})[0]?.[0] ||
                                 data.message || @js(__('Impossible de calculer la livraison.'));
                             return;
@@ -522,6 +525,8 @@
                            class="mt-4 text-xs text-zinc-500">Sélectionnez votre pays et indiquez votre code postal pour voir les tarifs.</p>
                         <p x-show="isCalculating" class="mt-4 text-xs text-zinc-500">Calcul des tarifs Sendcloud…</p>
                         <p x-show="shippingError" x-text="shippingError" class="mt-4 text-xs text-red-500"></p>
+                        <button x-show="shippingCartError" type="button" @click="$store.cart.isOpen = true"
+                            class="mt-2 text-xs font-medium text-bmlk-brand underline underline-offset-4">Vérifier le panier</button>
                         <p x-show="errors.shipping_option" x-text="errors.shipping_option?.[0]" class="mt-2 text-xs text-red-500"></p>
                         <div class="mt-5 space-y-2" x-show="shippingOptions.length">
                             <template x-for="option in shippingOptions" :key="option.code + option.contract_id">
