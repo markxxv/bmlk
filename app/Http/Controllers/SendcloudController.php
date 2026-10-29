@@ -259,6 +259,18 @@ class SendcloudController extends Controller
             'options' => $result['options'],
             'free_from' => $result['zone']->free_from !== null ? (float) $result['zone']->free_from : null,
             'free' => $result['free'],
+            // Repair old localStorage carts using the catalog's verified variant and price.
+            'cart_items' => $items->values()->map(function (array $item, int $index) use ($validated): array {
+                $original = $validated['cart_items'][$index] ?? [];
+                $signature = collect($item['options'])->map(fn (array $option): string =>
+                    $option['id'].':'.$option['key']
+                )->implode('|');
+
+                return [
+                    ...$item,
+                    'id' => (string) ($original['id'] ?? ($item['product_id'].'|'.($signature ?: 'default'))),
+                ];
+            })->all(),
         ])->header('Cache-Control', 'no-store');
     }
 
