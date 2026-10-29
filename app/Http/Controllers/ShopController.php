@@ -214,14 +214,18 @@ class ShopController extends Controller
             'last_name' => ['nullable', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:50'],
             'email' => ['required', 'email', 'max:255'],
-            'country' => ['required', 'string', 'max:120'],
-            'zip' => ['nullable', 'string', 'max:30'],
+            'country' => ['required', 'string', 'size:2'],
+            'zip' => ['required', 'string', 'max:30'],
             'city' => ['required', 'string', 'max:120'],
             'address' => ['required', 'string', 'max:1000'],
             'message' => ['nullable', 'string', 'max:2000'],
             'privacy' => ['accepted'],
             'cart_items' => ['required', 'string'],
             'promo_code' => ['nullable', 'string', 'max:32'],
+            'shipping_option' => ['required', 'string', 'max:190'],
+            'shipping_contract_id' => ['required', 'integer', 'min:1'],
+            'shipping_quoted_price' => ['required', 'numeric', 'min:0'],
+            'service_point_id' => ['nullable', 'integer', 'min:1'],
         ]);
 
         try {
@@ -250,21 +254,40 @@ class ShopController extends Controller
             2,
         );
 
-        $delivery = Delivery::query()
-            ->where('code', $validated['country'])
-            ->where('active', true)
-            ->first();
-
-        if (! $delivery) {
+        // Recalculate with the actual parcel and Sendcloud tariff; never trust a quoted price from JS.
+        $shipping = app(SendcloudController::class);
+        $countryCode = strtoupper($validated['country']);
+        $quote = $shipping->options(
+            $items, $countryCode, $validated['zip'], $validated['city'],
+            $validated['address'], $subtotal,
+        );
+        $delivery = $quote['zone'];
+        $selected = collect($quote['options'])->first(fn (array $option): bool =>
+            $option['code'] === $validated['shipping_option']
+                && $option['contract_id'] === (int) $validated['shipping_contract_id']
+        );
+        if (! $selected) {
             throw ValidationException::withMessages([
-                'country' => __('La livraison vers cette destination n’est pas disponible.'),
+                'shipping_option' => __('Le mode de livraison n’est plus disponible. Actualisez les tarifs.'),
             ]);
         }
-
-        $deliveryCost = $delivery->free_from !== null
-            && $subtotal >= (float) $delivery->free_from
-                ? 0.0
-                : (float) $delivery->price;
+        if ((int) round($selected['price'] * 100) !== (int) round((float) $validated['shipping_quoted_price'] * 100)) {
+            throw ValidationException::withMessages([
+                'shipping_option' => __('Le tarif a changé. Actualisez les tarifs avant de payer.'),
+            ]);
+        }
+        $point = null;
+        if ($selected['requires_point']) {
+            if (empty($validated['service_point_id'])) {
+                throw ValidationException::withMessages([
+                    'service_point_id' => __('Choisissez un point relais.'),
+                ]);
+            }
+            $point = $shipping->pointDetails(
+                (int) $validated['service_point_id'], $countryCode, $selected['carrier_code'],
+            );
+        }
+        $deliveryCost = $selected['price'];
 
         $promoCode = Str::upper(trim((string) ($validated['promo_code'] ?? '')));
         $influencer = $promoCode !== ''
@@ -301,8 +324,17 @@ class ShopController extends Controller
             'last_name' => $validated['last_name'] ?? null,
             'phone' => $validated['phone'],
             'email' => $validated['email'] ?? null,
-            'country' => $delivery->name,
+            'country' => SendcloudController::countries()[$countryCode],
             'delivery_code' => $delivery->code,
+            'shipping_country_code' => $countryCode,
+            'shipping_option_code' => $selected['code'],
+            'shipping_contract_id' => $selected['contract_id'],
+            'shipping_option_name' => $selected['carrier'].' — '.$selected['name'],
+            'sendcloud_rate' => $selected['actual_price'],
+            'shipping_parcel' => $quote['parcel'],
+            'service_point_id' => $point['id'] ?? null,
+            'service_point_name' => $point['name'] ?? null,
+            'service_point_address' => $point['address'] ?? null,
             'zip' => $validated['zip'] ?? null,
             'city' => $validated['city'],
             'address' => $validated['address'],
@@ -479,7 +511,7 @@ class ShopController extends Controller
         ]);
     }
 
-    private function normalizeItems(array $cartItems): Collection
+    public function normalizeItems(array $cartItems): Collection
     {
         $items = collect($cartItems);
 
