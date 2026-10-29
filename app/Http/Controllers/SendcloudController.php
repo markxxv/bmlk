@@ -48,8 +48,8 @@ class SendcloudController extends Controller
 
         $code = match (true) {
             $country === 'FR' => 'fr',
-            in_array($country, ['BE','NL','DE','LU','ES','IT','PT','AT','CH','MC','AD'], true) => 'eu1',
-            in_array($country, self::EU, true) || in_array($country, ['NO','IS','LI'], true) => 'eu2',
+            in_array($country, ['BE','NL','DE','LU','ES','IT','PT','AT'], true) => 'eu1',
+            in_array($country, self::EU, true) => 'eu2',
             default => 'int',
         };
 
