@@ -16,6 +16,9 @@ return new class extends Migration
             $table->unsignedInteger('sort')->default(1000)->index();
             $table->timestamps();
         });
+
+        // Ensure the checkout has countries immediately after deployment.
+        (new \Database\Seeders\CountrySeeder())->run();
     }
 
     public function down(): void
