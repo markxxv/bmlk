@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Country;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -199,6 +200,7 @@ class ShopController extends Controller
             'metaTitle' => __('Commande | BLACK MILK'),
             'metaDescription' => __('Finalisez votre commande BLACK MILK.'),
             'canonical' => route('checkout'),
+            'countries' => Country::available()->ordered()->get(['code', 'name']),
         ]);
     }
 
@@ -319,7 +321,7 @@ class ShopController extends Controller
             'last_name' => $validated['last_name'] ?? null,
             'phone' => $validated['phone'],
             'email' => $validated['email'] ?? null,
-            'country' => SendcloudController::countries()[$countryCode],
+            'country' => Country::available()->where('code', $countryCode)->value('name'),
             'delivery_code' => $delivery->code,
             'shipping_country_code' => $countryCode,
             'shipping_option_code' => $selected['code'],
