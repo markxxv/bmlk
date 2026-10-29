@@ -52,58 +52,49 @@ class CategoryResource extends Resource
     {
         return $schema
             ->components([
-                Tabs::make('Category details')
-                    ->tabs([
-                        Tab::make('General')
-                            ->icon('lucide-layout-grid')
+                Grid::make([
+                    'default' => 1,
+                    'xl' => 3,
+                    '2xl' => 3,
+                ])
+                    ->schema([
+                        Grid::make(1)
                             ->schema([
-                                Grid::make([
-                                    'default' => 1,
-                                    'xl' => 3,
-                                    '2xl' => 3,
-                                ])
-                                    ->schema([
-                                        Grid::make(1)
-                                            ->schema([
-                                                Section::make('Content')
-                                                    ->icon('lucide-languages')
-                                                    ->schema([
-                                                        Tabs::make('Translations')
-                                                            ->tabs(static::translationTabs()),
-                                                    ]),
-                                            ])
-                                            ->columnSpan([
-                                                'default' => 1,
-                                                'xl' => 2,
-                                                '2xl' => 2,
-                                            ]),
-
-                                        Grid::make(1)
-                                            ->schema([
-                                                Section::make('Structure')
-                                                    ->icon('lucide-folder-tree')
-                                                    ->schema([
-                                                        Select::make('parent_id')
-                                                            ->label('Parent category')
-                                                            ->options(fn (?Category $record): array => static::parentOptions($record))
-                                                            ->searchable()
-                                                            ->preload()
-                                                            ->native(false)
-                                                            ->prefixIcon('lucide-folder')
-                                                            ->placeholder('Root category'),
-                                                    ]),
-                                            ])
-                                            ->columnSpan([
-                                                'default' => 1,
-                                                'xl' => 1,
-                                                '2xl' => 1,
-                                            ]),
+                                Tabs::make('Languages and delivery')
+                                    ->tabs([
+                                        ...static::translationTabs(),
+                                        Tab::make('Delivery')
+                                            ->icon('lucide-truck')
+                                            ->schema(DeliveryFields::schema(false)),
                                     ])
-                                    ->columnSpanFull(),
+                                    ->contained(false),
+                            ])
+                            ->columnSpan([
+                                'default' => 1,
+                                'xl' => 2,
+                                '2xl' => 2,
                             ]),
-                        Tab::make('Delivery')
-                            ->icon('lucide-truck')
-                            ->schema(DeliveryFields::schema(false)),
+
+                        Grid::make(1)
+                            ->schema([
+                                Section::make('Structure')
+                                    ->icon('lucide-folder-tree')
+                                    ->schema([
+                                        Select::make('parent_id')
+                                            ->label('Parent category')
+                                            ->options(fn (?Category $record): array => static::parentOptions($record))
+                                            ->searchable()
+                                            ->preload()
+                                            ->native(false)
+                                            ->prefixIcon('lucide-folder')
+                                            ->placeholder('Root category'),
+                                    ]),
+                            ])
+                            ->columnSpan([
+                                'default' => 1,
+                                'xl' => 1,
+                                '2xl' => 1,
+                            ]),
                     ])
                     ->columnSpanFull(),
             ]);
