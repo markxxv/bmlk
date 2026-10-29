@@ -24,6 +24,20 @@ class CountryManagementTest extends TestCase
         );
     }
 
+    public function test_checkout_only_receives_active_countries_in_admin_order(): void
+    {
+        $this->seed(CountrySeeder::class);
+        Country::query()->where('code', 'IT')->update(['active' => false]);
+
+        $this->get(route('checkout'))
+            ->assertOk()
+            ->assertViewHas('countries', fn ($countries): bool =>
+                $countries->pluck('code')->take(4)->all() === ['FR', 'ES', 'PT', 'US']
+                && ! $countries->pluck('code')->contains('IT')
+                && $countries->pluck('sort')->values()->all() === $countries->pluck('sort')->sort()->values()->all()
+            );
+    }
+
     public function test_country_changes_survive_reseeding_and_control_shipping_availability(): void
     {
         $this->seed(CountrySeeder::class);
