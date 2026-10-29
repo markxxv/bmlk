@@ -254,7 +254,7 @@ class ShopController extends Controller
         $countryCode = strtoupper($validated['country']);
         $quote = $shipping->options(
             $items, $countryCode, $validated['zip'], $validated['city'],
-            $validated['address'], $subtotal,
+            $subtotal,
         );
         $delivery = $quote['zone'];
         $selected = collect($quote['options'])->first(fn (array $option): bool =>
@@ -541,15 +541,32 @@ class ShopController extends Controller
                     continue;
                 }
 
-                $selected = $selectedOptions->get($optionId);
+                $values = collect(data_get($option, 'values', []))
+                    ->filter(fn (mixed $value): bool => is_array($value) || filled($value))
+                    ->values();
 
-                if (! is_array($selected)) {
-                    throw ValidationException::withMessages([
-                        'cart_items' => __('Sélectionnez toutes les options du produit.'),
-                    ]);
+                // Legacy products may contain empty option placeholders. The product page
+                // doesn't display these, so they must not block shipping or checkout.
+                if ($values->isEmpty()) {
+                    continue;
                 }
 
-                $values = collect(data_get($option, 'values', []));
+                $selected = $selectedOptions->get($optionId);
+
+                // Single-choice options have no ambiguity and match the product-page default.
+                if (! is_array($selected) && $values->count() === 1) {
+                    $only = $values->first();
+                    $selected = is_array($only)
+                        ? ['quantity' => data_get($only, 'quantity')]
+                        : ['value' => (string) $only];
+                }
+
+                if (! is_array($selected)) {
+                    $name = $product->getTranslation('name', 'fr', false) ?: '#'.$product->id;
+                    throw ValidationException::withMessages([
+                        'cart_items' => __('Les options de « :product » ont changé. Ouvrez sa fiche et ajoutez-le à nouveau au panier.', ['product' => $name]),
+                    ]);
+                }
                 $label = data_get($option, 'label.'.strtoupper(app()->getLocale()))
                     ?: data_get($option, 'label.FR')
                     ?: $optionId;
