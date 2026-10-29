@@ -24,9 +24,9 @@
     </script>
 
     <main>
-        <section class="px-3 pb-3 pt-3 sm:px-5 sm:pb-14 sm:pt-16 lg:px-8 lg:pb-16 lg:pt-20">
+        <section class="px-3 pb-3 pt-3 sm:px-5 sm:pb-14 sm:pt-6 lg:px-8 lg:pb-16">
             <div class="mx-auto max-w-[1560px]">
-                <nav aria-label="{{ __('Fil d’Ariane') }}" class="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500" data-reveal data-reveal-y="8" data-reveal-duration="0.65">
+                <nav aria-label="{{ __('Fil d’Ariane') }}" class="flex items-center gap-2 text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-zinc-500" data-reveal data-reveal-y="8" data-reveal-duration="0.65">
                     <a href="{{ route('home') }}" class="transition hover:text-zinc-900">
                         {{ __('Accueil') }}
                     </a>
@@ -46,7 +46,7 @@
                     @endif
                 </nav>
 
-                <div class="mt-3 grid gap-1 sm:mt-8 sm:gap-8 lg:grid-cols-12 lg:items-end">
+                <div class="mt-3 grid gap-1 sm:mt-6 sm:gap-8 lg:grid-cols-12 lg:items-end">
                     <div class="lg:col-span-8">
                         <p class="text-[10px] font-semibold uppercase tracking-widest text-bmlk-brand sm:text-xs" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ $currentCategory ? __('Collection BLACK MILK') : __('Catalogue professionnel') }}
@@ -57,7 +57,7 @@
                         </h1>
                     </div>
 
-                    <div class="lg:col-span-4 lg:text-right">
+                    <div class="hidden sm:block lg:col-span-4 lg:text-right">
                         <p class="text-xs text-zinc-500 sm:text-sm" data-reveal data-reveal-y="10" data-reveal-duration="0.7" data-reveal-delay="0.12">
                             {{ trans_choice(':count produit|:count produits', $products->total(), ['count' => $products->total()]) }}
                         </p>
