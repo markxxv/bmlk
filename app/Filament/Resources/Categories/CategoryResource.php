@@ -67,7 +67,7 @@ class CategoryResource extends Resource
                                             ->icon('lucide-truck')
                                             ->schema(DeliveryFields::schema(false)),
                                     ])
-                                    ->contained(false),
+                                    ->contained(),
                             ])
                             ->columnSpan([
                                 'default' => 1,
