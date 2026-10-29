@@ -54,21 +54,23 @@ class RoleApplicationResource extends Resource
                         ->nullable()->minLength(4)->maxLength(24)
                         ->rule('regex:/^[A-Za-z0-9_-]{4,24}$/')
                         ->unique(table: User::class, ignorable: fn (?RoleApplication $record): ?User => $record?->user)
-                        ->rule(fn (?RoleApplication $record): Closure =>
-                            function (string $attribute, mixed $value, Closure $fail) use ($record): void {
-                                if (blank($value)) {
-                                    return;
-                                }
+                        ->rules([
+                            fn (?RoleApplication $record): Closure =>
+                                function (string $attribute, mixed $value, Closure $fail) use ($record): void {
+                                    if (blank($value)) {
+                                        return;
+                                    }
 
-                                $exists = User::query()
-                                    ->whereRaw('UPPER(influencer_code) = ?', [Str::upper(trim((string) $value))])
-                                    ->where('id', '!=', $record?->user_id)
-                                    ->exists();
+                                    $exists = User::query()
+                                        ->whereRaw('UPPER(influencer_code) = ?', [Str::upper(trim((string) $value))])
+                                        ->where('id', '!=', $record?->user_id)
+                                        ->exists();
 
-                                if ($exists) {
-                                    $fail('This promo code is already in use.');
-                                }
-                            })
+                                    if ($exists) {
+                                        $fail('This promo code is already in use.');
+                                    }
+                                },
+                        ])
                         ->dehydrateStateUsing(fn (?string $state): ?string =>
                             filled($state) ? Str::upper(trim($state)) : null),
                     TextInput::make('influencer_discount')->label('Discount, %')
