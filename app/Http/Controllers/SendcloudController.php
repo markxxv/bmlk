@@ -168,18 +168,27 @@ class SendcloudController extends Controller
             ];
         }
 
+        // The starter boxes may be enabled before actual warehouse measurements.
+        // Rate them conservatively and flag them for confirmation before printing labels.
+        $provisional = str_contains(mb_strtolower($box->name), 'estim');
+        $tare = $provisional
+            ? max((int) $box->tare_weight_g, 250, (int) ceil($weight * 0.25))
+            : (int) $box->tare_weight_g;
+        $totalWeight = $weight + $tare;
+
         return [
             'box_id' => $box->id,
             'box_name' => $box->name,
-            'total_weight_g' => $weight + $box->tare_weight_g,
+            'estimated' => $provisional,
+            'total_weight_g' => $totalWeight,
             'dimensions' => [
-                'length' => (string) $box->outer_length_cm,
-                'width' => (string) $box->outer_width_cm,
-                'height' => (string) $box->outer_height_cm,
+                'length' => (string) ((float) $box->outer_length_cm + ($provisional ? 2 : 0)),
+                'width' => (string) ((float) $box->outer_width_cm + ($provisional ? 2 : 0)),
+                'height' => (string) ((float) $box->outer_height_cm + ($provisional ? 2 : 0)),
                 'unit' => 'cm',
             ],
             'weight' => [
-                'value' => number_format(($weight + $box->tare_weight_g) / 1000, 3, '.', ''),
+                'value' => number_format($totalWeight / 1000, 3, '.', ''),
                 'unit' => 'kg',
             ],
         ];
