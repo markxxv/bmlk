@@ -24,7 +24,7 @@
     </script>
 
     <main>
-        <section class="px-3 pb-10 pt-12 sm:px-5 sm:pb-14 sm:pt-16 lg:px-8 lg:pb-16 lg:pt-20">
+        <section class="px-3 pb-3 pt-3 sm:px-5 sm:pb-14 sm:pt-16 lg:px-8 lg:pb-16 lg:pt-20">
             <div class="mx-auto max-w-[1560px]">
                 <nav aria-label="{{ __('Fil d’Ariane') }}" class="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500" data-reveal data-reveal-y="8" data-reveal-duration="0.65">
                     <a href="{{ route('home') }}" class="transition hover:text-zinc-900">
@@ -46,19 +46,19 @@
                     @endif
                 </nav>
 
-                <div class="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end">
+                <div class="mt-3 grid gap-1 sm:mt-8 sm:gap-8 lg:grid-cols-12 lg:items-end">
                     <div class="lg:col-span-8">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                        <p class="text-[10px] font-semibold uppercase tracking-widest text-bmlk-brand sm:text-xs" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ $currentCategory ? __('Collection BLACK MILK') : __('Catalogue professionnel') }}
                         </p>
 
-                        <h1 class="mt-4 max-w-5xl font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl" data-reveal-title data-reveal-title-duration="1">
+                        <h1 class="mt-1 max-w-5xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:mt-4 sm:text-6xl lg:text-7xl" data-reveal-title data-reveal-title-duration="1">
                             {{ $pageTitle }}
                         </h1>
                     </div>
 
                     <div class="lg:col-span-4 lg:text-right">
-                        <p class="text-sm text-zinc-500" data-reveal data-reveal-y="10" data-reveal-duration="0.7" data-reveal-delay="0.12">
+                        <p class="text-xs text-zinc-500 sm:text-sm" data-reveal data-reveal-y="10" data-reveal-duration="0.7" data-reveal-delay="0.12">
                             {{ trans_choice(':count produit|:count produits', $products->total(), ['count' => $products->total()]) }}
                         </p>
                     </div>
@@ -66,7 +66,7 @@
 
                 <nav
                     aria-label="{{ __('Catégories de produits') }}"
-                    class="-mx-3 mt-10 flex gap-2 overflow-x-auto px-3 pb-2 sm:-mx-5 sm:px-5 lg:mx-0 lg:px-0"
+                    class="-mx-3 mt-4 flex gap-2 overflow-x-auto px-3 pb-2 sm:-mx-5 sm:mt-10 sm:px-5 lg:mx-0 lg:px-0"
                     data-blur-reveal
                     data-blur-stagger="0.05"
                     data-blur-duration="0.65"
