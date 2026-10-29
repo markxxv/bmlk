@@ -19,6 +19,12 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
+    'sendcloud' => [
+        'public_key' => env('SENDCLOUD_PUBLIC_KEY'),
+        'secret_key' => env('SENDCLOUD_SECRET_KEY'),
+        'webhook_secret' => env('SENDCLOUD_WEBHOOK_SECRET'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
