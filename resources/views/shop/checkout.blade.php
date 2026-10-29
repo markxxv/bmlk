@@ -162,8 +162,7 @@
                     this.form.service_point_id = '';
                     this.servicePoints = [];
 
-                    if (!this.form.country || !this.form.zip.trim() || !this.form.city.trim() ||
-                        !this.form.address.trim() || !this.$store.cart.items.length) {
+                    if (!this.form.country || !this.form.zip.trim() || !this.$store.cart.items.length) {
                         this.isCalculating = false;
                         return;
                     }
@@ -183,7 +182,6 @@
                                 country: this.form.country,
                                 zip: this.form.zip,
                                 city: this.form.city,
-                                address: this.form.address,
                                 cart_items: this.$store.cart.items,
                             }),
                         });
@@ -490,7 +488,6 @@
                                     <x-lucide-map-pin class="pointer-events-none absolute left-4 top-4.5 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                     <textarea
                                         x-model="form.address"
-                                        @input.debounce.650ms="updateDeliveryCost()"
                                         rows="3"
                                         placeholder="{{ __('Adresse complète') }}"
                                         class="w-full resize-none rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
@@ -521,8 +518,8 @@
                             </span>
                             <h2 class="font-serif text-2xl font-medium tracking-tight text-zinc-900">Mode de livraison</h2>
                         </div>
-                        <p x-show="!form.country || !form.zip || !form.city || !form.address"
-                           class="mt-4 text-xs text-zinc-500">Renseignez votre adresse pour afficher les tarifs.</p>
+                        <p x-show="!form.country || !form.zip"
+                           class="mt-4 text-xs text-zinc-500">Sélectionnez votre pays et indiquez votre code postal pour voir les tarifs.</p>
                         <p x-show="isCalculating" class="mt-4 text-xs text-zinc-500">Calcul des tarifs Sendcloud…</p>
                         <p x-show="shippingError" x-text="shippingError" class="mt-4 text-xs text-red-500"></p>
                         <p x-show="errors.shipping_option" x-text="errors.shipping_option?.[0]" class="mt-2 text-xs text-red-500"></p>
