@@ -16,6 +16,9 @@ class Order extends Model
     {
         return [
             'items' => 'array',
+            'shipping_parcel' => 'array',
+            'sendcloud_rate' => 'decimal:2',
+            'sendcloud_event_at' => 'integer',
             'subtotal' => 'decimal:2',
             'delivery_cost' => 'decimal:2',
             'total_amount' => 'decimal:2',
