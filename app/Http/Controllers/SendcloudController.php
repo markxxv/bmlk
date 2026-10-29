@@ -301,6 +301,31 @@ class SendcloudController extends Controller
         }
     }
 
+    public function pointDetails(int $id, string $country, string $carrier): array
+    {
+        try {
+            $point = data_get($this->call('GET', '/service-points/'.$id), 'data', []);
+        } catch (Throwable $e) {
+            throw ValidationException::withMessages(['service_point_id' => 'Point relais indisponible.']);
+        }
+        if ((int) ($point['id'] ?? 0) !== $id
+            || strtoupper((string) data_get($point, 'address.country_code')) !== strtoupper($country)
+            || (string) data_get($point, 'carrier.code') !== $carrier
+            || ($point['is_expired'] ?? false)) {
+            throw ValidationException::withMessages(['service_point_id' => 'Point relais invalide.']);
+        }
+        return [
+            'id' => $id,
+            'name' => (string) ($point['name'] ?? ''),
+            'address' => trim(implode(' ', array_filter([
+                data_get($point, 'address.street'),
+                data_get($point, 'address.house_number'),
+                data_get($point, 'address.postal_code'),
+                data_get($point, 'address.city'),
+            ]))),
+        ];
+    }
+
     private function integrationId(): int
     {
         return Cache::remember('sendcloud.integration_id', now()->addHours(12), function (): int {
