@@ -285,14 +285,22 @@ class StripeController extends Controller
         }
 
         if ($paid) {
-            Order::query()->whereKey($order->id)->where('payment_status', '!=', 'paid')->update([
+            $changed = Order::query()->whereKey($order->id)->where('payment_status', '!=', 'paid')->update([
                 'payment_status' => 'paid',
                 'stripe_session_id' => $sessionId,
                 'stripe_payment_intent_id' => $session['payment_intent'] ?? null,
                 'paid_at' => now(),
                 'updated_at' => now(),
             ]);
-            $this->createCustomerForPaidOrder($order->fresh());
+            if ($changed) {
+                $this->createCustomerForPaidOrder($order->fresh());
+                // Sendcloud upsert is idempotent and does not purchase a shipping label.
+                // Defer until HTTP response has been sent, keeping Stripe webhook responsive.
+                $paidOrderId = $order->id;
+                app()->terminating(static function () use ($paidOrderId): void {
+                    app(SendcloudController::class)->syncPaidOrder(Order::findOrFail($paidOrderId));
+                });
+            }
         } elseif ($event === 'checkout.session.completed') {
             Order::query()->whereKey($order->id)->whereNotIn('payment_status', ['paid', 'failed'])
                 ->update(['payment_status' => 'processing', 'updated_at' => now()]);
