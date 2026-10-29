@@ -409,33 +409,6 @@ class ShopController extends Controller
         return response()->json(['code' => $influencer->influencer_code, 'percent' => (float) $influencer->influencer_discount]);
     }
 
-    public function deliveryCost(string $code): JsonResponse
-    {
-        $delivery = Delivery::query()
-            ->where('code', $code)
-            ->where('active', true)
-            ->first();
-
-        if (! $delivery) {
-            return response()->json([
-                'success' => false,
-                'message' => __('Livraison indisponible.'),
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'code' => $delivery->code,
-            'name' => $delivery->name,
-            'carrier' => $delivery->carrier,
-            'delay' => $delivery->delay,
-            'price' => (float) $delivery->price,
-            'free_from' => $delivery->free_from !== null
-                ? (float) $delivery->free_from
-                : null,
-        ]);
-    }
-
     public function recoveryForm(Request $request, ?string $orderNumber = null): View
     {
         return view('shop.recover-order', [
