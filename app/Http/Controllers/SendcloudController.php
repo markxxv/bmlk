@@ -275,7 +275,7 @@ class SendcloudController extends Controller
         try {
             $response = $this->client()->get(self::API.'/service-points', [
                 'country_code' => strtoupper($v['country']),
-                'carrier_code' => [$v['carrier']],
+                'carrier_code' => $v['carrier'],
                 'address' => $v['zip'].' '.$v['city'],
                 'limit' => 15,
             ]);
@@ -479,7 +479,7 @@ class SendcloudController extends Controller
             if ($timestamp > (int) ($order->sendcloud_event_at ?? 0)) {
                 $message = strtolower((string) data_get($parcel, 'status.message', ''));
                 $status = $order->status;
-                if (str_contains($message, 'deliver') || str_contains($message, 'livré')) {
+                if (preg_match('/^(delivered|livr[ée]|distribu[ée])/iu', $message)) {
                     $status = 'completed';
                 } elseif (str_contains($message, 'transit') || str_contains($message, 'en route') || str_contains($message, 'shipp')) {
                     $status = 'shipped';
