@@ -35,6 +35,7 @@
                 isLoadingPoints: false,
                 shippingError: '',
                 shippingCartError: false,
+                cartNotice: '',
                 shippingRequest: null,
                 shippingRevision: 0,
                 promoPercent: null,
@@ -193,6 +194,31 @@
                             this.shippingCartError = Boolean(data.errors?.cart_items);
                             this.shippingError = Object.values(data.errors || {})[0]?.[0] ||
                                 data.message || @js(__('Impossible de calculer la livraison.'));
+                            return;
+                        }
+                        // Old carts can reference removed option IDs. Reconcile with the
+                        // server-verified choice and price before showing Stripe totals.
+                        const corrected = data.cart_items || [];
+                        const current = this.$store.cart.items;
+                        const needsCorrection = corrected.length === current.length &&
+                            corrected.some((item, index) =>
+                                Number(item.unit_price) !== Number(current[index].unit_price) ||
+                                JSON.stringify(item.options) !== JSON.stringify(
+                                    (current[index].options || []).map(option => ({
+                                        id: option.id,
+                                        label: option.label,
+                                        value: option.value ?? null,
+                                        quantity: option.quantity ?? null,
+                                        display: option.display,
+                                        key: option.key,
+                                        price: option.price ?? null,
+                                    }))
+                                )
+                            );
+                        if (needsCorrection) {
+                            this.$store.cart.items = corrected;
+                            this.$store.cart.save();
+                            this.cartNotice = @js(__('Les variantes et les prix du panier ont été actualisés. Vérifiez votre sélection.'));
                             return;
                         }
                         this.shippingOptions = data.options || [];
@@ -524,6 +550,7 @@
                         <p x-show="!form.country || !form.zip"
                            class="mt-4 text-xs text-zinc-500">Sélectionnez votre pays et indiquez votre code postal pour voir les tarifs.</p>
                         <p x-show="isCalculating" class="mt-4 text-xs text-zinc-500">Calcul des tarifs Sendcloud…</p>
+                        <p x-show="cartNotice" x-text="cartNotice" class="mt-4 text-xs text-bmlk-brand"></p>
                         <p x-show="shippingError" x-text="shippingError" class="mt-4 text-xs text-red-500"></p>
                         <button x-show="shippingCartError" type="button" @click="$store.cart.isOpen = true"
                             class="mt-2 text-xs font-medium text-bmlk-brand underline underline-offset-4">Vérifier le panier</button>
