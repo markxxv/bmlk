@@ -594,10 +594,11 @@ class ShopController extends Controller
                             (int) data_get($value, 'quantity') === (int) $selectedQuantity
                     );
 
+                    // A previously selected quantity may have been removed from the catalog.
+                    // Use the same first choice displayed by the product page, then let the
+                    // shipping quote update the stored cart and show the correction notice.
                     if (! is_array($matched)) {
-                        throw ValidationException::withMessages([
-                            'cart_items' => __('Une option du produit est invalide.'),
-                        ]);
+                        $matched = $objectValues->first();
                     }
 
                     $optionPrice = data_get($matched, 'price.amount');
@@ -627,8 +628,12 @@ class ShopController extends Controller
                 );
 
                 if ($matched === null) {
+                    $matched = $values->first(fn (mixed $value): bool => ! is_array($value));
+                }
+
+                if ($matched === null) {
                     throw ValidationException::withMessages([
-                        'cart_items' => __('Une option du produit est invalide.'),
+                        'cart_items' => __('Les options du produit ne sont plus disponibles.'),
                     ]);
                 }
 
