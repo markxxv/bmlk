@@ -400,6 +400,16 @@ class SendcloudController extends Controller
     // Explicit admin action: label creation may incur a carrier charge.
     public function createLabel(Order $order): void
     {
+        // Avoid simultaneous label purchases from multiple admin requests.
+        $lock = Cache::lock('sendcloud-label-'.$order->id, 45);
+        if (! $lock->get()) {
+            throw new RuntimeException('Une étiquette est déjà en cours de création.');
+        }
+        try {
+            $order->refresh();
+            if ($order->tracking_number) {
+                throw new RuntimeException('Une étiquette existe déjà.');
+            }
         if ($order->payment_status !== 'paid' || $order->tracking_number) {
             throw new RuntimeException('Only paid orders without labels can be shipped.');
         }
@@ -449,6 +459,9 @@ class SendcloudController extends Controller
             'sendcloud_shipment_id' => $data['shipment_id'] ?? null,
             'status' => 'processing',
         ])->save();
+        } finally {
+            $lock->release();
+        }
     }
 
     public function label(Order $order): \Symfony\Component\HttpFoundation\BinaryFileResponse
