@@ -21,6 +21,7 @@ class EditOrder extends EditRecord
                 ->label('Synchroniser Sendcloud')
                 ->icon('lucide-refresh-cw')
                 ->visible(fn (): bool => $this->record->payment_status === 'paid'
+                    && is_array($this->record->shipping_parcel)
                     && ! $this->record->sendcloud_order_id)
                 ->action(function (): void {
                     app(SendcloudController::class)->syncPaidOrder($this->record);
@@ -35,6 +36,7 @@ class EditOrder extends EditRecord
                 ->icon('lucide-printer')
                 ->color('primary')
                 ->visible(fn (): bool => $this->record->payment_status === 'paid'
+                    && is_array($this->record->shipping_parcel)
                     && ! $this->record->tracking_number)
                 ->requiresConfirmation()
                 ->modalDescription('Cette opération achète une étiquette de transport auprès de Sendcloud.')
