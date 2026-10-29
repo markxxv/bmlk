@@ -34,6 +34,11 @@ return new class extends Migration
             $table->decimal('price_max', 12, 2)->nullable();
             $table->decimal('compare_at_price', 12, 2)->nullable();
 
+            $table->unsignedInteger('delivery_weight')->nullable(); // grams
+            $table->decimal('delivery_height', 8, 2)->nullable(); // cm
+            $table->decimal('delivery_depth', 8, 2)->nullable(); // cm
+            $table->decimal('delivery_length', 8, 2)->nullable(); // cm
+
             $table->jsonb('meta_title')->nullable();
             $table->jsonb('meta_description')->nullable();
 
