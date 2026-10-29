@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products;
 
 use App\Filament\Resources\Products\Pages;
+use App\Filament\Support\DeliveryFields;
 use App\Models\Category;
 use App\Models\Product;
 use BackedEnum;
@@ -62,202 +63,202 @@ class ProductResource extends Resource
     {
         return $schema
             ->components([
-                Grid::make([
-                    'default' => 1,
-                    'xl' => 3,
-                    '2xl' => 3,
-                ])
-                    ->schema([
-                        Grid::make(1)
+                Tabs::make('Product details')
+                    ->tabs([
+                        Tab::make('General')
+                            ->icon('lucide-layout-grid')
                             ->schema([
-                                Section::make('Content')
-                                    ->icon('lucide-languages')
+                                Grid::make([
+                                    'default' => 1,
+                                    'xl' => 3,
+                                    '2xl' => 3,
+                                ])
                                     ->schema([
-                                        Tabs::make('Translations')
-                                            ->tabs(static::translationTabs()),
-                                    ]),
-
-                                Section::make('Media')
-                                    ->icon('lucide-images')
-                                    ->schema([
-                                        SpatieMediaLibraryFileUpload::make('images')
-                                            ->label('Product images')
-                                            ->collection('images')
-                                            ->disk('public')
-                                            ->conversion('thumb')
-                                            ->image()
-                                            ->multiple()
-                                            ->reorderable()
-                                            ->columnSpanFull(),
-                                    ]),
-
-                                Section::make('Product data')
-                                    ->icon('lucide-list')
-                                    ->schema([
-                                        TagsInput::make('claims')
-                                            ->label('Claims')
-                                            ->placeholder('HEMA-free')
-                                            ->columnSpanFull(),
-
-                                        Grid::make(3)
+                                        Grid::make(1)
                                             ->schema([
-                                                TextInput::make('size.raw')
-                                                    ->label('Size label')
-                                                    ->placeholder('30 ml'),
-                                                TextInput::make('size.volume_ml')
-                                                    ->label('Volume')
-                                                    ->numeric()
-                                                    ->suffix('ml'),
-                                                TextInput::make('size.weight_g')
-                                                    ->label('Weight')
-                                                    ->numeric()
-                                                    ->suffix('g'),
-                                            ]),
-
-                                        Grid::make(2)
-                                            ->schema([
-                                                TextInput::make('measurements.weight_kg')
-                                                    ->label('Shipping weight')
-                                                    ->numeric()
-                                                    ->suffix('kg'),
-                                                TextInput::make('measurements.dimensions_cm_raw')
-                                                    ->label('Dimensions')
-                                                    ->placeholder('18 × 3 cm'),
-                                            ]),
-
-                                        Repeater::make('options')
-                                            ->label('Product options')
-                                            ->schema([
-                                                ToggleButtons::make('type')
-                                                    ->label('Option type')
-                                                    ->options(static::productOptionTypeOptions())
-                                                    ->icons([
-                                                        'diameter' => 'lucide-ruler',
-                                                        'pack_quantity' => 'lucide-package',
-                                                    ])
-                                                    ->default('diameter')
-                                                    ->grouped()
-                                                    ->required()
-                                                    ->columnSpanFull(),
-
-                                                Repeater::make('values')
-                                                    ->label('Values')
-                                                    ->table([
-                                                        TableColumn::make('Value')
-                                                            ->width('45%'),
-                                                        TableColumn::make('Quantity')
-                                                            ->width('20%'),
-                                                        TableColumn::make('Price')
-                                                            ->width('25%'),
-                                                    ])
-                                                    ->compact()
+                                                Section::make('Content')
+                                                    ->icon('lucide-languages')
                                                     ->schema([
-                                                        TextInput::make('value'),
-                                                        TextInput::make('quantity')
-                                                            ->numeric()
-                                                            ->minValue(1),
-                                                        TextInput::make('price')
-                                                            ->numeric()
-                                                            ->inputMode('decimal')
-                                                            ->minValue(0)
-                                                            ->prefix('€'),
+                                                        Tabs::make('Translations')
+                                                            ->tabs(static::translationTabs()),
+                                                    ]),
+
+                                                Section::make('Media')
+                                                    ->icon('lucide-images')
+                                                    ->schema([
+                                                        SpatieMediaLibraryFileUpload::make('images')
+                                                            ->label('Product images')
+                                                            ->collection('images')
+                                                            ->disk('public')
+                                                            ->conversion('thumb')
+                                                            ->image()
+                                                            ->multiple()
+                                                            ->reorderable()
+                                                            ->columnSpanFull(),
+                                                    ]),
+
+                                                Section::make('Product data')
+                                                    ->icon('lucide-list')
+                                                    ->schema([
+                                                        TagsInput::make('claims')
+                                                            ->label('Claims')
+                                                            ->placeholder('HEMA-free')
+                                                            ->columnSpanFull(),
+
+                                                        Grid::make(3)
+                                                            ->schema([
+                                                                TextInput::make('size.raw')
+                                                                    ->label('Size label')
+                                                                    ->placeholder('30 ml'),
+                                                                TextInput::make('size.volume_ml')
+                                                                    ->label('Volume')
+                                                                    ->numeric()
+                                                                    ->suffix('ml'),
+                                                                TextInput::make('size.weight_g')
+                                                                    ->label('Weight')
+                                                                    ->numeric()
+                                                                    ->suffix('g'),
+                                                            ]),
+
+                                                        Repeater::make('options')
+                                                            ->label('Product options')
+                                                            ->schema([
+                                                                ToggleButtons::make('type')
+                                                                    ->label('Option type')
+                                                                    ->options(static::productOptionTypeOptions())
+                                                                    ->icons([
+                                                                        'diameter' => 'lucide-ruler',
+                                                                        'pack_quantity' => 'lucide-package',
+                                                                    ])
+                                                                    ->default('diameter')
+                                                                    ->grouped()
+                                                                    ->required()
+                                                                    ->columnSpanFull(),
+
+                                                                Repeater::make('values')
+                                                                    ->label('Values')
+                                                                    ->table([
+                                                                        TableColumn::make('Value')
+                                                                            ->width('45%'),
+                                                                        TableColumn::make('Quantity')
+                                                                            ->width('20%'),
+                                                                        TableColumn::make('Price')
+                                                                            ->width('25%'),
+                                                                    ])
+                                                                    ->compact()
+                                                                    ->schema([
+                                                                        TextInput::make('value'),
+                                                                        TextInput::make('quantity')
+                                                                            ->numeric()
+                                                                            ->minValue(1),
+                                                                        TextInput::make('price')
+                                                                            ->numeric()
+                                                                            ->inputMode('decimal')
+                                                                            ->minValue(0)
+                                                                            ->prefix('€'),
+                                                                    ])
+                                                                    ->defaultItems(0)
+                                                                    ->addActionLabel('Add value')
+                                                                    ->reorderable()
+                                                                    ->columnSpanFull(),
+                                                            ])
+                                                            ->dehydrateStateUsing(fn (mixed $state): ?array => static::optionsForStorage($state))
+                                                            ->itemLabel(fn (array $state): ?string => static::productOptionTypeOptions()[data_get($state, 'type')] ?? 'Option')
+                                                            ->defaultItems(0)
+                                                            ->addActionLabel('Add option')
+                                                            ->collapsible()
+                                                            ->reorderable()
+                                                            ->columnSpanFull(),
                                                     ])
-                                                    ->defaultItems(0)
-                                                    ->addActionLabel('Add value')
-                                                    ->reorderable()
-                                                    ->columnSpanFull(),
+                                                    ->columns(1),
                                             ])
-                                            ->dehydrateStateUsing(fn (mixed $state): ?array => static::optionsForStorage($state))
-                                            ->itemLabel(fn (array $state): ?string => static::productOptionTypeOptions()[data_get($state, 'type')] ?? 'Option')
-                                            ->defaultItems(0)
-                                            ->addActionLabel('Add option')
-                                            ->collapsible()
-                                            ->reorderable()
-                                            ->columnSpanFull(),
-                                    ])
-                                    ->columns(1),
-                            ])
-                            ->columnSpan([
-                                'default' => 1,
-                                'xl' => 2,
-                                '2xl' => 2,
-                            ]),
-
-                        Grid::make(1)
-                            ->schema([
-                                   Section::make('Visibility')
-                                    ->icon('lucide-eye')
-                                    ->schema([
-                                        Toggle::make('active')
-                                            ->label('Active')
-                                            ->default(true)
-                                            ->onIcon('lucide-check')
-                                            ->offIcon('lucide-x')
-                                            ->onColor('success')
-                                            ->offColor('danger'),
-                                        Toggle::make('featured')
-                                            ->label('Featured')
-                                            ->onIcon('lucide-star')
-                                            ->offIcon('lucide-star-off'),
-                                        Toggle::make('is_new')
-                                            ->label('New')
-                                            ->onIcon('lucide-sparkles')
-                                            ->offIcon('lucide-circle'),
-                                    ]),
-                          
-                                Section::make('Pricing')
-                                    ->icon('lucide-euro')
-                                    ->schema([
-                                        Grid::make(2)
-                                            ->schema([
-                                                TextInput::make('price')
-                                                    ->label('Price')
-                                                    ->numeric()
-                                                    ->inputMode('decimal')
-                                                    ->prefix('€'),
-                                                TextInput::make('compare_at_price')
-                                                    ->label('Compare at')
-                                                    ->numeric()
-                                                    ->inputMode('decimal')
-                                                    ->prefix('€'),
-                                                TextInput::make('price_min')
-                                                    ->label('Minimum')
-                                                    ->numeric()
-                                                    ->inputMode('decimal')
-                                                    ->prefix('€'),
-                                                TextInput::make('price_max')
-                                                    ->label('Maximum')
-                                                    ->numeric()
-                                                    ->inputMode('decimal')
-                                                    ->prefix('€'),
+                                            ->columnSpan([
+                                                'default' => 1,
+                                                'xl' => 2,
+                                                '2xl' => 2,
                                             ]),
-                                    ]),
 
-                                Section::make('Catalog')
-                                    ->icon('lucide-package')
-                                    ->schema([
-                                        Select::make('category_id')
-                                            ->label('Category')
-                                            ->options(fn (): array => static::categoryOptions())
-                                            ->searchable()
-                                            ->preload()
-                                            ->native(false)
-                                            ->prefixIcon('lucide-folder')
-                                            ->required(),
+                                        Grid::make(1)
+                                            ->schema([
+                                                   Section::make('Visibility')
+                                                    ->icon('lucide-eye')
+                                                    ->schema([
+                                                        Toggle::make('active')
+                                                            ->label('Active')
+                                                            ->default(true)
+                                                            ->onIcon('lucide-check')
+                                                            ->offIcon('lucide-x')
+                                                            ->onColor('success')
+                                                            ->offColor('danger'),
+                                                        Toggle::make('featured')
+                                                            ->label('Featured')
+                                                            ->onIcon('lucide-star')
+                                                            ->offIcon('lucide-star-off'),
+                                                        Toggle::make('is_new')
+                                                            ->label('New')
+                                                            ->onIcon('lucide-sparkles')
+                                                            ->offIcon('lucide-circle'),
+                                                    ]),
+                                          
+                                                Section::make('Pricing')
+                                                    ->icon('lucide-euro')
+                                                    ->schema([
+                                                        Grid::make(2)
+                                                            ->schema([
+                                                                TextInput::make('price')
+                                                                    ->label('Price')
+                                                                    ->numeric()
+                                                                    ->inputMode('decimal')
+                                                                    ->prefix('€'),
+                                                                TextInput::make('compare_at_price')
+                                                                    ->label('Compare at')
+                                                                    ->numeric()
+                                                                    ->inputMode('decimal')
+                                                                    ->prefix('€'),
+                                                                TextInput::make('price_min')
+                                                                    ->label('Minimum')
+                                                                    ->numeric()
+                                                                    ->inputMode('decimal')
+                                                                    ->prefix('€'),
+                                                                TextInput::make('price_max')
+                                                                    ->label('Maximum')
+                                                                    ->numeric()
+                                                                    ->inputMode('decimal')
+                                                                    ->prefix('€'),
+                                                            ]),
+                                                    ]),
 
-                                        // TextInput::make('sku')
-                                        //     ->label('SKU')
-                                        //     ->prefixIcon('lucide-barcode')
-                                        //     ->maxLength(120),
-                                    ]),
+                                                Section::make('Catalog')
+                                                    ->icon('lucide-package')
+                                                    ->schema([
+                                                        Select::make('category_id')
+                                                            ->label('Category')
+                                                            ->options(fn (): array => static::categoryOptions())
+                                                            ->searchable()
+                                                            ->preload()
+                                                            ->native(false)
+                                                            ->prefixIcon('lucide-folder')
+                                                            ->required(),
+
+                                                        // TextInput::make('sku')
+                                                        //     ->label('SKU')
+                                                        //     ->prefixIcon('lucide-barcode')
+                                                        //     ->maxLength(120),
+                                                    ]),
 
 
-                            ])
-                            ->columnSpan([
-                                'default' => 1,
-                                'xl' => 1,
-                                '2xl' => 1,
+                                            ])
+                                            ->columnSpan([
+                                                'default' => 1,
+                                                'xl' => 1,
+                                                '2xl' => 1,
+                                            ]),
+                                    ])
+                                    ->columnSpanFull(),
                             ]),
+                        Tab::make('Delivery')
+                            ->icon('lucide-truck')
+                            ->schema(DeliveryFields::schema(true)),
                     ])
                     ->columnSpanFull(),
             ]);
