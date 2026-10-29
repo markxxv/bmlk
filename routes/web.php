@@ -31,6 +31,166 @@ Route::get('/api/delivery-cost/{code}', [ShopController::class, 'deliveryCost'])
     ->where('code', '[A-Za-z0-9-]+')
     ->name('api.delivery.cost');
 
+// TEMPORARY SENDCLOUD DIAGNOSTICS. Delete this entire group after verification.
+// Both endpoints are read-only, require an authenticated shop admin, and never reveal API keys.
+Route::middleware(['auth', 'throttle:6,1'])->group(function (): void {
+    Route::get('/admin/sendcloud-check/addresses', function (\Illuminate\Http\Request $request): \Illuminate\Http\JsonResponse {
+        abort_unless($request->user()?->is_admin === true, 403);
+
+        $public = (string) config('services.sendcloud.public_key');
+        $secret = (string) config('services.sendcloud.secret_key');
+
+        if ($public === '' || $secret === '') {
+            return response()->json(['error' => 'SENDCLOUD_PUBLIC_KEY / SENDCLOUD_SECRET_KEY are not configured.'], 503);
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::acceptJson()
+                ->withBasicAuth($public, $secret)
+                ->connectTimeout(5)
+                ->timeout(15)
+                ->get('https://panel.sendcloud.sc/api/v3/addresses/sender-addresses');
+
+            if (! $response->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'sendcloud_http_status' => $response->status(),
+                    'errors' => $response->json('errors') ?? $response->json('message'),
+                ], 502)->header('Cache-Control', 'no-store');
+            }
+
+            return response()->json([
+                'success' => true,
+                'sender_addresses' => collect($response->json('data', []))
+                    ->map(fn (array $address): array => \Illuminate\Support\Arr::only($address, [
+                        'id', 'company_name', 'name', 'address_line_1', 'house_number',
+                        'postal_code', 'city', 'country_code',
+                    ]))->values()->all(),
+            ])->header('Cache-Control', 'no-store');
+        } catch (\Throwable $exception) {
+            \Illuminate\Support\Facades\Log::warning('Sendcloud address diagnostics failed.', [
+                'error' => $exception->getMessage(),
+            ]);
+
+            return response()->json(['success' => false, 'error' => 'Sendcloud request failed.'], 502);
+        }
+    });
+
+    Route::get('/admin/sendcloud-check/shipping', function (\Illuminate\Http\Request $request): \Illuminate\Http\JsonResponse {
+        abort_unless($request->user()?->is_admin === true, 403);
+
+        $public = (string) config('services.sendcloud.public_key');
+        $secret = (string) config('services.sendcloud.secret_key');
+
+        if ($public === '' || $secret === '') {
+            return response()->json(['error' => 'SENDCLOUD_PUBLIC_KEY / SENDCLOUD_SECRET_KEY are not configured.'], 503);
+        }
+
+        // Run with ?country=FR, ?country=DE, ?country=ES or ?country=US.
+        $destinations = [
+            'FR' => ['country_code' => 'FR', 'postal_code' => '75011', 'city' => 'Paris'],
+            'DE' => ['country_code' => 'DE', 'postal_code' => '10115', 'city' => 'Berlin'],
+            'ES' => ['country_code' => 'ES', 'postal_code' => '28001', 'city' => 'Madrid'],
+            'US' => ['country_code' => 'US', 'postal_code' => '10001', 'city' => 'New York'],
+        ];
+
+        $country = strtoupper((string) $request->query('country', 'FR'));
+
+        if (! isset($destinations[$country])) {
+            return response()->json(['error' => 'Country must be FR, DE, ES or US.'], 422);
+        }
+
+        try {
+            $http = \Illuminate\Support\Facades\Http::acceptJson()
+                ->withBasicAuth($public, $secret)
+                ->connectTimeout(5)
+                ->timeout(15);
+
+            $addresses = $http->get('https://panel.sendcloud.sc/api/v3/addresses/sender-addresses');
+
+            if (! $addresses->successful()) {
+                return response()->json([
+                    'success' => false,
+                    'step' => 'sender_addresses',
+                    'sendcloud_http_status' => $addresses->status(),
+                    'errors' => $addresses->json('errors') ?? $addresses->json('message'),
+                ], 502)->header('Cache-Control', 'no-store');
+            }
+
+            // Use an actual FR sender address configured in Sendcloud, never the legal address by assumption.
+            $sender = collect($addresses->json('data', []))
+                ->first(fn (array $address): bool => strtoupper((string) ($address['country_code'] ?? '')) === 'FR'
+                    && str_replace(' ', '', (string) ($address['postal_code'] ?? '')) === '77400');
+
+            $sender ??= collect($addresses->json('data', []))
+                ->first(fn (array $address): bool => strtoupper((string) ($address['country_code'] ?? '')) === 'FR');
+
+            if (! $sender) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'No sender address in France is configured in Sendcloud. Check /admin/sendcloud-check/addresses.',
+                ], 422);
+            }
+
+            $from = array_filter(\Illuminate\Support\Arr::only($sender, [
+                'country_code', 'postal_code', 'city', 'address_line_1', 'house_number',
+            ]), fn (mixed $value): bool => $value !== null && $value !== '');
+
+            $contracts = $http->get('https://panel.sendcloud.sc/api/v3/contracts');
+
+            $payload = [
+                'from_address' => $from,
+                'to_address' => $destinations[$country],
+                // DIAGNOSTIC ONLY: illustrative test package (NOT a measured Black Milk box).
+                'parcels' => [[
+                    'dimensions' => [
+                        'length' => '24',
+                        'width' => '18',
+                        'height' => '14',
+                        'unit' => 'cm',
+                    ],
+                    'weight' => ['value' => '0.5', 'unit' => 'kg'],
+                ]],
+                'calculate_quotes' => true,
+            ];
+
+            $shipping = $http->post('https://panel.sendcloud.sc/api/v3/shipping-options', $payload);
+
+            return response()->json([
+                'success' => $shipping->successful(),
+                'origin' => \Illuminate\Support\Arr::only($sender, [
+                    'id', 'company_name', 'address_line_1', 'house_number',
+                    'postal_code', 'city', 'country_code',
+                ]),
+                'destination' => $destinations[$country],
+                'test_parcel' => $payload['parcels'][0],
+                'contracts' => [
+                    'http_status' => $contracts->status(),
+                    'data' => $contracts->successful()
+                        ? collect($contracts->json('data', []))
+                            ->map(fn (array $contract): array => \Illuminate\Support\Arr::only($contract, [
+                                'id', 'carrier', 'country', 'state', 'type', 'is_default_per_carrier',
+                            ]))->values()->all()
+                        : [],
+                    'errors' => $contracts->successful() ? null : ($contracts->json('errors') ?? $contracts->json('message')),
+                ],
+                'shipping_options' => [
+                    'http_status' => $shipping->status(),
+                    'message' => $shipping->json('message'),
+                    'data' => $shipping->json('data', []),
+                    'errors' => $shipping->successful() ? null : $shipping->json('errors'),
+                ],
+            ], $shipping->successful() ? 200 : 502)->header('Cache-Control', 'no-store');
+        } catch (\Throwable $exception) {
+            \Illuminate\Support\Facades\Log::warning('Sendcloud shipping diagnostics failed.', [
+                'error' => $exception->getMessage(),
+            ]);
+
+            return response()->json(['success' => false, 'error' => 'Sendcloud request failed.'], 502);
+        }
+    });
+});
+
 // Temporary Sendcloud endpoint: acknowledge connectivity tests and incoming events.
 // TODO: Verify Sendcloud-Signature and process parcel events before going live.
 Route::match(['get', 'post'], '/api/webhooks/sendcloud', fn () => response()->json(['status' => 'ok']))
