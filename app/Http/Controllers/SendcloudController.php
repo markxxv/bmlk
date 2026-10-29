@@ -410,55 +410,55 @@ class SendcloudController extends Controller
             if ($order->tracking_number) {
                 throw new RuntimeException('Une étiquette existe déjà.');
             }
-        if ($order->payment_status !== 'paid' || $order->tracking_number) {
-            throw new RuntimeException('Only paid orders without labels can be shipped.');
-        }
-        // International customs documents require HS codes, origin and export details.
-        // Until the merchant has supplied them, use Sendcloud's panel for non-EU labels.
-        if (! in_array($order->shipping_country_code, self::EU, true)) {
-            throw new RuntimeException('Étiquette hors UE : complétez les formalités douanières dans Sendcloud.');
-        }
-        if (! $order->sendcloud_order_id) {
-            $this->syncPaidOrder($order);
-            $order->refresh();
-        }
-        if (! $order->sendcloud_order_id) {
-            throw new RuntimeException('Order has not been accepted by Sendcloud.');
-        }
-
-        $result = $this->call('POST', '/orders/create-label-sync', [
-            'integration_id' => $this->integrationId(),
-            'sender_address_id' => 944950,
-            'order' => ['order_number' => $order->order_number, 'apply_shipping_rules' => false],
-            'ship_with' => [
-                'type' => 'shipping_option_code',
-                'properties' => [
-                    'shipping_option_code' => $order->shipping_option_code,
-                    'contract_id' => (int) $order->shipping_contract_id,
-                ],
-            ],
-            'label_details' => ['mime_type' => 'application/pdf', 'dpi' => 72],
-        ]);
-
-        $data = data_get($result, 'data.0', []);
-        if (empty($data['tracking_number'])) {
-            throw new RuntimeException('Sendcloud label response has no tracking number.');
-        }
-
-        if ($encoded = data_get($data, 'label.file')) {
-            $binary = base64_decode($encoded, true);
-            if ($binary && str_starts_with($binary, '%PDF')) {
-                Storage::disk('local')->put('sendcloud-labels/'.$order->id.'.pdf', $binary);
+            if ($order->payment_status !== 'paid' || $order->tracking_number) {
+                throw new RuntimeException('Only paid orders without labels can be shipped.');
             }
-        }
+            // International customs documents require HS codes, origin and export details.
+            // Until the merchant has supplied them, use Sendcloud's panel for non-EU labels.
+            if (! in_array($order->shipping_country_code, self::EU, true)) {
+                throw new RuntimeException('Étiquette hors UE : complétez les formalités douanières dans Sendcloud.');
+            }
+            if (! $order->sendcloud_order_id) {
+                $this->syncPaidOrder($order);
+                $order->refresh();
+            }
+            if (! $order->sendcloud_order_id) {
+                throw new RuntimeException('Order has not been accepted by Sendcloud.');
+            }
 
-        $order->forceFill([
-            'tracking_number' => $data['tracking_number'],
-            'tracking_url' => $data['tracking_url'] ?? null,
-            'sendcloud_parcel_id' => $data['parcel_id'] ?? null,
-            'sendcloud_shipment_id' => $data['shipment_id'] ?? null,
-            'status' => 'processing',
-        ])->save();
+            $result = $this->call('POST', '/orders/create-label-sync', [
+                'integration_id' => $this->integrationId(),
+                'sender_address_id' => 944950,
+                'order' => ['order_number' => $order->order_number, 'apply_shipping_rules' => false],
+                'ship_with' => [
+                    'type' => 'shipping_option_code',
+                    'properties' => [
+                        'shipping_option_code' => $order->shipping_option_code,
+                        'contract_id' => (int) $order->shipping_contract_id,
+                    ],
+                ],
+                'label_details' => ['mime_type' => 'application/pdf', 'dpi' => 72],
+            ]);
+
+            $data = data_get($result, 'data.0', []);
+            if (empty($data['tracking_number'])) {
+                throw new RuntimeException('Sendcloud label response has no tracking number.');
+            }
+
+            if ($encoded = data_get($data, 'label.file')) {
+                $binary = base64_decode($encoded, true);
+                if ($binary && str_starts_with($binary, '%PDF')) {
+                    Storage::disk('local')->put('sendcloud-labels/'.$order->id.'.pdf', $binary);
+                }
+            }
+
+            $order->forceFill([
+                'tracking_number' => $data['tracking_number'],
+                'tracking_url' => $data['tracking_url'] ?? null,
+                'sendcloud_parcel_id' => $data['parcel_id'] ?? null,
+                'sendcloud_shipment_id' => $data['shipment_id'] ?? null,
+                'status' => 'processing',
+            ])->save();
         } finally {
             $lock->release();
         }
