@@ -38,6 +38,30 @@
                 cartNotice: '',
                 shippingRequest: null,
                 shippingRevision: 0,
+                countries: @js($countries->toArray()),
+                countrySearch: '',
+                countryPickerOpen: false,
+                countryHighlight: 0,
+                get filteredCountries() {
+                    const normalize = value => String(value || '')
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+                    const term = normalize(this.countrySearch.trim());
+                    return this.countries.filter(country =>
+                        !term || normalize(country.name).includes(term) || country.code.toLowerCase().includes(term)
+                    );
+                },
+                selectCountry(country) {
+                    const changed = this.form.country !== country.code;
+                    this.form.country = country.code;
+                    this.countrySearch = country.name;
+                    this.countryPickerOpen = false;
+                    this.countryHighlight = 0;
+                    this.errors.country = null;
+                    if (changed) {
+                        this.form.zip = '';
+                        this.updateDeliveryCost();
+                    }
+                },
                 promoPercent: null,
                 promoError: '',
                 promoOpen: false,
@@ -76,14 +100,6 @@
 
                 init() {
                     this.$watch('$store.cart.items', () => this.updateDeliveryCost());
-                    this.$nextTick(() => {
-                        if (typeof Intl.DisplayNames === 'function') {
-                            const names = new Intl.DisplayNames(['fr'], { type: 'region' });
-                            this.$el.querySelectorAll('[data-country-option]').forEach(option => {
-                                option.textContent = names.of(option.value) || option.value;
-                            });
-                        }
-                    });
                     try {
                         const saved = JSON.parse(localStorage.getItem('bm_unpaid_order') || 'null');
                         if (saved?.number && saved?.url) this.savedOrder = saved;
@@ -460,25 +476,45 @@
                         </div>
 
                         <div class="mt-7 grid gap-x-4 gap-y-5 sm:grid-cols-2">
-                            <div class="group relative sm:col-span-2">
-                                <x-lucide-globe-2 class="pointer-events-none absolute left-4 top-4 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
-                                <select
-                                    x-model="form.country"
-                                    @change="updateDeliveryCost()"
-                                    class="w-full appearance-none rounded-xl border border-transparent bg-zinc-50 pl-11 py-3.5 pr-10 text-sm text-zinc-700 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
-                                    required
-                                >
-                                    <option value="" disabled>{{ __('Pays / zone de livraison') }}</option>
+                            <div class="relative sm:col-span-2"
+                                @click.outside="countryPickerOpen = false; countrySearch = countries.find(country => country.code === form.country)?.name || ''">
+                                <div class="group relative">
+                                    <x-lucide-globe-2 class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
+                                    <input type="text" x-model="countrySearch" autocomplete="off"
+                                        role="combobox" aria-controls="checkout-country-list" aria-autocomplete="list"
+                                        :aria-expanded="countryPickerOpen.toString()"
+                                        @focus="countryPickerOpen = true; countryHighlight = 0; if (form.country) countrySearch = ''"
+                                        @input="countryPickerOpen = true; countryHighlight = 0; if (form.country) { form.country = ''; updateDeliveryCost() }"
+                                        @keydown.arrow-down.prevent="countryHighlight = Math.min(countryHighlight + 1, Math.max(filteredCountries.length - 1, 0))"
+                                        @keydown.arrow-up.prevent="countryHighlight = Math.max(countryHighlight - 1, 0)"
+                                        @keydown.enter.prevent="if (filteredCountries[countryHighlight]) selectCountry(filteredCountries[countryHighlight])"
+                                        @keydown.escape.stop="countryPickerOpen = false; countrySearch = countries.find(country => country.code === form.country)?.name || ''"
+                                        placeholder="{{ __('Rechercher un pays…') }}"
+                                        class="w-full rounded-xl bg-zinc-50 py-3.5 pl-11 pr-10 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
+                                    >
+                                    <x-lucide-search class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                                </div>
 
-                                    @foreach (\App\Http\Controllers\SendcloudController::countries() as $code => $countryName)
-                                        <option value="{{ $code }}" data-country-option>{{ $countryName }}</option>
-                                    @endforeach
-                                </select>
-
-                                <x-lucide-chevron-down class="pointer-events-none absolute right-4 top-4 h-4 w-4 text-zinc-400" />
+                                <div x-show="countryPickerOpen" x-cloak id="checkout-country-list"
+                                    role="listbox"
+                                    class="absolute inset-x-0 top-full z-40 mt-2 max-h-64 overflow-y-auto rounded-xl bg-white p-1 shadow-xl">
+                                    <template x-for="(country, index) in filteredCountries" :key="country.code">
+                                        <button type="button" role="option" :aria-selected="(form.country === country.code).toString()"
+                                            @mouseenter="countryHighlight = index"
+                                            @click="selectCountry(country)"
+                                            class="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition"
+                                            :class="index === countryHighlight ? 'bg-zinc-100 text-zinc-900' : 'text-zinc-700 hover:bg-zinc-50'">
+                                            <span x-text="country.name"></span>
+                                            <span class="flex items-center gap-2">
+                                                <span class="text-[10px] text-zinc-400" x-text="country.code"></span>
+                                                <x-lucide-check x-show="form.country === country.code" class="h-3.5 w-3.5 text-bmlk-brand" />
+                                            </span>
+                                        </button>
+                                    </template>
+                                    <p x-show="filteredCountries.length === 0" class="px-3 py-4 text-center text-xs text-zinc-500">Aucun pays trouvé.</p>
+                                </div>
 
                                 <p x-show="errors.country" x-text="errors.country?.[0]" class="mt-1 text-xs text-red-500"></p>
-
                             </div>
 
                             <div>
