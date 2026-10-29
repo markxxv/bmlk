@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->validateCsrfTokens(except: ['stripe/webhook']);
+        $middleware->validateCsrfTokens(except: ['stripe/webhook', 'api/webhooks/sendcloud']);
         $middleware->redirectGuestsTo(fn (Request $request) => route('account.login'));
         $middleware->redirectUsersTo(fn (Request $request) => route('account.index'));
     })
