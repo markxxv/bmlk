@@ -31,6 +31,11 @@ Route::get('/api/delivery-cost/{code}', [ShopController::class, 'deliveryCost'])
     ->where('code', '[A-Za-z0-9-]+')
     ->name('api.delivery.cost');
 
+// Temporary Sendcloud endpoint: acknowledge connectivity tests and incoming events.
+// TODO: Verify Sendcloud-Signature and process parcel events before going live.
+Route::match(['get', 'post'], '/api/webhooks/sendcloud', fn () => response()->json(['status' => 'ok']))
+    ->name('sendcloud.webhook');
+
 Route::post('/stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
 
 Route::get('/order/recover', [ShopController::class, 'recoveryForm'])
