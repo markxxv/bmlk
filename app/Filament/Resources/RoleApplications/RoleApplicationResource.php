@@ -4,6 +4,8 @@ namespace App\Filament\Resources\RoleApplications;
 
 use App\Filament\Resources\RoleApplications\Pages;
 use App\Models\RoleApplication;
+use App\Models\User;
+use Closure;
 use BackedEnum;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
@@ -16,6 +18,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class RoleApplicationResource extends Resource
 {
@@ -43,6 +46,36 @@ class RoleApplicationResource extends Resource
                 ])->required()->native(false)->prefixIcon('lucide-check-circle'),
                 Textarea::make('message')->label('Customer message')->disabled()->dehydrated(false)->columnSpanFull(),
             ]),
+            Section::make('Partner statuses')->icon('lucide-badge-check')->columns(2)
+                ->visible(fn (?RoleApplication $record): bool => $record?->role === 'influencer')
+                ->schema([
+                    TextInput::make('influencer_code')->label('Permanent promo code')
+                        ->prefixIcon('lucide-ticket-percent')
+                        ->nullable()->minLength(4)->maxLength(24)
+                        ->rule('regex:/^[A-Za-z0-9_-]{4,24}$/')
+                        ->unique(table: User::class, ignorable: fn (?RoleApplication $record): ?User => $record?->user)
+                        ->rule(fn (?RoleApplication $record): Closure =>
+                            function (string $attribute, mixed $value, Closure $fail) use ($record): void {
+                                if (blank($value)) {
+                                    return;
+                                }
+
+                                $exists = User::query()
+                                    ->whereRaw('UPPER(influencer_code) = ?', [Str::upper(trim((string) $value))])
+                                    ->where('id', '!=', $record?->user_id)
+                                    ->exists();
+
+                                if ($exists) {
+                                    $fail('This promo code is already in use.');
+                                }
+                            })
+                        ->dehydrateStateUsing(fn (?string $state): ?string =>
+                            filled($state) ? Str::upper(trim($state)) : null),
+                    TextInput::make('influencer_discount')->label('Discount, %')
+                        ->prefixIcon('lucide-percent')
+                        ->numeric()->step(0.01)->minValue(0)->maxValue(95)
+                        ->required()->default(30),
+                ]),
         ]);
     }
 
