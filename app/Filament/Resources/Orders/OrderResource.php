@@ -143,6 +143,30 @@ class OrderResource extends Resource
                                     ->prefixIcon('lucide-truck')
                                     ->disabled()
                                     ->columnSpanFull(),
+                                TextInput::make('packaging_summary')
+                                    ->label('Shipping package')
+                                    ->prefixIcon('lucide-package')
+                                    ->formatStateUsing(function (?Order $record): string {
+                                        $parcel = $record?->shipping_parcel;
+                                        if (! is_array($parcel)) {
+                                            return '—';
+                                        }
+                                        $size = $parcel['dimensions'] ?? [];
+                                        $dimensions = implode(' × ', [
+                                            $size['length'] ?? '?',
+                                            $size['width'] ?? '?',
+                                            $size['height'] ?? '?',
+                                        ]);
+                                        return ($parcel['box_name'] ?? '—').' · '.$dimensions.' cm · '.($parcel['total_weight_g'] ?? '?').' g';
+                                    })
+                                    ->helperText(fn (?Order $record): ?string =>
+                                        data_get($record?->shipping_parcel, 'estimated')
+                                            ? 'Dimensions et poids estimés : vérifier le colis réel avant de créer une étiquette.'
+                                            : null
+                                    )
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->columnSpanFull(),
 
                                 TextInput::make('tracking_number')
                                     ->label('Tracking number')
