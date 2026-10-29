@@ -159,7 +159,7 @@ class SendcloudController extends Controller
         ];
     }
 
-    public function options(Collection|array $items, string $country, string $zip, string $city, string $address, float $subtotal): array
+    public function options(Collection|array $items, string $country, string $zip, ?string $city, float $subtotal): array
     {
         $zone = $this->zone($country);
         $parcel = $this->parcel($items);
@@ -171,12 +171,11 @@ class SendcloudController extends Controller
                     'city' => 'Lagny-sur-Marne', 'address_line_1' => 'Avenue du Beau Site',
                     'house_number' => '31',
                 ],
-                'to_address' => [
+                'to_address' => array_filter([
                     'country_code' => strtoupper($country),
-                    'postal_code' => $zip,
-                    'city' => $city,
-                    'address_line_1' => $address,
-                ],
+                    'postal_code' => trim($zip),
+                    'city' => $city !== null ? trim($city) : null,
+                ], fn (mixed $value): bool => $value !== null && $value !== ''),
                 'parcels' => [
                     ['dimensions' => $parcel['dimensions'], 'weight' => $parcel['weight']],
                 ],
@@ -245,8 +244,7 @@ class SendcloudController extends Controller
         $validated = $request->validate([
             'country' => ['required','string','size:2'],
             'zip' => ['required','string','max:30'],
-            'city' => ['required','string','max:120'],
-            'address' => ['required','string','max:1000'],
+            'city' => ['nullable','string','max:120'],
             'cart_items' => ['required','array','min:1'],
             'cart_items.*.product_id' => ['required','integer'],
             'cart_items.*.quantity' => ['required','integer','min:1','max:99'],
@@ -255,7 +253,7 @@ class SendcloudController extends Controller
         // Server revalidates prices and product options; never trust cart totals from JS.
         $items = app(ShopController::class)->normalizeItems($validated['cart_items']);
         $subtotal = round($items->sum(fn (array $item): float => $item['line_total']), 2);
-        $result = $this->options($items, strtoupper($validated['country']), $validated['zip'], $validated['city'], $validated['address'], $subtotal);
+        $result = $this->options($items, strtoupper($validated['country']), $validated['zip'], $validated['city'] ?? null, $subtotal);
 
         return response()->json([
             'options' => $result['options'],
