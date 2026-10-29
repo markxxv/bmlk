@@ -219,7 +219,6 @@
                             this.$store.cart.items = corrected;
                             this.$store.cart.save();
                             this.cartNotice = @js(__('Les variantes et les prix du panier ont été actualisés. Vérifiez votre sélection.'));
-                            return;
                         }
                         this.shippingOptions = data.options || [];
                         this.delivery = { free_from: data.free_from, free: data.free };
