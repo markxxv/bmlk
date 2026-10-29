@@ -15,6 +15,11 @@ return new class extends Migration
             $table->jsonb('description')->nullable();
             $table->jsonb('use')->nullable();
             $table->jsonb('price_label')->nullable();
+            $table->unsignedInteger('delivery_weight')->nullable(); // grams
+            $table->decimal('delivery_height', 8, 2)->nullable(); // cm
+            $table->decimal('delivery_depth', 8, 2)->nullable(); // cm
+            $table->decimal('delivery_length', 8, 2)->nullable(); // cm
+
             $table->jsonb('meta_title')->nullable();
             $table->jsonb('meta_description')->nullable();
             $table->timestamps();
