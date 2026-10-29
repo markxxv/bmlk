@@ -78,7 +78,7 @@ class ProductResource extends Resource
                                             ->icon('lucide-truck')
                                             ->schema(DeliveryFields::schema(true)),
                                     ])
-                                    ->contained(false),
+                                    ->contained(),
 
                                 Section::make('Media')
                                     ->icon('lucide-images')
