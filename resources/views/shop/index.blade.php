@@ -48,9 +48,9 @@
 
                 <div class="mt-3 grid gap-1 sm:mt-4 sm:gap-8 lg:grid-cols-12 lg:items-end">
                     <div class="lg:col-span-8">
-                        <p class="text-[10px] font-semibold uppercase tracking-widest text-bmlk-brand sm:text-xs" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                        <!-- <p class="text-[10px] font-semibold uppercase tracking-widest text-bmlk-brand sm:text-xs" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             {{ $currentCategory ? __('Collection BLACK MILK') : __('Catalogue professionnel') }}
-                        </p>
+                        </p> -->
 
                         <h1 class="mt-1 max-w-5xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:mt-4 sm:text-6xl lg:text-7xl" data-reveal-title data-reveal-title-duration="1">
                             {{ $pageTitle }}
