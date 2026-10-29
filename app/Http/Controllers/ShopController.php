@@ -553,19 +553,32 @@ class ShopController extends Controller
 
                 $selected = $selectedOptions->get($optionId);
 
-                // Single-choice options have no ambiguity and match the product-page default.
-                if (! is_array($selected) && $values->count() === 1) {
-                    $only = $values->first();
-                    $selected = is_array($only)
-                        ? ['quantity' => data_get($only, 'quantity')]
-                        : ['value' => (string) $only];
-                }
-
                 if (! is_array($selected)) {
-                    $name = $product->getTranslation('name', 'fr', false) ?: '#'.$product->id;
-                    throw ValidationException::withMessages([
-                        'cart_items' => __('Les options de « :product » ont changé. Ouvrez sa fiche et ajoutez-le à nouveau au panier.', ['product' => $name]),
-                    ]);
+                    // Old cart entries may have been saved before options were introduced
+                    // or their IDs changed. Preserve a matching old selection when unique.
+                    $matches = $values->filter(function (mixed $value) use ($selectedOptions): bool {
+                        return $selectedOptions->contains(function (mixed $old) use ($value): bool {
+                            if (! is_array($old)) {
+                                return false;
+                            }
+
+                            if (is_array($value)) {
+                                return data_get($old, 'quantity') !== null
+                                    && data_get($value, 'quantity') !== null
+                                    && (int) data_get($old, 'quantity') === (int) data_get($value, 'quantity');
+                            }
+
+                            return data_get($old, 'value') !== null
+                                && (string) data_get($old, 'value') === (string) $value;
+                        });
+                    });
+
+                    // The product page also selects its first choice by default.
+                    // The authoritative price will be read from the selected DB choice.
+                    $choice = $matches->count() === 1 ? $matches->first() : $values->first();
+                    $selected = is_array($choice)
+                        ? ['quantity' => data_get($choice, 'quantity')]
+                        : ['value' => (string) $choice];
                 }
                 $label = data_get($option, 'label.'.strtoupper(app()->getLocale()))
                     ?: data_get($option, 'label.FR')
@@ -599,6 +612,8 @@ class ShopController extends Controller
                         'value' => null,
                         'quantity' => (int) data_get($matched, 'quantity'),
                         'display' => data_get($matched, 'quantity').' ×',
+                        'key' => 'quantity:'.(data_get($matched, 'quantity') ?? 'none').':'.(data_get($matched, 'price.amount') ?? 'none'),
+                        'price' => $optionPrice !== null ? (float) $optionPrice : null,
                     ];
 
                     continue;
@@ -623,6 +638,8 @@ class ShopController extends Controller
                     'value' => (string) $matched,
                     'quantity' => null,
                     'display' => (string) $matched,
+                    'key' => 'value:'.(string) $matched,
+                    'price' => null,
                 ];
             }
 
