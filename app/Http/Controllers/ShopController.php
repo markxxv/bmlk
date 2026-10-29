@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -197,10 +196,6 @@ class ShopController extends Controller
     public function checkout(): View
     {
         return view('shop.checkout', [
-            'deliveries' => Delivery::query()
-                ->where('active', true)
-                ->orderBy('sort')
-                ->get(),
             'metaTitle' => __('Commande | BLACK MILK'),
             'metaDescription' => __('Finalisez votre commande BLACK MILK.'),
             'canonical' => route('checkout'),
