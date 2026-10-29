@@ -4,8 +4,8 @@
     class="relative z-50 px-3 pt-3 sm:px-5 sm:pt-5 lg:px-8 lg:pt-6"
 >
     <div class="mx-auto max-w-[1560px]">
-        <div class="relative rounded-full bg-white px-4 shadow-xl shadow-zinc-800/10 sm:px-5 lg:px-7">
-            <div class="grid min-h-20 grid-cols-[1fr_auto] items-center gap-4 lg:grid-cols-[1fr_auto_1fr]">
+        <div class="relative rounded-full bg-white px-3 shadow-xl shadow-zinc-800/10 sm:px-5 lg:px-7">
+            <div class="grid min-h-20 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 lg:grid-cols-[1fr_auto_1fr] lg:gap-4">
                 <nav class="hidden items-center gap-8 lg:flex" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
                     <a href="{{ route('shop.index') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
                         {{ __('Produits') }}
@@ -25,13 +25,13 @@
 
                 <a
                     href="{{ url('/') }}"
-                    class="flex min-w-0 items-center gap-3 justify-self-start lg:justify-self-center"
+                    class="flex min-w-0 items-center gap-2 justify-self-start sm:gap-3 lg:justify-self-center"
                     aria-label="{{ __('BLACK MILK') }}"
                 >
-                    <img src="/img/logo.png" alt="" class="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14">
+                    <img src="/img/logo.png" alt="" class="h-10 w-10 shrink-0 object-contain sm:h-14 sm:w-14">
 
                     <span class="min-w-0">
-                        <span class="block whitespace-nowrap font-serif text-xl font-medium leading-none tracking-widest text-zinc-900 sm:text-2xl">
+                        <span class="block whitespace-nowrap font-serif text-base font-medium leading-none tracking-wider text-zinc-900 sm:text-2xl sm:tracking-widest">
                             {{ __('BLACK MILK') }}
                         </span>
                         <span class="mt-1 block font-serif text-xs italic leading-none text-bmlk-brand sm:text-sm">
@@ -70,16 +70,16 @@
                     </button>
                 </div>
 
-                <div class="flex items-center justify-self-end gap-2 lg:hidden">
+                <div class="flex items-center justify-self-end gap-1 sm:gap-2 lg:hidden">
                     <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}"
-                        class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200"
+                        class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 max-[339px]:hidden"
                         aria-label="{{ __('Mon espace') }}">
                         <x-lucide-user-round class="h-4 w-4" />
                     </a>
                     <button
                         type="button"
                         @click="$store.cart.toggle()"
-                        class="inline-flex h-10 min-w-10 items-center justify-center gap-2 rounded-full border border-zinc-200 px-3 text-xs font-semibold"
+                        class="inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-full border border-zinc-200 px-2 text-xs font-semibold sm:gap-2 sm:px-3"
                         :aria-label="'{{ __('Panier') }} · ' + $store.cart.count"
                         data-reveal
                         data-reveal-y="8"
