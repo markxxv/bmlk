@@ -132,6 +132,7 @@
 
                 selectShipping(option) {
                     if (!option) return;
+                    this.shippingError = '';
                     const previouslySelected = this.form.shipping_option === option.code &&
                         Number(this.form.shipping_contract_id) === Number(option.contract_id);
                     this.form.shipping_option = option.code;
