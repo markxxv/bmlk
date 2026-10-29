@@ -132,6 +132,18 @@ class OrderResource extends Resource
                                     ->prefixIcon('lucide-mailbox')
                                     ->disabled(),
 
+                                TextInput::make('tracking_url')
+                                    ->label('Tracking URL')
+                                    ->prefixIcon('lucide-link')
+                                    ->disabled()
+                                    ->columnSpanFull(),
+
+                                TextInput::make('shipping_option_name')
+                                    ->label('Sendcloud shipping method')
+                                    ->prefixIcon('lucide-truck')
+                                    ->disabled()
+                                    ->columnSpanFull(),
+
                                 TextInput::make('tracking_number')
                                     ->label('Tracking number')
                                     ->prefixIcon('lucide-package-search')
