@@ -139,7 +139,33 @@ class SendcloudController extends Controller
         )->first();
 
         if (! $box) {
-            throw ValidationException::withMessages(['cart_items' => 'Aucun carton adapté à ce panier.']);
+            // Measured shipping boxes are preferred. If none fits, calculate a
+            // deliberately generous temporary parcel instead of blocking checkout.
+            // Do not use dimensions sent by the browser.
+            $packingVolume = $volume * 1.65;
+            $cubeSide = pow($packingVolume, 1 / 3);
+            $length = (int) ceil(max($largest[0] + 6, $cubeSide * 1.20));
+            $width = (int) ceil(max($largest[1] + 6, sqrt($packingVolume / $length) * 1.20));
+            $height = (int) ceil(max($largest[2] + 6, $packingVolume / ($length * $width) + 4));
+            $packingWeight = max(250, (int) ceil($weight * 0.25));
+            $totalWeight = $weight + $packingWeight;
+
+            return [
+                'box_id' => null,
+                'box_name' => 'Emballage estimé',
+                'estimated' => true,
+                'total_weight_g' => $totalWeight,
+                'dimensions' => [
+                    'length' => (string) $length,
+                    'width' => (string) $width,
+                    'height' => (string) $height,
+                    'unit' => 'cm',
+                ],
+                'weight' => [
+                    'value' => number_format($totalWeight / 1000, 3, '.', ''),
+                    'unit' => 'kg',
+                ],
+            ];
         }
 
         return [
