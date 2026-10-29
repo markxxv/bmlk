@@ -19,12 +19,23 @@
                     message: '',
                     privacy: false,
                     promo_code: '',
+                    shipping_option: '',
+                    shipping_contract_id: '',
+                    shipping_quoted_price: '',
+                    service_point_id: '',
                 },
                 errors: {},
                 isSubmitting: false,
                 paymentRetryUrl: null,
                 savedOrder: null,
                 deliveryCost: 0,
+                shippingOptions: [],
+                servicePoints: [],
+                isCalculating: false,
+                isLoadingPoints: false,
+                shippingError: '',
+                shippingRequest: null,
+                shippingRevision: 0,
                 promoPercent: null,
                 promoError: '',
                 promoOpen: false,
@@ -62,6 +73,15 @@
                 },
 
                 init() {
+                    this.$watch('$store.cart.items', () => this.updateDeliveryCost());
+                    this.$nextTick(() => {
+                        if (typeof Intl.DisplayNames === 'function') {
+                            const names = new Intl.DisplayNames(['fr'], { type: 'region' });
+                            this.$el.querySelectorAll('[data-country-option]').forEach(option => {
+                                option.textContent = names.of(option.value) || option.value;
+                            });
+                        }
+                    });
                     try {
                         const saved = JSON.parse(localStorage.getItem('bm_unpaid_order') || 'null');
                         if (saved?.number && saved?.url) this.savedOrder = saved;
@@ -86,66 +106,135 @@
                 },
                 delivery: null,
 
+                get selectedShipping() {
+                    return this.shippingOptions.find(option =>
+                        option.code === this.form.shipping_option &&
+                        Number(option.contract_id) === Number(this.form.shipping_contract_id)
+                    ) || null;
+                },
+
                 get isFreeDelivery() {
-                    return this.delivery?.free_from !== null
-                        && this.delivery?.free_from !== undefined
-                        && Number(this.$store.cart.totalPrice) >= Number(this.delivery.free_from);
+                    return !!this.delivery?.free && this.selectedShipping?.type !== 'express';
                 },
 
                 get totalWithDelivery() {
-                    return Number(this.$store.cart.totalPrice)
-                        - this.discountPreview
-                        + (this.isFreeDelivery ? 0 : Number(this.deliveryCost || 0));
+                    return Number(this.$store.cart.totalPrice) - this.discountPreview + Number(this.deliveryCost || 0);
                 },
 
                 get deliveryCostDisplay() {
-                    if (! this.form.country) {
-                        return '—';
-                    }
-
-                    if (this.isFreeDelivery) {
-                        return @js(__('Offerte'));
-                    }
-
-                    return this.formatPrice(this.deliveryCost);
+                    if (!this.selectedShipping) return '—';
+                    return this.isFreeDelivery ? @js(__('Offerte')) : this.formatPrice(this.deliveryCost);
                 },
 
                 formatPrice(value) {
-                    return new Intl.NumberFormat('fr-FR', {
-                        style: 'currency',
-                        currency: 'EUR',
-                    }).format(Number(value || 0));
+                    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(Number(value || 0));
+                },
+
+                selectShipping(option) {
+                    if (!option) return;
+                    const previouslySelected = this.form.shipping_option === option.code &&
+                        Number(this.form.shipping_contract_id) === Number(option.contract_id);
+                    this.form.shipping_option = option.code;
+                    this.form.shipping_contract_id = option.contract_id;
+                    this.form.shipping_quoted_price = option.price;
+                    this.deliveryCost = Number(option.price);
+                    if (option.type !== 'pickup') {
+                        this.form.service_point_id = '';
+                        this.servicePoints = [];
+                    } else if (!previouslySelected || !this.servicePoints.length) {
+                        this.form.service_point_id = '';
+                        this.loadPoints();
+                    }
                 },
 
                 async updateDeliveryCost() {
-                    this.errors.country = null;
+                    this.shippingRevision++;
+                    const revision = this.shippingRevision;
+                    this.shippingRequest?.abort();
+                    this.shippingOptions = [];
                     this.delivery = null;
                     this.deliveryCost = 0;
+                    this.shippingError = '';
+                    this.form.shipping_option = '';
+                    this.form.shipping_contract_id = '';
+                    this.form.shipping_quoted_price = '';
+                    this.form.service_point_id = '';
+                    this.servicePoints = [];
 
-                    if (! this.form.country) {
+                    if (!this.form.country || !this.form.zip.trim() || !this.form.city.trim() ||
+                        !this.form.address.trim() || !this.$store.cart.items.length) {
+                        this.isCalculating = false;
                         return;
                     }
 
+                    this.isCalculating = true;
+                    this.shippingRequest = new AbortController();
                     try {
-                        const response = await fetch(`/api/delivery-cost/${this.form.country}`, {
+                        const response = await fetch('/api/sendcloud/quote', {
+                            method: 'POST',
+                            signal: this.shippingRequest.signal,
                             headers: {
                                 'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                             },
+                            body: JSON.stringify({
+                                country: this.form.country,
+                                zip: this.form.zip,
+                                city: this.form.city,
+                                address: this.form.address,
+                                cart_items: this.$store.cart.items,
+                            }),
                         });
-
                         const data = await response.json();
-
-                        if (! response.ok || data.success !== true) {
-                            this.errors.country = [data.message || @js(__('Livraison indisponible.'))];
-
+                        if (revision !== this.shippingRevision) return;
+                        if (!response.ok) {
+                            this.shippingError = Object.values(data.errors || {})[0]?.[0] ||
+                                data.message || @js(__('Impossible de calculer la livraison.'));
                             return;
                         }
-
-                        this.delivery = data;
-                        this.deliveryCost = Number(data.price || 0);
+                        this.shippingOptions = data.options || [];
+                        this.delivery = { free_from: data.free_from, free: data.free };
+                        this.selectShipping(this.shippingOptions.find(option => option.type === 'home') ||
+                            this.shippingOptions[0]);
                     } catch (error) {
-                        this.errors.country = [@js(__('Impossible de calculer la livraison.'))];
+                        if (error.name !== 'AbortError' && revision === this.shippingRevision) {
+                            this.shippingError = @js(__('Impossible de calculer la livraison.'));
+                        }
+                    } finally {
+                        if (revision === this.shippingRevision) this.isCalculating = false;
+                    }
+                },
+
+                async loadPoints() {
+                    const option = this.selectedShipping;
+                    if (!option || option.type !== 'pickup') return;
+                    const revision = this.shippingRevision;
+                    this.isLoadingPoints = true;
+                    this.servicePoints = [];
+                    try {
+                        const query = new URLSearchParams({
+                            country: this.form.country,
+                            zip: this.form.zip,
+                            city: this.form.city,
+                            carrier: option.carrier_code,
+                        });
+                        const response = await fetch('/api/sendcloud/points?' + query, {
+                            headers: { 'Accept': 'application/json' },
+                        });
+                        const data = await response.json();
+                        if (revision !== this.shippingRevision || this.selectedShipping?.code !== option.code) return;
+                        if (!response.ok) throw new Error();
+                        this.servicePoints = data.points || [];
+                        if (!this.servicePoints.length) {
+                            this.shippingError = @js(__('Aucun point relais trouvé à proximité.'));
+                        }
+                    } catch (error) {
+                        if (revision === this.shippingRevision) {
+                            this.shippingError = @js(__('Impossible de charger les points relais.'));
+                        }
+                    } finally {
+                        if (revision === this.shippingRevision) this.isLoadingPoints = false;
                     }
                 },
 
@@ -155,6 +244,11 @@
                     }
 
                     this.errors = {};
+                    if (!this.paymentRetryUrl && (this.isCalculating || !this.selectedShipping ||
+                        (this.selectedShipping.type === 'pickup' && !this.form.service_point_id))) {
+                        this.errors.shipping_option = [@js(__('Choisissez un mode de livraison et un point relais si nécessaire.'))];
+                        return;
+                    }
                     this.isSubmitting = true;
 
                     if (this.paymentRetryUrl) {
@@ -349,10 +443,8 @@
                                 >
                                     <option value="" disabled>{{ __('Pays / zone de livraison') }}</option>
 
-                                    @foreach ($deliveries as $delivery)
-                                        <option value="{{ $delivery->code }}">
-                                            {{ $delivery->name }}
-                                        </option>
+                                    @foreach (\App\Http\Controllers\SendcloudController::countries() as $code => $countryName)
+                                        <option value="{{ $code }}" data-country-option>{{ $countryName }}</option>
                                     @endforeach
                                 </select>
 
@@ -360,11 +452,6 @@
 
                                 <p x-show="errors.country" x-text="errors.country?.[0]" class="mt-1 text-xs text-red-500"></p>
 
-                                <div x-show="delivery" class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-zinc-400">
-                                    <span x-text="delivery?.carrier"></span>
-                                    <span x-show="delivery?.delay">·</span>
-                                    <span x-text="delivery?.delay"></span>
-                                </div>
                             </div>
 
                             <div>
@@ -373,6 +460,7 @@
                                     <input
                                         type="text"
                                         x-model="form.city"
+                                        @input.debounce.650ms="updateDeliveryCost()"
                                         placeholder="{{ __('Ville') }}"
                                         class="w-full rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                         required
@@ -387,6 +475,8 @@
                                     <input
                                         type="text"
                                         x-model="form.zip"
+                                        @input.debounce.650ms="updateDeliveryCost()"
+                                        required
                                         placeholder="{{ __('Code postal') }}"
                                         class="w-full rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                     >
@@ -399,6 +489,7 @@
                                     <x-lucide-map-pin class="pointer-events-none absolute left-4 top-4.5 h-4 w-4 text-zinc-400 transition-colors group-focus-within:text-bmlk-brand" aria-hidden="true" />
                                     <textarea
                                         x-model="form.address"
+                                        @input.debounce.650ms="updateDeliveryCost()"
                                         rows="3"
                                         placeholder="{{ __('Adresse complète') }}"
                                         class="w-full resize-none rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
@@ -422,6 +513,59 @@
                         </div>
                     </section>
 
+                    <section class="border-b border-zinc-100 py-7 sm:py-8">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F6ECEE] text-bmlk-brand">
+                                <x-lucide-truck class="h-4 w-4" />
+                            </span>
+                            <h2 class="font-serif text-2xl font-medium tracking-tight text-zinc-900">Mode de livraison</h2>
+                        </div>
+                        <p x-show="!form.country || !form.zip || !form.city || !form.address"
+                           class="mt-4 text-xs text-zinc-500">Renseignez votre adresse pour afficher les tarifs.</p>
+                        <p x-show="isCalculating" class="mt-4 text-xs text-zinc-500">Calcul des tarifs Sendcloud…</p>
+                        <p x-show="shippingError" x-text="shippingError" class="mt-4 text-xs text-red-500"></p>
+                        <p x-show="errors.shipping_option" x-text="errors.shipping_option?.[0]" class="mt-2 text-xs text-red-500"></p>
+                        <div class="mt-5 space-y-2" x-show="shippingOptions.length">
+                            <template x-for="option in shippingOptions" :key="option.code + option.contract_id">
+                                <button type="button" @click="selectShipping(option)"
+                                    class="flex w-full items-center gap-3 rounded-xl bg-zinc-50 px-4 py-3 text-left transition hover:bg-zinc-100"
+                                    :class="selectedShipping?.code === option.code && selectedShipping?.contract_id === option.contract_id ? 'ring-1 ring-bmlk-brand' : ''">
+                                    <span class="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-zinc-300">
+                                        <span x-show="selectedShipping?.code === option.code && selectedShipping?.contract_id === option.contract_id"
+                                            class="h-2 w-2 rounded-full bg-bmlk-brand"></span>
+                                    </span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block text-sm font-medium text-zinc-800" x-text="option.carrier + ' · ' + option.name"></span>
+                                        <span class="block text-[11px] text-zinc-500"
+                                            x-text="option.type === 'pickup' ? 'Point relais' : option.type === 'express' ? 'Express' : 'À domicile'"></span>
+                                    </span>
+                                    <span class="shrink-0 text-sm font-semibold text-zinc-800"
+                                        x-text="option.price === 0 ? 'Offerte' : formatPrice(option.price)"></span>
+                                </button>
+                            </template>
+                        </div>
+                        <div x-show="selectedShipping?.type === 'pickup'" class="mt-4 space-y-2">
+                            <p class="text-xs font-medium text-zinc-700">Choisissez un point relais</p>
+                            <p x-show="isLoadingPoints" class="text-xs text-zinc-500">Recherche des points relais…</p>
+                            <template x-for="point in servicePoints" :key="point.id">
+                                <button type="button" @click="form.service_point_id = point.id"
+                                    class="flex w-full gap-3 rounded-lg bg-zinc-50 px-3 py-3 text-left hover:bg-zinc-100">
+                                    <x-lucide-map-pin class="mt-0.5 h-4 w-4 shrink-0 text-bmlk-brand" />
+                                    <span class="min-w-0 flex-1 text-xs">
+                                        <span class="block font-medium" x-text="point.name"></span>
+                                        <span class="block text-zinc-500" x-text="point.address"></span>
+                                    </span>
+                                    <x-lucide-check x-show="String(form.service_point_id) === String(point.id)" class="h-4 w-4 shrink-0 text-bmlk-brand" />
+                                </button>
+                            </template>
+                            <p x-show="errors.service_point_id" x-text="errors.service_point_id?.[0]" class="text-xs text-red-500"></p>
+                        </div>
+                        <p x-show="delivery?.free_from && !isFreeDelivery"
+                           class="mt-3 text-[11px] text-zinc-500">
+                            Livraison standard offerte dès <span x-text="formatPrice(delivery?.free_from)"></span>.
+                        </p>
+                    </section>
+
                     <section class="pt-8 sm:pt-10">
                         <label class="flex items-start gap-3 text-sm leading-6 text-zinc-600">
                             <input
@@ -440,7 +584,7 @@
 
                         <button
                             type="submit"
-                            :disabled="isSubmitting || ($store.cart.items.length === 0 && !paymentRetryUrl)"
+                            :disabled="isSubmitting || isCalculating || ($store.cart.items.length === 0 && !paymentRetryUrl) || (!paymentRetryUrl && !selectedShipping)"
                             class="mt-7 flex w-full items-center justify-center rounded-full bg-bmlk-brand px-6 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#945763] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bmlk-brand disabled:cursor-not-allowed disabled:bg-zinc-300"
                         >
                             <span x-show="!isSubmitting && !paymentRetryUrl">{{ __('Payer la commande') }}</span>
