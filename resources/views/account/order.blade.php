@@ -6,6 +6,20 @@
     <a href="{{ route('account.index') }}" class="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-bmlk-brand"><x-lucide-arrow-left class="h-4 w-4" />{{ __('Mes commandes') }}</a>
     <h1 class="mt-5 font-serif text-3xl text-zinc-900">{{ $order->order_number }}</h1>
     <p class="mt-2 text-sm text-zinc-500">{{ $order->payment_status === 'paid' ? __('Paiement confirmé') : __('Paiement en attente') }}</p>
+    @if (filled($order->shipping_option_name))
+        <p class="mt-3 text-xs text-zinc-500"><x-lucide-truck class="mr-1 inline h-3.5 w-3.5 text-bmlk-brand" />{{ $order->shipping_option_name }}</p>
+        @if ($order->service_point_name)
+            <p class="mt-1 text-xs text-zinc-500">{{ $order->service_point_name }} · {{ $order->service_point_address }}</p>
+        @endif
+    @endif
+    @if (filled($order->tracking_number))
+        <div class="mt-4 rounded-xl bg-zinc-50 p-4 text-sm">
+            <div class="flex items-center gap-2"><x-lucide-package-check class="h-4 w-4 text-bmlk-brand" />{{ __('Numéro de suivi') }} : <strong>{{ $order->tracking_number }}</strong></div>
+            @if (filled($order->tracking_url))
+                <a href="{{ $order->tracking_url }}" target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex items-center gap-1 text-bmlk-brand hover:underline">{{ __('Suivre mon colis') }}<x-lucide-external-link class="h-3 w-3" /></a>
+            @endif
+        </div>
+    @endif
     <div class="mt-6 divide-y divide-zinc-100">
         @foreach ($order->items as $item)
             <div class="flex items-center gap-4 py-4">
