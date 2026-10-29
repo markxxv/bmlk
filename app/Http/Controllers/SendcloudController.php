@@ -403,6 +403,11 @@ class SendcloudController extends Controller
         if ($order->payment_status !== 'paid' || $order->tracking_number) {
             throw new RuntimeException('Only paid orders without labels can be shipped.');
         }
+        // International customs documents require HS codes, origin and export details.
+        // Until the merchant has supplied them, use Sendcloud's panel for non-EU labels.
+        if (! in_array($order->shipping_country_code, self::EU, true)) {
+            throw new RuntimeException('Étiquette hors UE : complétez les formalités douanières dans Sendcloud.');
+        }
         if (! $order->sendcloud_order_id) {
             $this->syncPaidOrder($order);
             $order->refresh();
@@ -474,7 +479,7 @@ class SendcloudController extends Controller
             ->when(empty($parcel['order_number']), fn ($q) => $q->where('sendcloud_parcel_id', $parcel['id'] ?? -1))
             ->first();
 
-        if ($order && $order->payment_status === 'paid') {
+        if ($order && $order->payment_status === 'paid' && $order->status !== 'cancelled') {
             $timestamp = (int) ($event['carrier_status_change_timestamp'] ?? $event['timestamp'] ?? 0);
             if ($timestamp > (int) ($order->sendcloud_event_at ?? 0)) {
                 $message = strtolower((string) data_get($parcel, 'status.message', ''));
