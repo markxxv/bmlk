@@ -200,22 +200,22 @@
                 <div class="flex items-center p-8 sm:p-10 lg:p-14 xl:p-16">
                     <div class="max-w-xl">
                         <p class="text-xs font-semibold uppercase tracking-widest text-zinc-700" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
-                            {{ __('La maître derrière la marque') }}
+                            {{ __('La fondatrice de Blackmilk') }}
                         </p>
 
                         <h2 class="mt-5 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl" data-reveal-title data-reveal-title-duration="1" data-reveal-title-stagger="0.08">
-                            <span class="inline-block">{{ __('Née') }}</span>
-                            <span class="inline-block italic text-white">{{ __('de la') }}</span>
-                            <span class="inline-block">{{ __('pratique') }}</span>
+                            <span class="inline-block">{{ __('L’art') }}</span>
+                            <span class="inline-block italic text-white">{{ __('du') }}</span>
+                            <span class="inline-block">{{ __('savoir-faire') }}</span>
                         </h2>
 
                         <div class="mt-7 space-y-5 text-base leading-7 text-zinc-700 sm:text-lg" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.8" data-blur-y="14" data-blur-pixels="7">
                             <p data-blur-reveal-item>
-                                {{ __('Elena Smirnova a développé une méthode révolutionnaire de manucure à la cire et formulé chaque produit pour qu’il tienne ses promesses en cabine. Ses formules HEMA-free sont utilisées par des centaines de maîtres dans plus de 50 pays.') }}
+                                {{ __('Créatrice d’une méthode inédite de manucure à la cire, Elena Smirnova formule des produits pensés pour le quotidien des prothésistes ongulaires. Ses gels et soins sans HEMA ont déjà séduit des centaines de professionnelles à travers plus de 50 pays.') }}
                             </p>
 
                             <p data-blur-reveal-item>
-                                {{ __('Chaque référence est testée en conditions réelles avant d’arriver dans ta commande.') }}
+                                {{ __('Chaque produit est testé et approuvé avant d’être proposé à la vente.') }}
                             </p>
                         </div>
 
@@ -227,7 +227,7 @@
                             data-reveal-duration="0.75"
                             data-reveal-delay="0.18"
                         >
-                            {{ __('Notre histoire') }}
+                            {{ __('Découvrir son histoire') }}
                         </a>
                     </div>
                 </div>
