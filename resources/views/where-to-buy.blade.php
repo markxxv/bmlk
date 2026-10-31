@@ -14,16 +14,16 @@
                         </div>
 
                         <h1 class="mt-6 max-w-5xl font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
-                            <span class="inline-block">{{ __('Trouve') }}</span>
+                            <span class="inline-block">{{ __('Trouvez') }}</span>
                             <span class="inline-block italic text-white">{{ __('BLACK MILK') }}</span>
-                            <span class="inline-block">{{ __('près de toi') }}</span>
+                            <span class="inline-block">{{ __('près de chez vous') }}</span>
                         </h1>
                     </div>
 
                     <div class="flex items-end lg:col-span-4">
                         <div class="max-w-md">
                             <p class="text-base leading-7 text-zinc-800 sm:text-lg" data-reveal data-reveal-y="16" data-reveal-duration="0.8" data-reveal-delay="0.14">
-                                {{ __('Commande dans ta langue, paie dans ta monnaie et reçois ta commande plus vite auprès de nos représentants et revendeurs officiels.') }}
+                                {{ __('Profitez d\'une livraison plus rapide et d\'un service local auprès de nos revendeurs et partenaires agréés.') }}
                             </p>
 
                             <div class="mt-8 flex flex-wrap gap-x-8 gap-y-3 border-t border-[#C98792] pt-5" data-blur-reveal data-blur-stagger="0.08" data-blur-duration="0.7" data-blur-y="10" data-blur-pixels="5">
