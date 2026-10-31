@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderTelegramNotification;
 use App\Models\User;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -296,8 +297,8 @@ class StripeController extends Controller
                 ]);
 
                 if ($updated === 1) {
-                    // Register once at verified payment. The hourly cron sends
-                    // the initial Telegram message and pending reminders.
+                    // Register once at verified payment. An immediate attempt
+                    // follows; cron retries failures and sends daily reminders.
                     OrderTelegramNotification::query()->firstOrCreate(['order_id' => $order->id]);
                 }
 
@@ -305,9 +306,25 @@ class StripeController extends Controller
             });
             if ($changed) {
                 $this->createCustomerForPaidOrder($order->fresh());
-                // Sendcloud upsert is idempotent and does not purchase a shipping label.
-                // Defer until HTTP response has been sent, keeping Stripe webhook responsive.
+                // Immediately notify staff after the response has been sent.
+                // Failure leaves the DB entry unsent for the hourly retry.
                 $paidOrderId = $order->id;
+                app()->terminating(static function () use ($paidOrderId): void {
+                    try {
+                        Artisan::call('orders:telegram-notifications', ['--order' => $paidOrderId]);
+                    } catch (Throwable $e) {
+                        Log::error('Immediate Telegram order notification failed.', [
+                            'order_id' => $paidOrderId,
+                            'error' => str_replace(
+                                (string) config('services.telegram.bot_token'),
+                                '[REDACTED]',
+                                $e->getMessage(),
+                            ),
+                        ]);
+                    }
+                });
+
+                // Sendcloud upsert remains separate and does not buy a label.
                 app()->terminating(static function () use ($paidOrderId): void {
                     app(SendcloudController::class)->syncPaidOrder(Order::findOrFail($paidOrderId));
                 });

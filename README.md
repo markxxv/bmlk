@@ -403,9 +403,9 @@ Send a new verification or password-reset email to check the styling. Previously
 ## Telegram notifications for paid orders
 
 The verified Stripe payment transition creates exactly one row in `order_telegram_notifications` per order.
-An hourly Artisan command sends the first message for each new paid order. It sends a reminder every **24 hours** while `payment_status=paid` and the order `status=pending`. The reminders stop when the fulfillment status changes. Unpaid orders and orders paid before this feature was deployed are not automatically enrolled.
+Immediately after the Stripe HTTP response, Laravel attempts the **first Telegram notification** for a newly paid order, without waiting for cron. The hourly Artisan command retries unsuccessful first sends and sends a clearly identified **forgotten/unprepared order reminder every 24 hours** while `payment_status=paid` and the order `status=pending`. Reminders stop when fulfillment status changes. Unpaid orders and orders paid before this feature was deployed are not automatically enrolled.
 
-The database records `first_sent_at`, `last_sent_at` and a short-lived `claimed_at` sending lock. Telegram errors leave the notification eligible for retry on the next hourly run. Messages contain the order number, customer, item count, total, status and a Filament admin link; never the private customer order token.
+The database records `first_sent_at`, `last_sent_at` and a short-lived `claimed_at` sending lock. Telegram errors leave the notification eligible for retry on the next hourly run. Messages include each ordered product, saved variants, quantities, prices, discounts, customer contact details, full shipping destination, pickup point when applicable, delivery method, customer note, and totals. They link to the authenticated order page on the store website as **Voir la commande sur le site** (without mentioning framework names), never exposing the private customer order token.
 
 ### 1. Create a Telegram bot and get the chat ID
 
@@ -437,7 +437,7 @@ Add this **separate hourly entry** using `crontab -e` (replace the project path)
 0 * * * * cd /var/www/blackmilk && php artisan orders:telegram-notifications >> storage/logs/telegram-notifications.log 2>&1
 ```
 
-The Telegram command sends directly; it needs no queue worker or Supervisor. New paid orders are normally reported at the next top-of-hour cron run.
+The Telegram command sends directly; it needs no queue worker or Supervisor. New paid orders are reported immediately after payment confirmation in the same request lifecycle, after the Stripe HTTP response. Cron only retries first sends if needed and checks for daily reminders.
 
 ### 3. Verify
 

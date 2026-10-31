@@ -74,6 +74,92 @@ class OrderTelegramNotificationsTest extends TestCase
         $this->assertNotNull($notification->fresh()->first_sent_at);
     }
 
+
+    public function test_immediate_send_includes_products_shipping_address_and_manager_link(): void
+    {
+        Http::fake(['https://api.telegram.org/*' => Http::response(['ok' => true])]);
+        $order = $this->order('paid');
+        $order->update([
+            'access_token' => 'secret-private-token-should-not-leak',
+            'last_name' => 'Martin',
+            'email' => 'marie@example.com',
+            'address' => '10 Rue des Fleurs',
+            'zip' => '75003',
+            'shipping_option_name' => 'Colissimo — domicile',
+            'service_point_id' => 42,
+            'service_point_name' => 'Point relais central',
+            'service_point_address' => '12 Rue de Paris',
+            'message' => 'Livrer après 15h',
+            'promo_code' => 'WELCOME',
+            'discount_amount' => 3,
+            'items' => [
+                [
+                    'name' => 'Gel <Rose> & Milk',
+                    'quantity' => 2,
+                    'unit_price' => 12.00,
+                    'line_total' => 24.00,
+                    'options' => [['label' => 'Couleur', 'display' => 'Rouge & noir']],
+                ],
+                [
+                    'name' => 'Lime à ongles',
+                    'quantity' => 1,
+                    'unit_price' => 6.00,
+                    'line_total' => 6.00,
+                ],
+            ],
+            'subtotal' => 30,
+            'delivery_cost' => 5,
+            'total_amount' => 32,
+        ]);
+
+        $notification = OrderTelegramNotification::query()->create(['order_id' => $order->id]);
+
+        $this->artisan('orders:telegram-notifications', ['--order' => $order->id])->assertSuccessful();
+
+        Http::assertSent(function ($request) use ($order): bool {
+            $text = $request['text'];
+
+            return str_contains($text, 'Gel &lt;Rose&gt; &amp; Milk')
+                && str_contains($text, 'Rouge &amp; noir')
+                && str_contains($text, 'Lime à ongles')
+                && str_contains($text, '2 ×')
+                && str_contains($text, '10 Rue des Fleurs')
+                && str_contains($text, '75003 Paris')
+                && str_contains($text, 'Colissimo')
+                && str_contains($text, 'Point relais central')
+                && str_contains($text, 'Livrer après 15h')
+                && str_contains($text, 'WELCOME')
+                && str_contains($text, 'Total payé')
+                && str_contains($text, 'Voir la commande sur le site')
+                && str_contains($text, '/admin/orders/'.$order->id.'/edit')
+                && ! str_contains($text, 'Ouvrir dans Filament')
+                && ! str_contains($text, (string) $order->access_token);
+        });
+
+        $this->assertNotNull($notification->fresh()->first_sent_at);
+        $this->artisan('orders:telegram-notifications', ['--order' => $order->id])->assertSuccessful();
+        Http::assertSentCount(1);
+    }
+
+    public function test_daily_message_explicitly_says_forgotten_order(): void
+    {
+        Http::fake(['https://api.telegram.org/*' => Http::response(['ok' => true])]);
+        $order = $this->order('paid');
+
+        OrderTelegramNotification::query()->create([
+            'order_id' => $order->id,
+            'first_sent_at' => now()->subDays(2),
+            'last_sent_at' => now()->subHours(25),
+        ]);
+
+        $this->artisan('orders:telegram-notifications')->assertSuccessful();
+
+        Http::assertSent(fn ($request): bool =>
+            str_contains($request['text'], 'RAPPEL — Commande oubliée')
+            && str_contains($request['text'], 'sa préparation n’a toujours pas commencé')
+        );
+    }
+
     private function order(string $paymentStatus): Order
     {
         return Order::query()->create([
