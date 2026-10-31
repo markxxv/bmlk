@@ -565,13 +565,12 @@
                 </p>
 
                 <h2 class="mt-5 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl" data-reveal-title data-reveal-title-duration="1" data-reveal-title-stagger="0.08">
-                    <span class="inline-block">{{ __('Reste') }}</span>
-                    <span class="inline-block italic text-bmlk-brand">{{ __('au') }}</span>
-                    <span class="inline-block">{{ __('courant') }}</span>
+                    <span class="inline-block">{{ __('Restez') }}</span>
+                    <span class="inline-block italic text-bmlk-brand">{{ __('informée') }}</span>
                 </h2>
 
                 <p class="mx-auto mt-5 max-w-2xl text-base leading-7 text-zinc-600 sm:text-lg" data-reveal data-reveal-y="16" data-reveal-duration="0.8" data-reveal-delay="0.14">
-                    {{ __('Nouvelles teintes, éditions limitées et conseils de la maître, directement dans ta boîte mail.') }}
+                    {{ __('Nouveautés, éditions limitées et techniques professionnelles, directement dans votre boîte mail.') }}
                 </p>
 
                 <form
