@@ -109,29 +109,29 @@
         <section class="px-3 pb-8 pt-4 sm:px-5 sm:pb-10 lg:px-8 lg:pb-12">
             <div class="mx-auto max-w-[1560px]">
                 <div class="grid overflow-hidden rounded-3xl bg-[#EFDDE0] lg:grid-cols-12">
-                    <div class="px-7 py-10 sm:px-10 sm:py-12 lg:col-span-8 lg:px-14 lg:py-14 xl:px-16">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
-                            {{ __('Développe BLACK MILK dans ta région') }}
+                    <div class="px-5 pb-4 pt-7 sm:px-10 sm:py-12 lg:col-span-7 lg:px-14 lg:py-14 xl:px-16">
+                        <p class="text-[10px] font-semibold uppercase tracking-widest text-bmlk-brand sm:text-xs" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                            {{ __('Devenez distributeur local') }}
                         </p>
 
-                        <h2 class="mt-4 max-w-3xl font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl" data-reveal-title data-reveal-title-duration="0.95" data-reveal-title-stagger="0.08">
-                            <span class="inline-block">{{ __('Ton pays') }}</span>
-                            <span class="inline-block italic text-bmlk-brand">{{ __('n’est pas') }}</span>
+                        <h2 class="mt-3 max-w-3xl font-serif text-3xl font-medium leading-none tracking-tight text-zinc-900 sm:mt-4 sm:text-4xl lg:text-5xl" data-reveal-title data-reveal-title-duration="0.95" data-reveal-title-stagger="0.08">
+                            <span class="inline-block">{{ __('Votre pays') }}</span>
+                            <span class="inline-block italic text-bmlk-brand">{{ __('ne figure pas') }}</span>
                             <span class="inline-block">{{ __('dans la liste ?') }}</span>
                         </h2>
                     </div>
 
-                    <div class="flex flex-col justify-center px-7 pb-10 sm:px-10 sm:pb-12 lg:col-span-4 lg:px-14 lg:py-14" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.8" data-blur-y="14" data-blur-pixels="6">
-                        <p class="text-base leading-7 text-zinc-600" data-blur-reveal-item>
-                            {{ __('Deviens représentant officiel BLACK MILK dans ta région et développe ton activité avec une marque utilisée dans plus de 50 pays.') }}
+                    <div class="flex flex-col justify-center px-5 pb-7 sm:px-10 sm:pb-12 lg:col-span-5 lg:px-14 lg:py-14" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.8" data-blur-y="14" data-blur-pixels="6">
+                        <p class="text-sm leading-6 text-zinc-600 sm:text-base sm:leading-7" data-blur-reveal-item>
+                            {{ __('Rejoignez le réseau BLACK MILK en tant que revendeur agréé et développez votre activité avec une marque présente dans plus de 50 pays') }}
                         </p>
 
                         <a
                             href="mailto:office.blackmilk@gmail.com?subject={{ rawurlencode(__('Candidature représentant BLACK MILK')) }}"
-                            class="mt-7 inline-flex w-fit items-center gap-2 rounded-full bg-zinc-900 px-6 py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-zinc-800"
+                            class="mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-zinc-900 px-6 py-3 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-zinc-800 sm:mt-7"
                             data-blur-reveal-item
                         >
-                            {{ __('Devenir représentant') }}
+                            {{ __('Devenir partenaire') }}
                             <x-lucide-arrow-up-right class="h-4 w-4" />
                         </a>
                     </div>
