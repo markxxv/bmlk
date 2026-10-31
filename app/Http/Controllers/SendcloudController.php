@@ -487,7 +487,7 @@ class SendcloudController extends Controller
                 'tracking_url' => $data['tracking_url'] ?? null,
                 'sendcloud_parcel_id' => $data['parcel_id'] ?? null,
                 'sendcloud_shipment_id' => $data['shipment_id'] ?? null,
-                'status' => 'processing',
+                'status' => 'shipped',
             ])->save();
         } finally {
             $lock->release();
@@ -527,10 +527,16 @@ class SendcloudController extends Controller
             if ($timestamp > (int) ($order->sendcloud_event_at ?? 0)) {
                 $message = strtolower((string) data_get($parcel, 'status.message', ''));
                 $status = $order->status;
-                if (preg_match('/^(delivered|livr[ée]|distribu[ée])/iu', $message)) {
-                    $status = 'completed';
-                } elseif (str_contains($message, 'transit') || str_contains($message, 'en route') || str_contains($message, 'shipp')) {
-                    $status = 'shipped';
+                // Delivered is terminal: later carrier updates cannot roll
+                // an already completed order back to shipped.
+                if ($status !== 'completed') {
+                    if (preg_match('/^(delivered|livr[ée]|distribu[ée])/iu', $message)) {
+                        $status = 'completed';
+                    } elseif (! empty($parcel['tracking_number']) || $order->tracking_number
+                        || str_contains($message, 'transit') || str_contains($message, 'en route')
+                        || str_contains($message, 'shipp')) {
+                        $status = 'shipped';
+                    }
                 }
                 $order->forceFill([
                     'sendcloud_event_at' => $timestamp,

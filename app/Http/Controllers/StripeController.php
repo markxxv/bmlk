@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\OrderTelegramNotification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
@@ -285,13 +286,23 @@ class StripeController extends Controller
         }
 
         if ($paid) {
-            $changed = Order::query()->whereKey($order->id)->where('payment_status', '!=', 'paid')->update([
-                'payment_status' => 'paid',
-                'stripe_session_id' => $sessionId,
-                'stripe_payment_intent_id' => $session['payment_intent'] ?? null,
-                'paid_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $changed = \Illuminate\Support\Facades\DB::transaction(function () use ($order, $sessionId, $session): int {
+                $updated = Order::query()->whereKey($order->id)->where('payment_status', '!=', 'paid')->update([
+                    'payment_status' => 'paid',
+                    'stripe_session_id' => $sessionId,
+                    'stripe_payment_intent_id' => $session['payment_intent'] ?? null,
+                    'paid_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                if ($updated === 1) {
+                    // Register once at verified payment. The hourly cron sends
+                    // the initial Telegram message and pending reminders.
+                    OrderTelegramNotification::query()->firstOrCreate(['order_id' => $order->id]);
+                }
+
+                return $updated;
+            });
             if ($changed) {
                 $this->createCustomerForPaidOrder($order->fresh());
                 // Sendcloud upsert is idempotent and does not purchase a shipping label.

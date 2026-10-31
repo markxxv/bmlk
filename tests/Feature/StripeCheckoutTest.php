@@ -66,6 +66,7 @@ class StripeCheckoutTest extends TestCase
 
         $this->assertSame('paid', $order->fresh()->payment_status);
         $this->assertNotNull($order->fresh()->paid_at);
+        $this->assertDatabaseHas('order_telegram_notifications', ['order_id' => $order->id]);
 
         // Duplicate events must not change an already paid order.
         $paidAt = $order->fresh()->paid_at;

@@ -398,3 +398,59 @@ php artisan test --filter=PaymentEmailsTest
 ```
 
 Send a new verification or password-reset email to check the styling. Previously delivered messages cannot change.
+
+
+## Telegram notifications for paid orders
+
+The verified Stripe payment transition creates exactly one row in `order_telegram_notifications` per order.
+An hourly Artisan command sends the first message for each new paid order. It sends a reminder every **24 hours** while `payment_status=paid` and the order `status=pending`. The reminders stop when the fulfillment status changes. Unpaid orders and orders paid before this feature was deployed are not automatically enrolled.
+
+The database records `first_sent_at`, `last_sent_at` and a short-lived `claimed_at` sending lock. Telegram errors leave the notification eligible for retry on the next hourly run. Messages contain the order number, customer, item count, total, status and a Filament admin link; never the private customer order token.
+
+### 1. Create a Telegram bot and get the chat ID
+
+- In Telegram open **@BotFather**, run `/newbot` and copy the bot token.
+- Start a private chat with the bot and send `/start`, or add the bot to the intended Telegram group and send a message mentioning the bot.
+- To find the chat ID, visit `https://api.telegram.org/bot<TOKEN>/getUpdates` with your actual token. Read `result[*].message.chat.id` (group IDs are typically negative). If a group does not appear, mention the bot in the group or disable its privacy mode in BotFather and send another message. Keep the token private.
+
+Set these on the production server in `.env`:
+
+```dotenv
+TELEGRAM_BOT_TOKEN=123456789:AA_example_replace_me
+TELEGRAM_CHAT_ID=-1001234567890
+```
+
+Do not put the real token in Git.
+
+### 2. Deploy and install the hourly cron
+
+```bash
+git pull origin main
+php artisan migrate --force
+php artisan optimize:clear
+php artisan config:cache
+```
+
+Add this **separate hourly entry** using `crontab -e` (replace the project path). Keep the existing every-minute Laravel Scheduler entry above for payment emails:
+
+```cron
+0 * * * * cd /var/www/blackmilk && php artisan orders:telegram-notifications >> storage/logs/telegram-notifications.log 2>&1
+```
+
+The Telegram command sends directly; it needs no queue worker or Supervisor. New paid orders are normally reported at the next top-of-hour cron run.
+
+### 3. Verify
+
+```bash
+php artisan orders:telegram-notifications
+php artisan test --filter=OrderTelegramNotificationsTest
+php artisan test --filter=SendcloudWebhookTest
+```
+
+Run the Artisan command after the bot has been added to its chat. Telegram send failures are logged to `storage/logs/laravel.log` and retried. A missing token or chat ID causes the command to exit without sending.
+
+### Sendcloud status transitions
+
+- When a Sendcloud label is created and a tracking number is returned, the order is marked `shipped`.
+- A signed Sendcloud parcel webhook with tracking or a shipped/in-transit event also marks it `shipped`.
+- A signed delivery event marks it `completed`. Once completed, a later carrier event cannot revert it to shipped.
