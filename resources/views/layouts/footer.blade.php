@@ -20,23 +20,19 @@
 
                 <div class="mt-12 sm:mt-16" data-blur-reveal data-blur-stagger="0.09" data-blur-duration="0.85" data-blur-y="16" data-blur-pixels="7">
                     <p class="font-serif text-5xl font-medium leading-none tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl" data-blur-reveal-item>
-                        {{ __('BLACK MILK') }}
-                    </p>
-
-                    <p class="mt-3 font-serif text-2xl italic text-accent sm:text-3xl" data-blur-reveal-item>
-                        {{ __('Le Premier Choix') }}
+                        {{ __('Black milk') }}
                     </p>
                 </div>
 
                 <p class="mt-8 max-w-xl text-base leading-7 text-bmlk-footer-muted sm:text-lg" data-reveal data-reveal-y="14" data-reveal-duration="0.8">
-                    {{ __('Cosmétique professionnelle pour la manucure, développée par des maîtres pour celles et ceux qui placent la technique au premier plan.') }}
+                    {{ __('Des formules professionnelles créées par des expertes pour sublimer votre savoir-faire') }}
                 </p>
             </div>
 
             <div class="flex flex-col justify-between gap-10 lg:col-span-5 lg:pl-10">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-footer-muted">
-                        {{ __('Parlons-nous') }}
+                        {{ __('Contactez-nous') }}
                     </p>
 
                     <div class="mt-5 space-y-3" data-blur-reveal data-blur-stagger="0.09" data-blur-duration="0.8" data-blur-y="14" data-blur-pixels="7">
@@ -92,7 +88,7 @@
 
                 <div class="flex items-center gap-3 text-sm text-bmlk-footer-muted">
                     <x-lucide-map-pin class="h-4 w-4 text-accent" />
-                    <span>{{ __('Créé à Paris. Utilisé dans plus de 50 pays.') }}</span>
+                    <span>{{ __('Conçu à Paris. Distribué dans plus de 50 pays') }}</span>
                 </div>
             </div>
         </div>
@@ -108,9 +104,9 @@
                         <div class="mt-5 space-y-3">
                             <a href="{{ route('shop.index') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Produits') }}</a>
                             <a href="{{ url('/') }}#coffrets" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Coffrets') }}</a>
-                            <a href="#" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Cours') }}</a>
+                            <a href="#" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Formations') }}</a>
                             <a href="#" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Notre histoire') }}</a>
-                            <a href="{{ route('where-to-buy') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Représentants') }}</a>
+                            <a href="{{ route('where-to-buy') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Ambassadeurs') }}</a>
                             <a href="#" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Contact') }}</a>
                         </div>
                     </nav>
