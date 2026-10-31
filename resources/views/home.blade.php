@@ -48,24 +48,22 @@
                             <div class="flex items-start gap-3" data-blur-reveal-item>
                                 <x-lucide-leaf class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
-                                    <p class="text-[9px] font-semibold uppercase tracking-wider text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('HEMA-free') }}</p>
-                                    <p class="mt-1 hidden text-[10px] uppercase tracking-[0.16em] text-zinc-700 sm:block">{{ __('Sans compromis') }}</p>
+                                    <p class="text-[9px] font-semibold text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('Formule sans HEMA') }}</p>
+                                    <p class="mt-1 hidden text-[10px] text-zinc-700 sm:block">{{ __('Préserve vos ongles') }}</p>
                                 </div>
                             </div>
 
                             <div class="flex items-start gap-3" data-blur-reveal-item>
                                 <x-lucide-globe-2 class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
-                                    <p class="text-[9px] font-semibold uppercase tracking-wider text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('50+ pays') }}</p>
-                                    <p class="mt-1 hidden text-[10px] uppercase tracking-[0.16em] text-zinc-700 sm:block">{{ __('Dans le monde') }}</p>
+                                    <p class="text-[9px] font-semibold text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('Disponible dans +50 pays') }}</p>
                                 </div>
                             </div>
 
                             <div class="flex items-start gap-3" data-blur-reveal-item>
                                 <x-lucide-graduation-cap class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
-                                    <p class="text-[9px] font-semibold uppercase tracking-wider text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('Pour les professionnels') }}</p>
-                                    <p class="mt-1 hidden text-[10px] uppercase tracking-[0.16em] text-zinc-700 sm:block">{{ __('Résultats d’exception') }}</p>
+                                    <p class="text-[9px] font-semibold text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('Qualité professionnelle') }}</p>
                                 </div>
                             </div>
                         </div>
