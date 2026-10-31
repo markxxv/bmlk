@@ -381,7 +381,7 @@
                     </div>
 
                     <p class="max-w-xl text-base leading-7 text-zinc-600 lg:col-span-5 lg:justify-self-end lg:text-lg" data-reveal data-reveal-y="16" data-reveal-duration="0.8" data-reveal-delay="0.14">
-                        {{ __('Formations, workshops et rencontres BLACK MILK en France et à l’international.') }}
+                        {{ __('Rejoignez nos formations près de chez vous : toutes nos dates de formation en France et à l\'international') }}
                     </p>
                 </div>
 
