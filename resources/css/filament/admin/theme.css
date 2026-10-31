@@ -12,3 +12,9 @@ html.fi {
   padding-inline: unset!important;
   padding-right: 1rem!important;
 }
+
+/* Compact pill for pending partner applications in the sidebar. */
+.fi-sidebar-item a[href$="/role-applications"] .fi-badge {
+    padding: 0.0625rem 0.375rem;
+    border-radius: 9999px;
+}
