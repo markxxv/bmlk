@@ -42,7 +42,7 @@
 
                 <div class="hidden items-center justify-end gap-8 lg:flex" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
                     <a href="{{ route('where-to-buy') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
-                        {{ __('Où acheter') }}
+                        {{ __('Points de vente') }}
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
 
@@ -54,7 +54,7 @@
                     <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}"
                         class="inline-flex h-11 items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-800 transition hover:text-bmlk-brand"
                         data-blur-reveal-item>
-                        <x-lucide-user-round class="h-4 w-4" />{{ __('Mon espace') }}
+                        <x-lucide-user-round class="h-4 w-4" />{{ __('Mon compte') }}
                     </a>
 
                     <button
@@ -73,7 +73,7 @@
                 <div class="flex items-center justify-self-end gap-1 sm:gap-2 lg:hidden">
                     <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}"
                         class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 max-[339px]:hidden"
-                        aria-label="{{ __('Mon espace') }}">
+                        aria-label="{{ __('Mon compte') }}">
                         <x-lucide-user-round class="h-4 w-4" />
                     </a>
                     <button
@@ -154,7 +154,7 @@
 
             <nav class="flex flex-1 flex-col justify-center py-10">
                 <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
-                    {{ __('Mon espace') }}
+                    {{ __('Mon compte') }}
                 </a>
                 <a href="{{ route('shop.index') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Produits') }}
@@ -166,7 +166,7 @@
                     {{ __('Outils') }}
                 </a>
                 <a href="{{ route('where-to-buy') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
-                    {{ __('Où acheter') }}
+                    {{ __('Points de vente') }}
                 </a>
                 <a href="{{ route('events') }}" @click="open = false" class="py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Événements') }}
