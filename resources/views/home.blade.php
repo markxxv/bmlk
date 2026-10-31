@@ -91,14 +91,14 @@
                     </p>
 
                     <h2 class="mt-4 font-serif text-4xl font-medium leading-none tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl" data-reveal-title data-reveal-title-duration="1" data-reveal-title-stagger="0.08">
-                        <span class="inline-block">{{ __('Compose') }}</span>
-                        <span class="inline-block italic text-bmlk-brand">{{ __('ton') }}</span>
+                        <span class="inline-block">{{ __('Composez') }}</span>
+                        <span class="inline-block italic text-bmlk-brand">{{ __('votre') }}</span>
                         <span class="inline-block">{{ __('rituel') }}</span>
                     </h2>
                 </div>
 
                 <p class="max-w-xl text-base leading-7 text-zinc-600 lg:justify-self-end lg:text-lg" data-reveal data-reveal-y="16" data-reveal-duration="0.8" data-reveal-delay="0.16">
-                    {{ __('Trois coffrets pensés pour chaque besoin — débuter, se réassortir avec les favoris, ou profiter d’une offre exceptionnelle.') }}
+                    {{ __('Trois coffrets pensés pour chaque étape : débuter, renouveler vos favoris ou profiter d’une offre exclusive.') }}
                 </p>
             </div>
 
