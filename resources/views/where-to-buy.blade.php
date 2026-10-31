@@ -6,14 +6,14 @@
     <main>
         <section class="px-3 pb-5 pt-5 sm:px-5 sm:pb-10 lg:px-8">
             <div class="mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-[#DDA1AA]">
-                <div class="grid gap-12 px-7 py-12 sm:px-10 sm:py-16 lg:grid-cols-12 lg:px-14 lg:py-20 xl:px-16">
+                <div class="grid gap-5 px-5 py-7 sm:gap-12 sm:px-10 sm:py-16 lg:grid-cols-12 lg:px-14 lg:py-20 xl:px-16">
                     <div class="lg:col-span-8">
-                        <div class="flex items-center gap-3 text-xs font-semibold uppercase tracking-widest text-zinc-700" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                        <div class="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-700 sm:gap-3 sm:text-xs" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
                             <x-lucide-map-pin class="h-4 w-4" />
                             <span>{{ __('Réseau officiel BLACK MILK') }}</span>
                         </div>
 
-                        <h1 class="mt-6 max-w-5xl font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
+                        <h1 class="mt-3 max-w-5xl font-serif text-3xl font-medium leading-none tracking-tight text-zinc-900 sm:mt-6 sm:text-6xl lg:text-7xl xl:text-8xl" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
                             <span class="inline-block">{{ __('Trouvez') }}</span>
                             <span class="inline-block italic text-white">{{ __('BLACK MILK') }}</span>
                             <span class="inline-block">{{ __('près de chez vous') }}</span>
@@ -22,15 +22,15 @@
 
                     <div class="flex items-end lg:col-span-4">
                         <div class="max-w-md">
-                            <p class="text-base leading-7 text-zinc-800 sm:text-lg" data-reveal data-reveal-y="16" data-reveal-duration="0.8" data-reveal-delay="0.14">
+                            <p class="text-sm leading-5 text-zinc-800 sm:text-lg sm:leading-7" data-reveal data-reveal-y="16" data-reveal-duration="0.8" data-reveal-delay="0.14">
                                 {{ __('Profitez d\'une livraison plus rapide et d\'un service local auprès de nos revendeurs et partenaires agréés.') }}
                             </p>
 
-                            <div class="mt-8 flex flex-wrap gap-x-8 gap-y-3 border-t border-[#C98792] pt-5" data-blur-reveal data-blur-stagger="0.08" data-blur-duration="0.7" data-blur-y="10" data-blur-pixels="5">
-                                <span class="text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
+                            <div class="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-t border-[#C98792] pt-3 sm:mt-8 sm:gap-x-8 sm:gap-y-3 sm:pt-5" data-blur-reveal data-blur-stagger="0.08" data-blur-duration="0.7" data-blur-y="10" data-blur-pixels="5">
+                                <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-800 sm:text-xs" data-blur-reveal-item>
                                     {{ __('50+ pays') }}
                                 </span>
-                                <span class="text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
+                                <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-800 sm:text-xs" data-blur-reveal-item>
                                     {{ __('Réseau officiel') }}
                                 </span>
                             </div>
