@@ -40,8 +40,12 @@
 .bmc-hero::after,.bmc-form::after{content:"";position:absolute;inset:auto 0 0;height:16px;background:repeating-linear-gradient(90deg,var(--bmc-red) 0 64px,var(--bmc-blue) 64px 128px);pointer-events:none}
 .bmc-hero__inner{display:grid;grid-template-columns:minmax(0,1.03fr) minmax(0,.9fr);align-items:center;gap:64px;padding-block:72px}
 .bmc-hero__text{display:flex;min-width:0;flex-direction:column;align-items:flex-start;gap:24px}
-.bmc-hero .bmc-display{font-size:72px;line-height:1.02}
-.bmc-hero .bmc-display .bmc-script{margin-top:6px;color:#fff;font-size:.72em}
+.bmc-hero .bmc-display{font-size:72px;line-height:1.04}
+.bmc-hero-title{display:flex;max-width:100%;flex-direction:column;align-items:flex-start;letter-spacing:-.045em}
+.bmc-hero-title__first{display:block;font-size:.79em;line-height:1.18;white-space:nowrap}
+.bmc-hero-title__first>span{margin-left:.15em}
+.bmc-hero-title__second{display:flex;align-items:baseline;gap:.22em;line-height:1.08;white-space:nowrap}
+.bmc-hero-title__signature{font-family:"Playfair Display",Georgia,serif;font-size:.47em;font-weight:500;font-style:italic;letter-spacing:-.04em;line-height:1;color:#fff;white-space:nowrap}
 .bmc-hero .bmc-lead{color:#46343A}
 .bmc-hero__visual{position:relative;display:flex;min-width:0;justify-content:center;align-items:center;padding:0 6px 16px 28px}
 
@@ -109,12 +113,15 @@
 .bmc-sign sup{margin-left:4px;font-family:"Hanken Grotesk",sans-serif;font-size:10px;font-style:normal;vertical-align:super}
 
 @media(min-width:1584px){.bmc-hero,.bmc-apply{margin-inline:auto}}
+@media(max-width:1150px){
+  .bmc-hero .bmc-display{font-size:56px}
+}
 @media(max-width:900px){
   .bmc-wrap{padding-inline:32px}
   .bmc-hero__inner{grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:28px}
   .bmc-hero__visual{padding-left:12px}
   .bmc-seal{left:-26px;width:86px}
-  .bmc-hero .bmc-display{font-size:54px}
+  .bmc-hero .bmc-display{font-size:48px}
   .bmc-steps__grid{gap:10px}
   .bmc-step{padding:24px}
   .bmc-faq__inner{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:28px}
@@ -127,6 +134,8 @@
   .bmc-hero__inner{grid-template-columns:1fr;gap:30px;padding-block:34px 40px}
   .bmc-hero__text{gap:18px}
   .bmc-hero .bmc-display{font-size:48px}
+  .bmc-hero-title__second{display:block;white-space:normal}
+  .bmc-hero-title__signature{display:block;width:max-content;max-width:100%;margin:-2px 0 0 auto;font-size:.48em;text-align:right}
   .bmc-hero .bmc-lead{font-size:14px;line-height:1.6}
   .bmc-hero__visual{justify-content:center;padding:0 14px 10px 30px}
   .bmc-hero::after,.bmc-form::after{height:12px}
@@ -155,6 +164,9 @@
   .bmc-faq summary{font-size:17px}
   .bmc-sign{padding:12px 0 20px}
   .bmc-sign .bmc-display{font-size:20px}
+}
+@media(max-width:380px){
+  .bmc-hero .bmc-display{font-size:41px}
 }
 @media(prefers-reduced-motion:reduce){
   .bmc-btn{transition:none}
