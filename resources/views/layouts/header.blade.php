@@ -46,6 +46,11 @@
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
 
+                    <a href="{{ route('createurs') }}" class="group relative hidden py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800 xl:block" data-blur-reveal-item>
+                        {{ __('Créatrices') }}
+                        <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
+                    </a>
+
                     <a href="{{ route('events') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
                         {{ __('Événements') }}
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
