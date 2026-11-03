@@ -48,6 +48,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
 
 
+    @stack('head')
     @vite('resources/js/app.js')
 </head>
 

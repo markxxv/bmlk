@@ -168,8 +168,11 @@
                 <a href="{{ route('where-to-buy') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Où acheter') }}
                 </a>
-                <a href="{{ route('events') }}" @click="open = false" class="py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
+                <a href="{{ route('events') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Événements') }}
+                </a>
+                <a href="{{ route('createurs') }}" @click="open = false" class="py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
+                    {{ __('Créatrices') }}
                 </a>
             </nav>
 

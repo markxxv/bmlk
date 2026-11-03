@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\CreatorsController;
 
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\ShopController;
@@ -93,6 +94,11 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/account/influencer/code', [AccountController::class, 'saveCode'])
         ->middleware('throttle:3,1')->name('account.influencer.code');
 });
+
+// Public programme / lightweight application, stored in existing role_applications.
+Route::get('/createurs', [CreatorsController::class, 'index'])->name('createurs');
+Route::post('/createurs', [CreatorsController::class, 'apply'])
+    ->middleware('throttle:3,1')->name('createurs.apply');
 
 Route::get('/events', [FrontController::class, 'events'])->name('events');
 
