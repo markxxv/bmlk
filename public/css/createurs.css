@@ -51,8 +51,9 @@
 
 .bmc-arch{position:relative;width:min(100%,410px);aspect-ratio:4/5}
 .bmc-arch img{display:block;width:100%;height:100%;border:10px solid var(--bmc-page);border-radius:50% 50% 0 0;object-fit:cover;object-position:52% 55%}
-.bmc-seal{position:absolute;left:-38px;bottom:-24px;display:flex;width:112px;aspect-ratio:1;align-items:center;justify-content:center;border-radius:50%;background:var(--bmc-accent);color:white}
-.bmc-seal__core{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1}
+.bmc-seal{position:absolute;left:-70px;bottom:-56px;display:grid;place-items:center;width:176px;aspect-ratio:1;color:#fff;isolation:isolate;pointer-events:none}
+.bmc-seal__ring{position:absolute;inset:0;display:block;width:100%;height:100%;transform-origin:center;will-change:transform}
+.bmc-seal__core{position:relative;z-index:1;display:flex;width:112px;aspect-ratio:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:50%;background:var(--bmc-accent);line-height:1}
 .bmc-seal__core span:first-child{font-family:"Playfair Display",Georgia,serif;font-size:32px}
 .bmc-seal__core span:last-child{font-size:16px}
 
@@ -120,7 +121,8 @@
   .bmc-wrap{padding-inline:32px}
   .bmc-hero__inner{grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:28px}
   .bmc-hero__visual{padding-left:12px}
-  .bmc-seal{left:-26px;width:86px}
+  .bmc-seal{left:-54px;bottom:-48px;width:138px}
+  .bmc-seal__core{width:86px}
   .bmc-hero .bmc-display{font-size:48px}
   .bmc-steps__grid{gap:10px}
   .bmc-step{padding:24px}
@@ -131,7 +133,7 @@
   .bmc-wrap{padding-inline:20px}
   .bmc-display{font-size:34px}
   .bmc-hero,.bmc-apply{margin-inline:12px;border-radius:22px}
-  .bmc-hero__inner{grid-template-columns:1fr;gap:30px;padding-block:34px 40px}
+  .bmc-hero__inner{grid-template-columns:1fr;gap:30px;padding-block:34px 62px}
   .bmc-hero__text{gap:18px}
   .bmc-hero .bmc-display{font-size:48px}
   .bmc-hero-title__second{display:block;white-space:normal}
@@ -141,7 +143,8 @@
   .bmc-hero::after,.bmc-form::after{height:12px}
   .bmc-arch{width:min(100%,280px)}
   .bmc-arch img{border-radius:50% 50% 0 0}
-  .bmc-seal{left:-28px;bottom:-20px;width:86px}
+  .bmc-seal{left:-54px;bottom:-48px;width:138px}
+  .bmc-seal__core{width:86px}
   .bmc-seal__core span:first-child{font-size:25px}
   .bmc-meta{font-size:10px}
   .bmc-steps{padding:48px 0 16px}

@@ -1,5 +1,5 @@
 @push('head')
-    <link rel="stylesheet" href="{{ asset('css/createurs.css') }}?v=4">
+    <link rel="stylesheet" href="{{ asset('css/createurs.css') }}?v=5">
 @endpush
 
 <x-layout
@@ -27,6 +27,7 @@
                     <div class="bmc-arch">
                         <img src="{{ asset('img/createurs-modele-cire.jpg') }}" alt="Créatrice BLACK MILK" width="380" height="500" fetchpriority="high">
                         <div class="bmc-seal">
+                            <img class="bmc-seal__ring" src="{{ asset('img/createurs-seal-ring.svg') }}" width="200" height="200" alt="" decoding="async" data-rotating-seal>
                             <div class="bmc-seal__core"><span>BM</span><span aria-hidden="true">✳</span></div>
                         </div>
                     </div>

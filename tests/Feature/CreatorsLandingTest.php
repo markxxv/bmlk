@@ -17,7 +17,9 @@ class CreatorsLandingTest extends TestCase
     {
         $this->get(route('createurs'))
             ->assertOk()
-            ->assertSee('Testez.')
+            ->assertSee('Testez')
+            ->assertSee('createurs-seal-ring.svg')
+            ->assertSee('data-rotating-seal')
             ->assertSee('Envoyer ma candidature');
     }
 

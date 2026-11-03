@@ -1234,6 +1234,30 @@ export function initHoverText(root = document) {
     });
 }
 
+/**
+ * Slow editorial rotation for the Créatrices seal.
+ * Reuses the same Motion, inView, once() and reduced-motion conventions
+ * as the storefront animations. The BM monogram stays stationary.
+ */
+export function initCreatorSealRotation(root = document) {
+    root.querySelectorAll('[data-rotating-seal]').forEach((ring) => {
+        if (!once(ring, 'CreatorSealRotation') || reducedMotion.matches) return;
+
+        inView(ring, () => {
+            const animation = animate(ring, { rotate: [0, 360] }, {
+                duration: 36,
+                ease: 'linear',
+                repeat: Infinity,
+            });
+
+            return () => {
+                animation.stop();
+                ring.style.transform = '';
+            };
+        }, { amount: 0.2 });
+    });
+}
+
 export function initAnimations(root = document) {
     initReveal(root);
     initBlurReveal(root);
@@ -1248,6 +1272,7 @@ export function initAnimations(root = document) {
     initHorizontalRail(root);
     initScrollAccordion(root);
     initHoverText(root);
+    initCreatorSealRotation(root);
 
     const initScrollEffects = () => {
         initParallax(root);
