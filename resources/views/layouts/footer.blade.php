@@ -179,5 +179,6 @@
                 <a href="#" class="transition hover:text-bmlk-footer">{{ __('Cookies') }}</a>
             </nav>
         </div>
+        <div class="bmlk-packaging-stripe" aria-hidden="true"></div>
     </div>
 </footer>
