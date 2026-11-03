@@ -20,7 +20,7 @@
                         <span class="bmc-meta bmc-muted">Une demande simple · Quelques minutes</span>
                     </div>
                 </div>
-                <div class="bmc-hero__visual bmc-stripes-rb" aria-hidden="true">
+                <div class="bmc-hero__visual" aria-hidden="true">
                     <div class="bmc-arch">
                         <img src="{{ asset('img/createurs-modele-cire.jpg') }}" alt="Créatrice BLACK MILK" width="380" height="500" fetchpriority="high">
                         <div class="bmc-seal">
