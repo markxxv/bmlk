@@ -1,6 +1,5 @@
 @push('head')
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Pinyon+Script&display=swap">
-    <link rel="stylesheet" href="{{ asset('css/createurs.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/createurs.css') }}?v=2">
 @endpush
 
 <x-layout
@@ -58,18 +57,18 @@
             </div>
         </section>
 
-        <section class="bmc-terms bmc-checker" aria-labelledby="bmc-benefits-title">
+        <section class="bmc-terms" aria-labelledby="bmc-benefits-title">
             <div class="bmc-wrap bmc-terms__grid">
                 <div class="bmc-card">
-                    <h2 id="bmc-benefits-title" class="bmc-display" style="font-size:clamp(28px,3vw,36px)">Pour vous</h2>
+                    <h2 id="bmc-benefits-title" class="bmc-display">Pour vous</h2>
                     <ul class="bmc-list">
                         <li><span aria-hidden="true">✳</span><span>Un code de réduction personnel pour votre communauté</span></li>
                         <li><span aria-hidden="true">✳</span><span>Des opportunités de collaboration avec BLACK MILK</span></li>
                         <li><span aria-hidden="true">✳</span><span>Un espace personnel pour retrouver votre code</span></li>
                     </ul>
                 </div>
-                <div class="bmc-card bmc-card--red">
-                    <h2 class="bmc-display" style="font-size:clamp(28px,3vw,36px)">Pour nous</h2>
+                <div class="bmc-card bmc-card--soft">
+                    <h2 class="bmc-display">Pour nous</h2>
                     <ul class="bmc-list">
                         <li><span aria-hidden="true">✳</span><span>Votre regard sincère sur les produits</span></li>
                         <li><span aria-hidden="true">✳</span><span>Des contenus authentiques, à votre image</span></li>
@@ -79,7 +78,7 @@
             </div>
         </section>
 
-        <section class="bmc-apply bmc-stripes-bc" id="candidature" aria-labelledby="bmc-form-title">
+        <section class="bmc-apply" id="candidature" aria-labelledby="bmc-form-title">
             <div class="bmc-wrap">
                 <div class="bmc-form">
                     <h2 id="bmc-form-title" class="bmc-display">Votre<span class="bmc-script">candidature</span></h2>
@@ -118,7 +117,7 @@
                             <button type="submit" class="bmc-btn bmc-btn--line">Renvoyer l’e-mail</button>
                         </form>
                     @else
-                        <form method="POST" action="{{ route('createurs.apply') }}" class="flex flex-col gap-6">
+                        <form method="POST" action="{{ route('createurs.apply') }}" class="flex flex-col gap-4 sm:gap-6">
                             @csrf
                             <div class="bmc-hp" aria-hidden="true">
                                 <label>Site web<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
