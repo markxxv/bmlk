@@ -1258,6 +1258,95 @@ export function initCreatorSealRotation(root = document) {
     });
 }
 
+/**
+ * Smooth, keyboard-accessible FAQ accordion using Motion.
+ * Native <details> remains functional without JavaScript.
+ */
+export function initCreatorFaq(root = document) {
+    root.querySelectorAll('[data-creator-faq]').forEach((group) => {
+        if (!once(group, 'CreatorFaq')) return;
+
+        const items = [...group.querySelectorAll('details')].map((details) => {
+            const summary = details.querySelector('summary');
+            const panel = details.querySelector('[data-creator-faq-panel]');
+
+            if (!summary || !panel) return null;
+
+            let expanded = details.open;
+            let animation = null;
+            let sequence = 0;
+
+            details.dataset.faqExpanded = String(expanded);
+
+            const setExpanded = (next) => {
+                if (expanded === next) return;
+
+                expanded = next;
+                details.dataset.faqExpanded = String(next);
+                const version = ++sequence;
+
+                // Hold the current visual state if the user clicks repeatedly.
+                const fromHeight = details.open ? panel.getBoundingClientRect().height : 0;
+                const fromOpacity = details.open
+                    ? Number.parseFloat(getComputedStyle(panel).opacity)
+                    : 0;
+
+                animation?.stop();
+                animation = null;
+
+                if (reducedMotion.matches) {
+                    details.open = next;
+                    panel.style.height = '';
+                    panel.style.opacity = '';
+                    return;
+                }
+
+                if (next) details.open = true;
+
+                panel.style.height = `${fromHeight}px`;
+                panel.style.opacity = String(fromOpacity);
+
+                const toHeight = next ? panel.scrollHeight : 0;
+
+                animation = animate(panel, {
+                    height: [`${fromHeight}px`, `${toHeight}px`],
+                    opacity: [fromOpacity, next ? 1 : 0],
+                }, {
+                    duration: next ? 0.4 : 0.3,
+                    ease: editorialEase,
+                });
+
+                animation.finished.then(() => {
+                    if (sequence !== version) return;
+
+                    details.open = next;
+                    panel.style.height = '';
+                    panel.style.opacity = '';
+                    animation = null;
+                }).catch(() => {
+                    // A newer click superseded the preceding animation.
+                });
+            };
+
+            const item = { setExpanded };
+
+            summary.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                if (!expanded) {
+                    items.forEach((other) => {
+                        if (other !== item) other.setExpanded(false);
+                    });
+                }
+
+                setExpanded(!expanded);
+            });
+
+            return item;
+        }).filter(Boolean);
+    });
+}
+
 export function initAnimations(root = document) {
     initReveal(root);
     initBlurReveal(root);
@@ -1273,6 +1362,7 @@ export function initAnimations(root = document) {
     initScrollAccordion(root);
     initHoverText(root);
     initCreatorSealRotation(root);
+    initCreatorFaq(root);
 
     const initScrollEffects = () => {
         initParallax(root);

@@ -1,5 +1,5 @@
 @push('head')
-    <link rel="stylesheet" href="{{ asset('css/createurs.css') }}?v=5">
+    <link rel="stylesheet" href="{{ asset('css/createurs.css') }}?v=6">
 @endpush
 
 <x-layout
@@ -166,18 +166,24 @@
         <section class="bmc-faq" aria-labelledby="bmc-faq-title">
             <div class="bmc-wrap bmc-faq__inner">
                 <div><h2 id="bmc-faq-title" class="bmc-display">Questions fréquentes</h2></div>
-                <div class="bmc-faq__list">
+                <div class="bmc-faq__list" data-creator-faq>
                     <details>
                         <summary>Faut-il beaucoup d’abonné·es ?</summary>
-                        <p>Non. Nous regardons avant tout la qualité des contenus et votre lien avec votre communauté.</p>
+                        <div class="bmc-faq__panel" data-creator-faq-panel>
+                            <p>Non. Nous regardons avant tout la qualité des contenus et votre lien avec votre communauté.</p>
+                        </div>
                     </details>
                     <details>
                         <summary>Comment obtenir mon code ?</summary>
-                        <p>Après approbation de votre candidature et confirmation de votre e-mail, vous pourrez choisir votre code unique dans Mon espace influenceur.</p>
+                        <div class="bmc-faq__panel" data-creator-faq-panel>
+                            <p>Après approbation de votre candidature et confirmation de votre e-mail, vous pourrez choisir votre code unique dans Mon espace influenceur.</p>
+                        </div>
                     </details>
                     <details>
                         <summary>La candidature est-elle gratuite ?</summary>
-                        <p>Oui. Envoyer votre candidature est gratuit et ne vous engage à aucun achat.</p>
+                        <div class="bmc-faq__panel" data-creator-faq-panel>
+                            <p>Oui. Envoyer votre candidature est gratuit et ne vous engage à aucun achat.</p>
+                        </div>
                     </details>
                 </div>
             </div>
