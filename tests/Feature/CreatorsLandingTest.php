@@ -22,6 +22,9 @@ class CreatorsLandingTest extends TestCase
             ->assertSee('data-rotating-seal')
             ->assertSee('data-creator-faq')
             ->assertSee('data-creator-faq-panel')
+            ->assertSee('data-reveal-title')
+            ->assertSee('data-image-reveal')
+            ->assertSee('data-blur-reveal')
             ->assertSee('Envoyer ma candidature');
     }
 
