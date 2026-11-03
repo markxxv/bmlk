@@ -1,5 +1,5 @@
 @push('head')
-    <link rel="stylesheet" href="{{ asset('css/createurs.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('css/createurs.css') }}?v=3">
 @endpush
 
 <x-layout
@@ -13,7 +13,7 @@
             <div class="bmc-wrap bmc-hero__inner">
                 <div class="bmc-hero__text">
                     <p class="bmc-kicker">Programme créatrices</p>
-                    <h1 id="bmc-hero-title" class="bmc-display">Testez.<span class="block">Créez.</span><span class="block">Partagez.</span><span class="bmc-script">avec nous</span></h1>
+                    <h1 id="bmc-hero-title" class="bmc-display">Testez<span class="block">Créez</span><span class="block">Partagez</span><span class="bmc-script">avec nous</span></h1>
                     <p class="bmc-lead bmc-muted">Prothésistes ongulaires, créatrices UGC, passionnées de beauté des ongles : partagez votre univers avec BLACK MILK et rejoignez notre communauté.</p>
                     <div class="bmc-row">
                         <a class="bmc-btn" href="#candidature">Je candidate</a>
