@@ -12,20 +12,20 @@
         <section class="bmc-hero" aria-labelledby="bmc-hero-title">
             <div class="bmc-wrap bmc-hero__inner">
                 <div class="bmc-hero__text">
-                    <p class="bmc-kicker">Programme créatrices</p>
-                    <h1 id="bmc-hero-title" class="bmc-display bmc-hero-title">
+                    <p class="bmc-kicker" data-reveal data-reveal-y="10" data-reveal-duration="0.7" data-reveal-once="true">Programme créatrices</p>
+                    <h1 id="bmc-hero-title" class="bmc-display bmc-hero-title" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.09" data-reveal-title-once="true">
                         <span class="bmc-hero-title__first">Testez <span>Créez</span></span>
                         <span class="bmc-hero-title__second">Partagez <em class="bmc-hero-title__signature">avec nous</em></span>
                     </h1>
-                    <p class="bmc-lead bmc-muted">Prothésistes ongulaires, créatrices UGC, passionnées de beauté des ongles : partagez votre univers avec BLACK MILK et rejoignez notre communauté.</p>
-                    <div class="bmc-row">
+                    <p class="bmc-lead bmc-muted" data-reveal data-reveal-y="16" data-reveal-duration="0.85" data-reveal-delay="0.14" data-reveal-once="true">Prothésistes ongulaires, créatrices UGC, passionnées de beauté des ongles : partagez votre univers avec BLACK MILK et rejoignez notre communauté.</p>
+                    <div class="bmc-row" data-blur-reveal data-blur-duration="0.75" data-blur-delay="0.24" data-blur-y="14" data-blur-pixels="7" data-blur-once="true">
                         <a class="bmc-btn" href="#candidature">Je candidate</a>
                         <span class="bmc-meta bmc-muted">Une demande simple · Quelques minutes</span>
                     </div>
                 </div>
                 <div class="bmc-hero__visual" aria-hidden="true">
                     <div class="bmc-arch">
-                        <img src="{{ asset('img/createurs-modele-cire.jpg') }}" alt="Créatrice BLACK MILK" width="380" height="500" fetchpriority="high">
+                        <img src="{{ asset('img/createurs-modele-cire.jpg') }}" alt="Créatrice BLACK MILK" width="380" height="500" fetchpriority="high" data-image-reveal="bottom" data-image-reveal-duration="1.1" data-image-reveal-once="true">
                         <div class="bmc-seal">
                             <img class="bmc-seal__ring" src="{{ asset('img/createurs-seal-ring.svg') }}" width="200" height="200" alt="" decoding="async" data-rotating-seal>
                             <div class="bmc-seal__core"><span>BM</span><span aria-hidden="true">✳</span></div>
@@ -38,21 +38,21 @@
         <section class="bmc-steps" aria-labelledby="bmc-steps-title">
             <div class="bmc-wrap">
                 <div class="bmc-steps__head">
-                    <h2 id="bmc-steps-title" class="bmc-display">Comment ça marche</h2>
+                    <h2 id="bmc-steps-title" class="bmc-display" data-reveal-title data-reveal-title-duration="1" data-reveal-title-once="true">Comment ça marche</h2>
                     <span aria-hidden="true" class="text-3xl">✳</span>
                 </div>
-                <ol class="bmc-steps__grid">
-                    <li class="bmc-step">
+                <ol class="bmc-steps__grid" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.8" data-blur-y="20" data-blur-pixels="8" data-blur-once="true">
+                    <li class="bmc-step" data-blur-reveal-item>
                         <span class="bmc-step__num" aria-hidden="true">01</span>
                         <span class="bmc-step__cap">Candidatez</span>
                         <p>Présentez-vous et partagez votre profil. Notre équipe étudie votre demande.</p>
                     </li>
-                    <li class="bmc-step">
+                    <li class="bmc-step" data-blur-reveal-item>
                         <span class="bmc-step__num" aria-hidden="true">02</span>
                         <span class="bmc-step__cap">Rejoignez-nous</span>
                         <p>Une fois votre candidature approuvée, accédez à votre espace personnel.</p>
                     </li>
-                    <li class="bmc-step">
+                    <li class="bmc-step" data-blur-reveal-item>
                         <span class="bmc-step__num" aria-hidden="true">03</span>
                         <span class="bmc-step__cap">Partagez</span>
                         <p>Recevez votre code de réduction personnel et partagez-le avec votre communauté.</p>
@@ -62,8 +62,8 @@
         </section>
 
         <section class="bmc-terms" aria-labelledby="bmc-benefits-title">
-            <div class="bmc-wrap bmc-terms__grid">
-                <div class="bmc-card">
+            <div class="bmc-wrap bmc-terms__grid" data-blur-reveal data-blur-stagger="0.12" data-blur-duration="0.8" data-blur-y="18" data-blur-pixels="7" data-blur-once="true">
+                <div class="bmc-card" data-blur-reveal-item>
                     <h2 id="bmc-benefits-title" class="bmc-display">Pour vous</h2>
                     <ul class="bmc-list">
                         <li><span aria-hidden="true">✳</span><span>Un code de réduction personnel pour votre communauté</span></li>
@@ -71,7 +71,7 @@
                         <li><span aria-hidden="true">✳</span><span>Un espace personnel pour retrouver votre code</span></li>
                     </ul>
                 </div>
-                <div class="bmc-card bmc-card--soft">
+                <div class="bmc-card bmc-card--soft" data-blur-reveal-item>
                     <h2 class="bmc-display">Pour nous</h2>
                     <ul class="bmc-list">
                         <li><span aria-hidden="true">✳</span><span>Votre regard sincère sur les produits</span></li>
@@ -85,8 +85,8 @@
         <section class="bmc-apply" id="candidature" aria-labelledby="bmc-form-title">
             <div class="bmc-wrap">
                 <div class="bmc-form">
-                    <h2 id="bmc-form-title" class="bmc-display">Votre<span class="bmc-script">candidature</span></h2>
-                    <p class="bmc-lead bmc-muted">Quelques informations suffisent pour faire connaissance.</p>
+                    <h2 id="bmc-form-title" class="bmc-display" data-blur-reveal data-blur-duration="0.8" data-blur-y="14" data-blur-pixels="6" data-blur-once="true">Votre<span class="bmc-script">candidature</span></h2>
+                    <p class="bmc-lead bmc-muted" data-reveal data-reveal-y="12" data-reveal-duration="0.75" data-reveal-once="true">Quelques informations suffisent pour faire connaissance.</p>
 
                     @if (session('success'))
                         <p class="bmc-alert" role="status">{{ session('success') }}</p>
@@ -165,21 +165,21 @@
 
         <section class="bmc-faq" aria-labelledby="bmc-faq-title">
             <div class="bmc-wrap bmc-faq__inner">
-                <div><h2 id="bmc-faq-title" class="bmc-display">Questions fréquentes</h2></div>
-                <div class="bmc-faq__list" data-creator-faq>
-                    <details>
+                <div><h2 id="bmc-faq-title" class="bmc-display" data-reveal-title data-reveal-title-duration="1" data-reveal-title-once="true">Questions fréquentes</h2></div>
+                <div class="bmc-faq__list" data-creator-faq data-blur-reveal data-blur-stagger="0.09" data-blur-duration="0.75" data-blur-y="14" data-blur-pixels="6" data-blur-once="true">
+                    <details data-blur-reveal-item>
                         <summary>Faut-il beaucoup d’abonné·es ?</summary>
                         <div class="bmc-faq__panel" data-creator-faq-panel>
                             <p>Non. Nous regardons avant tout la qualité des contenus et votre lien avec votre communauté.</p>
                         </div>
                     </details>
-                    <details>
+                    <details data-blur-reveal-item>
                         <summary>Comment obtenir mon code ?</summary>
                         <div class="bmc-faq__panel" data-creator-faq-panel>
                             <p>Après approbation de votre candidature et confirmation de votre e-mail, vous pourrez choisir votre code unique dans Mon espace influenceur.</p>
                         </div>
                     </details>
-                    <details>
+                    <details data-blur-reveal-item>
                         <summary>La candidature est-elle gratuite ?</summary>
                         <div class="bmc-faq__panel" data-creator-faq-panel>
                             <p>Oui. Envoyer votre candidature est gratuit et ne vous engage à aucun achat.</p>
@@ -189,7 +189,7 @@
             </div>
         </section>
         <section class="bmc-sign" aria-label="BLACK MILK">
-            <div class="bmc-wrap"><p class="bmc-display">Avec amour<br>par Smirnova<sup>/01</sup></p></div>
+            <div class="bmc-wrap"><p class="bmc-display" data-reveal data-reveal-y="12" data-reveal-duration="0.8" data-reveal-once="true">Avec amour<br>par Smirnova<sup>/01</sup></p></div>
         </section>
     </main>
 </x-layout>
