@@ -37,7 +37,7 @@
 
 /* Hero: same rounded pink treatment as the other public pages. */
 .bmc-hero{position:relative;max-width:1560px;margin:0 12px;border-radius:28px;background:var(--bmc-pink);overflow:hidden}
-.bmc-hero::after,.bmc-apply::after{content:"";position:absolute;inset:auto 0 0;height:16px;background:repeating-linear-gradient(90deg,var(--bmc-red) 0 64px,var(--bmc-blue) 64px 128px);pointer-events:none}
+.bmc-hero::after,.bmc-form::after{content:"";position:absolute;inset:auto 0 0;height:16px;background:repeating-linear-gradient(90deg,var(--bmc-red) 0 64px,var(--bmc-blue) 64px 128px);pointer-events:none}
 .bmc-hero__inner{display:grid;grid-template-columns:minmax(0,1.03fr) minmax(0,.9fr);align-items:center;gap:64px;padding-block:72px}
 .bmc-hero__text{display:flex;min-width:0;flex-direction:column;align-items:flex-start;gap:24px}
 .bmc-hero .bmc-display{font-size:72px;line-height:1.02}
@@ -73,8 +73,8 @@
 .bmc-list li>span:first-child{color:var(--bmc-brand);font-size:17px;line-height:1.3}
 
 /* Application: familiar white card, rounded filled fields and soft panel. */
-.bmc-apply{position:relative;overflow:hidden;max-width:1560px;margin:0 12px;padding:68px 0;border-radius:28px;background:var(--bmc-soft)}
-.bmc-form{display:flex;flex-direction:column;gap:20px;width:100%;max-width:760px;margin:auto;padding:42px;border-radius:24px;background:white}
+.bmc-apply{max-width:1560px;margin:0 12px;padding:68px 0;border-radius:28px;background:var(--bmc-soft)}
+.bmc-form{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:20px;width:100%;max-width:760px;margin:auto;padding:42px;border-radius:24px;background:white}
 .bmc-form .bmc-display{font-size:44px}
 .bmc-form .bmc-script{font-size:.9em}
 .bmc-form>.bmc-lead{font-size:14px}
@@ -129,7 +129,7 @@
   .bmc-hero .bmc-display{font-size:48px}
   .bmc-hero .bmc-lead{font-size:14px;line-height:1.6}
   .bmc-hero__visual{justify-content:center;padding:0 14px 10px 30px}
-  .bmc-hero::after,.bmc-apply::after{height:12px}
+  .bmc-hero::after,.bmc-form::after{height:12px}
   .bmc-arch{width:min(100%,280px)}
   .bmc-arch img{border-radius:50% 50% 0 0}
   .bmc-seal{left:-28px;bottom:-20px;width:86px}
