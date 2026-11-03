@@ -80,6 +80,7 @@
                 </div>
             </div>
         </div>
+        <div class="bmlk-packaging-stripe pointer-events-none absolute inset-x-0 bottom-0 z-20" aria-hidden="true"></div>
     </section>
 
     <section id="coffrets" class="overflow-hidden px-3 py-16 sm:px-5 sm:py-20 lg:px-8 lg:py-28">
