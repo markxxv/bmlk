@@ -35,7 +35,7 @@
                             {{ __('BLACK MILK') }}
                         </span>
                         <span class="mt-1 block font-serif text-xs italic leading-none text-bmlk-brand sm:text-sm">
-                            {{ __('Le Premier Choix') }}
+                            {{ __('Le choix des pros') }}
                         </span>
                     </span>
                 </a>
@@ -135,7 +135,7 @@
                             {{ __('BLACK MILK') }}
                         </span>
                         <span class="mt-1 block font-serif text-xs italic text-zinc-700">
-                            {{ __('Le Premier Choix') }}
+                            {{ __('Le choix des pros') }}
                         </span>
                     </span>
                 </a>
