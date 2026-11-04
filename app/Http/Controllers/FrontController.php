@@ -39,7 +39,29 @@ class FrontController extends Controller
 
         $events = $this->upcomingEvents(4);
 
-        return view('home', compact('coffrets', 'categories', 'events'));
+        $seo = match ($this->catalogLocale()) {
+            'en' => [
+                'title' => 'HEMA-Free UV Gels, Bases & Tops | BLACK MILK France',
+                'description' => 'Discover BLACK MILK UV gels, camouflage bases, top coats, polygels and cuticle care. Professional nail products featuring HEMA-free formulas.',
+            ],
+            'ro' => [
+                'title' => 'Geluri UV, baze și topuri fără HEMA | BLACK MILK France',
+                'description' => 'Descoperă gelurile UV, bazele camouflage, topurile, polygelurile și produsele pentru cuticule BLACK MILK. Produse profesionale cu formule fără HEMA.',
+            ],
+            default => [
+                'title' => 'Gels UV, bases et tops sans HEMA | BLACK MILK France',
+                'description' => 'Découvrez les gels UV, bases camouflage, tops, polygels et soins des cuticules BLACK MILK. Produits de manucure professionnelle, avec des formules sans HEMA.',
+            ],
+        };
+
+        return view('home', [
+            'coffrets' => $coffrets,
+            'categories' => $categories,
+            'events' => $events,
+            'metaTitle' => $seo['title'],
+            'metaDescription' => $seo['description'],
+            'canonical' => route('home'),
+        ]);
     }
 
     public function events(): View
