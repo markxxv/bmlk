@@ -1,4 +1,8 @@
-<x-layout>
+<x-layout
+    :title="$metaTitle"
+    :meta-description="$metaDescription"
+    :canonical="$canonical"
+>
     <section class="relative z-[41] -mt-[92px] overflow-hidden bg-[#DDA1AA] pb-6 pt-[92px] sm:-mt-[100px] sm:pb-8 sm:pt-[100px] lg:-mt-[104px] lg:pb-10 lg:pt-[104px]">
         <div class="relative z-10 mx-auto max-w-[1560px] px-5 pt-3 sm:px-5 sm:pt-5 lg:px-8 lg:pt-6">
             <div class="relative lg:min-h-[720px] xl:min-h-[760px]">
