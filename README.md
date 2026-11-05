@@ -400,6 +400,32 @@ php artisan test --filter=PaymentEmailsTest
 Send a new verification or password-reset email to check the styling. Previously delivered messages cannot change.
 
 
+## Filament shop dashboard overview
+
+The main Filament dashboard (/admin) auto-discovers
+`app/Filament/Widgets/ShopOverviewStats.php`. It shows three compact stats:
+
+- **Partner applications**: all `role_applications.status = pending`.
+- **Paid orders pending**: `orders.status = pending` **and**
+  `orders.payment_status = paid`. Unpaid checkouts are excluded.
+- **Sales this month**: number of orders with `payment_status = paid`
+  and `paid_at` in the current `Europe/Paris` calendar month. The
+  in-card Filament sparkline displays daily counts through today, including
+  zero-sale days and handling UTC/Paris month boundaries.
+
+Cards link to their corresponding admin resource. Data refreshes every
+60 seconds. The area chart uses the native Filament stats chart and
+brand-colored styling in `resources/css/filament/admin/theme.css`.
+
+Deploy (the theme CSS requires a frontend rebuild):
+
+```bash
+git pull origin main
+npm run build
+php artisan optimize:clear
+php artisan test --filter=ShopDashboardStatsTest
+```
+
 ## Telegram notifications for paid orders
 
 The verified Stripe payment transition creates exactly one row in `order_telegram_notifications` per order.
