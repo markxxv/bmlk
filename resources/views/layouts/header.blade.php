@@ -26,17 +26,7 @@
                 <div class="hidden min-w-0 items-center justify-end gap-4 xl:flex xl:gap-6">
                     <nav class="flex items-center gap-3 xl:gap-6 2xl:gap-8" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
                         <a href="{{ route('shop.index') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
-                            {{ __('Produits') }}
-                            <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
-                        </a>
-
-                        <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
-                            {{ __('Soins') }}
-                            <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
-                        </a>
-
-                        <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
-                            {{ __('Outils') }}
+                            {{ __('Boutique') }}
                             <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
                         </a>
 
@@ -164,13 +154,7 @@
                     {{ __('Mon espace') }}
                 </a>
                 <a href="{{ route('shop.index') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
-                    {{ __('Produits') }}
-                </a>
-                <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
-                    {{ __('Soins') }}
-                </a>
-                <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
-                    {{ __('Outils') }}
+                    {{ __('Boutique') }}
                 </a>
                 <a href="{{ route('formations') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Formations') }}
