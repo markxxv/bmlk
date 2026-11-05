@@ -26,3 +26,10 @@ html.fi {
         !py-0
     ;
 }
+
+.fi-ta-cell.fi-ta-selection-cell:first-of-type {
+    @apply
+        !px-2
+        !py-0
+    ;
+}
