@@ -23,13 +23,13 @@ html.fi {
     font-size:12px!important;
     @apply
         !px-2
-        !py-0
+        !py-1
     ;
 }
 
 .fi-ta-cell.fi-ta-selection-cell:first-of-type {
     @apply
         !px-2
-        !py-0
+        !py-1
     ;
 }
