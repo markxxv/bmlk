@@ -33,8 +33,8 @@
     --cc-overlay-bg: rgba(58, 46, 48, 0.45);
     --cc-link-color: #a9636f;
 
-    --cc-modal-border-radius: 1.5rem;
-    --cc-btn-border-radius: 9999px;
+    --cc-modal-border-radius: 0.75rem;
+    --cc-btn-border-radius: 0.5rem;
 }
 
 #cc-main .cm__title,
@@ -49,4 +49,15 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+}
+
+#cc-main .pm__section--toggle,
+#cc-main .pm__section--expandable,
+#cc-main .pm__section--toggle .pm__section-toggle,
+#cc-main .pm__badge {
+    border-radius: 0.5rem;
+}
+
+#cc-main .pm__section--toggle {
+    overflow: hidden;
 }
