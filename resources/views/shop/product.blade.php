@@ -4,7 +4,7 @@
     :canonical="$canonical"
     og-type="product"
     :og-image="$ogImage"
-    :admin-edit-url="\App\Filament\Resources\Products\ProductResource::getUrl('edit', ['record' => $product])"
+    :admin-edit-url="auth()->user()?->is_admin ? \App\Filament\Resources\Products\ProductResource::getUrl('edit', ['record' => $product], panel: 'admin') : null"
 >
     @vite('resources/js/product.js')
 
