@@ -37,6 +37,7 @@ class Order extends Model
             'shipped' => __('Expédiée'),
             'completed' => __('Terminée'),
             'cancelled' => __('Annulée'),
+            'archived' => __('Archivée'),
             default => __('En attente'),
         };
     }
