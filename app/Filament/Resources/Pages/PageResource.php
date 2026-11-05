@@ -119,13 +119,19 @@ class PageResource extends Resource
                     ->weight('medium'),
 
                 TextColumn::make('slug_fr')
-                    ->label('Slug')
+                    ->label('Site')
                     ->state(fn (Page $record): string => $record->getTranslation('slug', 'fr', false) ?: '—')
                     ->searchable(
                         query: fn (Builder $query, string $search): Builder =>
                             $query->whereRaw("slug->>'fr' ILIKE ?", ["%{$search}%"])
                     )
-                    ->color('gray'),
+                    ->badge()
+                    ->color('gray')
+                    ->icon('lucide-external-link')
+                    ->url(fn (Page $record): ?string => $record->active && filled($record->getTranslation('slug', 'fr', false))
+                        ? route('page', ['slug' => $record->getTranslation('slug', 'fr', false)])
+                        : null)
+                    ->openUrlInNewTab(),
 
                 IconColumn::make('active')
                     ->label('Active')
@@ -158,9 +164,7 @@ class PageResource extends Resource
                         ->icon('lucide-trash-2'),
                 ]),
             ])
-            ->defaultSort('sort')
-            ->defaultPaginationPageOption(24)
-            ->paginationPageOptions([24, 48, 96]);
+            ->defaultSort('sort');
     }
 
     public static function getPages(): array
