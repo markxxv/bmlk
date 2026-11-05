@@ -129,6 +129,8 @@ return [
         ['value' => '−20 min', 'label' => 'Sur la durée de la prestation'],
         ['value' => 'À vie', 'label' => 'Accès au cours en ligne'],
     ],
+    // Gallery order from the prototype (public/img/formations/skin-XX.webp).
+    'wax_skins' => ['14', '05', '06', '02', '03', '07', '13', '12', '10', '15', '08', '09', '01'],
     'wax_about' => [
         'La qualité d’une manucure ne dépend pas du nombre de gestes maîtrisés, mais de la compréhension des tissus sur lesquels on travaille. La cuticule, l’éponychium, le ptérygion et le bourrelet proximal sont des structures distinctes, d’épaisseur, de densité et de réaction au travail mécanique différentes. Une peau déshydratée, une hyperkératose ou, à l’inverse, une peau fine et atrophique exigent un choix différent de fraise, de diamètre, de vitesse de rotation et d’angle d’attaque.',
         'La technique signature d’Elena Smirnova repose sur ce principe. La formation s’appuie sur l’anatomie et la physiologie de l’appareil unguéal, à partir desquelles se construisent le protocole de diagnostic et le choix raisonné de l’outil. Vous apprendrez à évaluer l’état des tissus avant de commencer et à adapter les paramètres de travail à chaque cliente, au lieu d’appliquer un protocole unique à toutes.',

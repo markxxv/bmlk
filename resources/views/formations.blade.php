@@ -148,6 +148,27 @@
                     @endforeach
                 </div>
 
+                <div class="mt-12 lg:mt-16">
+                    <h3 class="font-serif text-2xl font-medium text-zinc-900 sm:text-3xl" data-reveal data-reveal-y="12" data-reveal-duration="0.75">{{ __('Les types de peau, avant et après') }}</h3>
+                    <p class="mt-3 max-w-3xl text-sm leading-6 text-zinc-500">{{ __('Cuticule adhérente, hyperkératose des bourrelets, peau fine facilement traumatisée, peau sèche et déshydratée, peau réfractaire au traitement standard — et l’évolution de la peau d’un rendez-vous à l’autre.') }}</p>
+
+                    <div class="mt-6 grid grid-cols-5 gap-2 sm:grid-cols-7 sm:gap-3 lg:grid-cols-[repeat(13,minmax(0,1fr))]" data-blur-reveal data-blur-stagger="0.04" data-blur-duration="0.7" data-blur-y="12" data-blur-pixels="6" data-blur-once="true">
+                        @foreach ($waxSkins as $skin)
+                            <div class="aspect-[3/4] overflow-hidden rounded-xl bg-[#EFDDE0]" data-blur-reveal-item>
+                                <img
+                                    src="{{ asset('img/formations/skin-'.$skin.'.webp') }}"
+                                    alt="{{ __('Peau périunguéale étudiée en formation') }} {{ $loop->iteration }}"
+                                    width="465"
+                                    height="620"
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="h-full w-full object-cover"
+                                >
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 <div class="mt-12 grid gap-10 lg:mt-16 lg:grid-cols-12 lg:gap-16">
                     <div class="lg:col-span-5">
                         <h3 class="font-serif text-2xl font-medium text-zinc-900 sm:text-3xl" data-reveal data-reveal-y="12" data-reveal-duration="0.75">{{ __('À propos de la formation') }}</h3>
@@ -157,24 +178,6 @@
                                 <p data-blur-reveal-item>{{ __($paragraph) }}</p>
                             @endforeach
                         </div>
-
-                        <div class="mt-8 grid grid-cols-2 gap-3 sm:gap-4" data-blur-reveal data-blur-stagger="0.08" data-blur-duration="0.8" data-blur-y="16" data-blur-pixels="8">
-                            @foreach (['skin-14', 'skin-05', 'skin-06', 'skin-02'] as $skin)
-                                <div class="aspect-[3/4] overflow-hidden rounded-2xl bg-[#EFDDE0]" data-blur-reveal-item>
-                                    <img
-                                        src="{{ asset('img/formations/'.$skin.'.webp') }}"
-                                        alt="{{ __('Peau périunguéale étudiée en formation') }}"
-                                        width="465"
-                                        height="620"
-                                        loading="lazy"
-                                        decoding="async"
-                                        class="h-full w-full object-cover"
-                                    >
-                                </div>
-                            @endforeach
-                        </div>
-
-                        <p class="mt-3 text-xs text-zinc-500">{{ __('Cuticule adhérente, hyperkératose, peau fine, peau sèche, peau réfractaire : les cinq types de peau étudiés.') }}</p>
                     </div>
 
                     <div class="lg:col-span-7">

@@ -82,6 +82,7 @@ class FrontController extends Controller
             'waxModules' => config('formations.wax_modules'),
             'waxFacts' => config('formations.wax_facts'),
             'waxAbout' => config('formations.wax_about'),
+            'waxSkins' => config('formations.wax_skins'),
             'waxGoals' => config('formations.wax_goals'),
             'waxIncluded' => config('formations.wax_included'),
             'metaTitle' => __('Formations pour prothésistes ongulaires | BLACK MILK'),
