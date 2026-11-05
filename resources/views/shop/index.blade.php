@@ -2,6 +2,7 @@
     :title="$metaTitle"
     :meta-description="$metaDescription"
     :canonical="$canonical"
+    :admin-edit-url="$currentCategory ? \App\Filament\Resources\Categories\CategoryResource::getUrl('edit', ['record' => $currentCategory]) : null"
 >
     @php
         $locale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true) ? app()->getLocale() : 'fr';
