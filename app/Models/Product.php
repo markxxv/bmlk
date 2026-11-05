@@ -132,29 +132,6 @@ class Product extends Model implements HasMedia
         return '';
     }
 
-    /**
-     * srcset for storefront cards: 'card' for 1x screens, 'detail' for Retina.
-     * Browsers download only one candidate, so 1x page weight is unchanged.
-     */
-    public function storefrontImageSrcset(): string
-    {
-        $media = $this->getFirstMedia('images');
-
-        if ($media === null) {
-            return '';
-        }
-
-        $candidates = [];
-
-        foreach (['card' => 800, 'detail' => 1200] as $name => $width) {
-            if ($media->hasGeneratedConversion($name)) {
-                $candidates[] = $media->getUrl($name).' '.$width.'w';
-            }
-        }
-
-        return count($candidates) > 1 ? implode(', ', $candidates) : '';
-    }
-
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
