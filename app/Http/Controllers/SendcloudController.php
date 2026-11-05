@@ -527,9 +527,9 @@ class SendcloudController extends Controller
             if ($timestamp > (int) ($order->sendcloud_event_at ?? 0)) {
                 $message = strtolower((string) data_get($parcel, 'status.message', ''));
                 $status = $order->status;
-                // Delivered is terminal: later carrier updates cannot roll
-                // an already completed order back to shipped.
-                if ($status !== 'completed') {
+                // Completed and manually archived orders are terminal: carrier
+                // updates may refresh tracking, but cannot change their status.
+                if (! in_array($status, ['completed', 'archived'], true)) {
                     if (preg_match('/^(delivered|livr[ée]|distribu[ée])/iu', $message)) {
                         $status = 'completed';
                     } elseif (! empty($parcel['tracking_number']) || $order->tracking_number
