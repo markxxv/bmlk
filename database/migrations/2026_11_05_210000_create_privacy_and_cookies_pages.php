@@ -244,8 +244,8 @@ HTML;
             <td>2 heures maximum</td>
         </tr>
         <tr>
-            <td><code>CookieScriptConsent</code></td>
-            <td>Cookie-Script.com (outil de gestion du consentement)</td>
+            <td><code>cc_cookie</code></td>
+            <td>BLACK MILK</td>
             <td>Mémorisation de vos choix en matière de cookies</td>
             <td>6 mois</td>
         </tr>
@@ -266,18 +266,18 @@ HTML;
 </div>
 
 <h2>3. Traceurs soumis à votre consentement</h2>
-<p>D’autres traceurs ne sont déposés ou lus qu’<strong>après votre accord</strong> : mesure d’audience et de performance, personnalisation de l’expérience, contenus ou publicités ciblés. Aucun de ces traceurs n’est activé tant que vous n’avez pas fait votre choix.</p>
+<p>D’autres traceurs ne sont déposés ou lus qu’<strong>après votre accord</strong>. Ils relèvent de la catégorie « cookies marketing » : mesure de l’efficacité de nos campagnes publicitaires et affichage d’offres adaptées à vos centres d’intérêt (par exemple via Meta Pixel ou des plateformes publicitaires). Aucun de ces traceurs n’est activé tant que vous n’avez pas fait votre choix.</p>
 <ul>
-    <li>Lors de votre première visite, un bandeau vous permet d’<strong>accepter</strong>, de <strong>refuser</strong> ou de <strong>personnaliser</strong> vos choix par catégorie ; refuser est aussi simple qu’accepter.</li>
+    <li>Lors de votre première visite, un bandeau vous permet de <strong>tout accepter</strong>, de <strong>tout refuser</strong> ou de <strong>gérer vos préférences</strong> par catégorie ; refuser est aussi simple qu’accepter.</li>
     <li>L’accès au site ne dépend pas de votre acceptation de ces traceurs (aucun « mur de cookies »).</li>
     <li>Votre choix est conservé pendant <strong>6 mois</strong>, puis nous vous le demanderons à nouveau.</li>
-    <li>La liste détaillée et à jour de ces traceurs (nom, émetteur, finalité, durée) est consultable à tout moment dans le centre de préférences du bandeau.</li>
+    <li>Cette politique est mise à jour chaque fois qu’un nouveau traceur soumis à consentement est ajouté au site.</li>
 </ul>
 
 <h2>4. Gérer vos choix</h2>
 <p>Vous pouvez modifier ou retirer votre consentement à tout moment, aussi simplement que vous l’avez donné :</p>
 <p>
-    <button type="button" class="cookie-settings-button" onclick="if (window.CookieScript && window.CookieScript.instance) { window.CookieScript.instance.show(); } return false;">Modifier mes choix de cookies</button>
+    <button type="button" class="cookie-settings-button" data-cc="show-preferencesModal">Modifier mes choix de cookies</button>
 </p>
 <p>Vous pouvez aussi paramétrer votre navigateur pour bloquer ou supprimer les cookies :</p>
 <ul>

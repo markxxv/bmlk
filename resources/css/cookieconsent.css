@@ -1,0 +1,52 @@
+/* Cookie banner — BLACK MILK palette (vanilla-cookieconsent v3 variables). */
+#cc-main {
+    --cc-font-family: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --cc-bg: #ffffff;
+    --cc-primary-color: #3a2e30;
+    --cc-secondary-color: #776a70;
+
+    --cc-btn-primary-bg: #712b47;
+    --cc-btn-primary-color: #ffffff;
+    --cc-btn-primary-border-color: #712b47;
+    --cc-btn-primary-hover-bg: #a9636f;
+    --cc-btn-primary-hover-color: #ffffff;
+    --cc-btn-primary-hover-border-color: #a9636f;
+
+    --cc-btn-secondary-bg: #f6ecee;
+    --cc-btn-secondary-color: #712b47;
+    --cc-btn-secondary-border-color: #f6ecee;
+    --cc-btn-secondary-hover-bg: #eedde2;
+    --cc-btn-secondary-hover-color: #712b47;
+    --cc-btn-secondary-hover-border-color: #eedde2;
+
+    --cc-separator-border-color: #f0e6e8;
+    --cc-toggle-on-bg: #712b47;
+    --cc-toggle-off-bg: #c9b7bd;
+    --cc-toggle-readonly-bg: #e4d6da;
+    --cc-section-category-border: #f0e6e8;
+    --cc-cookie-category-block-bg: #fcf8f4;
+    --cc-cookie-category-block-border: #f0e6e8;
+    --cc-cookie-category-block-hover-bg: #f6ecee;
+    --cc-cookie-category-block-hover-border: #eedde2;
+    --cc-cookie-category-expanded-block-bg: #fcf8f4;
+    --cc-cookie-category-expanded-block-hover-bg: #f6ecee;
+    --cc-overlay-bg: rgba(58, 46, 48, 0.45);
+    --cc-link-color: #a9636f;
+
+    --cc-modal-border-radius: 1.5rem;
+    --cc-btn-border-radius: 9999px;
+}
+
+#cc-main .cm__title,
+#cc-main .pm__title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 500;
+}
+
+#cc-main .cm__btn,
+#cc-main .pm__btn {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}

@@ -19,6 +19,7 @@
     "dependencies": {
         "alpinejs": "^3.17.4",
         "embla-carousel": "^8.6.0",
-        "motion": "^13.4.1"
+        "motion": "^13.4.1",
+        "vanilla-cookieconsent": "^3.3.0"
     }
 }
