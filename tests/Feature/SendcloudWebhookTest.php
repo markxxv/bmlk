@@ -41,6 +41,19 @@ class SendcloudWebhookTest extends TestCase
         $this->assertSame('completed', $order->fresh()->status);
     }
 
+    public function test_archived_order_remains_archived_after_carrier_updates(): void
+    {
+        $order = $this->order();
+        $order->update(['status' => 'archived']);
+
+        $this->event($order, 'Shipped', 1000, 'TRK-ARCHIVE');
+        $this->assertSame('archived', $order->fresh()->status);
+        $this->assertSame('TRK-ARCHIVE', $order->fresh()->tracking_number);
+
+        $this->event($order, 'Delivered', 1001, 'TRK-ARCHIVE');
+        $this->assertSame('archived', $order->fresh()->status);
+    }
+
     public function test_creating_label_with_tracking_marks_order_shipped(): void
     {
         $order = $this->order();
