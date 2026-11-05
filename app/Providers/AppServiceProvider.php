@@ -10,6 +10,7 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Observers\TranslatableSlugObserver;
+use Filament\Tables\Table;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -30,6 +31,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Blade::component('layouts.app', 'layout');
+
+        // Use one default page size for every Filament resource table.
+        Table::configureUsing(fn (Table $table): Table => $table
+            ->defaultPaginationPageOption(50)
+            ->paginationPageOptions([10, 25, 50, 100]));
 
         // Reuse the same branded Blade email design as the order receipts.
         // Laravel still owns its signed verification and reset-token logic.
