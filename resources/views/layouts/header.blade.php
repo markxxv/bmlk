@@ -42,7 +42,7 @@
 
                 <div class="hidden items-center justify-end gap-8 lg:flex" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
                     <a href="{{ route('where-to-buy') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
-                        {{ __('Où acheter') }}
+                        {{ __('Points de vente') }}
                         <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
                     </a>
 
@@ -166,7 +166,7 @@
                     {{ __('Outils') }}
                 </a>
                 <a href="{{ route('where-to-buy') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
-                    {{ __('Où acheter') }}
+                    {{ __('Points de vente') }}
                 </a>
                 <a href="{{ route('events') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Événements') }}
