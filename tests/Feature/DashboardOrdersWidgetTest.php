@@ -90,6 +90,39 @@ class DashboardOrdersWidgetTest extends TestCase
         $widget->call('filterByStatus', 'invalid_filter')->assertSet('statusFilter', 'cancelled');
     }
 
+    public function test_fulfillment_badges_have_semantic_colors_and_archived_can_be_filtered(): void
+    {
+        $this->actingAs($this->admin());
+
+        $archived = $this->order('paid', 'archived');
+        $active = $this->order('paid', 'processing');
+        $cancelled = $this->order('paid', 'cancelled');
+
+        $widget = Livewire::test(OrdersWidget::class)
+            ->assertSee('Archived (1)')
+            ->assertSee('Preparing (1)')
+            ->assertSee('Cancelled (1)');
+
+        $component = $widget->instance();
+
+        foreach ([
+            'pending' => 'bg-amber-100',
+            'processing' => 'bg-blue-100',
+            'shipped' => 'bg-sky-100',
+            'completed' => 'bg-green-100',
+            'cancelled' => 'bg-red-100',
+            'archived' => 'bg-gray-100',
+        ] as $status => $class) {
+            $this->assertStringContainsString($class, $component->fulfillmentBadgeClass($status));
+        }
+
+        $widget->call('filterByStatus', 'archived')
+            ->assertSee($archived->order_number)
+            ->assertDontSee($active->order_number)
+            ->assertDontSee($cancelled->order_number)
+            ->assertSee('bg-gray-100', escape: false);
+    }
+
     private function order(string $paymentStatus, string $status): Order
     {
         return Order::query()->create([
