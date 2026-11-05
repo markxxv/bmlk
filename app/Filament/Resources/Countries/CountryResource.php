@@ -106,9 +106,7 @@ class CountryResource extends Resource
                 EditAction::make()->icon('lucide-pencil'),
             ])
             ->reorderable('sort')
-            ->defaultSort('sort')
-            ->defaultPaginationPageOption(50)
-            ->paginationPageOptions([25, 50, 100]);
+            ->defaultSort('sort');
     }
 
     public static function getPages(): array
