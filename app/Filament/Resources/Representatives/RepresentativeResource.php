@@ -182,9 +182,7 @@ class RepresentativeResource extends Resource
                         ->icon('lucide-trash-2'),
                 ]),
             ])
-            ->defaultSort('sort')
-            ->defaultPaginationPageOption(24)
-            ->paginationPageOptions([24, 48, 96]);
+            ->defaultSort('sort');
     }
 
     public static function getPages(): array
