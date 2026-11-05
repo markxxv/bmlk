@@ -175,9 +175,7 @@ class ShippingBoxResource extends Resource
                 DeleteAction::make()->icon('lucide-trash-2'),
             ])
             ->reorderable('sort')
-            ->defaultSort('sort')
-            ->defaultPaginationPageOption(24)
-            ->paginationPageOptions([24, 48, 96]);
+            ->defaultSort('sort');
     }
 
     private static function dimensionsLabel(ShippingBox $box, string $prefix): string
