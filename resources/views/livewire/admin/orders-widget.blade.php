@@ -65,14 +65,14 @@
                             <span class="inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold {{ $this->paymentBadgeClass($order->payment_status) }}">
                                 {{ $this->paymentLabel($order->payment_status) }}
                             </span>
-                            @if ($order->payment_status === 'paid' || $order->status === 'cancelled')
-                                <div class="mt-1 text-xs text-gray-500 md:hidden">{{ $this->fulfillmentLabel($order->status) }}</div>
+                            @if ($order->payment_status === 'paid' || in_array($order->status, ['cancelled', 'archived'], true))
+                                <span class="mt-1 inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium md:hidden {{ $this->fulfillmentBadgeClass($order->status) }}">{{ $this->fulfillmentLabel($order->status) }}</span>
                             @endif
                         </td>
 
                         <td class="hidden px-3 py-3 text-xs text-gray-500 dark:text-gray-400 md:table-cell">
-                            @if ($order->payment_status === 'paid' || $order->status === 'cancelled')
-                                {{ $this->fulfillmentLabel($order->status) }}
+                            @if ($order->payment_status === 'paid' || in_array($order->status, ['cancelled', 'archived'], true))
+                                <span class="inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium {{ $this->fulfillmentBadgeClass($order->status) }}">{{ $this->fulfillmentLabel($order->status) }}</span>
                             @else
                                 —
                             @endif
