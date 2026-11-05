@@ -8,5 +8,4 @@ use Filament\Resources\Pages\EditRecord;
 class EditRepresentative extends EditRecord
 {
     protected static string $resource = RepresentativeResource::class;
-
 }
