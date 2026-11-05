@@ -91,6 +91,7 @@ class ProductResource extends Resource
                                             ->image()
                                             ->multiple()
                                             ->reorderable()
+                                            ->appendFiles()
                                             ->columnSpanFull(),
                                     ]),
 
