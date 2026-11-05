@@ -417,6 +417,17 @@ Cards link to their corresponding admin resource. Data refreshes every
 60 seconds. The area chart uses the native Filament stats chart and
 brand-colored styling in `resources/css/filament/admin/theme.css`.
 
+Directly below the stats, the main dashboard shows the **Maison Plush-style
+orders widget** (`app/Filament/Widgets/OrdersWidget.php` and
+`App\\Livewire\\Admin\\OrdersWidget`). The filter pills prioritize payment
+(`unpaid`, `paid`, `processing`, `failed`) before fulfillment
+(`pending`, `processing`, `shipped`, `completed`, `cancelled`).
+The payment badge is the prominent column; fulfillment only becomes actionable
+for paid orders, except for cancelled orders. Filter counts cover the entire
+database; the table shows the latest 60 matching orders. Only Filament admins
+can mount the underlying Livewire component.
+
+
 Deploy (the theme CSS requires a frontend rebuild):
 
 ```bash
@@ -424,6 +435,7 @@ git pull origin main
 npm run build
 php artisan optimize:clear
 php artisan test --filter=ShopDashboardStatsTest
+php artisan test --filter=DashboardOrdersWidgetTest
 ```
 
 ## Telegram notifications for paid orders
