@@ -114,6 +114,18 @@ class CategoryResource extends Resource
                     ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("name->>'fr' ILIKE ?", ["%{$search}%"]))
                     ->weight('medium'),
 
+                TextColumn::make('slug_fr')
+                    ->label('Site')
+                    ->state(fn (Category $record): string => $record->getTranslation('slug', 'fr', false) ?: '—')
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("slug->>'fr' ILIKE ?", ["%{$search}%"]))
+                    ->badge()
+                    ->color('gray')
+                    ->icon('lucide-external-link')
+                    ->url(fn (Category $record): ?string => ! $record->trashed() && filled($record->getTranslation('slug', 'fr', false))
+                        ? route('shop.category', ['slug' => $record->getTranslation('slug', 'fr', false)])
+                        : null)
+                    ->openUrlInNewTab(),
+
                 TextColumn::make('parent_name')
                     ->label('Parent')
                     ->state(fn (Category $record): string => $record->parent?->getTranslation('name', 'fr', false) ?: '—')
