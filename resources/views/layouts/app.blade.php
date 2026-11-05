@@ -5,6 +5,7 @@
     'robots' => 'index, follow',
     'ogType' => 'website',
     'ogImage' => null,
+    'adminEditUrl' => null,
 ])
 
 <!DOCTYPE html>
@@ -57,6 +58,15 @@
     <x-cart />
 
     {{ $slot }}
+
+    @if ($adminEditUrl && auth()->user()?->is_admin)
+        <a href="{{ $adminEditUrl }}"
+           class="fixed bottom-5 left-5 z-[90] flex size-12 items-center justify-center rounded-full bg-bmlk-brand text-white shadow-lg transition hover:bg-[#572036] hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bmlk-brand"
+           title="Modifier dans l’administration"
+           aria-label="Modifier cette page">
+            <x-lucide-pencil class="size-5" />
+        </a>
+    @endif
 
     @include('layouts.footer')
 
