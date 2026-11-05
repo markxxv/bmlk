@@ -11,7 +11,7 @@
                         <div class="flex items-center gap-2 sm:gap-3">
                             <span class="h-px w-8 shrink-0 bg-zinc-800 sm:w-10" data-line-reveal data-line-reveal-duration="0.8"></span>
                             <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-800 sm:text-xs sm:tracking-widest" data-reveal data-reveal-y="10" data-reveal-duration="0.7" data-reveal-delay="0.08">
-                                {{ __('Conçu par des prothésistes ongulaires, pour les prothésistes ongulaires') }}
+                                {{ __('Conçu par une prothésiste ongulaire, pour les prothésistes ongulaires') }}
                             </p>
                         </div>
 
@@ -286,7 +286,7 @@
                             class="group mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-bmlk-brand transition hover:text-[#945763]"
                             data-blur-reveal-item
                         >
-                            {{ __('Voir toute la collection') }}
+                            {{ __('Découvrir toute la collection') }}
                             <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </a>
                     </div>
