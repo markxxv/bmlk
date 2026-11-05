@@ -130,8 +130,13 @@
                                         </span>
                                     @endif
                                 @if ($image)
+                                    @php($coffretSrcset = $product->storefrontImageSrcset())
                                     <img
                                         src="{{ $image }}"
+                                        @if ($coffretSrcset)
+                                            srcset="{{ $coffretSrcset }}"
+                                            sizes="(min-width: 1600px) 500px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 80vw"
+                                        @endif
                                         alt="{{ $product->name }}"
                                         class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                                         loading="lazy"
