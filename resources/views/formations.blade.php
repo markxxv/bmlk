@@ -7,23 +7,23 @@
     <main>
         {{-- Hero --}}
         <section class="px-3 pb-5 pt-5 sm:px-5 sm:pb-10 lg:px-8">
-            <div class="relative mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-[#EFDDE0]">
+            <div class="relative mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-[#DDA1AA]">
                 <div class="grid lg:min-h-[640px] lg:grid-cols-12">
                     <div class="flex flex-col justify-between px-7 pb-14 pt-12 sm:px-10 sm:pt-16 lg:col-span-7 lg:px-14 lg:pb-16 lg:pt-20 xl:px-16">
                         <div>
                             <div class="flex items-center gap-3">
-                                <span class="h-px w-8 shrink-0 bg-zinc-800 sm:w-10" data-line-reveal data-line-reveal-duration="0.8"></span>
-                                <p class="text-xs font-semibold uppercase tracking-widest text-zinc-800" data-reveal data-reveal-y="10" data-reveal-duration="0.7" data-reveal-delay="0.08">
+                                <span class="h-px w-8 shrink-0 bg-accent sm:w-10" data-line-reveal data-line-reveal-duration="0.8"></span>
+                                <p class="text-xs font-semibold uppercase tracking-widest text-accent" data-reveal data-reveal-y="10" data-reveal-duration="0.7" data-reveal-delay="0.08">
                                     {{ __('Smirnova School · BLACK MILK') }}
                                 </p>
                             </div>
 
-                            <h1 class="mt-7 max-w-3xl font-serif text-5xl font-medium leading-[0.95] tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
+                            <h1 class="mt-7 max-w-3xl font-serif text-5xl font-medium leading-[0.95] tracking-tight text-[#3A2E30] sm:text-6xl lg:text-7xl xl:text-8xl" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
                                 <span class="block">{{ __('Apprenez') }}</span>
                                 <span class="block italic text-white">{{ __('à la source') }}</span>
                             </h1>
 
-                            <p class="mt-6 max-w-xl text-base leading-7 text-zinc-800 sm:text-lg sm:leading-8" data-reveal data-reveal-y="18" data-reveal-duration="0.85" data-reveal-delay="0.18">
+                            <p class="mt-6 max-w-xl text-base leading-7 text-[#46343A] sm:text-lg sm:leading-8" data-reveal data-reveal-y="18" data-reveal-duration="0.85" data-reveal-delay="0.18">
                                 {{ __('Les formations d’Elena Smirnova pour maîtriser la technique à la cire : en ligne, à votre rythme, ou en présentiel, directement auprès d’elle.') }}
                             </p>
 
@@ -33,7 +33,7 @@
                                     <x-lucide-chevron-down class="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
                                 </a>
 
-                                <a href="#presentiel" class="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-xs font-semibold uppercase tracking-widest text-zinc-900 transition hover:bg-zinc-50">
+                                <a href="#presentiel" class="inline-flex h-12 items-center justify-center rounded-full bg-bmlk-soft px-6 text-xs font-semibold uppercase tracking-widest text-accent transition hover:bg-[#EEDDE2]">
                                     {{ __('Formations en présentiel') }}
                                 </a>
                             </div>
@@ -41,18 +41,18 @@
 
                         <div class="mt-12 grid grid-cols-1 gap-4 border-t border-[#C98792] pt-6 sm:grid-cols-3 sm:gap-5" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.75" data-blur-y="12" data-blur-pixels="7">
                             <div class="flex items-center gap-3" data-blur-reveal-item>
-                                <x-lucide-graduation-cap class="h-5 w-5 shrink-0 text-zinc-800" stroke-width="1.4" />
-                                <p class="text-[11px] font-semibold tracking-widest text-zinc-800">{{ __('Accès à vie aux cours en ligne') }}</p>
+                                <x-lucide-graduation-cap class="h-5 w-5 shrink-0 text-accent" stroke-width="1.4" />
+                                <p class="text-[11px] font-semibold tracking-widest text-[#3A2E30]">{{ __('Accès à vie aux cours en ligne') }}</p>
                             </div>
 
                             <div class="flex items-center gap-3" data-blur-reveal-item>
-                                <x-lucide-badge-check class="h-5 w-5 shrink-0 text-zinc-800" stroke-width="1.4" />
-                                <p class="text-[11px] font-semibold tracking-widest text-zinc-800">{{ __('Certificat de fin de formation') }}</p>
+                                <x-lucide-badge-check class="h-5 w-5 shrink-0 text-accent" stroke-width="1.4" />
+                                <p class="text-[11px] font-semibold tracking-widest text-[#3A2E30]">{{ __('Certificat de fin de formation') }}</p>
                             </div>
 
                             <div class="flex items-center gap-3" data-blur-reveal-item>
-                                <x-lucide-map-pin class="h-5 w-5 shrink-0 text-zinc-800" stroke-width="1.4" />
-                                <p class="text-[11px] font-semibold tracking-widest text-zinc-800">{{ __('Sessions en présentiel avec Elena') }}</p>
+                                <x-lucide-map-pin class="h-5 w-5 shrink-0 text-accent" stroke-width="1.4" />
+                                <p class="text-[11px] font-semibold tracking-widest text-[#3A2E30]">{{ __('Sessions en présentiel avec Elena') }}</p>
                             </div>
                         </div>
                     </div>
