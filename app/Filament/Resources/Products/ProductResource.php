@@ -274,12 +274,17 @@ class ProductResource extends Resource
                     ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("name->>'fr' ILIKE ?", ["%{$search}%"]))
                     ->weight('medium'),
 
-                // TextColumn::make('slug_fr')
-                //     ->label('Slug')
-                //     ->state(fn (Product $record): string => $record->getTranslation('slug', 'fr', false) ?: '—')
-                //     ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("slug->>'fr' ILIKE ?", ["%{$search}%"]))
-                //     ->color('gray')
-                //     ->toggleable(),
+                TextColumn::make('slug_fr')
+                    ->label('Site')
+                    ->state(fn (Product $record): string => $record->getTranslation('slug', 'fr', false) ?: '—')
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("slug->>'fr' ILIKE ?", ["%{$search}%"]))
+                    ->badge()
+                    ->color('gray')
+                    ->icon('lucide-external-link')
+                    ->url(fn (Product $record): ?string => $record->active && ! $record->trashed() && filled($record->getTranslation('slug', 'fr', false))
+                        ? route('shop.product', ['slug' => $record->getTranslation('slug', 'fr', false)])
+                        : null)
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('category_name')
                     ->label('Category')
@@ -349,9 +354,7 @@ class ProductResource extends Resource
                         ->icon('lucide-trash-2'),
                 ]),
             ])
-            ->defaultSort('id', 'desc')
-            ->defaultPaginationPageOption(24)
-            ->paginationPageOptions([24, 48, 96]);
+            ->defaultSort('id', 'desc');
     }
 
     public static function getPages(): array
