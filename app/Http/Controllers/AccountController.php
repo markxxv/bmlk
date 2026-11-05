@@ -276,11 +276,23 @@ class AccountController extends Controller
             ->where('role', $data['role'])->where('status', 'pending')->exists()) {
             return back()->with('success', __('Demande déjà enregistrée.'));
         }
-        $user->roleApplications()->create([
+        $application = $user->roleApplications()->create([
             'role' => $data['role'],
             'message' => $data['message'] ?? null,
             'status' => 'pending',
         ]);
+
+        // Notify staff immediately, without a job or queue. A Telegram outage
+        // must never prevent the customer from submitting the application.
+        try {
+            app(\App\Services\PartnerApplicationTelegramNotifier::class)->send($application->id);
+        } catch (\Throwable $exception) {
+            // The scheduler retries this unsent alert directly.
+            Log::warning('Partner application saved; immediate Telegram send failed.', [
+                'application_id' => $application->id,
+            ]);
+        }
+
         return back()->with('success', __('Demande envoyée.'));
     }
 
