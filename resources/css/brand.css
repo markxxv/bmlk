@@ -6,14 +6,8 @@
     --color-bmlk-footer-line: #C49BAA;
 }
 
-/* Signature packaging stripes — 16px desktop / 12px mobile. */
+/* Signature packaging stripes — same blue/cream module as the hero medallion (22px / 14px). */
 .bmlk-packaging-stripe {
-    height: 16px;
-    background: repeating-linear-gradient(90deg, #7E1519 0 64px, #A3BCD6 64px 128px);
-}
-
-@media (max-width: 720px) {
-    .bmlk-packaging-stripe {
-        height: 12px;
-    }
+    height: 14px;
+    background: repeating-linear-gradient(90deg, #94AABF 0 22px, #F6EEE6 22px 44px);
 }

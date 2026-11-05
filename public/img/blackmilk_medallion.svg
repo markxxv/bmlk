@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 997.3 997.3">
+  <!-- Medallion derived from the client prototype. 1 unit = 1/1000 of the hero cow width.
+       Outer stripe disc 0.961, inner cream disc 0.773, 8px gap + 1px wine line, stripes 22px at cow width 496. -->
+  <defs>
+    <pattern id="bm-stripes" width="89.5" height="997.3" patternUnits="userSpaceOnUse" x="18.3">
+      <rect x="0" y="0" width="44.75" height="997.3" fill="#94AABF"/>
+      <rect x="44.75" y="0" width="44.75" height="997.3" fill="#F6EEE6"/>
+    </pattern>
+    <clipPath id="bm-disc">
+      <circle cx="498.65" cy="498.65" r="480.35"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#bm-disc)" opacity="0.95">
+    <rect x="0" y="0" width="997.3" height="997.3" fill="url(#bm-stripes)"/>
+  </g>
+
+  <circle cx="498.65" cy="498.65" r="497.64" fill="none" stroke="#6B2234" stroke-width="2.03"/>
+  <circle cx="498.65" cy="498.65" r="386.65" fill="#F6EEE6"/>
+  <circle cx="498.65" cy="498.65" r="385.64" fill="none" stroke="#6B2234" stroke-width="2.03"/>
+</svg>
