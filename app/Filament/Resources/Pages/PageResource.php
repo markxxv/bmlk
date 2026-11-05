@@ -135,10 +135,10 @@ class PageResource extends Resource
                     ->trueColor('success')
                     ->falseColor('danger'),
 
-                TextColumn::make('sort')
-                    ->label('Order')
-                    ->sortable()
-                    ->alignCenter(),
+                // TextColumn::make('sort')
+                //     ->label('Order')
+                //     ->sortable()
+                //     ->alignCenter(),
 
                 TextColumn::make('updated_at')
                     ->label('Updated')
