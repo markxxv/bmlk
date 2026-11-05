@@ -21,6 +21,7 @@ class EditOrder extends EditRecord
                 ->label('Synchroniser Sendcloud')
                 ->icon('lucide-refresh-cw')
                 ->visible(fn (): bool => $this->record->payment_status === 'paid'
+                    && $this->record->status !== 'archived'
                     && is_array($this->record->shipping_parcel)
                     && ! $this->record->sendcloud_order_id)
                 ->action(function (): void {
@@ -36,6 +37,7 @@ class EditOrder extends EditRecord
                 ->icon('lucide-printer')
                 ->color('primary')
                 ->visible(fn (): bool => $this->record->payment_status === 'paid'
+                    && $this->record->status !== 'archived'
                     && is_array($this->record->shipping_parcel)
                     && ! $this->record->tracking_number)
                 ->requiresConfirmation()
