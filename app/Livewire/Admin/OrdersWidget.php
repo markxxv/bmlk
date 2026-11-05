@@ -24,6 +24,7 @@ class OrdersWidget extends Component
         'shipped' => 'Shipped',
         'completed' => 'Completed',
         'cancelled' => 'Cancelled',
+        'archived' => 'Archived',
     ];
 
     #[Url(as: 'orders')]
@@ -112,8 +113,8 @@ class OrdersWidget extends Component
                 }
             }
 
-            if ($row->status === 'cancelled') {
-                $counts['cancelled'] += $count;
+            if (in_array($row->status, ['cancelled', 'archived'], true)) {
+                $counts[$row->status] += $count;
             }
         }
 
@@ -149,7 +150,8 @@ class OrdersWidget extends Component
                     ->where('status', $status);
                 break;
             case 'cancelled':
-                $query->where('status', 'cancelled');
+            case 'archived':
+                $query->where('status', $this->statusFilter);
                 break;
         }
     }
@@ -184,7 +186,21 @@ class OrdersWidget extends Component
             'shipped' => 'Shipped',
             'completed' => 'Completed',
             'cancelled' => 'Cancelled',
-            default => Str::headline((string) ($status ?? 'Unknown')),
+            'archived' => 'Archived',
+            default => Str::headline((string) ($status ?? 'Unknown')), 
+        };
+    }
+
+    public function fulfillmentBadgeClass(?string $status): string
+    {
+        return match ($status) {
+            'pending' => 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
+            'processing' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+            'shipped' => 'bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-400',
+            'completed' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+            'cancelled' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+            'archived' => 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
+            default => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
         };
     }
 
