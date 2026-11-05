@@ -4,6 +4,7 @@
     :canonical="$canonical"
     og-type="product"
     :og-image="$ogImage"
+    :admin-edit-url="\App\Filament\Resources\Products\ProductResource::getUrl('edit', ['record' => $product])"
 >
     @vite('resources/js/product.js')
 
