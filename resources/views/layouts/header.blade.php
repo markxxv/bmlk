@@ -5,27 +5,10 @@
 >
     <div class="mx-auto max-w-[1560px]">
         <div class="relative rounded-full bg-white px-3 shadow-xl shadow-zinc-800/10 sm:px-5 lg:px-7">
-            <div class="grid min-h-20 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 lg:grid-cols-[1fr_auto_1fr] lg:gap-4">
-                <nav class="hidden items-center gap-8 lg:flex" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
-                    <a href="{{ route('shop.index') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
-                        {{ __('Produits') }}
-                        <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
-                    </a>
-
-                    <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
-                        {{ __('Soins') }}
-                        <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
-                    </a>
-
-                    <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
-                        {{ __('Outils') }}
-                        <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
-                    </a>
-                </nav>
-
+            <div class="flex min-h-20 items-center justify-between gap-2 lg:gap-4">
                 <a
                     href="{{ url('/') }}"
-                    class="flex min-w-0 items-center gap-2 justify-self-start sm:gap-3 lg:justify-self-center"
+                    class="flex shrink-0 items-center gap-2 sm:gap-3"
                     aria-label="{{ __('BLACK MILK') }}"
                 >
                     <img src="/img/logo.png" alt="" class="h-10 w-10 shrink-0 object-contain sm:h-14 sm:w-14">
@@ -40,37 +23,56 @@
                     </span>
                 </a>
 
-                <div class="hidden items-center justify-end gap-8 lg:flex" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
-                    <a href="{{ route('where-to-buy') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
-                        {{ __('Points de vente') }}
-                        <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
-                    </a>
+                <div class="hidden min-w-0 items-center justify-end gap-4 lg:flex xl:gap-8">
+                    <nav class="flex items-center gap-3 xl:gap-6 2xl:gap-8" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
+                        <a href="{{ route('shop.index') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
+                            {{ __('Produits') }}
+                            <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
+                        </a>
 
-                    <a href="{{ route('events') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
-                        {{ __('Événements') }}
-                        <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
-                    </a>
+                        <a href="{{ route('shop.category', ['slug' => 'soins-essentiels']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
+                            {{ __('Soins') }}
+                            <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
+                        </a>
 
-                    <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}"
-                        class="inline-flex h-11 items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-800 transition hover:text-bmlk-brand"
-                        data-blur-reveal-item>
-                        <x-lucide-user-round class="h-4 w-4" />{{ __('Mon espace') }}
-                    </a>
+                        <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
+                            {{ __('Outils') }}
+                            <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
+                        </a>
 
-                    <button
-                        type="button"
-                        @click="$store.cart.toggle()"
-                        class="inline-flex h-11 items-center gap-2 rounded-full bg-bmlk-brand px-5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#945763]"
-                        data-blur-reveal-item
-                    >
-                        <x-lucide-shopping-bag class="h-4 w-4" />
-                        {{ __('Panier') }}
-                        <span>·</span>
-                        <span x-text="$store.cart.count">0</span>
-                    </button>
+                        <a href="{{ route('where-to-buy') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
+                            {{ __('Points de vente') }}
+                            <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
+                        </a>
+
+                        <a href="{{ route('events') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
+                            {{ __('Événements') }}
+                            <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
+                        </a>
+                    </nav>
+
+                    <div class="flex shrink-0 items-center gap-3 xl:gap-6" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
+                        <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}"
+                            class="inline-flex h-11 items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-800 transition hover:text-bmlk-brand"
+                            data-blur-reveal-item>
+                            <x-lucide-user-round class="h-4 w-4" />{{ __('Mon espace') }}
+                        </a>
+
+                        <button
+                            type="button"
+                            @click="$store.cart.toggle()"
+                            class="inline-flex h-11 items-center gap-2 rounded-full bg-bmlk-brand px-5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#945763]"
+                            data-blur-reveal-item
+                        >
+                            <x-lucide-shopping-bag class="h-4 w-4" />
+                            {{ __('Panier') }}
+                            <span>·</span>
+                            <span x-text="$store.cart.count">0</span>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="flex items-center justify-self-end gap-1 sm:gap-2 lg:hidden">
+                <div class="flex items-center gap-1 sm:gap-2 lg:hidden">
                     <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}"
                         class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 max-[339px]:hidden"
                         aria-label="{{ __('Mon espace') }}">
