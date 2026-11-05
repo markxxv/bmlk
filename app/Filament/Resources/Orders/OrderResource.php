@@ -69,6 +69,7 @@ class OrderResource extends Resource
                                         'shipped' => 'Shipped',
                                         'completed' => 'Completed',
                                         'cancelled' => 'Cancelled',
+                                        'archived' => 'Archived',
                                     ])
                                     ->required(),
 
@@ -291,7 +292,24 @@ class OrderResource extends Resource
                     'failed' => 'danger',
                     default => 'gray',
                 }),
-            TextColumn::make('status')->label('Order status')->badge()->color('gray'),
+            TextColumn::make('status')->label('Fulfillment')->badge()
+                ->formatStateUsing(fn (string $state): string => match ($state) {
+                    'pending' => 'To prepare',
+                    'processing' => 'Preparing',
+                    'shipped' => 'Shipped',
+                    'completed' => 'Completed',
+                    'cancelled' => 'Cancelled',
+                    'archived' => 'Archived',
+                    default => $state,
+                })
+                ->color(fn (string $state): string => match ($state) {
+                    'pending' => 'warning',
+                    'processing', 'shipped' => 'info',
+                    'completed' => 'success',
+                    'cancelled' => 'danger',
+                    'archived' => 'gray',
+                    default => 'gray',
+                }),
             TextColumn::make('tracking_number')->label('Tracking')
                 ->placeholder('—')
                 ->copyable()
@@ -310,6 +328,7 @@ class OrderResource extends Resource
                 'shipped' => 'Shipped',
                 'completed' => 'Completed',
                 'cancelled' => 'Cancelled',
+                'archived' => 'Archived',
             ]),
         ])
         ->recordActions([EditAction::make()])
