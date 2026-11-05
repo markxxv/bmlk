@@ -374,7 +374,7 @@ class SendcloudController extends Controller
     // Safe to repeat: Sendcloud upserts by order_id + integration ID.
     public function syncPaidOrder(Order $order): void
     {
-        if ($order->payment_status !== 'paid' || $order->sendcloud_order_id) {
+        if ($order->payment_status !== 'paid' || $order->status === 'archived' || $order->sendcloud_order_id) {
             return;
         }
         try {
@@ -437,6 +437,9 @@ class SendcloudController extends Controller
         }
         try {
             $order->refresh();
+            if ($order->status === 'archived') {
+                throw new RuntimeException('Cette commande est archivée.');
+            }
             if ($order->tracking_number) {
                 throw new RuntimeException('Une étiquette existe déjà.');
             }
