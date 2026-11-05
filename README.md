@@ -422,32 +422,79 @@ TELEGRAM_CHAT_ID=-1001234567890
 
 Do not put the real token in Git.
 
-### 2. Deploy and install the hourly cron
+### 2. Deploy with the existing one-minute scheduler cron
+
+The existing system crontab is enough for Telegram orders, applications, and
+the database queue worker. **Do not add a separate hourly Telegram cron.**
+
+```cron
+*/1 * * * * cd /var/www/blackmilkfrance.com && php artisan schedule:run >> storage/logs/scheduler.log 2>&1
+```
+
+Run after each deployment:
 
 ```bash
+cd /var/www/blackmilkfrance.com
 git pull origin main
 php artisan migrate --force
 php artisan optimize:clear
 php artisan config:cache
+php artisan schedule:list
 ```
 
-Add this **separate hourly entry** using `crontab -e` (replace the project path). Keep the existing every-minute Laravel Scheduler entry above for payment emails:
+Scheduler tasks:
 
-```cron
-0 * * * * cd /var/www/blackmilk && php artisan orders:telegram-notifications >> storage/logs/telegram-notifications.log 2>&1
-```
+- `orders:telegram-notifications`: hourly retry and paid-order reminders,
+  still sent synchronously by the existing command.
+- `partners:telegram-notifications`: every five minutes, retries failed
+  first partner alerts directly and enqueues eligible reminders.
+- `queue:work database --queue=partner-telegram --stop-when-empty --max-time=45 --tries=3`:
+  runs once per minute via Scheduler to drain **only** partner reminders. No
+  additional cron line, Supervisor daemon, or manual queue worker is needed.
+  Requires the `jobs` table (already supplied by Laravel's standard migration).
+  The partner job explicitly uses the database connection, even if another
+  queue connection is configured as the application default.
 
-The Telegram command sends directly; it needs no queue worker or Supervisor. New paid orders are reported immediately after payment confirmation in the same request lifecycle, after the Stripe HTTP response. Cron only retries first sends if needed and checks for daily reminders.
+### 3. Partner Applications notifications
 
-### 3. Verify
+A verified customer submitting a new request from `/account/roles`
+triggers an **immediate, synchronous** Telegram message to the same bot/chat
+as paid-order notifications. No queue is involved in the first send.
+A Telegram outage never blocks saving the application.
+
+The message shows the partner program (wholesale/influencer), applicant name,
+email, submission time, full applicant message, and the authenticated admin
+link `/admin/role-applications/{id}/edit`.
+
+Failed first sends are retried synchronously by `partners:telegram-notifications`.
+Existing pending requests created before deploying this feature are picked up
+on the first scheduler run; approved/rejected requests are never sent.
+
+If an application stays `pending` for at least 24 hours after its last
+successful Telegram notification, the scheduler enqueues a **clearly marked
+reminder**. A database job sends it, and the next reminder is eligible only
+after another 24 hours. Atomic database claims and queued timestamps prevent
+overlapping cron invocations from sending repeated alerts. Before sending, the
+job verifies that the application still has `status=pending`; approving or
+rejecting a request stops reminders immediately.
+
+The `role_applications` table stores
+`telegram_first_sent_at`, `telegram_last_sent_at`,
+`telegram_claimed_at`, and `telegram_reminder_queued_at`.
+
+### 4. Verify
 
 ```bash
+php artisan schedule:list
+php artisan partners:telegram-notifications
 php artisan orders:telegram-notifications
+php artisan test --filter=PartnerApplicationTelegramNotificationsTest
 php artisan test --filter=OrderTelegramNotificationsTest
-php artisan test --filter=SendcloudWebhookTest
 ```
 
-Run the Artisan command after the bot has been added to its chat. Telegram send failures are logged to `storage/logs/laravel.log` and retried. A missing token or chat ID causes the command to exit without sending.
+Telegram failures are logged to `storage/logs/laravel.log`. If a queue
+job fails three times, inspect `php artisan queue:failed`. The next scheduler
+scan can re-enqueue a pending reminder after its 20-minute dispatch lock expires.
 
 ### Sendcloud status transitions
 
