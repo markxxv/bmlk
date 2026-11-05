@@ -18,3 +18,11 @@ html.fi {
     padding: 0.0625rem 0.375rem;
     border-radius: 9999px;
 }
+
+.fi-ta-header-cell {
+    font-size:12px!important;
+    @apply
+        !px-2
+        !py-0
+    ;
+}
