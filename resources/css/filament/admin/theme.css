@@ -33,3 +33,10 @@ html.fi {
         !py-1
     ;
 }
+
+/* Soft area sparkline in the monthly sales stat (Filament StatsOverviewWidget). */
+.fi-wi-stats-overview-stat {
+    --stat-chart-border-width: 1.5;
+    --stat-chart-line-tension: 0.3;
+    --stat-chart-fill: origin;
+}
