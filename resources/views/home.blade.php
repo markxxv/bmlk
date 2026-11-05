@@ -119,6 +119,10 @@
                         $coffretUrl = $coffretSlug
                             ? route('shop.product', ['slug' => $coffretSlug])
                             : route('shop.index');
+                        $coffretSrcset = $product->storefrontImageSrcset();
+                        $coffretImgAttrs = $coffretSrcset !== ''
+                            ? new \Illuminate\Support\HtmlString('srcset="'.e($coffretSrcset).'" sizes="(min-width: 1600px) 500px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 80vw"')
+                            : '';
                     @endphp
 
                     <article class="group w-4/5 shrink-0 snap-start sm:w-1/2 lg:w-auto @if ($loop->iteration === 2) lg:pt-12 @endif" data-blur-reveal-item>
@@ -132,6 +136,7 @@
                                 @if ($image)
                                     <img
                                         src="{{ $image }}"
+                                        {{ $coffretImgAttrs }}
                                         alt="{{ $product->name }}"
                                         class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                                         loading="lazy"
