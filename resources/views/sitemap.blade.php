@@ -13,6 +13,9 @@
         <loc>{{ route('events') }}</loc>
     </url>
     <url>
+        <loc>{{ route('formations') }}</loc>
+    </url>
+    <url>
         <loc>{{ route('createurs') }}</loc>
     </url>
     <url>

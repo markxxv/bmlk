@@ -74,6 +74,18 @@ class FrontController extends Controller
         ]);
     }
 
+    public function formations(): View
+    {
+        return view('formations', [
+            'onlineCourses' => config('formations.online'),
+            'liveCourses' => config('formations.live'),
+            'waxModules' => config('formations.wax_modules'),
+            'metaTitle' => __('Formations pour prothésistes ongulaires | BLACK MILK'),
+            'metaDescription' => __('Découvrez les formations de la Smirnova School : Wax Manicure, Pop-It Architect, BLACK MILK Instructor et Instagram Creator, en ligne ou en présentiel.'),
+            'canonical' => route('formations'),
+        ]);
+    }
+
     public function whereToBuy(): View
     {
         $representatives = Representative::query()

@@ -23,7 +23,7 @@
                     </span>
                 </a>
 
-                <div class="hidden min-w-0 items-center justify-end gap-4 lg:flex xl:gap-8">
+                <div class="hidden min-w-0 items-center justify-end gap-4 xl:flex xl:gap-6">
                     <nav class="flex items-center gap-3 xl:gap-6 2xl:gap-8" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
                         <a href="{{ route('shop.index') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
                             {{ __('Produits') }}
@@ -37,6 +37,11 @@
 
                         <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
                             {{ __('Outils') }}
+                            <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
+                        </a>
+
+                        <a href="{{ route('formations') }}" class="group relative py-7 text-xs font-semibold uppercase tracking-widest text-zinc-800" data-blur-reveal-item>
+                            {{ __('Formations') }}
                             <span class="absolute inset-x-0 bottom-5 h-px origin-left scale-x-0 bg-bmlk-brand transition-transform duration-300 group-hover:scale-x-100"></span>
                         </a>
 
@@ -72,7 +77,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-1 sm:gap-2 lg:hidden">
+                <div class="flex items-center gap-1 sm:gap-2 xl:hidden">
                     <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}"
                         class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 max-[339px]:hidden"
                         aria-label="{{ __('Mon espace') }}">
@@ -120,7 +125,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         @keydown.escape.window="open = false"
-        class="fixed inset-0 z-50 bg-[#DDA1AA] lg:hidden"
+        class="fixed inset-0 z-50 bg-[#DDA1AA] xl:hidden"
         data-toggle-reveal
         data-toggle-reveal-stagger="0.08"
         data-toggle-reveal-duration="0.72"
@@ -166,6 +171,9 @@
                 </a>
                 <a href="{{ route('shop.category', ['slug' => 'coupe-accessoires']) }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Outils') }}
+                </a>
+                <a href="{{ route('formations') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
+                    {{ __('Formations') }}
                 </a>
                 <a href="{{ route('where-to-buy') }}" @click="open = false" class="border-b border-[#C98792] py-4 font-serif text-4xl text-zinc-900" data-toggle-reveal-item>
                     {{ __('Points de vente') }}

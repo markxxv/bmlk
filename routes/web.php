@@ -101,6 +101,7 @@ Route::post('/createurs', [CreatorsController::class, 'apply'])
     ->middleware('throttle:3,1')->name('createurs.apply');
 
 Route::get('/events', [FrontController::class, 'events'])->name('events');
+Route::get('/formations', [FrontController::class, 'formations'])->name('formations');
 
 Route::get('/ou-acheter', [FrontController::class, 'whereToBuy'])->name('where-to-buy');
 

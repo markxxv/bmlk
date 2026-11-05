@@ -104,7 +104,7 @@
                         <div class="mt-5 space-y-3">
                             <a href="{{ route('shop.index') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Produits') }}</a>
                             <a href="{{ url('/') }}#coffrets" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Coffrets') }}</a>
-                            <a href="#" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Formations') }}</a>
+                            <a href="{{ route('formations') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Formations') }}</a>
                             <a href="{{ route('createurs') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Programme créatrices') }}</a>
                             <a href="#" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Notre histoire') }}</a>
                             <a href="{{ route('where-to-buy') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Ambassadeurs') }}</a>
