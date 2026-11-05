@@ -175,8 +175,8 @@
             <nav class="flex flex-wrap gap-x-5 gap-y-2 text-xs">
                 <a href="/conditions-generales-de-vente" class="transition hover:text-bmlk-footer">{{ __('CGV') }}</a>
                 <a href="/mentions-legales" class="transition hover:text-bmlk-footer">{{ __('Mentions légales') }}</a>
-                <a href="#" class="transition hover:text-bmlk-footer">{{ __('Confidentialité') }}</a>
-                <a href="#" class="transition hover:text-bmlk-footer">{{ __('Cookies') }}</a>
+                <a href="/politique-de-confidentialite" class="transition hover:text-bmlk-footer">{{ __('Confidentialité') }}</a>
+                <a href="/politique-de-cookies" class="transition hover:text-bmlk-footer">{{ __('Cookies') }}</a>
             </nav>
         </div>
         <div class="bmlk-packaging-stripe" aria-hidden="true"></div>

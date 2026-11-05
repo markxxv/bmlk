@@ -60,5 +60,64 @@
             font-weight: 600;
             color: #27272a;
         }
+
+        .page-content .table-wrap {
+            margin-top: 1.25rem;
+            overflow-x: auto;
+            border: 1px solid #eadfe2;
+            border-radius: 1rem;
+        }
+
+        .page-content table {
+            width: 100%;
+            min-width: 640px;
+            border-collapse: collapse;
+            font-size: .875rem;
+            line-height: 1.55;
+        }
+
+        .page-content th {
+            padding: .75rem 1rem;
+            background: #F6ECEE;
+            color: #18181b;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .page-content td {
+            padding: .875rem 1rem;
+            border-top: 1px solid #f0e6e8;
+            vertical-align: top;
+        }
+
+        .page-content code {
+            padding: .1rem .35rem;
+            border-radius: .35rem;
+            background: #F6ECEE;
+            color: #712B47;
+            font-size: .8125rem;
+        }
+
+        .page-content .cookie-settings-button {
+            display: inline-flex;
+            min-height: 3rem;
+            align-items: center;
+            justify-content: center;
+            padding: 0 1.5rem;
+            border: 0;
+            border-radius: 9999px;
+            background: #712B47;
+            color: #fff;
+            font-size: .75rem;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background-color .2s;
+        }
+
+        .page-content .cookie-settings-button:hover {
+            background: var(--color-bmlk-brand);
+        }
     </style>
 </x-layout>
