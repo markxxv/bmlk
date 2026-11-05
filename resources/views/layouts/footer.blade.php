@@ -108,7 +108,7 @@
                             <a href="{{ route('createurs') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Ambassadeurs') }}</a>
                             <a href="#" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Notre histoire') }}</a>
                             <a href="{{ route('where-to-buy') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Points de vente') }}</a>
-                            <a href="#" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Contact') }}</a>
+                           {{-- <a href="#" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Contact') }}</a> --}}
                         </div>
                     </nav>
 
