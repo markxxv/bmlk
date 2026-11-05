@@ -56,14 +56,14 @@ class ShopOverviewStats extends StatsOverviewWidget
             Stat::make('Paid orders pending', $paidPendingOrders)
                 ->description('Awaiting preparation')
                 ->descriptionIcon('lucide-package')
-                ->color($paidPendingOrders > 0 ? 'danger' : 'gray')
+                ->color($paidPendingOrders > 0 ? 'warning' : 'gray')
                 ->url(OrderResource::getUrl('index')),
 
             Stat::make('Sales this month', $paidDates->count())
                 ->description($now->format('F Y').' · Paid orders')
                 ->descriptionIcon('lucide-trending-up')
                 ->chart(array_values($dailySales))
-                ->color('primary')
+                ->color('success')
                 ->url(OrderResource::getUrl('index')),
         ];
     }
