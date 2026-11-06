@@ -6,7 +6,28 @@ use App\Http\Controllers\CreatorsController;
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\StripeController;
+use App\Http\Controllers\WarehouseController;
+use App\Http\Middleware\EnsureWarehouseStaff;
 use Illuminate\Support\Facades\Route;
+
+
+// Warehouse is a separate, installable PWA with its own two-week session.
+// Only admins and users explicitly granted is_warehouse may access orders.
+Route::prefix('warehouse')->name('warehouse.')->group(function (): void {
+    Route::get('/login', [WarehouseController::class, 'loginForm'])->name('login');
+    Route::post('/login', [WarehouseController::class, 'login'])
+        ->middleware('throttle:5,1')->name('login.submit');
+
+    Route::middleware(['auth', EnsureWarehouseStaff::class])->group(function (): void {
+        Route::post('/logout', [WarehouseController::class, 'logout'])->name('logout');
+        Route::get('/', [WarehouseController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order:order_number}', [WarehouseController::class, 'show'])->name('orders.show');
+        Route::post('/orders/{order:order_number}/status', [WarehouseController::class, 'status'])->name('orders.status');
+        Route::post('/orders/{order:order_number}/label', [WarehouseController::class, 'createLabel'])
+            ->middleware('throttle:5,1')->name('orders.create-label');
+        Route::get('/orders/{order:order_number}/label', [WarehouseController::class, 'label'])->name('orders.label');
+    });
+});
 
 Route::get('/', [FrontController::class, 'home'])->name('home');
 
