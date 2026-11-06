@@ -144,7 +144,7 @@ class OrderTelegramNotificationsTest extends TestCase
                 && str_contains($text, 'WELCOME')
                 && str_contains($text, 'Total payé')
                 && str_contains($text, 'Voir la commande sur le site')
-                && str_contains($text, '/admin/orders/'.$order->id.'/edit')
+                && str_contains($text, '/warehouse/orders/'.$order->order_number)
                 && ! str_contains($text, 'Ouvrir dans Filament')
                 && ! str_contains($text, (string) $order->access_token);
         });
