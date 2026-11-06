@@ -22,6 +22,7 @@ class Order extends Model
             'subtotal' => 'decimal:2',
             'delivery_cost' => 'decimal:2',
             'total_amount' => 'decimal:2',
+            'paid_at' => 'datetime',
             'payment_failed_at' => 'datetime',
             'paid_email_sent_at' => 'datetime',
             'failed_email_sent_at' => 'datetime',
