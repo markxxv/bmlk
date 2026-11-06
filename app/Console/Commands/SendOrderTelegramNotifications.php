@@ -265,9 +265,9 @@ class SendOrderTelegramNotifications extends Command
         }
 
         $lines[] = '';
-        // An authenticated staff page on the shop domain. Never expose the
-        // private customer order access token in a Telegram group.
-        $lines[] = '<a href="'.$this->escape(url('/admin/orders/'.$order->id.'/edit')).'">Voir la commande sur le site</a>';
+        // Direct link to the staff PWA. The warehouse login preserves the intended
+        // order URL; never expose the private customer order access token.
+        $lines[] = '<a href="'.$this->escape(route('warehouse.orders.show', $order->order_number)).'">Voir la commande sur le site</a>';
 
         return $this->splitMessages($lines, $order->order_number);
     }
