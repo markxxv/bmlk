@@ -41,6 +41,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_warehouse' => 'boolean',
             'is_wholesale' => 'boolean',
             'is_influencer' => 'boolean',
             'influencer_discount' => 'decimal:2',
