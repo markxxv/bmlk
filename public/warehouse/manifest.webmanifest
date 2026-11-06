@@ -1,0 +1,16 @@
+{
+  "name": "BLACK MILK · Préparation",
+  "short_name": "BLACK MILK",
+  "description": "Commandes à préparer et étiquettes Sendcloud",
+  "id": "/warehouse/",
+  "start_url": "/warehouse/",
+  "scope": "/warehouse/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F8F6F7",
+  "theme_color": "#712B47",
+  "icons": [
+    {"src": "/warehouse/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"},
+    {"src": "/warehouse/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any"}
+  ]
+}
