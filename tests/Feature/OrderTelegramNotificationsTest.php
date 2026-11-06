@@ -29,7 +29,7 @@ class OrderTelegramNotificationsTest extends TestCase
         $order = $this->order('paid');
         $notification = OrderTelegramNotification::query()->create(['order_id' => $order->id]);
 
-        $this->artisan('orders:telegram-notifications --initial-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--initial-only' => true])->assertSuccessful();
         $this->assertNotNull($notification->fresh()->first_sent_at);
         Http::assertSentCount(1);
         Http::assertSent(fn ($request) => str_contains($request['text'], 'Nouvelle commande payée'));
@@ -43,20 +43,20 @@ class OrderTelegramNotificationsTest extends TestCase
         Http::assertSentCount(1);
 
         $this->travelTo(Carbon::parse('2026-11-03 10:00:00', 'Europe/Paris'));
-        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--reminders-only' => true])->assertSuccessful();
         Http::assertSentCount(2);
         Http::assertSent(fn ($request) => str_contains($request['text'], 'RAPPEL — Commande oubliée'));
 
-        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--reminders-only' => true])->assertSuccessful();
         Http::assertSentCount(2);
 
         $this->travelTo(Carbon::parse('2026-11-04 10:00:00', 'Europe/Paris'));
-        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--reminders-only' => true])->assertSuccessful();
         Http::assertSentCount(3);
 
         $order->update(['status' => 'processing']);
         $this->travelTo(Carbon::parse('2026-11-05 10:00:00', 'Europe/Paris'));
-        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--reminders-only' => true])->assertSuccessful();
         Http::assertSentCount(3);
     }
 
@@ -189,13 +189,13 @@ class OrderTelegramNotificationsTest extends TestCase
         // This is an existing DB reminder, not a Laravel queued job.
         $this->artisan('orders:telegram-notifications')->assertSuccessful();
         $this->travelTo(Carbon::parse('2026-11-07 10:00:00', 'Europe/Paris')); // Saturday
-        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--reminders-only' => true])->assertSuccessful();
         $this->travelTo(Carbon::parse('2026-11-09 09:59:00', 'Europe/Paris'));
-        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--reminders-only' => true])->assertSuccessful();
         Http::assertNothingSent();
 
         $this->travelTo(Carbon::parse('2026-11-09 10:00:00', 'Europe/Paris')); // Monday
-        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--reminders-only' => true])->assertSuccessful();
         Http::assertSentCount(1);
         $this->assertSame(
             '2026-11-09',
@@ -221,11 +221,11 @@ class OrderTelegramNotificationsTest extends TestCase
         ]);
 
         $this->travelTo(Carbon::parse('2026-11-03 10:00:00', 'Europe/Paris'));
-        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--reminders-only' => true])->assertSuccessful();
         Http::assertNothingSent();
 
         $this->travelTo(Carbon::parse('2026-11-04 10:00:00', 'Europe/Paris'));
-        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--reminders-only' => true])->assertSuccessful();
         Http::assertSentCount(1);
     }
 
@@ -241,11 +241,11 @@ class OrderTelegramNotificationsTest extends TestCase
             'last_sent_at' => now()->subDays(2),
         ]);
 
-        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--reminders-only' => true])->assertSuccessful();
         Http::assertNothingSent();
 
         $this->travelTo(Carbon::parse('2026-07-06 08:00:00', 'UTC')); // 10:00 in Paris
-        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--reminders-only' => true])->assertSuccessful();
         Http::assertSentCount(1);
     }
 
@@ -264,7 +264,7 @@ class OrderTelegramNotificationsTest extends TestCase
             'last_sent_at' => now()->subDays(2),
         ]);
 
-        $this->artisan('orders:telegram-notifications --initial-only')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications', ['--initial-only' => true])->assertSuccessful();
         Http::assertSentCount(1);
         Http::assertSent(fn ($request) => str_contains($request['text'], 'Nouvelle commande payée'));
     }
