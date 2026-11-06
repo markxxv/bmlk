@@ -1,0 +1,162 @@
+<x-warehouse.layout :title="$order->order_number">
+    <header class="mb-4 flex items-start gap-3">
+        <a href="{{ route('warehouse.orders.index') }}" aria-label="{{ __('Retour aux commandes') }}" class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white text-[#712B47] shadow-sm">
+            <x-lucide-arrow-left class="size-5" />
+        </a>
+        <div class="min-w-0 flex-1">
+            <div class="text-[10px] font-extrabold tracking-[0.18em] text-[#712B47]">BLACK MILK · FRANCE</div>
+            <h1 class="mt-1 break-all text-lg font-extrabold tracking-tight">{{ $order->order_number }}</h1>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+                <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{{ __('Payée') }}</span>
+                <span class="rounded-full px-3 py-1 text-xs font-bold {{ $order->status === 'pending' ? 'bg-amber-50 text-amber-800' : 'bg-sky-50 text-sky-800' }}">{{ $order->customerStatusLabel() }}</span>
+            </div>
+        </div>
+    </header>
+
+    @if (session('success'))
+        <div role="status" class="mb-3 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">{{ session('success') }}</div>
+    @endif
+    @if ($errors->any())
+        <div role="alert" class="mb-3 rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800">{{ $errors->first() }}</div>
+    @endif
+
+    <div class="mb-4 flex items-center justify-between gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm">
+        <div class="min-w-0">
+            <div class="truncate text-sm font-bold">{{ trim($order->first_name.' '.($order->last_name ?? '')) }}</div>
+            <div class="mt-1 truncate text-xs text-zinc-500">{{ $order->city }} · {{ $order->shipping_option_name ?: __('Livraison') }}</div>
+        </div>
+        <div class="shrink-0 text-right">
+            <div class="text-sm font-extrabold text-[#712B47]">{{ number_format((float) $order->total_amount, 2, ',', ' ') }} €</div>
+            <div class="text-xs text-zinc-400">{{ ($order->paid_at ?? $order->created_at)->timezone('Europe/Paris')->format('d/m · H:i') }}</div>
+        </div>
+    </div>
+
+    <section aria-labelledby="warehouse-items-heading" class="overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div class="flex items-center justify-between bg-[#F9EAF0] px-4 py-3.5">
+            <h2 id="warehouse-items-heading" class="flex items-center gap-2 text-lg font-extrabold"><x-lucide-package class="size-5 text-[#712B47]" /> {{ __('Articles') }}</h2>
+            <span class="rounded-full bg-white px-3 py-1 text-sm font-bold text-[#712B47]">{{ collect($order->items ?? [])->sum(fn (array $item) => (int) ($item['quantity'] ?? 1)) }} {{ __('unités') }}</span>
+        </div>
+
+        <div class="divide-y divide-zinc-100 px-4">
+            @forelse (($order->items ?? []) as $item)
+                <div class="flex items-start gap-3 py-4">
+                    @if (filled(data_get($item, 'image')))
+                        <img src="{{ data_get($item, 'image') }}" alt="" class="size-20 shrink-0 rounded-xl bg-zinc-100 object-contain" loading="eager">
+                    @else
+                        <div class="flex size-20 shrink-0 items-center justify-center rounded-xl bg-zinc-100"><x-lucide-package class="size-7 text-zinc-400" /></div>
+                    @endif
+                    <div class="min-w-0 flex-1">
+                        <div class="text-sm font-bold leading-tight">{{ data_get($item, 'name', __('Produit')) }}</div>
+                        @foreach ((data_get($item, 'options') ?? []) as $option)
+                            @if (filled(data_get($option, 'display')))
+                                <div class="mt-1 text-xs text-zinc-500">{{ data_get($option, 'label') }}{{ filled(data_get($option, 'label')) ? ' · ' : '' }}{{ data_get($option, 'display') }}</div>
+                            @endif
+                        @endforeach
+                        <div class="mt-2 text-xs text-zinc-500">{{ number_format((float) data_get($item, 'unit_price', 0), 2, ',', ' ') }} € / {{ __('unité') }}</div>
+                    </div>
+                    <div class="shrink-0 rounded-xl bg-[#F9EAF0] px-3 py-2 text-center">
+                        <div class="text-[10px] font-semibold text-[#712B47]">{{ __('QTÉ') }}</div>
+                        <div class="text-2xl font-black leading-tight text-[#712B47]">×{{ (int) data_get($item, 'quantity', 1) }}</div>
+                    </div>
+                </div>
+            @empty
+                <p class="py-5 text-sm text-zinc-500">{{ __('Aucun article.') }}</p>
+            @endforelse
+        </div>
+    </section>
+
+    <section aria-label="{{ __('Étiquette de livraison') }}" class="mt-4">
+        @if ($labelReady)
+            <a href="{{ route('warehouse.orders.label', $order->order_number) }}" class="flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-[#712B47] px-4 py-4 text-center text-sm font-bold text-white shadow-sm">
+                <x-lucide-printer class="size-5 shrink-0" /> {{ __('Ouvrir / imprimer l’étiquette PDF') }}
+            </a>
+            <p class="mt-2 text-center text-xs text-zinc-500">{{ __('Suivi : :tracking', ['tracking' => $order->tracking_number]) }}</p>
+        @elseif ($order->tracking_number)
+            <p class="rounded-xl bg-amber-50 p-4 text-sm font-medium text-amber-800">{{ __('Étiquette créée, PDF indisponible. Vérifiez Sendcloud.') }}</p>
+        @elseif (in_array($order->status, ['pending', 'processing'], true) && is_array($order->shipping_parcel))
+            <form method="POST" action="{{ route('warehouse.orders.create-label', $order->order_number) }}" onsubmit="return confirm(@js(__('Créer l’étiquette Sendcloud ? Cette action peut entraîner des frais de transport.')));">
+                @csrf
+                <button type="submit" class="flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#712B47] px-4 py-4 text-center text-sm font-bold text-white shadow-sm active:opacity-80">
+                    <x-lucide-printer class="size-5 shrink-0" /> {{ __('Créer l’étiquette Sendcloud') }}
+                </button>
+            </form>
+        @else
+            <p class="rounded-xl bg-zinc-100 p-4 text-sm text-zinc-600">{{ __('Étiquette indisponible pour ce statut ou colis incomplet.') }}</p>
+        @endif
+    </section>
+
+    <section aria-labelledby="warehouse-status-heading" class="mt-4 rounded-2xl bg-white px-4 py-4 shadow-sm">
+        <h2 id="warehouse-status-heading" class="mb-3 flex items-center gap-2 font-bold"><x-lucide-list-check class="size-5 text-[#712B47]" />{{ __('Statut') }}</h2>
+        <div class="flex flex-wrap gap-2">
+            @if ($order->status === 'pending')
+                <form method="POST" action="{{ route('warehouse.orders.status', $order->order_number) }}">@csrf
+                    <input type="hidden" name="status" value="processing">
+                    <button class="min-h-11 rounded-xl bg-[#F9EAF0] px-4 py-2.5 text-sm font-bold text-[#712B47]">{{ __('Démarrer la préparation') }}</button>
+                </form>
+            @elseif ($order->status === 'processing')
+                <span class="inline-flex min-h-11 items-center rounded-xl bg-sky-50 px-4 text-sm font-bold text-sky-700">{{ __('En préparation') }}</span>
+                <form method="POST" action="{{ route('warehouse.orders.status', $order->order_number) }}">@csrf
+                    <input type="hidden" name="status" value="pending">
+                    <button class="min-h-11 rounded-xl bg-zinc-100 px-4 py-2.5 text-sm text-zinc-700">{{ __('Remettre en attente') }}</button>
+                </form>
+            @elseif ($order->status === 'shipped')
+                <form method="POST" action="{{ route('warehouse.orders.status', $order->order_number) }}">@csrf
+                    <input type="hidden" name="status" value="completed">
+                    <button class="min-h-11 rounded-xl bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-700">{{ __('Marquer terminée') }}</button>
+                </form>
+            @else
+                <span class="rounded-xl bg-zinc-100 px-4 py-2.5 text-sm font-semibold text-zinc-600">{{ $order->customerStatusLabel() }}</span>
+            @endif
+            @if (in_array($order->status, ['shipped', 'completed'], true))
+                <form method="POST" action="{{ route('warehouse.orders.status', $order->order_number) }}" onsubmit="return confirm(@js(__('Archiver cette commande ?')));">@csrf
+                    <input type="hidden" name="status" value="archived">
+                    <button class="min-h-11 rounded-xl bg-zinc-100 px-4 py-2.5 text-sm text-zinc-500">{{ __('Archiver') }}</button>
+                </form>
+            @endif
+        </div>
+    </section>
+
+    <section aria-labelledby="warehouse-shipping-heading" class="mt-4 rounded-2xl bg-white p-4 shadow-sm">
+        <h2 id="warehouse-shipping-heading" class="mb-3 flex items-center gap-2 font-bold"><x-lucide-map-pin class="size-5 text-[#712B47]" />{{ __('Livraison') }}</h2>
+        <div class="text-sm font-semibold">{{ trim($order->first_name.' '.($order->last_name ?? '')) }}</div>
+        <address class="mt-1 text-sm not-italic leading-relaxed text-zinc-600">
+            {{ $order->address }}<br>
+            {{ $order->zip }} {{ $order->city }}<br>
+            {{ $order->country }}
+        </address>
+        @if ($order->service_point_id)
+            <div class="mt-3 rounded-xl bg-zinc-100 p-3 text-sm">
+                <div class="text-xs font-semibold text-zinc-500">{{ __('Point relais') }}</div>
+                <div class="mt-1 font-semibold">{{ $order->service_point_name }}</div>
+                <div class="text-zinc-600">{{ $order->service_point_address }}</div>
+            </div>
+        @endif
+        <div class="mt-4 flex flex-wrap gap-3 text-sm">
+            @if ($order->phone)
+                <a class="font-medium text-[#712B47] underline" href="tel:{{ preg_replace('/[^+0-9]/', '', $order->phone) }}">{{ $order->phone }}</a>
+            @endif
+            @if ($order->email)
+                <a class="min-w-0 break-all text-[#712B47] underline" href="mailto:{{ $order->email }}">{{ $order->email }}</a>
+            @endif
+        </div>
+        @if (filled($order->message))
+            <div class="mt-4 rounded-xl bg-zinc-100 p-3 text-sm"><div class="mb-1 text-xs font-semibold text-zinc-500">{{ __('Note client') }}</div>{{ $order->message }}</div>
+        @endif
+    </section>
+
+    <section aria-label="{{ __('Récapitulatif') }}" class="mt-4 rounded-2xl bg-white p-4 text-sm shadow-sm">
+        <div class="flex justify-between gap-3 py-1 text-zinc-600"><span>{{ __('Sous-total') }}</span><span>{{ number_format((float) $order->subtotal, 2, ',', ' ') }} €</span></div>
+        @if ((float) $order->discount_amount > 0)
+            <div class="flex justify-between gap-3 py-1 text-zinc-600"><span>{{ __('Réduction') }}</span><span>−{{ number_format((float) $order->discount_amount, 2, ',', ' ') }} €</span></div>
+        @endif
+        <div class="flex justify-between gap-3 py-1 text-zinc-600"><span>{{ __('Livraison') }}</span><span>{{ number_format((float) $order->delivery_cost, 2, ',', ' ') }} €</span></div>
+        <div class="mt-2 flex justify-between gap-3 text-base font-extrabold text-[#712B47]"><span>{{ __('Total payé') }}</span><span>{{ number_format((float) $order->total_amount, 2, ',', ' ') }} €</span></div>
+    </section>
+
+    <nav aria-label="{{ __('Navigation entre commandes') }}" class="fixed inset-x-0 bottom-0 z-20 bg-white/95 px-5 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur-sm">
+        <div class="mx-auto flex max-w-xl items-center justify-between gap-3">
+            <a href="{{ route('warehouse.orders.index') }}" class="flex min-h-11 items-center gap-2 rounded-xl bg-zinc-100 px-4 text-sm font-bold text-zinc-700"><x-lucide-arrow-left class="size-4" />{{ __('Commandes') }}</a>
+            <span class="text-sm font-semibold text-[#712B47]">{{ $order->customerStatusLabel() }}</span>
+        </div>
+    </nav>
+</x-warehouse.layout>
