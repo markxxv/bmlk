@@ -19,28 +19,33 @@
     @endphp
 
     <main>
-        <section class="px-3 pb-5 pt-5 sm:px-5 sm:pb-10 lg:px-8">
-            <div class="mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-[#EFDDE0]">
-                <div class="grid gap-12 px-7 py-12 sm:px-10 sm:py-16 lg:grid-cols-12 lg:px-14 lg:py-20 xl:px-16">
-                    <div class="lg:col-span-8">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-bmlk-brand" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
-                            {{ __('Événements BLACK MILK') }}
-                        </p>
+        <section class="px-3 pb-5 pt-5 sm:px-5 sm:pb-10 lg:px-8" aria-labelledby="events-hero-title">
+            <div class="relative mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-[#DDA1AA]">
+                <div class="grid lg:min-h-[400px] lg:grid-cols-12">
+                    <div class="relative px-6 pb-0 pt-8 sm:px-10 sm:pt-12 lg:col-span-8 lg:flex lg:flex-col lg:justify-center lg:py-14 lg:pl-14 lg:pr-8 xl:pl-16">
+                        <div class="flex items-center gap-3">
+                            <span class="h-px w-8 shrink-0 bg-accent sm:w-10" data-line-reveal data-line-reveal-duration="0.8"></span>
+                            <p class="text-[10px] font-semibold uppercase tracking-widest text-accent sm:text-xs" data-reveal data-reveal-y="10" data-reveal-duration="0.7">
+                                {{ __('Événements BLACK MILK') }}
+                            </p>
+                        </div>
 
-                        <h1 class="mt-6 max-w-5xl font-serif text-5xl font-medium leading-none tracking-tight text-zinc-900 sm:text-6xl lg:text-7xl xl:text-8xl" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
-                            <span class="inline-block">{{ __('Les prochains') }}</span>
-                            <span class="inline-block italic text-bmlk-brand">{{ __('rendez-vous') }}</span>
+                        <h1 id="events-hero-title" class="mt-5 max-w-4xl font-serif text-[2.5rem] font-medium leading-[1.05] tracking-tight text-bmlk-ink sm:mt-7 sm:text-6xl lg:text-6xl xl:text-7xl" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
+                            <span class="block">{{ __('Les prochains') }}</span>
+                            <span class="block italic text-white">{{ __('rendez-vous') }}</span>
                         </h1>
                     </div>
 
-                    <div class="flex items-end lg:col-span-4">
-                        <div class="max-w-md">
-                            <p class="text-base leading-7 text-zinc-700 sm:text-lg" data-reveal data-reveal-y="16" data-reveal-duration="0.8" data-reveal-delay="0.14">
+                    <div class="flex items-end px-6 pb-9 pt-5 sm:px-10 sm:pb-12 sm:pt-7 lg:col-span-4 lg:px-0 lg:pb-0 lg:pt-12">
+                        <div class="w-full lg:rounded-tl-3xl lg:bg-[#FCF8F4] lg:px-9 lg:pb-14 lg:pt-10 xl:px-12">
+                            <div class="mb-4 hidden h-px w-10 bg-accent lg:block" aria-hidden="true"></div>
+                            <p class="max-w-md text-sm leading-6 text-[#46343A] sm:text-lg sm:leading-7" data-reveal data-reveal-y="16" data-reveal-duration="0.8" data-reveal-delay="0.14">
                                 {{ __('Formations, workshops et rencontres BLACK MILK en France et à l’international.') }}
                             </p>
                         </div>
                     </div>
                 </div>
+                <div class="bmlk-packaging-stripe pointer-events-none absolute inset-x-0 bottom-0 z-20" aria-hidden="true"></div>
             </div>
         </section>
 
