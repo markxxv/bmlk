@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use App\Http\Middleware\WarehouseSession;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,8 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prependToGroup('web', WarehouseSession::class);
         $middleware->validateCsrfTokens(except: ['stripe/webhook', 'api/webhooks/sendcloud']);
-        $middleware->redirectGuestsTo(fn (Request $request) => route('account.login'));
+        $middleware->redirectGuestsTo(fn (Request $request) => $request->is('warehouse', 'warehouse/*')
+            ? route('warehouse.login') : route('account.login'));
         $middleware->redirectUsersTo(fn (Request $request) => route('account.index'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
