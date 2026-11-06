@@ -544,3 +544,78 @@ scan can re-enqueue a pending reminder after its 20-minute dispatch lock expires
 - When a Sendcloud label is created and a tracking number is returned, the order is marked `shipped`.
 - A signed Sendcloud parcel webhook with tracking or a shipped/in-transit event also marks it `shipped`.
 - A signed delivery event marks it `completed`. Once completed, a later carrier event cannot revert it to shipped.
+
+
+## Warehouse PWA — staff order preparation
+
+A separate minimal mobile-first staff application is available on the shop
+domain. It has its own login and **14-day session** (cookie path \`/warehouse\`,
+cookie \`bmlk_warehouse_session\`). This does not extend customer or Filament
+sessions. Everything is protected by the normal Laravel authentication system,
+CSRF verification and a specific permission (\`users.is_warehouse\`, or
+\`is_admin\`). Only paid orders can be opened.
+
+- \`/warehouse/\` — paid pending and processing orders, photos and quantities,
+  search, status filters and quick access to each order.
+- \`/warehouse/orders/BM-YYYYMMDD-XXXXXX\` — item-first detail screen, packing
+  actions, Sendcloud label purchase and printable PDF, address and contacts.
+- \`/warehouse/login\` — standalone staff login; direct order links preserve
+  the intended destination after successful authentication.
+
+Telegram **paid-order alerts and reminders** now link directly to the
+warehouse detail screen, not the Filament edit form. Older Telegram messages
+retain their original URL.
+
+Install the PWA on iPhone with **Safari → Share → Add to Home Screen**.
+On Android, use the browser's **Install app** option. The manifest, icon,
+and service worker live in \`public/warehouse/\`. The service worker uses
+network-only navigation: customer addresses, labels and order details are
+**never stored in an offline cache**. HTTPS is required for PWA installation.
+
+The order label uses the existing Sendcloud v3 \`createLabel\` implementation
+with its existing lock to avoid duplicate label purchases. The purchase
+requires an explicit confirmation. As in the Filament resource, Sendcloud
+creation marks the order \`shipped\` when it returns a tracking number.
+Once the PDF is available the primary action opens the label in the browser
+PDF viewer for printing, without generating a second paid label. For orders
+outside the supported EU flow, the label must be handled in Sendcloud.
+
+### Warehouse staff access
+
+After deployment, you can sign into the PWA using an existing Filament admin
+account. For a warehouse-only employee, give an existing account with a
+**password** explicit warehouse permission (without admin access):
+
+\`\`\`bash
+php artisan tinker
+\`\`\`
+
+\`\`\`php
+$user = \App\Models\User::where('email', 'employee@example.com')->firstOrFail();
+$user->forceFill(['is_warehouse' => true])->save();
+\`\`\`
+
+If the employee does not yet have an account, create one with a password,
+then enable this flag. Normal customer accounts are denied access even if
+they know a valid order number.
+
+### Deploy / verify
+
+\`\`\`bash
+cd /var/www/blackmilkfrance.com
+git pull origin main
+php artisan migrate --force
+npm ci
+npm run build
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:list --path=warehouse
+php artisan test --filter=WarehousePwaTest
+php artisan test --filter=OrderTelegramNotificationsTest
+\`\`\`
+
+The existing one-minute cron is unchanged. Opening an order directly from
+the Telegram app can initially use the Telegram in-app browser rather than
+the installed standalone PWA; it still reaches the same protected order
+after staff login in that browser.
+
