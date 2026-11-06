@@ -14,6 +14,13 @@ use Illuminate\Support\Facades\Route;
 // Warehouse is a separate, installable PWA with its own two-week session.
 // Only admins and users explicitly granted is_warehouse may access orders.
 Route::prefix('warehouse')->name('warehouse.')->group(function (): void {
+    // Serve the service worker from the Laravel route, without creating a
+    // physical public/warehouse directory that would shadow this whole prefix.
+    Route::get('/sw.js', static fn () => response()->file(public_path('pwa-warehouse/sw.js'), [
+        'Content-Type' => 'application/javascript; charset=UTF-8',
+        'Cache-Control' => 'no-store',
+    ]));
+
     Route::get('/login', [WarehouseController::class, 'loginForm'])->name('login');
     Route::post('/login', [WarehouseController::class, 'login'])
         ->middleware('throttle:5,1')->name('login.submit');

@@ -568,8 +568,10 @@ retain their original URL.
 
 Install the PWA on iPhone with **Safari → Share → Add to Home Screen**.
 On Android, use the browser's **Install app** option. The manifest, icon,
-and service worker live in `public/warehouse/`. The service worker uses
-network-only navigation: customer addresses, labels and order details are
+and service worker live in `public/pwa-warehouse/`. The service worker is served via Laravel at `/warehouse/sw.js`.
+Keep static assets in `public/pwa-warehouse` to avoid Nginx's
+`try_files $uri $uri/` resolving `/warehouse` as a physical directory
+and returning 403. The service worker uses network-only navigation: customer addresses, labels and order details are
 **never stored in an offline cache**. HTTPS is required for PWA installation.
 
 The order label uses the existing Sendcloud v3 `createLabel` implementation

@@ -11,9 +11,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="BLACK MILK">
-    <link rel="manifest" href="{{ asset('warehouse/manifest.webmanifest') }}">
-    <link rel="icon" type="image/svg+xml" href="{{ asset('warehouse/icon.svg') }}">
-    <link rel="apple-touch-icon" href="{{ asset('warehouse/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ asset('pwa-warehouse/manifest.webmanifest') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('pwa-warehouse/icon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('pwa-warehouse/apple-touch-icon.png') }}">
     <title>{{ $title }} · BLACK MILK</title>
     @vite('resources/css/app.css')
 </head>

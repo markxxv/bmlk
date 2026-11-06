@@ -14,6 +14,16 @@ class WarehousePwaTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_warehouse_route_is_not_shadowed_by_a_public_directory(): void
+    {
+        $this->assertDirectoryDoesNotExist(public_path('warehouse'));
+
+        $this->get('/warehouse')->assertRedirect(route('warehouse.login'));
+        $this->get('/warehouse/sw.js')
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/javascript; charset=UTF-8');
+    }
+
     public function test_guests_are_redirected_to_the_warehouse_login(): void
     {
         $order = $this->order();
