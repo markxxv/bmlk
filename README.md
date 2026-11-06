@@ -441,9 +441,9 @@ php artisan test --filter=DashboardOrdersWidgetTest
 ## Telegram notifications for paid orders
 
 The verified Stripe payment transition creates exactly one row in `order_telegram_notifications` per order.
-Immediately after the Stripe HTTP response, Laravel attempts the **first Telegram notification** for a newly paid order, without waiting for cron. The hourly Artisan command retries unsuccessful first sends and sends a clearly identified **forgotten/unprepared order reminder every 24 hours** while `payment_status=paid` and the order `status=pending`. Reminders stop when fulfillment status changes. Unpaid orders and orders paid before this feature was deployed are not automatically enrolled.
+Immediately after the Stripe HTTP response, Laravel attempts the **first Telegram notification** for a newly paid order, without waiting for cron. The hourly Artisan command retries unsuccessful first sends **at any time of day**. A separate scheduler task sends clearly identified **forgotten/unprepared order reminders at 10:00 on Monday–Friday, in `Europe/Paris`**, while `payment_status=paid` and the order `status=pending`. The first reminder is eligible at least 24 hours after the initial successful notification; subsequent reminders are eligible on the next working-day morning (at most once per Paris calendar day). Reminders stop when fulfillment status changes. Unpaid orders and orders paid before this feature was deployed are not automatically enrolled.
 
-The database records `first_sent_at`, `last_sent_at` and a short-lived `claimed_at` sending lock. Telegram errors leave the notification eligible for retry on the next hourly run. Messages include each ordered product, saved variants, quantities, prices, discounts, customer contact details, full shipping destination, pickup point when applicable, delivery method, customer note, and totals. They link to the authenticated order page on the store website as **Voir la commande sur le site** (without mentioning framework names), never exposing the private customer order token.
+The database records `first_sent_at`, `last_sent_at` and a short-lived `claimed_at` sending lock. Initial Telegram send failures remain eligible for the next hourly retry; failed reminders are retried at the next eligible workday 10:00 slot. Pending tracked order reminders already in the database automatically adopt the new schedule; **paid-order reminders do not use Laravel's jobs queue**, so no migration or queue flush is required. Changing the schedule does not send stale reminders overnight. Messages include each ordered product, saved variants, quantities, prices, discounts, customer contact details, full shipping destination, pickup point when applicable, delivery method, customer note, and totals. They link to the authenticated order page on the store website as **Voir la commande sur le site** (without mentioning framework names), never exposing the private customer order token.
 
 ### 1. Create a Telegram bot and get the chat ID
 
@@ -482,8 +482,12 @@ php artisan schedule:list
 
 Scheduler tasks:
 
-- `orders:telegram-notifications`: hourly retry and paid-order reminders,
-  still sent synchronously by the existing command.
+- `orders:telegram-notifications --initial-only`: hourly retries of failed
+  first paid-order notifications, including nights and weekends.
+- `orders:telegram-notifications --reminders-only`: Monday–Friday at 10:00
+  `Europe/Paris`, for tracked paid orders still awaiting preparation.
+  The command itself also refuses reminders outside that window, including
+  when invoked manually with no options.
 - `partners:telegram-notifications`: every five minutes, retries failed
   first partner alerts directly and enqueues eligible reminders.
 - `queue:work database --queue=partner-telegram --stop-when-empty --max-time=45 --tries=3`:
@@ -525,7 +529,8 @@ The `role_applications` table stores
 ```bash
 php artisan schedule:list
 php artisan partners:telegram-notifications
-php artisan orders:telegram-notifications
+php artisan orders:telegram-notifications --initial-only
+php artisan schedule:list
 php artisan test --filter=PartnerApplicationTelegramNotificationsTest
 php artisan test --filter=OrderTelegramNotificationsTest
 ```
