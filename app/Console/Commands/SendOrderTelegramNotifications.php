@@ -7,14 +7,18 @@ use App\Models\OrderTelegramNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 use RuntimeException;
 use Throwable;
 
 class SendOrderTelegramNotifications extends Command
 {
-    protected $signature = 'orders:telegram-notifications {--order= : Immediately send the first notification for one paid order}';
+    protected $signature = 'orders:telegram-notifications
+        {--order= : Immediately send the first notification for one paid order}
+        {--initial-only : Retry initial paid-order notifications only}
+        {--reminders-only : Send due reminders only during the weekday 10:00 Paris window}';
 
-    protected $description = 'Notify Telegram of new paid orders, then remind daily while pending';
+    protected $description = 'Notify Telegram of paid orders immediately and remind at 10:00 Paris time on workdays';
 
     public function handle(): int
     {
@@ -27,41 +31,75 @@ class SendOrderTelegramNotifications extends Command
             return self::FAILURE;
         }
 
-        $cutoff = now()->subDay();
+        if (($this->option('initial-only') && $this->option('reminders-only'))
+            || ($this->option('reminders-only') && $this->option('order') !== null)) {
+            $this->error('Choose either initial notifications or reminders.');
 
-        // Only orders registered at the moment Stripe confirmed payment are
-        // eligible. Older paid orders are not unexpectedly sent on deployment.
+            return self::FAILURE;
+        }
+
+        $cutoff = now()->subDay();
+        $startOfParisDay = now('Europe/Paris')->startOfDay()->utc();
+        $sendReminders = ! $this->option('initial-only') && $this->isReminderWindow();
+
+        // Paid orders already tracked in the database remain eligible; there
+        // are no queued order-reminder jobs to migrate or reschedule.
         $query = OrderTelegramNotification::query()
             ->whereHas('order', fn ($order) => $order->where('payment_status', 'paid'));
 
+        $dueReminder = function ($query) use ($cutoff, $startOfParisDay): void {
+            $query->whereNotNull('first_sent_at')
+                ->where('first_sent_at', '<=', $cutoff)
+                ->where('last_sent_at', '<', $startOfParisDay)
+                ->whereHas('order', fn ($order) => $order->where('status', 'pending'));
+        };
+
         if ($this->option('order') !== null) {
-            // Stripe calls this once after its HTTP response; the hourly cron
-            // is only a fallback for failed initial sends and pending reminders.
+            // Stripe always sends the first notification immediately.
             $query->where('order_id', (int) $this->option('order'))
                 ->whereNull('first_sent_at');
+        } elseif ($this->option('reminders-only')) {
+            if (! $sendReminders) {
+                return self::SUCCESS;
+            }
+
+            $query->where($dueReminder);
+        } elseif (! $sendReminders) {
+            // Hourly fallback: never send reminders overnight or on weekends.
+            $query->whereNull('first_sent_at');
         } else {
-            $query->where(function ($query) use ($cutoff): void {
-                $query->whereNull('first_sent_at')
-                    ->orWhere(function ($query) use ($cutoff): void {
-                        $query->whereNotNull('first_sent_at')
-                            ->where('last_sent_at', '<=', $cutoff)
-                            ->whereHas('order', fn ($order) => $order->where('status', 'pending'));
-                    });
-            });
+            $query->where(fn ($query) => $query->whereNull('first_sent_at')->orWhere($dueReminder));
         }
 
-        $query->chunkById(100, function ($notifications) use ($token, $chatId, $cutoff): void {
+        $query->chunkById(100, function ($notifications) use ($token, $chatId, $cutoff, $startOfParisDay): void {
             foreach ($notifications as $notification) {
-                $this->notify($notification, $token, $chatId, $cutoff);
+                $this->notify($notification, $token, $chatId, $cutoff, $startOfParisDay);
             }
         });
 
         return self::SUCCESS;
     }
 
-    private function notify(OrderTelegramNotification $notification, string $token, string $chatId, mixed $cutoff): void
+    private function isReminderWindow(): bool
     {
+        $parisTime = now('Europe/Paris');
+
+        return $parisTime->isWeekday() && $parisTime->hour === 10;
+    }
+
+    private function notify(
+        OrderTelegramNotification $notification,
+        string $token,
+        string $chatId,
+        Carbon $cutoff,
+        Carbon $startOfParisDay,
+    ): void {
         $first = $notification->first_sent_at === null;
+
+        if (! $first && ! $this->isReminderWindow()) {
+            return;
+        }
+
         $claim = now();
 
         // Atomic per-order claim prevents overlapping cron runs from sending
@@ -81,7 +119,9 @@ class SendOrderTelegramNotifications extends Command
             ->when(
                 $first,
                 fn ($query) => $query->whereNull('first_sent_at'),
-                fn ($query) => $query->whereNotNull('first_sent_at')->where('last_sent_at', '<=', $cutoff),
+                fn ($query) => $query->whereNotNull('first_sent_at')
+                    ->where('first_sent_at', '<=', $cutoff)
+                    ->where('last_sent_at', '<', $startOfParisDay),
             )
             ->update(['claimed_at' => $claim]);
 
