@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Order;
 use App\Models\OrderTelegramNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -20,31 +21,43 @@ class OrderTelegramNotificationsTest extends TestCase
         config()->set('services.telegram.chat_id', '-1001234567890');
     }
 
-    public function test_new_paid_order_sends_once_and_repeats_each_day_while_pending(): void
+    public function test_new_paid_order_sends_immediately_then_reminds_on_workday_mornings_only(): void
     {
         Http::fake(['https://api.telegram.org/*' => Http::response(['ok' => true])]);
+        $this->travelTo(Carbon::parse('2026-11-02 08:00:00', 'Europe/Paris')); // Monday
+
         $order = $this->order('paid');
         $notification = OrderTelegramNotification::query()->create(['order_id' => $order->id]);
 
-        $this->artisan('orders:telegram-notifications')->assertSuccessful();
+        $this->artisan('orders:telegram-notifications --initial-only')->assertSuccessful();
         $this->assertNotNull($notification->fresh()->first_sent_at);
         Http::assertSentCount(1);
         Http::assertSent(fn ($request) => str_contains($request['text'], 'Nouvelle commande payée'));
 
-        $this->artisan('orders:telegram-notifications')->assertSuccessful();
-        $this->travel(23)->hours();
+        $this->travelTo(Carbon::parse('2026-11-03 07:00:00', 'Europe/Paris'));
         $this->artisan('orders:telegram-notifications')->assertSuccessful();
         Http::assertSentCount(1);
 
-        $this->travel(2)->hours();
+        $this->travelTo(Carbon::parse('2026-11-03 09:00:00', 'Europe/Paris'));
         $this->artisan('orders:telegram-notifications')->assertSuccessful();
+        Http::assertSentCount(1);
+
+        $this->travelTo(Carbon::parse('2026-11-03 10:00:00', 'Europe/Paris'));
+        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
         Http::assertSentCount(2);
-        Http::assertSent(fn ($request) => str_contains($request['text'], 'Rappel'));
+        Http::assertSent(fn ($request) => str_contains($request['text'], 'RAPPEL — Commande oubliée'));
+
+        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        Http::assertSentCount(2);
+
+        $this->travelTo(Carbon::parse('2026-11-04 10:00:00', 'Europe/Paris'));
+        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        Http::assertSentCount(3);
 
         $order->update(['status' => 'processing']);
-        $this->travel(26)->hours();
-        $this->artisan('orders:telegram-notifications')->assertSuccessful();
-        Http::assertSentCount(2);
+        $this->travelTo(Carbon::parse('2026-11-05 10:00:00', 'Europe/Paris'));
+        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        Http::assertSentCount(3);
     }
 
     public function test_unpaid_and_unregistered_historical_orders_are_not_sent(): void
@@ -144,6 +157,7 @@ class OrderTelegramNotificationsTest extends TestCase
     public function test_daily_message_explicitly_says_forgotten_order(): void
     {
         Http::fake(['https://api.telegram.org/*' => Http::response(['ok' => true])]);
+        $this->travelTo(Carbon::parse('2026-11-09 10:00:00', 'Europe/Paris'));
         $order = $this->order('paid');
 
         OrderTelegramNotification::query()->create([
@@ -158,6 +172,101 @@ class OrderTelegramNotificationsTest extends TestCase
             str_contains($request['text'], 'RAPPEL — Commande oubliée')
             && str_contains($request['text'], 'sa préparation n’a toujours pas commencé')
         );
+    }
+
+    public function test_already_tracked_orders_are_held_until_monday_at_ten_in_paris(): void
+    {
+        Http::fake(['https://api.telegram.org/*' => Http::response(['ok' => true])]);
+        $this->travelTo(Carbon::parse('2026-11-06 23:00:00', 'Europe/Paris')); // Friday
+
+        $order = $this->order('paid');
+        $notification = OrderTelegramNotification::query()->create([
+            'order_id' => $order->id,
+            'first_sent_at' => now()->subDays(4),
+            'last_sent_at' => now()->subDays(2),
+        ]);
+
+        // This is an existing DB reminder, not a Laravel queued job.
+        $this->artisan('orders:telegram-notifications')->assertSuccessful();
+        $this->travelTo(Carbon::parse('2026-11-07 10:00:00', 'Europe/Paris')); // Saturday
+        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        $this->travelTo(Carbon::parse('2026-11-09 09:59:00', 'Europe/Paris'));
+        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        Http::assertNothingSent();
+
+        $this->travelTo(Carbon::parse('2026-11-09 10:00:00', 'Europe/Paris')); // Monday
+        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        Http::assertSentCount(1);
+        $this->assertSame(
+            '2026-11-09',
+            $notification->fresh()->last_sent_at->timezone('Europe/Paris')->toDateString(),
+        );
+
+        // No second reminder can be sent in the same Paris calendar day.
+        $this->travelTo(Carbon::parse('2026-11-09 10:30:00', 'Europe/Paris'));
+        $this->artisan('orders:telegram-notifications')->assertSuccessful();
+        Http::assertSentCount(1);
+    }
+
+    public function test_first_reminder_waits_at_least_a_day_after_payment_notification(): void
+    {
+        Http::fake(['https://api.telegram.org/*' => Http::response(['ok' => true])]);
+        $this->travelTo(Carbon::parse('2026-11-02 16:00:00', 'Europe/Paris')); // Monday
+
+        $order = $this->order('paid');
+        OrderTelegramNotification::query()->create([
+            'order_id' => $order->id,
+            'first_sent_at' => now(),
+            'last_sent_at' => now(),
+        ]);
+
+        $this->travelTo(Carbon::parse('2026-11-03 10:00:00', 'Europe/Paris'));
+        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        Http::assertNothingSent();
+
+        $this->travelTo(Carbon::parse('2026-11-04 10:00:00', 'Europe/Paris'));
+        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        Http::assertSentCount(1);
+    }
+
+    public function test_paris_daylight_saving_time_controls_reminder_window(): void
+    {
+        Http::fake(['https://api.telegram.org/*' => Http::response(['ok' => true])]);
+        $this->travelTo(Carbon::parse('2026-07-06 07:59:00', 'UTC')); // 09:59 in Paris
+
+        $order = $this->order('paid');
+        OrderTelegramNotification::query()->create([
+            'order_id' => $order->id,
+            'first_sent_at' => now()->subDays(3),
+            'last_sent_at' => now()->subDays(2),
+        ]);
+
+        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        Http::assertNothingSent();
+
+        $this->travelTo(Carbon::parse('2026-07-06 08:00:00', 'UTC')); // 10:00 in Paris
+        $this->artisan('orders:telegram-notifications --reminders-only')->assertSuccessful();
+        Http::assertSentCount(1);
+    }
+
+    public function test_initial_alerts_are_still_sent_at_night_without_triggering_reminders(): void
+    {
+        Http::fake(['https://api.telegram.org/*' => Http::response(['ok' => true])]);
+        $this->travelTo(Carbon::parse('2026-11-07 02:00:00', 'Europe/Paris')); // Saturday
+
+        $new = $this->order('paid');
+        OrderTelegramNotification::query()->create(['order_id' => $new->id]);
+
+        $old = $this->order('paid');
+        OrderTelegramNotification::query()->create([
+            'order_id' => $old->id,
+            'first_sent_at' => now()->subDays(3),
+            'last_sent_at' => now()->subDays(2),
+        ]);
+
+        $this->artisan('orders:telegram-notifications --initial-only')->assertSuccessful();
+        Http::assertSentCount(1);
+        Http::assertSent(fn ($request) => str_contains($request['text'], 'Nouvelle commande payée'));
     }
 
     private function order(string $paymentStatus): Order
