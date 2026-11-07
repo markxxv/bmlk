@@ -13,67 +13,101 @@
 
     <form method="GET" action="{{ route('warehouse.orders.index') }}" class="mb-4 flex items-center gap-2 rounded-2xl bg-white px-4 shadow-sm">
         @if ($state !== 'all')<input type="hidden" name="state" value="{{ $state }}">@endif
+        @if ($sort !== 'oldest')<input type="hidden" name="sort" value="{{ $sort }}">@endif
         <x-lucide-search class="size-5 shrink-0 text-zinc-400" />
         <input type="search" name="q" value="{{ $search }}" placeholder="{{ __('Numéro, client, ville…') }}" class="min-h-12 w-full min-w-0 bg-transparent text-base outline-none placeholder:text-zinc-400" aria-label="{{ __('Rechercher une commande') }}">
         @if ($search !== '')
-            <a class="text-sm text-[#712B47]" href="{{ route('warehouse.orders.index', ['state' => $state]) }}">{{ __('Effacer') }}</a>
+            <a class="text-sm text-[#712B47]" href="{{ route('warehouse.orders.index', ['state' => $state, 'sort' => $sort]) }}">{{ __('Effacer') }}</a>
         @endif
     </form>
 
     <nav aria-label="{{ __('Filtrer les commandes') }}" class="mb-4 flex gap-2 overflow-x-auto pb-1">
         @foreach (['all' => __('Toutes'), 'pending' => __('À faire'), 'processing' => __('En cours')] as $key => $label)
-            <a href="{{ route('warehouse.orders.index', array_filter(['state' => $key, 'q' => $search])) }}" class="inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold {{ $state === $key ? 'bg-[#712B47] text-white' : 'bg-white text-zinc-600' }}">
+            <a href="{{ route('warehouse.orders.index', array_filter(['state' => $key, 'q' => $search, 'sort' => $sort !== 'oldest' ? $sort : null])) }}" class="inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold {{ $state === $key ? 'bg-[#712B47] text-white' : 'bg-white text-zinc-600' }}">
                 {{ $label }} <span class="{{ $state === $key ? 'text-white' : 'text-zinc-400' }}">{{ $counts[$key] }}</span>
             </a>
         @endforeach
     </nav>
 
-    <div class="mb-3 flex items-center justify-between text-sm">
-        <span class="font-semibold text-zinc-700">{{ __('Commandes payées') }}</span>
-        <span class="text-zinc-500">{{ __('Plus anciennes d’abord') }}</span>
+    <div class="mb-3 flex items-center justify-between gap-3 px-1">
+        <div class="flex min-w-0 items-center gap-2 text-xs font-semibold text-zinc-700">
+            <span class="size-1.5 shrink-0 rounded-full bg-emerald-500"></span>
+            <span>{{ __('Commandes payées') }}</span>
+        </div>
+        <a href="{{ route('warehouse.orders.index', array_filter(['state' => $state, 'q' => $search, 'sort' => $sort === 'oldest' ? 'newest' : null])) }}"
+           class="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-lg px-2 text-xs text-zinc-500 transition hover:bg-white hover:text-[#712B47] focus-visible:outline-2 focus-visible:outline-[#712B47]"
+           aria-label="{{ __('Inverser l’ordre de tri') }}">
+            @if ($sort === 'oldest')
+                <x-lucide-arrow-down-narrow-wide class="size-4" />
+                <span>{{ __('Plus anciennes d’abord') }}</span>
+            @else
+                <x-lucide-arrow-down-wide-narrow class="size-4" />
+                <span>{{ __('Plus récentes d’abord') }}</span>
+            @endif
+        </a>
     </div>
 
     <div class="space-y-3">
         @forelse ($orders as $order)
             @php
-                $count = collect($order->items ?? [])->sum(fn (array $item): int => (int) ($item['quantity'] ?? 1));
+                $items = $order->items ?? [];
+                $count = collect($items)->sum(fn (array $item): int => (int) ($item['quantity'] ?? 1));
                 $isPending = $order->status === 'pending';
             @endphp
-            <a href="{{ route('warehouse.orders.show', $order->order_number) }}" class="block rounded-2xl bg-white p-4 shadow-sm transition active:scale-[0.99]">
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="text-sm font-extrabold tracking-tight">{{ $order->order_number }}</span>
-                    <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">{{ __('Payée') }}</span>
-                    <span class="rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $isPending ? 'bg-amber-50 text-amber-800' : 'bg-sky-50 text-sky-800' }}">{{ $isPending ? __('À faire') : __('En cours') }}</span>
+            <a href="{{ route('warehouse.orders.show', $order->order_number) }}"
+               class="group block rounded-3xl bg-white p-4 shadow-sm transition duration-150 hover:shadow-md active:scale-[0.995] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#712B47] sm:p-5">
+                <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+                    <span class="font-mono text-xs font-semibold tracking-tight text-zinc-500">{{ $order->order_number }}</span>
+                    <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold {{ $isPending ? 'bg-amber-50 text-amber-800' : 'bg-sky-50 text-sky-800' }}">
+                        <span class="size-1.5 shrink-0 rounded-full {{ $isPending ? 'bg-amber-500' : 'bg-sky-500' }}"></span>
+                        {{ $isPending ? __('À faire') : __('En cours') }}
+                    </span>
                 </div>
+
                 <div class="mt-3 flex items-start justify-between gap-3">
-                    <div class="min-w-0">
-                        <div class="truncate font-bold">{{ trim($order->first_name.' '.($order->last_name ?? '')) }}</div>
-                        <div class="mt-0.5 text-sm text-zinc-500">{{ $order->city }} · {{ $order->shipping_option_name ?: __('Livraison') }}</div>
+                    <div class="min-w-0 flex-1">
+                        <h2 class="truncate text-lg font-extrabold tracking-tight text-zinc-900">{{ trim($order->first_name.' '.($order->last_name ?? '')) }}</h2>
+                        <div class="mt-1.5 flex items-start gap-1.5 text-xs leading-relaxed text-zinc-500">
+                            <x-lucide-map-pin class="mt-0.5 size-3.5 shrink-0 text-[#AE8A99]" />
+                            <span class="min-w-0 line-clamp-2">{{ $order->city }} · {{ $order->shipping_option_name ?: __('Livraison') }}</span>
+                        </div>
                     </div>
-                    <div class="flex shrink-0 items-center gap-2 text-[#712B47]">
-                        <span class="text-sm font-bold">{{ number_format((float) $order->total_amount, 2, ',', ' ') }} €</span>
-                        <x-lucide-chevron-right class="size-4" />
+                    <div class="shrink-0 pt-0.5 text-right text-lg font-extrabold tabular-nums tracking-tight text-[#712B47]">
+                        {{ number_format((float) $order->total_amount, 2, ',', ' ') }} €
                     </div>
                 </div>
 
-                <div class="mt-3 flex flex-wrap gap-x-3 gap-y-2">
-                    @foreach (array_slice($order->items ?? [], 0, 4) as $item)
-                        <div class="flex min-w-0 max-w-full items-center gap-2">
-                            @if (filled(data_get($item, 'image')))
-                                <img src="{{ data_get($item, 'image') }}" loading="lazy" alt="" class="size-11 shrink-0 rounded-lg bg-zinc-100 object-contain">
-                            @else
-                                <span class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-zinc-100"><x-lucide-package class="size-5 text-zinc-400" /></span>
-                            @endif
-                            <span class="max-w-32 text-xs font-medium leading-snug text-zinc-700"><span class="font-extrabold text-[#712B47]">{{ (int) data_get($item, 'quantity', 1) }}×</span> {{ data_get($item, 'name', __('Produit')) }}</span>
-                        </div>
-                    @endforeach
-                    @if (count($order->items ?? []) > 4)
-                        <span class="self-center text-xs font-semibold text-zinc-500">+{{ count($order->items) - 4 }}</span>
-                    @endif
+                <div class="mt-4 rounded-2xl bg-[#F9F6F7] p-2.5 sm:p-3">
+                    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-x-4">
+                        @foreach (array_slice($items, 0, 4) as $item)
+                            <div class="flex min-w-0 items-center gap-2.5">
+                                @if (filled(data_get($item, 'image')))
+                                    <img src="{{ data_get($item, 'image') }}" loading="lazy" alt="" class="size-10 shrink-0 rounded-xl bg-white object-contain">
+                                @else
+                                    <span class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white"><x-lucide-package class="size-5 text-zinc-400" /></span>
+                                @endif
+                                <span class="min-w-0 flex-1 truncate text-xs font-medium text-zinc-700" title="{{ data_get($item, 'name', __('Produit')) }}">
+                                    {{ data_get($item, 'name', __('Produit')) }}
+                                </span>
+                                <span class="shrink-0 rounded-lg bg-white px-2 py-1 text-xs font-extrabold tabular-nums text-[#712B47]">×{{ (int) data_get($item, 'quantity', 1) }}</span>
+                            </div>
+                        @endforeach
+                        @if (count($items) > 4)
+                            <span class="px-1 text-xs font-semibold text-zinc-500">+{{ count($items) - 4 }} {{ __('autres produits') }}</span>
+                        @endif
+                    </div>
                 </div>
-                <div class="mt-3 flex items-center justify-between gap-2 text-xs text-zinc-500">
-                    <span>{{ $count }} {{ __('articles') }}</span>
-                    <span>{{ $order->created_at->timezone('Europe/Paris')->format('d/m · H:i') }}</span>
+
+                <div class="mt-3 flex items-center justify-between gap-3">
+                    <div class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-zinc-400">
+                        <span>{{ $count }} {{ __('articles') }}</span>
+                        <span aria-hidden="true">·</span>
+                        <time datetime="{{ $order->created_at->toIso8601String() }}">{{ $order->created_at->timezone('Europe/Paris')->format('d/m · H:i') }}</time>
+                    </div>
+                    <span class="flex shrink-0 items-center gap-1.5 text-xs font-bold text-[#712B47]">
+                        {{ __('Voir') }}
+                        <x-lucide-arrow-up-right class="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </span>
                 </div>
             </a>
         @empty
