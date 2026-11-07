@@ -140,7 +140,7 @@ class WarehousePwaTest extends TestCase
             ->assertOk()
             ->assertSeeInOrder([$newer->order_number, $older->order_number])
             ->assertSee('Plus récentes d’abord')
-            ->assertSee('sort=oldest', false);
+            ->assertDontSee('sort=oldest', false);
     }
 
     public function test_staff_can_start_preparing_and_cannot_ship_without_a_label(): void
