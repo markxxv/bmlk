@@ -65,6 +65,7 @@ class WarehouseController extends Controller
         }
 
         $search = mb_substr(trim((string) $request->query('q', '')), 0, 80);
+        $sort = $request->query('sort') === 'newest' ? 'newest' : 'oldest';
 
         $base = Order::query()
             ->where('payment_status', 'paid')
@@ -87,11 +88,12 @@ class WarehouseController extends Controller
                         ->orWhereRaw('LOWER(city) LIKE ?', [$term]);
                 });
             })
-            ->orderBy('created_at')
+            ->orderBy('created_at', $sort === 'newest' ? 'desc' : 'asc')
+            ->orderBy('id', $sort === 'newest' ? 'desc' : 'asc')
             ->paginate(20)
             ->withQueryString();
 
-        return view('warehouse.index', compact('orders', 'counts', 'state', 'search'));
+        return view('warehouse.index', compact('orders', 'counts', 'state', 'search', 'sort'));
     }
 
     public function show(Order $order): View
