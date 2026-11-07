@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CreatorsController;
 
 use App\Http\Controllers\FrontController;
+use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\WarehouseController;
@@ -127,6 +128,11 @@ Route::middleware('auth')->group(function (): void {
 Route::get('/createurs', [CreatorsController::class, 'index'])->name('createurs');
 Route::post('/createurs', [CreatorsController::class, 'apply'])
     ->middleware('throttle:3,1')->name('createurs.apply');
+
+// Workshop requests are sent directly to Telegram without a queue or checkout.
+Route::get('/reparation', [RepairController::class, 'index'])->name('reparation');
+Route::post('/reparation', [RepairController::class, 'submit'])
+    ->middleware('throttle:3,1')->name('reparation.submit');
 
 Route::get('/events', [FrontController::class, 'events'])->name('events');
 Route::get('/formations', [FrontController::class, 'formations'])->name('formations');
