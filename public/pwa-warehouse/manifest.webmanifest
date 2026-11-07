@@ -10,7 +10,10 @@
   "background_color": "#F8F6F7",
   "theme_color": "#712B47",
   "icons": [
-    {"src": "/pwa-warehouse/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"},
-    {"src": "/pwa-warehouse/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any"}
+    {
+      "src": "/img/logo.png",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ]
 }

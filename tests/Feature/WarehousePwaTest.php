@@ -24,6 +24,23 @@ class WarehousePwaTest extends TestCase
             ->assertHeader('Content-Type', 'application/javascript; charset=UTF-8');
     }
 
+
+    public function test_warehouse_login_uses_navbar_branding_and_existing_logo_for_pwa_icons(): void
+    {
+        $this->get(route('warehouse.login'))
+            ->assertOk()
+            ->assertSee('src="/img/logo.png"', false)
+            ->assertSee('BLACK MILK')
+            ->assertSee('Le choix des pros')
+            ->assertDontSee('Espace préparation')
+            ->assertDontSee('Accès réservé à l’équipe.')
+            ->assertDontSee('Session conservée pendant 14 jours sur cet appareil.');
+
+        $manifest = json_decode(file_get_contents(public_path('pwa-warehouse/manifest.webmanifest')), true);
+
+        $this->assertSame('/img/logo.png', $manifest['icons'][0]['src']);
+    }
+
     public function test_guests_are_redirected_to_the_warehouse_login(): void
     {
         $order = $this->order();
