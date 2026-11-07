@@ -123,6 +123,26 @@ class WarehousePwaTest extends TestCase
             ->assertDontSee($processing->order_number);
     }
 
+    public function test_order_sort_toggle_orders_records_and_preserves_filters(): void
+    {
+        $this->actingAs($this->staff());
+
+        $older = $this->order(['city' => 'Longwy']);
+        $older->forceFill(['created_at' => now()->subDays(2)])->saveQuietly();
+        $newer = $this->order(['city' => 'Longwy']);
+
+        $this->get(route('warehouse.orders.index', ['state' => 'pending', 'q' => 'Longwy']))
+            ->assertOk()
+            ->assertSeeInOrder([$older->order_number, $newer->order_number])
+            ->assertSee('Plus anciennes d’abord');
+
+        $this->get(route('warehouse.orders.index', ['state' => 'pending', 'q' => 'Longwy', 'sort' => 'newest']))
+            ->assertOk()
+            ->assertSeeInOrder([$newer->order_number, $older->order_number])
+            ->assertSee('Plus récentes d’abord')
+            ->assertSee('sort=oldest', false);
+    }
+
     public function test_staff_can_start_preparing_and_cannot_ship_without_a_label(): void
     {
         $this->actingAs($this->staff());
