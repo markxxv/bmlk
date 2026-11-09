@@ -69,6 +69,10 @@ class OrderRefundService
         ?int $itemIndex,
         ?int $quantity,
     ): OrderRefund {
+        if (! config('services.stripe.secret')) {
+            throw ValidationException::withMessages(['refund' => 'Stripe refunds are not configured.']);
+        }
+
         $refund = DB::transaction(function () use ($order, $staff, $requestKey, $type, $itemIndex, $quantity): OrderRefund {
             // Lock the parent order so simultaneous staff requests cannot over-refund.
             $lockedOrder = Order::query()->lockForUpdate()->findOrFail($order->id);
@@ -194,6 +198,12 @@ class OrderRefundService
         }
 
         if ($refund->stripe_refund_id && $refund->stripe_refund_id !== $stripeId) {
+            return;
+        }
+
+        // An older pending event must not revert a terminal status.
+        if (in_array($refund->status, ['succeeded', 'failed', 'canceled'], true)
+            && ! in_array($status, ['succeeded', 'failed', 'canceled'], true)) {
             return;
         }
 
