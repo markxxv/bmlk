@@ -33,7 +33,7 @@
                 <strong class="text-lg text-zinc-900">{{ number_format((float) $order->total_amount, 2, ',', ' ') }} €</strong>
             </div>
 
-            <div class="mt-5 grid gap-3 {{ filled($order->tracking_number) ? 'sm:grid-cols-2' : '' }}">
+            <div class="mt-5 grid gap-3">
                 <div class="flex min-w-0 items-start gap-3 rounded-2xl bg-zinc-50 px-4 py-4">
                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-bmlk-brand">
                         <x-lucide-package-check class="h-4 w-4" aria-hidden="true" />
@@ -44,18 +44,9 @@
                         <p class="mt-1 text-xs text-zinc-500">{{ $order->customerPaymentStatusLabel() }}</p>
                     </div>
                 </div>
-                @if (filled($order->tracking_number))
-                    <div class="flex min-w-0 items-start gap-3 rounded-2xl bg-zinc-50 px-4 py-4">
-                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-bmlk-brand">
-                            <x-lucide-truck class="h-4 w-4" aria-hidden="true" />
-                        </span>
-                        <div class="min-w-0">
-                            <p class="text-xs text-zinc-500">{{ __('Numéro de suivi') }}</p>
-                            <p class="mt-1 break-all text-sm font-semibold text-zinc-900">{{ $order->tracking_number }}</p>
-                        </div>
-                    </div>
-                @endif
             </div>
+
+            @include('account.partials.tracking', ['order' => $order])
 
             <h2 class="mt-9 font-serif text-2xl text-zinc-900">{{ __('Articles commandés') }}</h2>
             <div class="mt-3 divide-y divide-zinc-100">
