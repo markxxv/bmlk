@@ -52,6 +52,24 @@
         </div>
     </div>
 
+    @if (filled($order->tracking_number))
+        <section aria-label="{{ __('Tracking number') }}" class="mb-4 rounded-2xl bg-white p-4 shadow-sm">
+            <div class="mb-2 flex items-center gap-2 text-sm font-semibold text-zinc-500">
+                <x-lucide-truck class="size-4 text-[#712B47]" />
+                {{ __('Tracking number') }}
+            </div>
+            <div class="flex items-center gap-3">
+                <span id="warehouse-tracking-number" class="min-w-0 flex-1 break-all font-mono text-base font-bold tracking-tight text-zinc-950">{{ $order->tracking_number }}</span>
+                <button id="warehouse-tracking-copy" type="button" aria-label="{{ __('Copy tracking number') }}"
+                    class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#F9EAF0] px-3 text-sm font-bold text-[#712B47] transition-colors active:opacity-80">
+                    <x-lucide-copy id="warehouse-tracking-copy-icon" class="size-4" />
+                    <x-lucide-check id="warehouse-tracking-check-icon" class="hidden size-4" />
+                    <span id="warehouse-tracking-copy-label" aria-live="polite">{{ __('Copy') }}</span>
+                </button>
+            </div>
+        </section>
+    @endif
+
     <section aria-labelledby="warehouse-items-heading" class="overflow-hidden rounded-2xl bg-white shadow-sm">
         <div class="flex items-center justify-between bg-[#F9EAF0] px-4 py-3.5">
             <h2 id="warehouse-items-heading" class="flex items-center gap-2 text-lg font-extrabold"><x-lucide-package class="size-5 text-[#712B47]" /> {{ __('Items') }}</h2>
@@ -197,6 +215,75 @@
 
     @if ($order->payment_status === 'paid')
         @include('warehouse.refunds')
+    @endif
+
+    @php
+        // Only expose actual HTTPS tracking URLs returned by Sendcloud.
+        $trackingUrl = filled($order->tracking_number)
+            && is_string($order->tracking_url)
+            && filter_var($order->tracking_url, FILTER_VALIDATE_URL)
+            && parse_url($order->tracking_url, PHP_URL_SCHEME) === 'https'
+                ? $order->tracking_url : null;
+    @endphp
+    @if ($trackingUrl)
+        <a href="{{ $trackingUrl }}" target="_blank" rel="noopener noreferrer"
+            class="mt-4 flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-[#712B47] shadow-sm active:opacity-80">
+            <x-lucide-map-pinned class="size-5" />
+            {{ __('Track shipment') }}
+            <x-lucide-arrow-up-right class="size-4" />
+        </a>
+    @endif
+
+    @if (filled($order->tracking_number))
+        <script>
+            (() => {
+                const button = document.getElementById('warehouse-tracking-copy');
+                const copyIcon = document.getElementById('warehouse-tracking-copy-icon');
+                const checkIcon = document.getElementById('warehouse-tracking-check-icon');
+                const label = document.getElementById('warehouse-tracking-copy-label');
+                const number = document.getElementById('warehouse-tracking-number').textContent.trim();
+                let resetTimer;
+
+                button.addEventListener('click', async () => {
+                    let copied = false;
+                    try {
+                        if (navigator.clipboard?.writeText) {
+                            await navigator.clipboard.writeText(number);
+                            copied = true;
+                        } else {
+                            const input = document.createElement('textarea');
+                            input.value = number;
+                            input.setAttribute('readonly', '');
+                            input.style.position = 'fixed';
+                            input.style.opacity = '0';
+                            document.body.appendChild(input);
+                            input.select();
+                            copied = document.execCommand('copy');
+                            input.remove();
+                        }
+                    } catch {
+                        copied = false;
+                    }
+
+                    clearTimeout(resetTimer);
+                    copyIcon.classList.toggle('hidden', copied);
+                    checkIcon.classList.toggle('hidden', !copied);
+                    button.classList.toggle('bg-emerald-50', copied);
+                    button.classList.toggle('text-emerald-700', copied);
+                    button.classList.toggle('bg-[#F9EAF0]', !copied);
+                    button.classList.toggle('text-[#712B47]', !copied);
+                    label.textContent = copied ? 'Copied' : 'Copy failed';
+
+                    resetTimer = setTimeout(() => {
+                        copyIcon.classList.remove('hidden');
+                        checkIcon.classList.add('hidden');
+                        button.classList.remove('bg-emerald-50', 'text-emerald-700');
+                        button.classList.add('bg-[#F9EAF0]', 'text-[#712B47]');
+                        label.textContent = 'Copy';
+                    }, 2200);
+                });
+            })();
+        </script>
     @endif
 
     <nav aria-label="{{ __('Order navigation') }}" class="fixed inset-x-0 bottom-0 z-20 bg-white/95 px-5 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur-sm">
