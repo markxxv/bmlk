@@ -309,7 +309,7 @@ const prepareTitleLines = (title) => {
     let lines = explicit;
 
     if (!lines.length) {
-        const directSpans = [...title.children].filter((child) => child.tagName === 'SPAN');
+        const directSpans = [...title.children].filter((child) => child.tagName === 'SPAN' && !child.hasAttribute('data-reveal-title-skip'));
 
         if (!directSpans.length) {
             const inner = document.createElement('span');
