@@ -20,6 +20,10 @@ Schedule::command('orders:telegram-notifications --reminders-only')
     ->timezone('Europe/Paris')
     ->withoutOverlapping(10);
 
+// Backfill historic shipments with --all once. Regular checks only request
+// tracking for open shipments, respecting a minimum sync interval.
+Schedule::command('shipping:sync-tracking')->hourly()->withoutOverlapping(30);
+
 // First partner alerts and any failed retries are sent directly. Only reminders
 // are queued (database driver), and the short-lived worker drains that queue.
 Schedule::command('partners:telegram-notifications')->everyFiveMinutes()->withoutOverlapping(5);
