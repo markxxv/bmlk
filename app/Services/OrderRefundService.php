@@ -161,14 +161,20 @@ class OrderRefundService
             // Timeout, rate limit and 5xx responses may have created a refund remotely.
             // Keep their amount reserved; a second refund with a new key is unsafe.
             $uncertain = $response->status() === 409 || $response->status() === 429 || $response->serverError();
-            $refund->forceFill(['status' => $uncertain ? 'needs_review' : 'failed'])->save();
+            $refund->refresh();
+            if ($refund->status !== 'succeeded') {
+                $refund->forceFill(['status' => $uncertain ? 'needs_review' : 'failed'])->save();
+            }
             Log::warning('Warehouse Stripe refund rejected.', [
                 'order_id' => $order->id,
                 'refund_id' => $refund->id,
                 'http_status' => $response->status(),
             ]);
         } catch (Throwable $exception) {
-            $refund->forceFill(['status' => 'needs_review'])->save();
+            $refund->refresh();
+            if ($refund->status !== 'succeeded') {
+                $refund->forceFill(['status' => 'needs_review'])->save();
+            }
             Log::warning('Warehouse Stripe refund result unknown.', [
                 'order_id' => $order->id,
                 'refund_id' => $refund->id,
