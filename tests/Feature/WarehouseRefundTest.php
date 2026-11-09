@@ -102,7 +102,9 @@ class WarehouseRefundTest extends TestCase
         $this->assertSame(1300, (int) $order->refunds()->where('type', 'order')->firstOrFail()->amount_cents);
         $this->assertSame(2100, (int) $order->refunds()->sum('amount_cents'));
 
-        $this->get(route('warehouse.orders.index'))->assertOk()->assertDontSee($order->order_number);
+        $this->get(route('warehouse.orders.index'))->assertOk()->assertSee($order->order_number);
+        $this->get(route('warehouse.orders.index', ['state' => 'pending']))
+            ->assertOk()->assertDontSee($order->order_number);
         $this->get(route('warehouse.orders.show', $order->order_number))
             ->assertOk()->assertSee('Shipment and fulfillment actions are disabled.');
 
@@ -218,7 +220,9 @@ class WarehouseRefundTest extends TestCase
         }
 
         $this->assertSame(1600, (int) $order->refunds()->sum('amount_cents'));
-        $this->get(route('warehouse.orders.index'))->assertDontSee($order->order_number);
+        $this->get(route('warehouse.orders.index'))->assertOk()->assertSee($order->order_number);
+        $this->get(route('warehouse.orders.index', ['state' => 'pending']))
+            ->assertOk()->assertDontSee($order->order_number);
         $this->get(route('warehouse.orders.show', $order->order_number))
             ->assertOk()->assertSee('Full payment refunded or reserved.');
         $this->post(route('warehouse.orders.status', $order->order_number), ['status' => 'processing'])
