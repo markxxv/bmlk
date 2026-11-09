@@ -23,6 +23,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
+            ->bootUsing(fn () => app()->setLocale('en'))
             ->path('admin')
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
