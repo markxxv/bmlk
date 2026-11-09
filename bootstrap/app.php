@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use App\Http\Middleware\WarehouseSession;
+use App\Http\Middleware\ReadOnlyCustomerPreview;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prependToGroup('web', WarehouseSession::class);
+        $middleware->appendToGroup('web', ReadOnlyCustomerPreview::class);
         $middleware->validateCsrfTokens(except: ['stripe/webhook', 'api/webhooks/sendcloud']);
         $middleware->redirectGuestsTo(fn (Request $request) => $request->is('warehouse', 'warehouse/*')
             ? route('warehouse.login') : route('account.login'));
