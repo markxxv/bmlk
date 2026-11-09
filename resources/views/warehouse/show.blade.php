@@ -87,6 +87,9 @@
 
     @unless ($refundSummary['has_whole_refund'])
     <section aria-label="{{ __('Shipping label') }}" class="mt-4">
+        @if ($refundSummary['reserved_cents'] > 0)
+            <p class="mb-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">Some items have been refunded. Verify the parcel contents and weight before purchasing a shipping label.</p>
+        @endif
         @if ($labelReady)
             <a href="{{ route('warehouse.orders.label', $order->order_number) }}" class="flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-[#712B47] px-4 py-4 text-center text-sm font-bold text-white shadow-sm">
                 <x-lucide-printer class="size-5 shrink-0" /> {{ __('Open / print PDF label') }}
