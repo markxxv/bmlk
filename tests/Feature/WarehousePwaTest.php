@@ -33,7 +33,7 @@ class WarehousePwaTest extends TestCase
             ->assertSee('BLACK MILK')
             ->assertSee('<html lang="en">', false)
             ->assertSee('Sign in')
-            ->assertSee('The professionals&#039; choice')
+            ->assertSee("The professionals' choice")
             ->assertDontSee('Preparation area')
             ->assertDontSee('Staff access only.')
             ->assertDontSee('Stay signed in on this device for 14 days.');
