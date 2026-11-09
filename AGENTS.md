@@ -367,10 +367,10 @@ Spatie Translatable fields are stored as PostgreSQL JSONB objects, for example:
 
 ## Warehouse refunds
 
-- Warehouse staff can refund a paid order using Stripe PaymentIntent and either a specific purchased item/quantity (at its discounted Checkout price) or the remaining full order balance, including shipping.
-- Only English UI for refund flows. Mobile-first bottom sheet, quantity controls and a separate, explicit irreversible-payment confirmation are required.
+- Warehouse staff can refund a paid order using Stripe PaymentIntent: select multiple product rows with their own quantity steppers (one refund for the combined discounted Checkout prices), or refund the entire remaining balance including shipping.
+- Only English UI for refund flows. Mobile-first bottom sheet with **visible per-product selection checkboxes and per-row quantity steppers**, one sticky combined total, an itemized review and a separate explicit irreversible-payment confirmation. Do not hide selection inside a context menu or use one global quantity control.
 - Never accept browser-provided refund amounts. Calculate cents on the server, enforce refundable quantities, lock the order during reservation, and reuse each attempt's persistent Stripe idempotency key.
-- Keep a refund audit trail in `order_refunds`; preserve pending and uncertain attempts against double refunds, and reconcile webhook changes. Do not modify the customer's shared French status labels.
+- Keep a refund audit trail in `order_refunds`, with JSON `items` selection snapshot for each multi-product refund, retaining legacy single-item fields. Reserve quantities per order line across both formats. Preserve pending and uncertain attempts against double refunds, and reconcile webhook changes. Do not modify the customer's shared French status labels.
 - If the whole payment is refunded or reserved, including through several item refunds, block Warehouse fulfillment/label purchases and stop the pending-order reminders.
 - Run migrations and compile Tailwind/Vite assets when changing the refund UI.
 
