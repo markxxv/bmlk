@@ -7,6 +7,11 @@
             <div class="text-[10px] font-extrabold tracking-[0.18em] text-[#712B47]">BLACK MILK · FRANCE</div>
             <h1 class="mt-1 break-all text-lg font-extrabold tracking-tight">{{ $order->order_number }}</h1>
             <div class="mt-2 flex flex-wrap gap-1.5">
+                @if ($refundSummary['has_whole_refund'])
+                    <span class="rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-700">Full refund requested</span>
+                @elseif ($refundSummary['reserved_cents'] > 0)
+                    <span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800">Partially refunded</span>
+                @endif
                 <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{{ __('Paid') }}</span>
                 <span class="rounded-full px-3 py-1 text-xs font-bold {{ $order->status === 'pending' ? 'bg-amber-50 text-amber-800' : 'bg-sky-50 text-sky-800' }}">{{ $statusLabel }}</span>
             </div>
@@ -38,7 +43,12 @@
         </div>
 
         <div class="divide-y divide-zinc-100 px-4">
-            @forelse (($order->items ?? []) as $item)
+            @forelse (($order->items ?? []) as $index => $item)
+                @php
+                    $refundItem = $refundSummary['items'][$index] ?? null;
+                    $packingQuantity = $refundItem['available_quantity'] ?? (int) data_get($item, 'quantity', 1);
+                    $refundedQuantity = $refundItem['refunded_quantity'] ?? 0;
+                @endphp
                 <div class="flex items-start gap-3 py-4">
                     @if (filled(data_get($item, 'image')))
                         <img src="{{ data_get($item, 'image') }}" alt="" class="size-20 shrink-0 rounded-xl bg-zinc-100 object-contain" loading="eager">
@@ -53,10 +63,16 @@
                             @endif
                         @endforeach
                         <div class="mt-2 text-xs text-zinc-500">{{ number_format((float) data_get($item, 'unit_price', 0), 2, ',', ' ') }} € / {{ __('unit') }}</div>
+                        @if ($refundedQuantity > 0)
+                            <p class="mt-1 text-xs font-bold text-rose-700">{{ $refundedQuantity }} {{ __('refunded / reserved') }}</p>
+                        @endif
                     </div>
                     <div class="shrink-0 rounded-xl bg-[#F9EAF0] px-3 py-2 text-center">
                         <div class="text-[10px] font-semibold text-[#712B47]">{{ __('QTY') }}</div>
-                        <div class="text-2xl font-black leading-tight text-[#712B47]">×{{ (int) data_get($item, 'quantity', 1) }}</div>
+                        <div class="text-2xl font-black leading-tight text-[#712B47]">×{{ $packingQuantity }}</div>
+                        @if ($refundedQuantity > 0 || $refundSummary['has_whole_refund'])
+                            <p class="mt-1 text-[10px] font-semibold text-rose-700">{{ __('To pack') }}</p>
+                        @endif
                     </div>
                 </div>
             @empty
@@ -65,6 +81,7 @@
         </div>
     </section>
 
+    @unless ($refundSummary['has_whole_refund'])
     <section aria-label="{{ __('Shipping label') }}" class="mt-4">
         @if ($labelReady)
             <a href="{{ route('warehouse.orders.label', $order->order_number) }}" class="flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-[#712B47] px-4 py-4 text-center text-sm font-bold text-white shadow-sm">
@@ -116,6 +133,10 @@
         </div>
     </section>
 
+    @else
+        <p class="mt-4 rounded-xl bg-rose-50 p-4 text-sm font-bold text-rose-800">Full refund requested. Shipment and fulfillment actions are disabled.</p>
+    @endunless
+
     <section aria-labelledby="warehouse-shipping-heading" class="mt-4 rounded-2xl bg-white p-4 shadow-sm">
         <h2 id="warehouse-shipping-heading" class="mb-3 flex items-center gap-2 font-bold"><x-lucide-map-pin class="size-5 text-[#712B47]" />{{ __('Shipping') }}</h2>
         <div class="text-sm font-semibold">{{ trim($order->first_name.' '.($order->last_name ?? '')) }}</div>
@@ -152,6 +173,8 @@
         <div class="flex justify-between gap-3 py-1 text-zinc-600"><span>{{ __('Shipping') }}</span><span>{{ number_format((float) $order->delivery_cost, 2, ',', ' ') }} €</span></div>
         <div class="mt-2 flex justify-between gap-3 text-base font-extrabold text-[#712B47]"><span>{{ __('Total paid') }}</span><span>{{ number_format((float) $order->total_amount, 2, ',', ' ') }} €</span></div>
     </section>
+
+    @include('warehouse.refunds')
 
     <nav aria-label="{{ __('Order navigation') }}" class="fixed inset-x-0 bottom-0 z-20 bg-white/95 px-5 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur-sm">
         <div class="mx-auto flex max-w-xl items-center justify-between gap-3">
