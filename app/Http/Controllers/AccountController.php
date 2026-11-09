@@ -127,21 +127,38 @@ class AccountController extends Controller
             $this->claimOrders($request);
         }
         $user = $request->user();
+        $preview = $request->session()->has('customer_preview');
+
+        // Regular login claims verified-email orders. Preview must show the
+        // same real orders without ever changing their database ownership.
+        $orders = Order::query()->where(function ($query) use ($user, $preview): void {
+            $query->where('user_id', $user->id);
+            if ($preview && $user->hasVerifiedEmail()) {
+                $query->orWhere(fn ($unclaimed) => $unclaimed->whereNull('user_id')
+                    ->whereNotNull('email')
+                    ->whereRaw('LOWER(TRIM(email)) = ?', [Str::lower(trim($user->email))]));
+            }
+        });
 
         return view('account.index', [
             'user' => $user,
-            // The originating paid order is visible immediately, even while
-            // the new customer's email still awaits verification.
-            'currentOrder' => $user->orders()
-                ->whereKey($user->onboarding_order_id)
-                ->first(),
-            'orders' => $user->orders()->latest()->paginate(12),
+            'currentOrder' => (clone $orders)->whereKey($user->onboarding_order_id)->first(),
+            'orders' => $orders->latest()->paginate(12),
         ]);
     }
 
     public function order(Request $request, Order $order): View
     {
-        abort_unless($order->user_id === $request->user()->id, 404);
+        $user = $request->user();
+        $ownsOrder = $order->user_id === $user->id;
+        $previewMatchesEmail = $request->session()->has('customer_preview')
+            && $user->hasVerifiedEmail()
+            && $order->user_id === null
+            && filled($order->email)
+            && Str::lower(trim($order->email)) === Str::lower(trim($user->email));
+
+        abort_unless($ownsOrder || $previewMatchesEmail, 404);
+
         return view('account.checkout-order', compact('order'));
     }
 
