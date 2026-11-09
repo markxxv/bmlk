@@ -39,7 +39,7 @@
     color: #70879C;
     text-shadow: rgba(246, 238, 230, 0.6) 1px 1px 0,
         rgba(38, 54, 76, 0.35) -1px -1px 0,
-        rgba(38, 54, 76, 0.22) 0 18px 30px;
+        rgba(38, 54, 76, 0) 0 18px 30px;
     position: relative;
     z-index: 1;
     white-space: nowrap;
