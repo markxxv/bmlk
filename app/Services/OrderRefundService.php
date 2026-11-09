@@ -134,8 +134,7 @@ class OrderRefundService
                 foreach ($selections as $selection) {
                     if (! is_array($selection)
                         || ! isset($selection['item_index'], $selection['quantity'])
-                        || ! filter_var($selection['item_index'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]])
-                        && $selection['item_index'] !== 0) {
+                        || filter_var($selection['item_index'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]) === false) {
                         throw ValidationException::withMessages(['refund' => 'Invalid product selection.']);
                     }
 
