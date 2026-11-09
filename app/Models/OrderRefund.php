@@ -13,6 +13,7 @@ class OrderRefund extends Model
     {
         return [
             'amount_cents' => 'integer',
+            'items' => 'array',
             'item_index' => 'integer',
             'quantity' => 'integer',
         ];
