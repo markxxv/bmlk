@@ -310,7 +310,7 @@ class WarehouseRefundTest extends TestCase
         $this->assertCount(2, $refund->items);
         $this->assertSame([
             ['item_index' => 0, 'quantity' => 1, 'unit_cents' => 800, 'name' => 'Nail care', 'options' => ''],
-            ['item_index' => 1, 'quantity' => 2, 'unit_cents' => 500, 'name' => 'Cuticle oil', 'options' => ''],
+            ['item_index' => 1, 'quantity' => 2, 'unit_cents' => 500, 'name' => 'Cuticle oil', 'options' => '30 ml'],
         ], $refund->items);
 
         $summary = app(OrderRefundService::class)->summary($order);
@@ -322,7 +322,7 @@ class WarehouseRefundTest extends TestCase
         $this->get(route('warehouse.orders.show', $order->order_number))
             ->assertOk()
             ->assertSee('Nail care × 1')
-            ->assertSee('Cuticle oil × 2');
+            ->assertSee('Cuticle oil · 30 ml × 2');
         $this->get(route('warehouse.orders.index'))
             ->assertOk()
             ->assertSee($order->order_number)
@@ -403,7 +403,8 @@ class WarehouseRefundTest extends TestCase
                 ['name' => 'Nail care', 'quantity' => 2, 'unit_price' => 10,
                     'discounted_unit_price' => 8, 'line_total' => 20],
                 ['name' => 'Cuticle oil', 'quantity' => 3, 'unit_price' => 6,
-                    'discounted_unit_price' => 5, 'line_total' => 18],
+                    'discounted_unit_price' => 5, 'line_total' => 18,
+                    'options' => [['label' => 'Size', 'display' => '30 ml']]],
                 ['name' => 'File', 'quantity' => 1, 'unit_price' => 4,
                     'discounted_unit_price' => 4, 'line_total' => 4],
             ],
