@@ -9,7 +9,7 @@
             <div class="mt-2 flex flex-wrap gap-1.5">
                 @if ($refundSummary['has_whole_refund'])
                     <span class="rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-700">
-                        {{ $refundSummary['history']->firstWhere('type', 'order')?->status === 'succeeded' ? 'Refunded' : 'Refund pending' }}
+                        {{ $refundSummary['history']->whereNotIn('status', ['failed', 'canceled'])->every(fn ($refund) => $refund->status === 'succeeded') ? 'Refunded' : 'Refund pending' }}
                     </span>
                 @elseif ($refundSummary['reserved_cents'] > 0)
                     <span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800">Partially refunded</span>
@@ -141,7 +141,7 @@
     </section>
 
     @else
-        <p class="mt-4 rounded-xl bg-rose-50 p-4 text-sm font-bold text-rose-800">Full refund requested. Shipment and fulfillment actions are disabled.</p>
+        <p class="mt-4 rounded-xl bg-rose-50 p-4 text-sm font-bold text-rose-800">Full payment refunded or reserved. Shipment and fulfillment actions are disabled.</p>
     @endunless
 
     <section aria-labelledby="warehouse-shipping-heading" class="mt-4 rounded-2xl bg-white p-4 shadow-sm">
