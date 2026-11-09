@@ -1,8 +1,8 @@
-<x-warehouse.layout title="To prepare">
+<x-warehouse.layout title="Orders">
     <header class="mb-5 flex items-center justify-between gap-3">
         <div class="min-w-0">
             <div class="text-[10px] font-extrabold tracking-[0.19em] text-[#712B47]">BLACK MILK · FRANCE</div>
-            <h1 class="mt-1 text-3xl font-extrabold tracking-tight">{{ __('To prepare') }}</h1>
+            <h1 class="mt-1 text-3xl font-extrabold tracking-tight">{{ __('Orders') }}</h1>
         </div>
         <form method="POST" action="{{ route('warehouse.logout') }}">@csrf
             <button type="submit" aria-label="{{ __('Sign out') }}" class="flex size-11 items-center justify-center rounded-xl bg-white text-zinc-500 shadow-sm">
@@ -13,7 +13,7 @@
 
     <form method="GET" action="{{ route('warehouse.orders.index') }}" class="mb-4 flex items-center gap-2 rounded-2xl bg-white px-4 shadow-sm">
         @if ($state !== 'all')<input type="hidden" name="state" value="{{ $state }}">@endif
-        @if ($sort !== 'oldest')<input type="hidden" name="sort" value="{{ $sort }}">@endif
+        @if ($sort !== 'newest')<input type="hidden" name="sort" value="{{ $sort }}">@endif
         <x-lucide-search class="size-5 shrink-0 text-zinc-400" />
         <input type="search" name="q" value="{{ $search }}" placeholder="{{ __('Order number, customer, city…') }}" class="min-h-12 w-full min-w-0 bg-transparent text-base outline-none placeholder:text-zinc-400" aria-label="{{ __('Search orders') }}">
         @if ($search !== '')
@@ -21,28 +21,60 @@
         @endif
     </form>
 
-    <nav aria-label="{{ __('Filter orders') }}" class="mb-4 flex gap-2 overflow-x-auto pb-1">
-        @foreach (['all' => __('All'), 'pending' => __('To prepare'), 'processing' => __('In progress')] as $key => $label)
-            <a href="{{ route('warehouse.orders.index', array_filter(['state' => $key, 'q' => $search, 'sort' => $sort !== 'oldest' ? $sort : null])) }}" class="inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold {{ $state === $key ? 'bg-[#712B47] text-white' : 'bg-white text-zinc-600' }}">
-                {{ $label }} <span class="{{ $state === $key ? 'text-white' : 'text-zinc-400' }}">{{ $counts[$key] }}</span>
-            </a>
-        @endforeach
+    @php
+        $fulfillmentFilters = [
+            'all' => 'All',
+            'pending' => 'To prepare',
+            'processing' => 'Preparing',
+            'shipped' => 'Shipped',
+            'completed' => 'Completed',
+            'cancelled' => 'Cancelled',
+            'archived' => 'Archived',
+        ];
+        $paymentFilters = [
+            'paid' => 'Paid',
+            'payment_pending' => 'Payment pending',
+            'payment_processing' => 'Payment processing',
+            'payment_failed' => 'Payment failed',
+            'refunds' => 'Refunds',
+        ];
+    @endphp
+
+    <nav aria-label="{{ __('Filter orders') }}" class="mb-4 space-y-2">
+        <div class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+            @foreach ($fulfillmentFilters as $key => $label)
+                <a href="{{ route('warehouse.orders.index', array_filter(['state' => $key, 'q' => $search, 'sort' => $sort !== 'newest' ? $sort : null])) }}"
+                   @if ($state === $key) aria-current="page" @endif
+                   class="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold {{ $state === $key ? 'bg-[#712B47] text-white' : 'bg-white text-zinc-600' }}">
+                    {{ __($label) }} <span class="{{ $state === $key ? 'text-white' : 'text-zinc-400' }}">{{ $counts[$key] }}</span>
+                </a>
+            @endforeach
+        </div>
+        <div class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+            @foreach ($paymentFilters as $key => $label)
+                <a href="{{ route('warehouse.orders.index', array_filter(['state' => $key, 'q' => $search, 'sort' => $sort !== 'newest' ? $sort : null])) }}"
+                   @if ($state === $key) aria-current="page" @endif
+                   class="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold {{ $state === $key ? 'bg-[#712B47] text-white' : 'bg-white text-zinc-600' }}">
+                    {{ __($label) }} <span class="{{ $state === $key ? 'text-white' : 'text-zinc-400' }}">{{ $counts[$key] }}</span>
+                </a>
+            @endforeach
+        </div>
     </nav>
 
     <div class="mb-3 flex items-center justify-between gap-3 px-1">
         <div class="flex min-w-0 items-center gap-2 text-xs font-semibold text-zinc-700">
-            <span class="size-1.5 shrink-0 rounded-full bg-emerald-500"></span>
-            <span>{{ __('Paid orders') }}</span>
+            <span class="size-1.5 shrink-0 rounded-full bg-[#712B47]"></span>
+            <span>{{ $state === 'all' ? __('All orders') : __($fulfillmentFilters[$state] ?? $paymentFilters[$state] ?? 'Orders') }}</span>
         </div>
-        <a href="{{ route('warehouse.orders.index', array_filter(['state' => $state, 'q' => $search, 'sort' => $sort === 'oldest' ? 'newest' : null])) }}"
+        <a href="{{ route('warehouse.orders.index', array_filter(['state' => $state, 'q' => $search, 'sort' => $sort === 'newest' ? 'oldest' : null])) }}"
            class="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-lg px-2 text-xs text-zinc-500 transition hover:bg-white hover:text-[#712B47] focus-visible:outline-2 focus-visible:outline-[#712B47]"
            aria-label="{{ __('Reverse sort order') }}">
-            @if ($sort === 'oldest')
-                <x-lucide-arrow-down-narrow-wide class="size-4" />
-                <span>{{ __('Oldest first') }}</span>
-            @else
+            @if ($sort === 'newest')
                 <x-lucide-arrow-down-wide-narrow class="size-4" />
                 <span>{{ __('Newest first') }}</span>
+            @else
+                <x-lucide-arrow-down-narrow-wide class="size-4" />
+                <span>{{ __('Oldest first') }}</span>
             @endif
         </a>
     </div>
@@ -52,23 +84,58 @@
             @php
                 $items = $order->items ?? [];
                 $reservedRefunds = $order->refunds->whereNotIn('status', ['failed', 'canceled']);
+                $reservedAmount = (int) $reservedRefunds->sum('amount_cents');
+                $totalCents = (int) round((float) $order->total_amount * 100);
+                $fullyRefunded = $totalCents > 0 && $reservedAmount >= $totalCents;
+                $refundSucceeded = $fullyRefunded && $reservedRefunds->every(fn ($refund) => $refund->status === 'succeeded');
                 $count = collect($items)->sum(fn (array $item, int $index): int =>
-                    max(0, (int) ($item['quantity'] ?? 1) - (int) $reservedRefunds
+                    $fullyRefunded ? 0 : max(0, (int) ($item['quantity'] ?? 1) - (int) $reservedRefunds
                         ->where('type', 'item')->where('item_index', $index)->sum('quantity')));
-                $hasItemRefunds = $reservedRefunds->isNotEmpty();
-                $isPending = $order->status === 'pending';
+                $paymentLabel = match ($order->payment_status) {
+                    'paid' => 'Paid',
+                    'unpaid' => 'Payment pending',
+                    'processing' => 'Payment processing',
+                    'failed' => 'Payment failed',
+                    default => ucfirst(str_replace('_', ' ', (string) $order->payment_status)),
+                };
+                $paymentColor = match ($order->payment_status) {
+                    'paid' => 'bg-emerald-50 text-emerald-800',
+                    'processing' => 'bg-sky-50 text-sky-800',
+                    'failed' => 'bg-rose-50 text-rose-800',
+                    default => 'bg-amber-50 text-amber-800',
+                };
+                $statusLabel = match ($order->status) {
+                    'pending' => 'To prepare',
+                    'processing' => 'Preparing',
+                    'shipped' => 'Shipped',
+                    'completed' => 'Completed',
+                    'cancelled' => 'Cancelled',
+                    'archived' => 'Archived',
+                    default => ucfirst(str_replace('_', ' ', (string) $order->status)),
+                };
+                $statusColor = match ($order->status) {
+                    'pending' => 'bg-amber-50 text-amber-800',
+                    'processing', 'shipped' => 'bg-sky-50 text-sky-800',
+                    'completed' => 'bg-emerald-50 text-emerald-800',
+                    'cancelled' => 'bg-rose-50 text-rose-800',
+                    default => 'bg-zinc-100 text-zinc-600',
+                };
             @endphp
             <a href="{{ route('warehouse.orders.show', $order->order_number) }}"
                class="group block rounded-3xl bg-white p-4 shadow-sm transition duration-150 hover:shadow-md active:scale-[0.995] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#712B47] sm:p-5">
                 <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
                     <span class="font-mono text-xs font-semibold tracking-tight text-zinc-500">{{ $order->order_number }}</span>
-                    <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold {{ $isPending ? 'bg-amber-50 text-amber-800' : 'bg-sky-50 text-sky-800' }}">
-                        <span class="size-1.5 shrink-0 rounded-full {{ $isPending ? 'bg-amber-500' : 'bg-sky-500' }}"></span>
-                        {{ $isPending ? __('To prepare') : __('In progress') }}
-                    </span>
-                    @if ($hasItemRefunds)
-                        <span class="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700">Partial refund</span>
-                    @endif
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="rounded-full px-2.5 py-1 text-xs font-bold {{ $paymentColor }}">{{ __($paymentLabel) }}</span>
+                        @if ($order->payment_status === 'paid')
+                            <span class="rounded-full px-2.5 py-1 text-xs font-bold {{ $statusColor }}">{{ __($statusLabel) }}</span>
+                        @endif
+                        @if ($fullyRefunded)
+                            <span class="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700">{{ $refundSucceeded ? __('Refunded') : __('Refund pending') }}</span>
+                        @elseif ($reservedAmount > 0)
+                            <span class="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700">{{ __('Partial refund') }}</span>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="mt-3 flex items-start justify-between gap-3">
@@ -88,7 +155,7 @@
                     <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-x-4">
                         @foreach (array_slice($items, 0, 4) as $itemIndex => $item)
                             @php
-                                $packedQuantity = max(0, (int) ($item['quantity'] ?? 1)
+                                $packedQuantity = $fullyRefunded ? 0 : max(0, (int) ($item['quantity'] ?? 1)
                                     - (int) $reservedRefunds->where('type', 'item')
                                         ->where('item_index', $itemIndex)->sum('quantity'));
                             @endphp
@@ -101,7 +168,7 @@
                                 <span class="min-w-0 flex-1 truncate text-xs font-medium text-zinc-700" title="{{ data_get($item, 'name', __('Product')) }}">
                                     {{ data_get($item, 'name', __('Product')) }}
                                 </span>
-                                <span class="shrink-0 rounded-lg bg-white px-2 py-1 text-xs font-extrabold tabular-nums {{ $packedQuantity === 0 ? 'text-rose-700' : 'text-[#712B47]' }}">{{ $packedQuantity === 0 ? 'Refunded' : '×'.$packedQuantity }}</span>
+                                <span class="shrink-0 rounded-lg bg-white px-2 py-1 text-xs font-extrabold tabular-nums {{ $packedQuantity === 0 ? 'text-rose-700' : 'text-[#712B47]' }}">{{ $packedQuantity === 0 && $reservedAmount > 0 ? __('Refunded') : '×'.$packedQuantity }}</span>
                             </div>
                         @endforeach
                         @if (count($items) > 4)
@@ -125,8 +192,8 @@
         @empty
             <div class="rounded-2xl bg-white px-5 py-14 text-center shadow-sm">
                 <x-lucide-check-check class="mx-auto size-10 text-emerald-600" />
-                <p class="mt-3 font-bold">{{ __('No orders to prepare') }}</p>
-                <p class="mt-1 text-sm text-zinc-500">{{ __('Everything is up to date.') }}</p>
+                <p class="mt-3 font-bold">{{ __('No orders found') }}</p>
+                <p class="mt-1 text-sm text-zinc-500">{{ __('Try another filter or search.') }}</p>
             </div>
         @endforelse
     </div>
@@ -138,7 +205,7 @@
     <div class="fixed inset-x-0 bottom-0 z-20 bg-white/95 px-5 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur-sm">
         <div class="mx-auto flex max-w-xl items-center justify-between gap-4">
             <div class="flex items-center gap-2 font-semibold text-[#712B47]"><x-lucide-package-check class="size-5" /> {{ __('Orders') }}</div>
-            <span class="rounded-full bg-[#F5E9EE] px-3 py-2 text-sm font-bold text-[#712B47]">{{ $counts['all'] }} {{ __('to process') }}</span>
+            <span class="rounded-full bg-[#F5E9EE] px-3 py-2 text-sm font-bold text-[#712B47]">{{ $counts['pending'] }} {{ __('to prepare') }}</span>
         </div>
     </div>
 </x-warehouse.layout>
