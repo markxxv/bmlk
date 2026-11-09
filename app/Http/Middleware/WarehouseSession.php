@@ -11,6 +11,8 @@ class WarehouseSession
     public function handle(Request $request, Closure $next): Response
     {
         if ($request->is('warehouse', 'warehouse/*')) {
+            // Staff interfaces are always English; the public shop stays French.
+            app()->setLocale('en');
             // Set this before EncryptCookies and StartSession so the warehouse
             // has its own durable login without extending customer sessions.
             config([
