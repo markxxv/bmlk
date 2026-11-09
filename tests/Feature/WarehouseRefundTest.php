@@ -309,8 +309,8 @@ class WarehouseRefundTest extends TestCase
         $this->assertNull($refund->quantity);
         $this->assertCount(2, $refund->items);
         $this->assertSame([
-            ['item_index' => 0, 'quantity' => 1, 'unit_cents' => 800, 'name' => 'Nail care'],
-            ['item_index' => 1, 'quantity' => 2, 'unit_cents' => 500, 'name' => 'Cuticle oil'],
+            ['item_index' => 0, 'quantity' => 1, 'unit_cents' => 800, 'name' => 'Nail care', 'options' => ''],
+            ['item_index' => 1, 'quantity' => 2, 'unit_cents' => 500, 'name' => 'Cuticle oil', 'options' => ''],
         ], $refund->items);
 
         $summary = app(OrderRefundService::class)->summary($order);
