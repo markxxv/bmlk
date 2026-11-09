@@ -600,7 +600,7 @@ Keep static assets in `public/pwa-warehouse` to avoid Nginx's
 and returning 403. The service worker uses network-only navigation: customer addresses, labels and order details are
 **never stored in an offline cache**. HTTPS is required for PWA installation.
 
-The order label uses the existing Sendcloud v3 `createLabel` implementation
+Warehouse order details display a tracking number above the Items section once assigned. The copy button provides a green check and `Copied` feedback, including a fallback for iOS webviews. A separate **Track shipment** link appears at the bottom when Sendcloud has saved a valid HTTPS `tracking_url`; no tracking URL is fabricated.\n\nThe order label uses the existing Sendcloud v3 `createLabel` implementation
 with its existing lock to avoid duplicate label purchases. The purchase
 requires an explicit confirmation. As in the Filament resource, Sendcloud
 creation marks the order `shipped` when it returns a tracking number.
