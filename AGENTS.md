@@ -369,6 +369,7 @@ Spatie Translatable fields are stored as PostgreSQL JSONB objects, for example:
 ## Sendcloud tracking timeline
 
 - Always use Sendcloud API v3 GET /parcels/tracking/{tracking_number} for historic tracking events, not v2. No bulk history endpoint for multiple tracking numbers is documented.
+- Tracking response parsing must handle documented top-level events, nested data/parcel envelopes and legitimate no-carrier-event responses. Reject unknown 200 payloads with diagnostic field names only; never log raw shipping/customer API responses.
 - Store actual events in order_tracking_events with stable deduplication; cache last phase and sync time on orders. Do not fabricate missing carrier scans or dates.
 - Customer account list and detail share the French account.partials.tracking accordion and the existing Motion FAQ height animation. Warehouse and Filament remain English.
 - Account views read only local records. Signed Sendcloud webhook updates and the scheduled hourly shipping:sync-tracking command keep them current.
