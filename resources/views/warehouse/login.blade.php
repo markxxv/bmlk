@@ -5,7 +5,7 @@
                 <img src="/img/logo.png" alt="" class="h-14 w-14 shrink-0 object-contain">
                 <span>
                     <span class="block whitespace-nowrap font-serif text-2xl font-medium leading-none tracking-widest text-zinc-900">{{ __('BLACK MILK') }}</span>
-                    <span class="mt-1 block font-serif text-sm italic leading-none text-bmlk-brand">{{ __('The professionals' choice') }}</span>
+                    <span class="mt-1 block font-serif text-sm italic leading-none text-bmlk-brand">{{ __("The professionals' choice") }}</span>
                 </span>
             </a>
         </div>
