@@ -186,6 +186,52 @@ class OrderRefundService
         return $refund->fresh();
     }
 
+    public function refreshStatus(OrderRefund $refund): OrderRefund
+    {
+        if (! config('services.stripe.secret')) {
+            return $refund;
+        }
+
+        $order = $refund->order;
+
+        try {
+            if ($refund->stripe_refund_id) {
+                $response = Http::withToken(config('services.stripe.secret'))
+                    ->timeout(12)
+                    ->get('https://api.stripe.com/v1/refunds/'.rawurlencode($refund->stripe_refund_id));
+
+                if ($response->successful() && is_array($response->json())) {
+                    $this->syncWebhook($response->json());
+                }
+            } elseif ($order->stripe_payment_intent_id) {
+                // Reconcile an ambiguous POST by inspecting Stripe, never by sending a new refund.
+                $response = Http::withToken(config('services.stripe.secret'))
+                    ->timeout(12)
+                    ->get('https://api.stripe.com/v1/refunds', [
+                        'payment_intent' => $order->stripe_payment_intent_id,
+                        'limit' => 100,
+                    ]);
+
+                if ($response->successful()) {
+                    foreach ($response->json('data', []) as $data) {
+                        if (is_array($data) && data_get($data, 'metadata.request_key') === $refund->request_key) {
+                            $this->syncWebhook($data);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Throwable $exception) {
+            Log::warning('Warehouse Stripe refund status check failed.', [
+                'order_id' => $order->id,
+                'refund_id' => $refund->id,
+                'exception' => get_class($exception),
+            ]);
+        }
+
+        return $refund->fresh();
+    }
+
     public function syncWebhook(array $data): void
     {
         $requestKey = data_get($data, 'metadata.request_key');
