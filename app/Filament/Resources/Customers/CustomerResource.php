@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\Customers;
 
 use App\Filament\Resources\Customers\Pages;
+use App\Http\Controllers\CustomerPreviewController;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\EditAction;
+use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -60,7 +62,19 @@ class CustomerResource extends Resource
         ])->filters([
             TernaryFilter::make('is_wholesale'),
             TernaryFilter::make('is_influencer'),
-        ])->recordActions([EditAction::make()->icon('lucide-pencil')])
+        ])->recordActions([
+            Action::make('loginAsCustomer')
+                ->label('Login as user')
+                ->icon('lucide-eye')
+                ->color('gray')
+                ->visible(fn (User $record): bool => ! $record->is_admin && ! $record->is_warehouse)
+                ->requiresConfirmation()
+                ->modalHeading('Preview customer account')
+                ->modalDescription('Open this customer’s real account in read-only mode. Orders and profile are visible; changes, checkout and payments are blocked. You can return to admin at any time.')
+                ->modalSubmitActionLabel('Start preview')
+                ->action(fn (User $record) => app(CustomerPreviewController::class)->start(request(), $record)),
+            EditAction::make()->icon('lucide-pencil'),
+        ])
             ->defaultSort('id', 'desc');
     }
 
