@@ -59,6 +59,12 @@
                                 default => 'Processing',
                             } }}
                         </p>
+                        @if (! in_array($refund->status, ['succeeded', 'failed', 'canceled']))
+                            <form method="POST" action="{{ route('warehouse.orders.refunds.refresh', [$order->order_number, $refund->id]) }}" class="mt-2">
+                                @csrf
+                                <button type="submit" class="min-h-11 rounded-lg bg-white px-3 py-2 text-xs font-bold text-[#712B47]">Check status in Stripe</button>
+                            </form>
+                        @endif
                     </div>
                     <span class="shrink-0 text-sm font-extrabold tabular-nums">{{ $money($refund->amount_cents) }}</span>
                 </div>
