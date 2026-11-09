@@ -29,6 +29,14 @@ Do not treat files inside `design_prototype/` as the application itself.
 - `mallardduck/blade-lucide-icons`
 - Vite
 
+## Interface language policy
+
+- The Filament admin panel (`/admin`) and the Warehouse PWA (`/warehouse`) must use **English only**, including labels, buttons, status names, confirmation dialogs, validation errors, and accessibility text.
+- Keep `APP_LOCALE=fr` and `APP_FALLBACK_LOCALE=fr` for the public shop, customer account, checkout, notifications and other customer-facing pages.
+- Filament enforces English through `AdminPanelProvider::panel()->bootUsing(fn () => app()->setLocale('en'))`. Do not change the global application locale to translate Filament.
+- Warehouse enforces English only for warehouse routes through `WarehouseSession`; use English source strings in its Blade templates and controllers. Do not change shared `Order::customerStatusLabel()` or customer-facing status messages.
+- Any new admin or warehouse features and documentation must follow this language split.
+
 ## Core application structure
 
 ```text
