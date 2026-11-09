@@ -24,7 +24,7 @@
                                     <span class="block" data-reveal-title-skip>
                                         <span class="home-hero-script">{{ rtrim(__('Moins de produits,'), ', ') }}</span>
                                     </span>
-                                    <span class="block">{{ __('plus de précision :') }}</span>
+                                    <span class="block">{{ __('plus de précision') }}</span>
                                 </h1>
 
                                 <p class="mt-5 max-w-lg text-sm leading-6 text-[color:var(--bmc-accent)] sm:mt-7 sm:text-lg sm:leading-7" data-reveal data-reveal-y="18" data-reveal-duration="0.85" data-reveal-delay="0.18">
