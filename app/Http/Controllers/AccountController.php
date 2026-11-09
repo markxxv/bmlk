@@ -131,7 +131,7 @@ class AccountController extends Controller
 
         // Regular login claims verified-email orders. Preview must show the
         // same real orders without ever changing their database ownership.
-        $orders = Order::query()->where(function ($query) use ($user, $preview): void {
+        $orders = Order::query()->with('trackingEvents')->where(function ($query) use ($user, $preview): void {
             $query->where('user_id', $user->id);
             if ($preview && $user->hasVerifiedEmail()) {
                 $query->orWhere(fn ($unclaimed) => $unclaimed->whereNull('user_id')
@@ -158,6 +158,8 @@ class AccountController extends Controller
             && Str::lower(trim($order->email)) === Str::lower(trim($user->email));
 
         abort_unless($ownsOrder || $previewMatchesEmail, 404);
+
+        $order->load('trackingEvents');
 
         return view('account.checkout-order', compact('order'));
     }
