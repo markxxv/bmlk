@@ -88,9 +88,23 @@
                 $totalCents = (int) round((float) $order->total_amount * 100);
                 $fullyRefunded = $totalCents > 0 && $reservedAmount >= $totalCents;
                 $refundSucceeded = $fullyRefunded && $reservedRefunds->every(fn ($refund) => $refund->status === 'succeeded');
+                $reservedQuantities = [];
+                foreach ($reservedRefunds as $refund) {
+                    if ($refund->type === 'item' && $refund->item_index !== null) {
+                        $index = (int) $refund->item_index;
+                        $reservedQuantities[$index] = ($reservedQuantities[$index] ?? 0) + (int) $refund->quantity;
+                    } elseif ($refund->type === 'items') {
+                        foreach (($refund->items ?? []) as $line) {
+                            if (! is_array($line) || ! isset($line['item_index'], $line['quantity'])) {
+                                continue;
+                            }
+                            $index = (int) $line['item_index'];
+                            $reservedQuantities[$index] = ($reservedQuantities[$index] ?? 0) + (int) $line['quantity'];
+                        }
+                    }
+                }
                 $count = collect($items)->sum(fn (array $item, int $index): int =>
-                    $fullyRefunded ? 0 : max(0, (int) ($item['quantity'] ?? 1) - (int) $reservedRefunds
-                        ->where('type', 'item')->where('item_index', $index)->sum('quantity')));
+                    $fullyRefunded ? 0 : max(0, (int) ($item['quantity'] ?? 1) - ($reservedQuantities[$index] ?? 0)));
                 $paymentLabel = match ($order->payment_status) {
                     'paid' => 'Paid',
                     'unpaid' => 'Payment pending',
@@ -156,8 +170,7 @@
                         @foreach (array_slice($items, 0, 4) as $itemIndex => $item)
                             @php
                                 $packedQuantity = $fullyRefunded ? 0 : max(0, (int) ($item['quantity'] ?? 1)
-                                    - (int) $reservedRefunds->where('type', 'item')
-                                        ->where('item_index', $itemIndex)->sum('quantity'));
+                                    - ($reservedQuantities[$itemIndex] ?? 0));
                             @endphp
                             <div class="flex min-w-0 items-center gap-2.5">
                                 @if (filled(data_get($item, 'image')))
