@@ -14,10 +14,22 @@
                 @elseif ($refundSummary['reserved_cents'] > 0)
                     <span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800">Partially refunded</span>
                 @endif
-                @if (! $refundSummary['has_whole_refund'])
-                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{{ __('Paid') }}</span>
+                @if ($order->payment_status === 'paid')
+                    @unless ($refundSummary['has_whole_refund'])
+                        <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{{ __('Paid') }}</span>
+                    @endunless
+                    <span class="rounded-full bg-sky-50 px-3 py-1 text-xs font-bold text-sky-800">{{ $statusLabel }}</span>
+                @else
+                    @php
+                        $paymentLabel = match ($order->payment_status) {
+                            'unpaid' => 'Payment pending',
+                            'processing' => 'Payment processing',
+                            'failed' => 'Payment failed',
+                            default => 'Payment pending',
+                        };
+                    @endphp
+                    <span class="rounded-full px-3 py-1 text-xs font-bold {{ $order->payment_status === 'failed' ? 'bg-rose-50 text-rose-800' : 'bg-amber-50 text-amber-800' }}">{{ __($paymentLabel) }}</span>
                 @endif
-                <span class="rounded-full px-3 py-1 text-xs font-bold {{ $order->status === 'pending' ? 'bg-amber-50 text-amber-800' : 'bg-sky-50 text-sky-800' }}">{{ $statusLabel }}</span>
             </div>
         </div>
     </header>
@@ -43,7 +55,7 @@
     <section aria-labelledby="warehouse-items-heading" class="overflow-hidden rounded-2xl bg-white shadow-sm">
         <div class="flex items-center justify-between bg-[#F9EAF0] px-4 py-3.5">
             <h2 id="warehouse-items-heading" class="flex items-center gap-2 text-lg font-extrabold"><x-lucide-package class="size-5 text-[#712B47]" /> {{ __('Items') }}</h2>
-            <span class="rounded-full bg-white px-3 py-1 text-sm font-bold text-[#712B47]">{{ collect($refundSummary['items'])->sum('available_quantity') }} {{ __('to pack') }}</span>
+            <span class="rounded-full bg-white px-3 py-1 text-sm font-bold text-[#712B47]">{{ collect($refundSummary['items'])->sum('available_quantity') }} {{ $order->payment_status === 'paid' ? __('to pack') : __('items') }}</span>
         </div>
 
         <div class="divide-y divide-zinc-100 px-4">
@@ -85,7 +97,7 @@
         </div>
     </section>
 
-    @unless ($refundSummary['has_whole_refund'])
+    @if ($order->payment_status === 'paid' && ! $refundSummary['has_whole_refund'])
     <section aria-label="{{ __('Shipping label') }}" class="mt-4">
         @if ($refundSummary['reserved_cents'] > 0)
             <p class="mb-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">Some items have been refunded. Verify the parcel contents and weight before purchasing a shipping label.</p>
@@ -140,9 +152,11 @@
         </div>
     </section>
 
-    @else
+    @elseif ($refundSummary['has_whole_refund'])
         <p class="mt-4 rounded-xl bg-rose-50 p-4 text-sm font-bold text-rose-800">Full payment refunded or reserved. Shipment and fulfillment actions are disabled.</p>
-    @endunless
+    @else
+        <p class="mt-4 rounded-xl bg-amber-50 p-4 text-sm font-semibold text-amber-900">Payment has not been confirmed. This order is read-only until payment succeeds.</p>
+    @endif
 
     <section aria-labelledby="warehouse-shipping-heading" class="mt-4 rounded-2xl bg-white p-4 shadow-sm">
         <h2 id="warehouse-shipping-heading" class="mb-3 flex items-center gap-2 font-bold"><x-lucide-map-pin class="size-5 text-[#712B47]" />{{ __('Shipping') }}</h2>
@@ -181,7 +195,9 @@
         <div class="mt-2 flex justify-between gap-3 text-base font-extrabold text-[#712B47]"><span>{{ __('Total paid') }}</span><span>{{ number_format((float) $order->total_amount, 2, ',', ' ') }} €</span></div>
     </section>
 
-    @include('warehouse.refunds')
+    @if ($order->payment_status === 'paid')
+        @include('warehouse.refunds')
+    @endif
 
     <nav aria-label="{{ __('Order navigation') }}" class="fixed inset-x-0 bottom-0 z-20 bg-white/95 px-5 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur-sm">
         <div class="mx-auto flex max-w-xl items-center justify-between gap-3">
