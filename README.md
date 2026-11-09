@@ -560,7 +560,7 @@ Warehouse staff with `is_warehouse` or `is_admin` can refund a paid Stripe order
 
 The flow requires a separate review screen, the exact refund amount and an explicit acknowledgment before the final action. Server validation recalculates all amounts; it never trusts browser-submitted prices. A row lock on the order prevents concurrent refunds, and a persistent UUID-based Stripe idempotency key prevents duplicate refunds. Every attempt is stored in `order_refunds` with staff user, item index, quantity, amount in cents, Stripe ID and outcome. Pending or uncertain responses keep the amount reserved for review; never retry with a new key while Stripe's result is uncertain. Stripe `refund.created`, `refund.updated`, and `refund.failed` webhooks update tracked refund outcomes. Pending and uncertain entries also provide a **Check status in Stripe** action that fetches the refund or lists PaymentIntent refunds without creating another charge reversal. Enable these three event types on the existing Stripe webhook endpoint (`/stripe/webhook`) in the Stripe Dashboard; otherwise pending refunds will not automatically reconcile.
 
-When the total payment is refunded or reserved (whether at once or through item refunds), the order disappears from the Warehouse picking queue, prevents further fulfillment actions and stops its Telegram pending-order reminders. Existing customer payment/fulfillment status fields are intentionally unchanged; the staff view shows the refund history separately. Refunds initiated outside Warehouse (directly in Stripe) are not imported into this history.
+When the total payment is refunded or reserved (whether at once or through item refunds), the order remains visible under **All orders** and **Refunds**, but leaves the actionable **To prepare** / **Preparing** filters, prevents further fulfillment actions and stops its Telegram pending-order reminders. Existing customer payment/fulfillment status fields are intentionally unchanged; the staff view shows the refund history separately. Refunds initiated outside Warehouse (directly in Stripe) are not imported into this history.
 
 Deploy with:
 
@@ -579,10 +579,10 @@ domain. It has its own login and **14-day session** (cookie path `/warehouse`,
 cookie `bmlk_warehouse_session`). This does not extend customer or Filament
 sessions. Everything is protected by the normal Laravel authentication system,
 CSRF verification and a specific permission (`users.is_warehouse`, or
-`is_admin`). Only paid orders can be opened.
+`is_admin`). Staff can browse all orders, including unpaid, failed, shipped, cancelled, archived and refunded orders. Only paid, not fully refunded orders can be prepared or shipped; unpaid and failed orders are read-only.
 
-- `/warehouse/` — paid pending and processing orders, photos and quantities,
-  search, status filters and quick access to each order.
+- `/warehouse/` — all orders with payment and fulfillment status badges, photos and quantities,
+  search, separate status and payment filters, default newest-first ordering and quick access to every order. The bottom counter tracks paid orders still awaiting preparation.
 - `/warehouse/orders/BM-YYYYMMDD-XXXXXX` — item-first detail screen, packing
   actions, Sendcloud label purchase and printable PDF, address and contacts.
 - `/warehouse/login` — standalone staff login; direct order links preserve
