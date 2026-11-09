@@ -24,3 +24,29 @@
 [x-cloak] {
     display: none !important;
 }
+
+/* Homepage hero signature — keep the rotation independent of the line-reveal animation. */
+.home-hero-script {
+    display: inline-block;
+    font-family: 'Great Vibes', cursive;
+    font-weight: 400;
+    font-size: 102px;
+    line-height: 0.72;
+    margin: 0 0 -0.1em -0.06em;
+    padding-right: 0.12em;
+    transform: rotate(-6deg);
+    transform-origin: left center;
+    color: #70879C;
+    text-shadow: rgba(246, 238, 230, 0.6) 1px 1px 0,
+        rgba(38, 54, 76, 0.35) -1px -1px 0,
+        rgba(38, 54, 76, 0.22) 0 18px 30px;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+}
+
+@media (max-width: 639px) {
+    .home-hero-script {
+        font-size: clamp(44px, 12vw, 72px);
+    }
+}
