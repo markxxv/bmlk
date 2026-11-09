@@ -55,6 +55,81 @@ class SendcloudTrackingHistoryTest extends TestCase
         $this->assertSame('future', $stages[4]['state']);
     }
 
+    public function test_wrapped_sendcloud_tracking_payload_is_imported(): void
+    {
+        $order = $this->order('SC-WRAPPED-123');
+
+        Http::fake([
+            'https://panel.sendcloud.sc/api/v3/parcels/tracking/*' =>
+                Http::response(['data' => $this->trackingPayload('SC-WRAPPED-123')]),
+        ]);
+
+        $this->assertSame(4, app(SendcloudTrackingService::class)->sync($order));
+        $this->assertSame(4, $order->trackingEvents()->count());
+        $this->assertSame('in_transit', $order->fresh()->sendcloud_tracking_phase);
+    }
+
+    public function test_announced_parcel_without_carrier_events_imports_label_only(): void
+    {
+        $order = $this->order('SC-LABEL-ONLY');
+
+        Http::fake([
+            'https://panel.sendcloud.sc/api/v3/parcels/tracking/*' => Http::response([
+                'announced_at' => '2026-11-08T10:00:00Z',
+                'tracking_numbers' => [['tracking_number' => 'SC-LABEL-ONLY']],
+                'events' => null,
+            ]),
+        ]);
+
+        $this->assertSame(1, app(SendcloudTrackingService::class)->sync($order));
+        $this->assertSame('label_created', $order->trackingEvents()->sole()->phase);
+        $this->assertNotNull($order->fresh()->sendcloud_tracking_synced_at);
+
+        // The second attempt updates the existing event, without duplicating it.
+        $this->assertSame(1, app(SendcloudTrackingService::class)->sync($order));
+        $this->assertSame(1, $order->trackingEvents()->count());
+    }
+
+    public function test_empty_tracking_history_does_not_create_fake_carrier_events(): void
+    {
+        $order = $this->order('SC-NO-SCANS');
+
+        Http::fake([
+            'https://panel.sendcloud.sc/api/v3/parcels/tracking/*' => Http::response([
+                'tracking_numbers' => [['tracking_number' => 'SC-NO-SCANS']],
+                'events' => [],
+            ]),
+        ]);
+
+        $this->assertSame(0, app(SendcloudTrackingService::class)->sync($order));
+        $this->assertDatabaseCount('order_tracking_events', 0);
+        $this->assertNotNull($order->fresh()->sendcloud_tracking_synced_at);
+    }
+
+    public function test_unsupported_json_reports_field_names_without_exposing_values(): void
+    {
+        $order = $this->order('SC-BAD-SHAPE');
+
+        Http::fake([
+            'https://panel.sendcloud.sc/api/v3/parcels/tracking/*' => Http::response([
+                'message' => 'Sensitive customer information',
+                'foo' => ['address' => '1 Private Road'],
+            ]),
+        ]);
+
+        try {
+            app(SendcloudTrackingService::class)->sync($order);
+            $this->fail('Unexpected tracking response should be rejected.');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString('keys: message, foo', $e->getMessage());
+            $this->assertStringNotContainsString('Sensitive customer information', $e->getMessage());
+            $this->assertStringNotContainsString('1 Private Road', $e->getMessage());
+        }
+
+        $this->assertDatabaseCount('order_tracking_events', 0);
+        $this->assertNull($order->fresh()->sendcloud_tracking_synced_at);
+    }
+
     public function test_delivered_updates_order_but_does_not_regress_archived_orders(): void
     {
         $order = $this->order('SC-DEL-123');
