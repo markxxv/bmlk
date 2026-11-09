@@ -21,6 +21,8 @@ class Order extends Model
             'shipping_parcel' => 'array',
             'sendcloud_rate' => 'decimal:2',
             'sendcloud_event_at' => 'integer',
+            'sendcloud_tracking_synced_at' => 'datetime',
+            'sendcloud_expected_delivery_date' => 'date',
             'subtotal' => 'decimal:2',
             'delivery_cost' => 'decimal:2',
             'total_amount' => 'decimal:2',
@@ -60,6 +62,11 @@ class Order extends Model
         return $query->whereRaw(
             "COALESCE((SELECT SUM(amount_cents) FROM order_refunds WHERE order_refunds.order_id = orders.id AND order_refunds.status NOT IN ('failed', 'canceled')), 0) < ROUND(orders.total_amount * 100)"
         );
+    }
+
+    public function trackingEvents(): HasMany
+    {
+        return $this->hasMany(OrderTrackingEvent::class);
     }
 
     public function refunds(): HasMany
