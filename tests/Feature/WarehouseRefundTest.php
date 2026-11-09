@@ -15,6 +15,13 @@ class WarehouseRefundTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config()->set('services.stripe.secret', 'sk_test_warehouse_refunds');
+    }
+
     public function test_customer_cannot_issue_a_refund(): void
     {
         $order = $this->order();
