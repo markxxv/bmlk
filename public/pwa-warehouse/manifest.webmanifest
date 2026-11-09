@@ -1,7 +1,7 @@
 {
-  "name": "BLACK MILK · Préparation",
+  "name": "BLACK MILK · Warehouse",
   "short_name": "BLACK MILK",
-  "description": "Commandes à préparer et étiquettes Sendcloud",
+  "description": "Order preparation and Sendcloud shipping labels",
   "id": "/warehouse/",
   "start_url": "/warehouse/",
   "scope": "/warehouse/",
