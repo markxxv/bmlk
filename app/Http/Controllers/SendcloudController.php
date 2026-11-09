@@ -7,6 +7,7 @@ use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ShippingBox;
+use App\Services\SendcloudTrackingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -551,6 +552,16 @@ class SendcloudController extends Controller
                     'sendcloud_parcel_id' => $parcel['id'] ?? $order->sendcloud_parcel_id,
                     'status' => $status,
                 ])->save();
+                // Classic signed webhook: refresh the complete v3 tracking
+                // history immediately. Scheduled polling retries on failures.
+                try {
+                    app(SendcloudTrackingService::class)->sync($order);
+                } catch (Throwable $exception) {
+                    Log::warning('Sendcloud tracking refresh after webhook failed.', [
+                        'order_id' => $order->id,
+                        'message' => $exception->getMessage(),
+                    ]);
+                }
             }
         }
         return response()->json(['ok' => true]);
