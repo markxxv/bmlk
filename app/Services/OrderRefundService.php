@@ -23,6 +23,24 @@ class OrderRefundService
         $reservedCents = (int) $reserved->sum('amount_cents');
         $hasWholeOrderRefund = $reserved->contains('type', 'order') || ($totalCents > 0 && $reservedCents >= $totalCents);
 
+        // Legacy single-item refunds and new multi-item refunds reserve quantities
+        // in exactly the same way, including pending or uncertain Stripe outcomes.
+        $reservedQuantities = [];
+        foreach ($reserved as $refund) {
+            if ($refund->type === 'item' && $refund->item_index !== null) {
+                $index = (int) $refund->item_index;
+                $reservedQuantities[$index] = ($reservedQuantities[$index] ?? 0) + (int) $refund->quantity;
+            } elseif ($refund->type === 'items') {
+                foreach (($refund->items ?? []) as $line) {
+                    if (! is_array($line) || ! isset($line['item_index'], $line['quantity'])) {
+                        continue;
+                    }
+                    $index = (int) $line['item_index'];
+                    $reservedQuantities[$index] = ($reservedQuantities[$index] ?? 0) + (int) $line['quantity'];
+                }
+            }
+        }
+
         $items = [];
         foreach (($order->items ?? []) as $index => $item) {
             if (! is_array($item)) {
@@ -32,15 +50,14 @@ class OrderRefundService
             $quantity = max(0, (int) ($item['quantity'] ?? 0));
             // This is exactly the unit amount passed to Stripe Checkout.
             $unitCents = (int) round((float) ($item['discounted_unit_price'] ?? $item['unit_price'] ?? 0) * 100);
-            $refundedQuantity = (int) $reserved
-                ->where('type', 'item')
-                ->where('item_index', $index)
-                ->sum('quantity');
+            $refundedQuantity = $reservedQuantities[$index] ?? 0;
 
             $items[$index] = [
                 'index' => $index,
                 'name' => (string) ($item['name'] ?? 'Product'),
                 'image' => (string) ($item['image'] ?? ''),
+                'options' => collect($item['options'] ?? [])
+                    ->pluck('display')->filter()->implode(' · '),
                 'quantity' => $quantity,
                 'unit_cents' => max(0, $unitCents),
                 'refunded_quantity' => $refundedQuantity,
@@ -69,12 +86,13 @@ class OrderRefundService
         string $type,
         ?int $itemIndex,
         ?int $quantity,
+        ?array $selectedItems = null,
     ): OrderRefund {
         if (! config('services.stripe.secret')) {
             throw ValidationException::withMessages(['refund' => 'Stripe refunds are not configured.']);
         }
 
-        $refund = DB::transaction(function () use ($order, $staff, $requestKey, $type, $itemIndex, $quantity): OrderRefund {
+        $refund = DB::transaction(function () use ($order, $staff, $requestKey, $type, $itemIndex, $quantity, $selectedItems): OrderRefund {
             // Lock the parent order so simultaneous staff requests cannot over-refund.
             $lockedOrder = Order::query()->lockForUpdate()->findOrFail($order->id);
             $existing = OrderRefund::query()->where('request_key', $requestKey)->first();
@@ -92,19 +110,59 @@ class OrderRefundService
                 throw ValidationException::withMessages(['refund' => 'This order is not available for a refund.']);
             }
 
+            $itemLines = null;
+
             if ($type === 'order') {
                 // Refunding the entire remaining balance also includes shipping.
                 $amountCents = $summary['remaining_cents'];
                 $itemIndex = null;
                 $quantity = null;
-            } elseif ($type === 'item') {
-                $item = $summary['items'][$itemIndex ?? -1] ?? null;
-                if (! $item || ! $quantity || $quantity < 1 || $quantity > $item['available_quantity']
-                    || $item['unit_cents'] < 1) {
-                    throw ValidationException::withMessages(['refund' => 'Select an available item and quantity.']);
+            } elseif ($type === 'item' || $type === 'items') {
+                // Keep accepting legacy single-item requests. New mobile UI sends
+                // the whole selection as one atomic Stripe refund.
+                $selections = $type === 'item'
+                    ? [['item_index' => $itemIndex, 'quantity' => $quantity]]
+                    : $selectedItems;
+
+                if (! is_array($selections) || count($selections) < 1 || count($selections) > 50) {
+                    throw ValidationException::withMessages(['refund' => 'Select at least one product.']);
                 }
 
-                $amountCents = $item['unit_cents'] * $quantity;
+                $seen = [];
+                $itemLines = [];
+                $amountCents = 0;
+                foreach ($selections as $selection) {
+                    if (! is_array($selection)
+                        || ! isset($selection['item_index'], $selection['quantity'])
+                        || ! filter_var($selection['item_index'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]])
+                        && $selection['item_index'] !== 0) {
+                        throw ValidationException::withMessages(['refund' => 'Invalid product selection.']);
+                    }
+
+                    $index = (int) $selection['item_index'];
+                    $lineQty = filter_var($selection['quantity'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+                    $item = $summary['items'][$index] ?? null;
+
+                    if ($lineQty === false || isset($seen[$index]) || ! $item
+                        || $lineQty > $item['available_quantity'] || $item['unit_cents'] < 1) {
+                        throw ValidationException::withMessages(['refund' => 'Check the selected products and quantities.']);
+                    }
+
+                    $seen[$index] = true;
+                    $itemLines[] = [
+                        'item_index' => $index,
+                        'quantity' => $lineQty,
+                        'unit_cents' => $item['unit_cents'],
+                        'name' => $item['name'],
+                    ];
+                    $amountCents += $item['unit_cents'] * $lineQty;
+                }
+
+                // Legacy refund rows retain their original fields for compatibility.
+                if ($type === 'items') {
+                    $itemIndex = null;
+                    $quantity = null;
+                }
             } else {
                 throw ValidationException::withMessages(['refund' => 'Invalid refund type.']);
             }
@@ -119,6 +177,7 @@ class OrderRefundService
                 'type' => $type,
                 'item_index' => $itemIndex,
                 'quantity' => $quantity,
+                'items' => $type === 'items' ? $itemLines : null,
                 'amount_cents' => $amountCents,
                 'status' => 'initiated',
             ]);
@@ -144,6 +203,7 @@ class OrderRefundService
                         'type' => $refund->type,
                         'item_index' => (string) ($refund->item_index ?? ''),
                         'quantity' => (string) ($refund->quantity ?? ''),
+                        'item_count' => (string) count($refund->items ?? []),
                     ],
                 ]);
 
