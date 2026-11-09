@@ -250,19 +250,27 @@
                         if (navigator.clipboard?.writeText) {
                             await navigator.clipboard.writeText(number);
                             copied = true;
-                        } else {
-                            const input = document.createElement('textarea');
-                            input.value = number;
-                            input.setAttribute('readonly', '');
-                            input.style.position = 'fixed';
-                            input.style.opacity = '0';
-                            document.body.appendChild(input);
-                            input.select();
-                            copied = document.execCommand('copy');
-                            input.remove();
                         }
                     } catch {
-                        copied = false;
+                        // Fall back for restrictive iOS browser and webview clipboard permissions.
+                    }
+
+                    if (!copied) {
+                        const input = document.createElement('textarea');
+                        input.value = number;
+                        input.setAttribute('readonly', '');
+                        input.style.position = 'fixed';
+                        input.style.opacity = '0';
+                        document.body.appendChild(input);
+                        try {
+                            input.select();
+                            input.setSelectionRange(0, input.value.length);
+                            copied = document.execCommand('copy');
+                        } catch {
+                            copied = false;
+                        } finally {
+                            input.remove();
+                        }
                     }
 
                     clearTimeout(resetTimer);
