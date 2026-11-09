@@ -51,7 +51,9 @@ class SendOrderTelegramNotifications extends Command
             $query->whereNotNull('first_sent_at')
                 ->where('first_sent_at', '<=', $cutoff)
                 ->where('last_sent_at', '<', $startOfParisDay)
-                ->whereHas('order', fn ($order) => $order->where('status', 'pending'));
+                ->whereHas('order', fn ($order) => $order->where('status', 'pending')
+                    ->whereDoesntHave('refunds', fn ($refunds) => $refunds->where('type', 'order')
+                        ->whereNotIn('status', ['failed', 'canceled'])));
         };
 
         if ($this->option('order') !== null) {
@@ -113,7 +115,9 @@ class SendOrderTelegramNotifications extends Command
             ->whereHas('order', function ($query) use ($first): void {
                 $query->where('payment_status', 'paid');
                 if (! $first) {
-                    $query->where('status', 'pending');
+                    $query->where('status', 'pending')
+                        ->whereDoesntHave('refunds', fn ($refunds) => $refunds->where('type', 'order')
+                            ->whereNotIn('status', ['failed', 'canceled']));
                 }
             })
             ->when(
