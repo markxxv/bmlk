@@ -121,7 +121,11 @@ class AccountController extends Controller
 
     public function index(Request $request): View
     {
-        $this->claimOrders($request);
+        // Customer impersonation is strictly read-only: never claim or alter
+        // historical order ownership merely by previewing a customer's page.
+        if (! $request->session()->has('customer_preview')) {
+            $this->claimOrders($request);
+        }
         $user = $request->user();
 
         return view('account.index', [
