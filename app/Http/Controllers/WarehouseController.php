@@ -80,6 +80,7 @@ class WarehouseController extends Controller
         ];
 
         $orders = $base
+            ->with('refunds')
             ->when($state !== 'all', fn ($query) => $query->where('status', $state))
             ->when($search !== '', function ($query) use ($search): void {
                 $term = '%'.mb_strtolower($search).'%';
