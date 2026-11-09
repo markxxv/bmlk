@@ -62,7 +62,8 @@ class SyncSendcloudTracking extends Command
         $attempted = 0;
         $errors = [];
 
-        foreach ($query->cursor() as $order) {
+        // Chunk by primary key: safely update orders while iterating, on SQLite and MySQL alike.
+        foreach ($query->lazyById(50) as $order) {
             if ($attempted >= $total) {
                 break;
             }
