@@ -54,6 +54,22 @@
 </head>
 
 <body class="min-h-screen bg-[#FCF8F4] font-['Hanken_Grotesk'] text-[#3A2E30] antialiased">
+    @if (is_array(session('customer_preview')))
+        <div class="sticky top-0 z-[100] bg-[#712B47] px-4 py-2.5 text-white shadow-md">
+            <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                <div class="flex min-w-0 items-center gap-2 text-sm">
+                    <x-lucide-eye class="size-4 shrink-0" />
+                    <span class="min-w-0 truncate"><strong>Read-only preview</strong> · {{ auth()->user()?->name }}</span>
+                </div>
+                <form method="POST" action="{{ route('customer-preview.stop') }}">
+                    @csrf
+                    <button type="submit" class="inline-flex min-h-10 items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#712B47] transition hover:bg-[#F9EAF0]">
+                        <x-lucide-arrow-left class="size-4" /> Return to admin
+                    </button>
+                </form>
+            </div>
+        </div>
+    @endif
     @include('layouts.header')
     <x-cart />
 
