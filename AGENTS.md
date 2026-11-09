@@ -363,7 +363,7 @@ Spatie Translatable fields are stored as PostgreSQL JSONB objects, for example:
 - Only English UI for refund flows. Mobile-first bottom sheet, quantity controls and a separate, explicit irreversible-payment confirmation are required.
 - Never accept browser-provided refund amounts. Calculate cents on the server, enforce refundable quantities, lock the order during reservation, and reuse each attempt's persistent Stripe idempotency key.
 - Keep a refund audit trail in `order_refunds`; preserve pending and uncertain attempts against double refunds, and reconcile webhook changes. Do not modify the customer's shared French status labels.
-- If a full remaining-balance refund is reserved, block Warehouse fulfillment/label purchases and stop the pending-order reminders.
+- If the whole payment is refunded or reserved, including through several item refunds, block Warehouse fulfillment/label purchases and stop the pending-order reminders.
 - Run migrations and compile Tailwind/Vite assets when changing the refund UI.
 
 ## Source catalog / prototype
