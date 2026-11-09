@@ -36,13 +36,10 @@ class SendcloudTrackingService
             throw new RuntimeException('Sendcloud tracking API returned HTTP '.$response->status().'.');
         }
 
-        $data = $response->json();
-        if (! is_array($data) || ! is_array($data['events'] ?? null)) {
-            throw new RuntimeException('Sendcloud returned an invalid tracking event response.');
-        }
+        $data = $this->trackingPayload($response->json());
 
         $count = 0;
-        $events = $data['events'];
+        $events = $data['events'] ?? [];
 
         // The announcement date is explicitly the label creation date, not a
         // carrier handover. Preserve it as a separate timeline milestone.
@@ -101,6 +98,61 @@ class SendcloudTrackingService
     }
 
     /**
+     * Sendcloud documents a top-level events array, but some responses are
+     * nested (data/parcel) or have no carrier events yet. Never interpret an
+     * unknown successful response as an empty history without parcel evidence.
+     */
+    private function trackingPayload(mixed $payload): array
+    {
+        if (! is_array($payload)) {
+            throw new RuntimeException('Sendcloud tracking returned non-JSON data.');
+        }
+
+        $candidates = [$payload];
+        foreach (['data', 'parcel', 'result'] as $key) {
+            if (is_array($payload[$key] ?? null)) {
+                $nested = $payload[$key];
+                $candidates[] = $nested;
+                if (array_is_list($nested) && is_array($nested[0] ?? null)) {
+                    $candidates[] = $nested[0];
+                }
+                if (is_array($nested['parcel'] ?? null)) {
+                    $candidates[] = $nested['parcel'];
+                }
+            }
+        }
+
+        foreach ($candidates as $candidate) {
+            $hasParcel = array_key_exists('events', $candidate)
+                || array_key_exists('announced_at', $candidate)
+                || array_key_exists('tracking_numbers', $candidate)
+                || array_key_exists('created_at', $candidate);
+
+            if (! $hasParcel) {
+                continue;
+            }
+
+            if (! array_key_exists('events', $candidate) || $candidate['events'] === null) {
+                // A parcel may be announced before any carrier scan is known.
+                $candidate['events'] = [];
+            }
+
+            if (is_array($candidate['events']) && array_is_list($candidate['events'])) {
+                return $candidate;
+            }
+        }
+
+        // Only field names are reported: never expose customer addresses,
+        // tracking URLs, payload values, API credentials or other PII in logs.
+        $keys = implode(', ', array_slice(array_keys($payload), 0, 15));
+        $type = get_debug_type($payload['events'] ?? null);
+
+        throw new RuntimeException(
+            'Sendcloud tracking response shape is unsupported (keys: '.$keys.'; events: '.$type.').'
+        );
+    }
+
+    /**
      * Store either a v3 API event (event_at) or a v3 event subscription payload
      * (timestamp). Fingerprints are stable between sources and repeated syncs.
      */
@@ -108,7 +160,7 @@ class SendcloudTrackingService
     {
         $trackingNumber ??= trim((string) $order->tracking_number);
         $eventType = (string) ($event['event_type'] ?? 'carrier');
-        if ($trackingNumber === '' || ! in_array($eventType, ['carrier', 'calculated', 'internal'], true)) {
+        if ($trackingNumber === '' || ! in_array($eventType, ['carrier', 'calculated', 'internal', 'claim'], true)) {
             return false;
         }
 
