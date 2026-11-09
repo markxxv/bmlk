@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -52,6 +53,13 @@ class Order extends Model
             'failed' => __('Paiement échoué'),
             default => __('Paiement en attente'),
         };
+    }
+
+    public function scopeWithRefundBalance(Builder $query): Builder
+    {
+        return $query->whereRaw(
+            "COALESCE((SELECT SUM(amount_cents) FROM order_refunds WHERE order_refunds.order_id = orders.id AND order_refunds.status NOT IN ('failed', 'canceled')), 0) < ROUND(orders.total_amount * 100)"
+        );
     }
 
     public function refunds(): HasMany
