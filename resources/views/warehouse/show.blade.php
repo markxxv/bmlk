@@ -8,11 +8,15 @@
             <h1 class="mt-1 break-all text-lg font-extrabold tracking-tight">{{ $order->order_number }}</h1>
             <div class="mt-2 flex flex-wrap gap-1.5">
                 @if ($refundSummary['has_whole_refund'])
-                    <span class="rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-700">Full refund requested</span>
+                    <span class="rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-700">
+                        {{ $refundSummary['history']->firstWhere('type', 'order')?->status === 'succeeded' ? 'Refunded' : 'Refund pending' }}
+                    </span>
                 @elseif ($refundSummary['reserved_cents'] > 0)
                     <span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800">Partially refunded</span>
                 @endif
-                <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{{ __('Paid') }}</span>
+                @if (! $refundSummary['has_whole_refund'])
+                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{{ __('Paid') }}</span>
+                @endif
                 <span class="rounded-full px-3 py-1 text-xs font-bold {{ $order->status === 'pending' ? 'bg-amber-50 text-amber-800' : 'bg-sky-50 text-sky-800' }}">{{ $statusLabel }}</span>
             </div>
         </div>
@@ -39,7 +43,7 @@
     <section aria-labelledby="warehouse-items-heading" class="overflow-hidden rounded-2xl bg-white shadow-sm">
         <div class="flex items-center justify-between bg-[#F9EAF0] px-4 py-3.5">
             <h2 id="warehouse-items-heading" class="flex items-center gap-2 text-lg font-extrabold"><x-lucide-package class="size-5 text-[#712B47]" /> {{ __('Items') }}</h2>
-            <span class="rounded-full bg-white px-3 py-1 text-sm font-bold text-[#712B47]">{{ collect($order->items ?? [])->sum(fn (array $item) => (int) ($item['quantity'] ?? 1)) }} {{ __('units') }}</span>
+            <span class="rounded-full bg-white px-3 py-1 text-sm font-bold text-[#712B47]">{{ collect($refundSummary['items'])->sum('available_quantity') }} {{ __('to pack') }}</span>
         </div>
 
         <div class="divide-y divide-zinc-100 px-4">
