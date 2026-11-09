@@ -130,6 +130,24 @@ class CustomerPreviewTest extends TestCase
         $this->assertAuthenticatedAs($customer);
     }
 
+    public function test_preview_cannot_restore_an_admin_whose_access_was_revoked(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $customer = User::factory()->create();
+
+        $this->actingAs($admin)
+            ->post(route('customer-preview.start', $customer))
+            ->assertRedirect(route('account.index'));
+
+        $admin->forceFill(['is_admin' => false])->save();
+
+        $this->post(route('customer-preview.stop'))
+            ->assertRedirect(route('account.login'))
+            ->assertSessionMissing('customer_preview');
+
+        $this->assertGuest();
+    }
+
     public function test_admin_cannot_preview_other_admins_or_warehouse_staff(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
