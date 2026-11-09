@@ -86,7 +86,7 @@
                 <div>
                     <p class="text-sm font-semibold text-zinc-700">Choose what to refund</p>
                     <label class="mt-3 flex min-h-16 cursor-pointer items-center gap-3 rounded-xl bg-[#F9F1F4] p-4">
-                        <input type="radio" name="type" value="order" checked class="size-5 shrink-0 accent-[#712B47]">
+                        <input type="radio" name="type" value="order" class="size-5 shrink-0 accent-[#712B47]">
                         <span class="min-w-0 flex-1">
                             <span class="block text-sm font-bold">Remaining order balance</span>
                             <span class="block text-xs text-zinc-600">Includes shipping and any amount not yet refunded.</span>
@@ -131,7 +131,7 @@
 
                 <div class="flex items-center justify-between gap-2 rounded-xl bg-zinc-950 p-4 text-white">
                     <span class="text-sm font-semibold">Refund amount</span>
-                    <span id="refund-preview-amount" class="text-2xl font-extrabold tabular-nums">{{ $money($remaining) }}</span>
+                    <span id="refund-preview-amount" class="text-2xl font-extrabold tabular-nums">€0.00</span>
                 </div>
                 <button id="refund-review-button" type="button"
                     class="min-h-13 w-full rounded-xl bg-[#712B47] px-4 py-3 text-base font-bold text-white disabled:opacity-40">
@@ -189,7 +189,7 @@
             const money = cents => new Intl.NumberFormat('en-IE', {style: 'currency', currency: 'EUR'}).format(cents / 100);
             let qty = 1;
             let submitting = false;
-            const mode = () => form.querySelector('input[name="type"]:checked').value;
+            const mode = () => form.querySelector('input[name="type"]:checked')?.value ?? null;
             const selected = () => items.find(item => item.checked);
 
             const update = () => {
@@ -201,7 +201,7 @@
                 quantityDisplay.textContent = String(qty);
                 document.getElementById('refund-quantity-minus').disabled = qty <= 1;
                 document.getElementById('refund-quantity-plus').disabled = !item || qty >= Number(item.dataset.max);
-                const cents = isItem ? (item ? Number(item.dataset.unit) * qty : 0) : remaining;
+                const cents = isItem ? (item ? Number(item.dataset.unit) * qty : 0) : (mode() === 'order' ? remaining : 0);
                 amountPreview.textContent = money(cents);
                 document.getElementById('refund-review-button').disabled = cents < 1 || cents > remaining;
                 return cents;
@@ -210,6 +210,8 @@
             document.getElementById('open-warehouse-refund').addEventListener('click', () => {
                 check.checked = false;
                 submit.disabled = true;
+                form.querySelectorAll('input[type="radio"]').forEach(input => {input.checked = false;});
+                qty = 1;
                 choose.hidden = false;
                 confirmStep.hidden = true;
                 dialog.showModal();
@@ -220,7 +222,6 @@
                 if (event.target === dialog) dialog.close();
             });
             form.querySelectorAll('input[name="type"]').forEach(input => input.addEventListener('change', () => {
-                if (mode() === 'item' && !selected() && items.length) items[0].checked = true;
                 qty = 1;
                 update();
             }));
