@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Services\OrderRefundService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -60,31 +61,33 @@ class WarehouseController extends Controller
 
     public function index(Request $request): View
     {
-        $state = $request->query('state', 'all');
-        if (! in_array($state, ['all', 'pending', 'processing'], true)) {
+        $states = [
+            'all', 'pending', 'processing', 'shipped', 'completed',
+            'cancelled', 'archived', 'paid', 'payment_pending',
+            'payment_processing', 'payment_failed', 'refunds',
+        ];
+
+        $state = (string) $request->query('state', 'all');
+        if (! in_array($state, $states, true)) {
             $state = 'all';
         }
 
         $search = mb_substr(trim((string) $request->query('q', '')), 0, 80);
-        $sort = $request->query('sort') === 'newest' ? 'newest' : 'oldest';
+        $sort = $request->query('sort') === 'oldest' ? 'oldest' : 'newest';
 
-        $base = Order::query()
-            ->withRefundBalance()
-            ->where('payment_status', 'paid')
-            ->whereIn('status', ['pending', 'processing']);
+        // The staff directory includes every order, just like Filament.
+        // Only the actionable "To prepare" / "Preparing" filters require a
+        // paid, not fully refunded order.
+        $counts = [];
+        foreach ($states as $filter) {
+            $counts[$filter] = $this->filterOrders(Order::query(), $filter)->count();
+        }
 
-        $counts = [
-            'all' => (clone $base)->count(),
-            'pending' => (clone $base)->where('status', 'pending')->count(),
-            'processing' => (clone $base)->where('status', 'processing')->count(),
-        ];
-
-        $orders = $base
+        $orders = $this->filterOrders(Order::query(), $state)
             ->with('refunds')
-            ->when($state !== 'all', fn ($query) => $query->where('status', $state))
-            ->when($search !== '', function ($query) use ($search): void {
+            ->when($search !== '', function (Builder $query) use ($search): void {
                 $term = '%'.mb_strtolower($search).'%';
-                $query->where(function ($query) use ($term): void {
+                $query->where(function (Builder $query) use ($term): void {
                     $query->whereRaw('LOWER(order_number) LIKE ?', [$term])
                         ->orWhereRaw('LOWER(first_name) LIKE ?', [$term])
                         ->orWhereRaw('LOWER(last_name) LIKE ?', [$term])
@@ -99,10 +102,24 @@ class WarehouseController extends Controller
         return view('warehouse.index', compact('orders', 'counts', 'state', 'search', 'sort'));
     }
 
+    private function filterOrders(Builder $query, string $state): Builder
+    {
+        return match ($state) {
+            'pending', 'processing' => $query->where('payment_status', 'paid')
+                ->where('status', $state)->withRefundBalance(),
+            'shipped', 'completed', 'cancelled', 'archived' => $query->where('status', $state),
+            'paid' => $query->where('payment_status', 'paid'),
+            'payment_pending' => $query->where('payment_status', 'unpaid'),
+            'payment_processing' => $query->where('payment_status', 'processing'),
+            'payment_failed' => $query->where('payment_status', 'failed'),
+            'refunds' => $query->whereHas('refunds', fn (Builder $refunds) =>
+                $refunds->whereNotIn('status', ['failed', 'canceled'])),
+            default => $query,
+        };
+    }
+
     public function show(Order $order, OrderRefundService $refundService): View
     {
-        abort_unless($order->payment_status === 'paid', 404);
-
         return view('warehouse.show', [
             'order' => $order,
             'labelReady' => $this->labelExists($order),
