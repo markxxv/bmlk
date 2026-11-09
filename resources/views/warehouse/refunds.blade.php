@@ -114,6 +114,11 @@
                             <input type="radio" name="item_index" value="{{ $item['index'] }}" data-refund-item
                                 data-unit="{{ $item['unit_cents'] }}" data-max="{{ $item['available_quantity'] }}"
                                 data-name="{{ $item['name'] }}" class="size-5 shrink-0 accent-[#712B47]">
+                            @if ($item['image'] !== '')
+                                <img src="{{ $item['image'] }}" alt="" loading="lazy" class="size-11 shrink-0 rounded-lg bg-white object-contain">
+                            @else
+                                <span class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-white text-zinc-400"><x-lucide-package class="size-5" /></span>
+                            @endif
                             <span class="min-w-0 flex-1 text-sm font-semibold">{{ $item['name'] }}</span>
                             <span class="shrink-0 text-right text-xs text-zinc-600">{{ $item['available_quantity'] }} left
                                 <span class="block font-bold text-zinc-900">{{ $money($item['unit_cents']) }} each</span>
