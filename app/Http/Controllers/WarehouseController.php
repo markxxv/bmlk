@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\User;
+use App\Services\OrderRefundService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -68,6 +69,7 @@ class WarehouseController extends Controller
         $sort = $request->query('sort') === 'newest' ? 'newest' : 'oldest';
 
         $base = Order::query()
+            ->whereDoesntHave('refunds', fn ($query) => $query->where('type', 'order')->whereNotIn('status', ['failed', 'canceled']))
             ->where('payment_status', 'paid')
             ->whereIn('status', ['pending', 'processing']);
 
@@ -96,13 +98,14 @@ class WarehouseController extends Controller
         return view('warehouse.index', compact('orders', 'counts', 'state', 'search', 'sort'));
     }
 
-    public function show(Order $order): View
+    public function show(Order $order, OrderRefundService $refundService): View
     {
         abort_unless($order->payment_status === 'paid', 404);
 
         return view('warehouse.show', [
             'order' => $order,
             'labelReady' => $this->labelExists($order),
+            'refundSummary' => $refundService->summary($order),
             'statusLabel' => match ($order->status) {
                 'pending' => __('Pending preparation'),
                 'processing' => __('Preparing'),
