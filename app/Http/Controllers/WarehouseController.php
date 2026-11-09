@@ -139,6 +139,7 @@ class WarehouseController extends Controller
         $query = Order::query()
             ->whereKey($order->id)
             ->where('payment_status', 'paid')
+            ->withRefundBalance()
             ->whereIn('status', $from);
 
         // An order must never be marked shipped without an actual label.
