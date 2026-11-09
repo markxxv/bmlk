@@ -145,6 +145,9 @@
                         <x-lucide-triangle-alert class="size-5" /> Final confirmation
                     </div>
                     <p class="mt-2 text-sm text-rose-900">This action sends money back to the customer and cannot be undone.</p>
+                    @if ($order->tracking_number)
+                        <p class="mt-2 text-sm font-semibold text-rose-900">A shipping label already exists. Refunding does not cancel it in Sendcloud.</p>
+                    @endif
                 </div>
                 <div class="rounded-xl bg-zinc-100 p-4">
                     <p class="text-xs font-semibold text-zinc-500">Order {{ $order->order_number }}</p>
