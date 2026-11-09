@@ -30,7 +30,7 @@
             <x-lucide-rotate-ccw class="size-4" /> Issue a refund
         </button>
     @elseif ($refundSummary['has_whole_refund'])
-        <p class="mt-3 rounded-xl bg-amber-50 p-3 text-sm font-medium text-amber-800">A full refund has been requested. Do not ship this order.</p>
+        <p class="mt-3 rounded-xl bg-amber-50 p-3 text-sm font-medium text-amber-800">The full payment has been refunded or reserved. Do not ship this order.</p>
     @elseif ($remaining === 0)
         <p class="mt-3 text-sm font-medium text-emerald-700">The full payment amount has already been refunded or reserved.</p>
     @else
