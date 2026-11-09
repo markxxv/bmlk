@@ -125,6 +125,7 @@ class WarehouseController extends Controller
         ]);
 
         abort_unless($order->payment_status === 'paid', 404);
+        abort_if($order->refunds()->where('type', 'order')->whereNotIn('status', ['failed', 'canceled'])->exists(), 409);
 
         $from = match ($data['status']) {
             'pending' => ['processing'],
@@ -155,6 +156,7 @@ class WarehouseController extends Controller
     {
         abort_unless($order->payment_status === 'paid', 404);
         abort_unless(in_array($order->status, ['pending', 'processing'], true), 409);
+        abort_if($order->refunds()->where('type', 'order')->whereNotIn('status', ['failed', 'canceled'])->exists(), 409);
 
         try {
             app(SendcloudController::class)->createLabel($order);
