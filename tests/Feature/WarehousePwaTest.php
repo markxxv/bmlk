@@ -31,10 +31,12 @@ class WarehousePwaTest extends TestCase
             ->assertOk()
             ->assertSee('src="/img/logo.png"', false)
             ->assertSee('BLACK MILK')
-            ->assertSee('Le choix des pros')
-            ->assertDontSee('Espace préparation')
-            ->assertDontSee('Accès réservé à l’équipe.')
-            ->assertDontSee('Session conservée pendant 14 jours sur cet appareil.');
+            ->assertSee('<html lang="en">', false)
+            ->assertSee('Sign in')
+            ->assertSee('The professionals&#039; choice')
+            ->assertDontSee('Preparation area')
+            ->assertDontSee('Staff access only.')
+            ->assertDontSee('Stay signed in on this device for 14 days.');
 
         $manifest = json_decode(file_get_contents(public_path('pwa-warehouse/manifest.webmanifest')), true);
 
@@ -114,7 +116,7 @@ class WarehousePwaTest extends TestCase
             ->assertOk()
             ->assertSee($pending->order_number)
             ->assertSee($processing->order_number)
-            ->assertSee('2 à traiter')
+            ->assertSee('2 to process')
             ->assertDontSee('Lorem ipsum');
 
         $this->get(route('warehouse.orders.index', ['state' => 'pending']))
@@ -134,12 +136,14 @@ class WarehousePwaTest extends TestCase
         $this->get(route('warehouse.orders.index', ['state' => 'pending', 'q' => 'Longwy']))
             ->assertOk()
             ->assertSeeInOrder([$older->order_number, $newer->order_number])
-            ->assertSee('Plus anciennes d’abord');
+            ->assertSee('Oldest first')
+            ->assertDontSee('Plus anciennes d’abord');
 
         $this->get(route('warehouse.orders.index', ['state' => 'pending', 'q' => 'Longwy', 'sort' => 'newest']))
             ->assertOk()
             ->assertSeeInOrder([$newer->order_number, $older->order_number])
-            ->assertSee('Plus récentes d’abord')
+            ->assertSee('Newest first')
+            ->assertDontSee('Plus récentes d’abord')
             ->assertDontSee('sort=oldest', false);
     }
 
