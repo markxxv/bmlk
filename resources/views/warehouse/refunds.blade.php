@@ -142,7 +142,7 @@
             <div id="refund-confirm-step" class="space-y-5 px-5 pb-6 pt-4" hidden>
                 <div class="rounded-xl bg-rose-50 p-4">
                     <div class="flex items-center gap-2 font-bold text-rose-800">
-                        <x-lucide-alert-triangle class="size-5" /> Final confirmation
+                        <x-lucide-triangle-alert class="size-5" /> Final confirmation
                     </div>
                     <p class="mt-2 text-sm text-rose-900">This action sends money back to the customer and cannot be undone.</p>
                 </div>
