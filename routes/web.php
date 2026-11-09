@@ -8,6 +8,7 @@ use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\WarehouseRefundController;
 use App\Http\Middleware\EnsureWarehouseStaff;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,8 @@ Route::prefix('warehouse')->name('warehouse.')->group(function (): void {
         Route::get('/', [WarehouseController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order:order_number}', [WarehouseController::class, 'show'])->name('orders.show');
         Route::post('/orders/{order:order_number}/status', [WarehouseController::class, 'status'])->name('orders.status');
+        Route::post('/orders/{order:order_number}/refund', [WarehouseRefundController::class, 'store'])
+            ->middleware('throttle:3,1')->name('orders.refund');
         Route::post('/orders/{order:order_number}/label', [WarehouseController::class, 'createLabel'])
             ->middleware('throttle:5,1')->name('orders.create-label');
         Route::get('/orders/{order:order_number}/label', [WarehouseController::class, 'label'])->name('orders.label');
