@@ -10,7 +10,6 @@ use BackedEnum;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -19,6 +18,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Illuminate\Support\HtmlString;
 
 class RoleApplicationResource extends Resource
 {
@@ -56,7 +56,12 @@ class RoleApplicationResource extends Resource
                 Select::make('status')->label('Decision')->options([
                     'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected',
                 ])->required()->native(false)->prefixIcon('lucide-check-circle'),
-                Textarea::make('message')->label('Customer message')->disabled()->dehydrated(false)->columnSpanFull(),
+            ]),
+            Section::make('Customer message')->icon('lucide-message-square-text')->schema([
+                Placeholder::make('message_preview')->hiddenLabel()
+                    ->content(fn (?RoleApplication $record): HtmlString => new HtmlString(
+                        '<div class="whitespace-pre-wrap break-words">' . e($record?->message ?? '—') . '</div>'
+                    )),
             ]),
             Section::make('Partner statuses')->icon('lucide-badge-check')->columns(2)
                 ->visible(fn (?RoleApplication $record): bool => $record?->role === 'influencer')
