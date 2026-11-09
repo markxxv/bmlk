@@ -56,7 +56,7 @@ class WarehousePwaTest extends TestCase
 
         $this->get(route('warehouse.orders.index'))
             ->assertOk()
-            ->assertSee('Paid orders')
+            ->assertSee('All orders')
             ->assertSee('To prepare')
             ->assertDontSee('Commandes payées');
 
@@ -127,26 +127,49 @@ class WarehousePwaTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_only_paid_pending_and_processing_orders_appear_in_queue(): void
+    public function test_warehouse_lists_all_orders_and_filters_payment_and_fulfillment(): void
     {
         $this->actingAs($this->staff());
 
         $pending = $this->order();
         $processing = $this->order(['status' => 'processing']);
-        $this->order(['status' => 'shipped']);
-        $this->order(['payment_status' => 'unpaid']);
+        $shipped = $this->order(['status' => 'shipped']);
+        $unpaid = $this->order(['payment_status' => 'unpaid']);
+        $failed = $this->order(['payment_status' => 'failed']);
 
         $this->get(route('warehouse.orders.index'))
             ->assertOk()
             ->assertSee($pending->order_number)
             ->assertSee($processing->order_number)
-            ->assertSee('2 to process')
-            ->assertDontSee('Lorem ipsum');
+            ->assertSee($shipped->order_number)
+            ->assertSee($unpaid->order_number)
+            ->assertSee($failed->order_number)
+            ->assertSee('All orders')
+            ->assertSee('Payment pending')
+            ->assertSee('Payment failed')
+            ->assertSee('2 to prepare');
 
         $this->get(route('warehouse.orders.index', ['state' => 'pending']))
             ->assertOk()
             ->assertSee($pending->order_number)
-            ->assertDontSee($processing->order_number);
+            ->assertDontSee($processing->order_number)
+            ->assertDontSee($shipped->order_number)
+            ->assertDontSee($unpaid->order_number);
+
+        $this->get(route('warehouse.orders.index', ['state' => 'shipped']))
+            ->assertOk()
+            ->assertSee($shipped->order_number)
+            ->assertDontSee($pending->order_number);
+
+        $this->get(route('warehouse.orders.index', ['state' => 'payment_pending']))
+            ->assertOk()
+            ->assertSee($unpaid->order_number)
+            ->assertDontSee($shipped->order_number);
+
+        $this->get(route('warehouse.orders.index', ['state' => 'payment_failed']))
+            ->assertOk()
+            ->assertSee($failed->order_number)
+            ->assertDontSee($pending->order_number);
     }
 
     public function test_order_sort_toggle_orders_records_and_preserves_filters(): void
@@ -159,16 +182,15 @@ class WarehousePwaTest extends TestCase
 
         $this->get(route('warehouse.orders.index', ['state' => 'pending', 'q' => 'Longwy']))
             ->assertOk()
+            ->assertSeeInOrder([$newer->order_number, $older->order_number])
+            ->assertSee('Newest first');
+
+        $this->get(route('warehouse.orders.index', ['state' => 'pending', 'q' => 'Longwy', 'sort' => 'oldest']))
+            ->assertOk()
             ->assertSeeInOrder([$older->order_number, $newer->order_number])
             ->assertSee('Oldest first')
-            ->assertDontSee('Plus anciennes d’abord');
-
-        $this->get(route('warehouse.orders.index', ['state' => 'pending', 'q' => 'Longwy', 'sort' => 'newest']))
-            ->assertOk()
-            ->assertSeeInOrder([$newer->order_number, $older->order_number])
-            ->assertSee('Newest first')
-            ->assertDontSee('Plus récentes d’abord')
-            ->assertDontSee('sort=oldest', false);
+            ->assertDontSee('Plus anciennes d’abord')
+            ->assertSee('q=Longwy', false);
     }
 
     public function test_staff_can_start_preparing_and_cannot_ship_without_a_label(): void
@@ -229,12 +251,24 @@ class WarehousePwaTest extends TestCase
         Http::assertSentCount(1);
     }
 
-    public function test_unpaid_order_detail_is_not_visible_to_staff(): void
+    public function test_unpaid_order_is_visible_but_cannot_be_fulfilled_or_refunded(): void
     {
         $this->actingAs($this->staff());
         $order = $this->order(['payment_status' => 'unpaid']);
 
-        $this->get(route('warehouse.orders.show', $order->order_number))->assertNotFound();
+        $this->get(route('warehouse.orders.show', $order->order_number))
+            ->assertOk()
+            ->assertSee($order->order_number)
+            ->assertSee('Payment pending')
+            ->assertSee('read-only until payment succeeds')
+            ->assertDontSee('Start preparing')
+            ->assertDontSee('Issue a refund');
+
+        $this->post(route('warehouse.orders.status', $order->order_number), [
+            'status' => 'processing',
+        ])->assertNotFound();
+
+        $this->post(route('warehouse.orders.create-label', $order->order_number))->assertNotFound();
     }
 
     private function staff(): User
