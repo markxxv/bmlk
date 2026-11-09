@@ -360,7 +360,7 @@ Spatie Translatable fields are stored as PostgreSQL JSONB objects, for example:
 ## Filament customer impersonation
 
 - Filament **Shop → Customers** includes an admin-only `Login as user` action to inspect real customer account and order screens for design/QA.
-- Only a verified current `is_admin` actor may invoke the server-side start action; the target must not be another admin or Warehouse staff account.
+- Only an authenticated current `is_admin` actor may invoke the server-side start action; the target must not be another admin or Warehouse staff account.
 - Customer preview uses a server-side session marker, regenerates session IDs when switching identities, and offers a persistent **Return to admin** POST action in the shared storefront layout.
 - Preview is strictly read-only: middleware blocks every unsafe HTTP method except returning, and uses a narrow allowlist for safe GET routes. Never permit checkout payments, verification, account edits, uploads, logout or Filament access while previewing.
 - The customer account index may display unclaimed orders belonging to the verified customer email during preview but **must never claim or change order ownership**.
