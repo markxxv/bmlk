@@ -40,6 +40,7 @@ class OrderRefundService
             $items[$index] = [
                 'index' => $index,
                 'name' => (string) ($item['name'] ?? 'Product'),
+                'image' => (string) ($item['image'] ?? ''),
                 'quantity' => $quantity,
                 'unit_cents' => max(0, $unitCents),
                 'refunded_quantity' => $refundedQuantity,
