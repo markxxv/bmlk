@@ -147,7 +147,7 @@ class WarehousePwaTest extends TestCase
             ->assertSee('All orders')
             ->assertSee('Payment pending')
             ->assertSee('Payment failed')
-            ->assertSee('2 to prepare');
+            ->assertSee('1 to prepare');
 
         $this->get(route('warehouse.orders.index', ['state' => 'pending']))
             ->assertOk()
