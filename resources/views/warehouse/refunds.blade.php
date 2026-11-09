@@ -47,7 +47,7 @@
                             <p class="text-sm font-semibold">Selected products</p>
                             <ul class="mt-1 space-y-0.5 text-xs text-zinc-600">
                                 @foreach (($refund->items ?? []) as $line)
-                                    <li>{{ $line['name'] ?? ($refundSummary['items'][$line['item_index'] ?? -1]['name'] ?? 'Product') }} × {{ $line['quantity'] ?? 0 }}</li>
+                                    <li>{{ $line['name'] ?? ($refundSummary['items'][$line['item_index'] ?? -1]['name'] ?? 'Product') }}{{ ! empty($line['options']) ? ' · '.$line['options'] : '' }} × {{ $line['quantity'] ?? 0 }}</li>
                                 @endforeach
                             </ul>
                         @else
@@ -128,7 +128,7 @@
                             <legend class="mb-2 text-sm font-bold">Choose products and quantities</legend>
                             @foreach ($refundableItems as $item)
                                 <div data-refund-row data-index="{{ $item['index'] }}" data-unit="{{ $item['unit_cents'] }}"
-                                    data-max="{{ $item['available_quantity'] }}" data-name="{{ $item['name'] }}"
+                                    data-max="{{ $item['available_quantity'] }}" data-name="{{ $item['name'] }}{{ $item['options'] !== '' ? ' · '.$item['options'] : '' }}"
                                     class="rounded-2xl bg-zinc-100 p-3">
                                     <label class="flex min-h-12 cursor-pointer items-center gap-3">
                                         <input type="checkbox" data-refund-check
