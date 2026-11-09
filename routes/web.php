@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CreatorsController;
+use App\Http\Controllers\CustomerPreviewController;
 
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\RepairController;
@@ -12,6 +13,13 @@ use App\Http\Controllers\WarehouseRefundController;
 use App\Http\Middleware\EnsureWarehouseStaff;
 use Illuminate\Support\Facades\Route;
 
+
+// Customer preview is started by the Filament Customers action. This POST
+// endpoint also makes the authorization rules directly testable.
+Route::post('/_admin/customer-preview/{user}', [CustomerPreviewController::class, 'start'])
+    ->middleware(['auth', 'throttle:6,1'])->name('customer-preview.start');
+Route::post('/_customer-preview/stop', [CustomerPreviewController::class, 'stop'])
+    ->middleware(['auth', 'throttle:12,1'])->name('customer-preview.stop');
 
 // Warehouse is a separate, installable PWA with its own two-week session.
 // Only admins and users explicitly granted is_warehouse may access orders.
