@@ -60,7 +60,8 @@
                 </div>
 
                 @forelse ($orders as $order)
-                    <a href="{{ route('account.order', $order) }}" class="group mt-5 flex flex-wrap items-start justify-between gap-4 border-b border-zinc-100 pb-5 transition last:border-0">
+                    <div class="mt-5 border-b border-zinc-100 pb-5 last:border-0">
+                        <a href="{{ route('account.order', $order) }}" class="group flex flex-wrap items-start justify-between gap-4 transition">
                         <span class="min-w-0 flex-1">
                             <span class="flex flex-wrap items-center gap-2.5">
                                 <strong class="text-sm font-semibold text-zinc-900">{{ $order->order_number }}</strong>
@@ -74,18 +75,14 @@
                                 <span aria-hidden="true">·</span>
                                 <span>{{ $order->customerPaymentStatusLabel() }}</span>
                             </span>
-                            @if (filled($order->tracking_number))
-                                <span class="mt-2 flex min-w-0 items-start gap-1.5 text-xs text-zinc-600">
-                                    <x-lucide-truck class="mt-0.5 h-3.5 w-3.5 shrink-0 text-bmlk-brand" aria-hidden="true" />
-                                    <span class="min-w-0 break-all">{{ __('Numéro de suivi') }} : <span class="font-medium text-zinc-900">{{ $order->tracking_number }}</span></span>
-                                </span>
-                            @endif
                         </span>
                         <span class="flex shrink-0 items-center gap-3 text-sm font-semibold text-zinc-900">
                             {{ number_format($order->total_amount, 2, ',', ' ') }} €
                             <x-lucide-chevron-right class="h-4 w-4 text-zinc-400 transition group-hover:translate-x-0.5 group-hover:text-bmlk-brand" aria-hidden="true" />
                         </span>
-                    </a>
+                        </a>
+                        @include('account.partials.tracking', ['order' => $order])
+                    </div>
                 @empty
                     <p class="mt-6 text-sm text-zinc-500">{{ __('Aucune commande pour le moment.') }}</p>
                 @endforelse
