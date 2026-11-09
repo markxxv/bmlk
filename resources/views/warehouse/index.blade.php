@@ -51,7 +51,11 @@
         @forelse ($orders as $order)
             @php
                 $items = $order->items ?? [];
-                $count = collect($items)->sum(fn (array $item): int => (int) ($item['quantity'] ?? 1));
+                $reservedRefunds = $order->refunds->whereNotIn('status', ['failed', 'canceled']);
+                $count = collect($items)->sum(fn (array $item, int $index): int =>
+                    max(0, (int) ($item['quantity'] ?? 1) - (int) $reservedRefunds
+                        ->where('type', 'item')->where('item_index', $index)->sum('quantity')));
+                $hasItemRefunds = $reservedRefunds->isNotEmpty();
                 $isPending = $order->status === 'pending';
             @endphp
             <a href="{{ route('warehouse.orders.show', $order->order_number) }}"
@@ -62,6 +66,9 @@
                         <span class="size-1.5 shrink-0 rounded-full {{ $isPending ? 'bg-amber-500' : 'bg-sky-500' }}"></span>
                         {{ $isPending ? __('To prepare') : __('In progress') }}
                     </span>
+                    @if ($hasItemRefunds)
+                        <span class="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700">Partial refund</span>
+                    @endif
                 </div>
 
                 <div class="mt-3 flex items-start justify-between gap-3">
@@ -79,7 +86,12 @@
 
                 <div class="mt-4 rounded-2xl bg-[#F9F6F7] p-2.5 sm:p-3">
                     <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-x-4">
-                        @foreach (array_slice($items, 0, 4) as $item)
+                        @foreach (array_slice($items, 0, 4) as $itemIndex => $item)
+                            @php
+                                $packedQuantity = max(0, (int) ($item['quantity'] ?? 1)
+                                    - (int) $reservedRefunds->where('type', 'item')
+                                        ->where('item_index', $itemIndex)->sum('quantity'));
+                            @endphp
                             <div class="flex min-w-0 items-center gap-2.5">
                                 @if (filled(data_get($item, 'image')))
                                     <img src="{{ data_get($item, 'image') }}" loading="lazy" alt="" class="size-10 shrink-0 rounded-xl bg-white object-contain">
@@ -89,7 +101,7 @@
                                 <span class="min-w-0 flex-1 truncate text-xs font-medium text-zinc-700" title="{{ data_get($item, 'name', __('Product')) }}">
                                     {{ data_get($item, 'name', __('Product')) }}
                                 </span>
-                                <span class="shrink-0 rounded-lg bg-white px-2 py-1 text-xs font-extrabold tabular-nums text-[#712B47]">×{{ (int) data_get($item, 'quantity', 1) }}</span>
+                                <span class="shrink-0 rounded-lg bg-white px-2 py-1 text-xs font-extrabold tabular-nums {{ $packedQuantity === 0 ? 'text-rose-700' : 'text-[#712B47]' }}">{{ $packedQuantity === 0 ? 'Refunded' : '×'.$packedQuantity }}</span>
                             </div>
                         @endforeach
                         @if (count($items) > 4)
