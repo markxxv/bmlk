@@ -21,7 +21,7 @@ class OrderRefundService
         $reserved = $refunds->reject(fn (OrderRefund $refund) => in_array($refund->status, self::EXCLUDED_STATUSES, true));
         $totalCents = (int) round((float) $order->total_amount * 100);
         $reservedCents = (int) $reserved->sum('amount_cents');
-        $hasWholeOrderRefund = $reserved->contains('type', 'order');
+        $hasWholeOrderRefund = $reserved->contains('type', 'order') || ($totalCents > 0 && $reservedCents >= $totalCents);
 
         $items = [];
         foreach (($order->items ?? []) as $index => $item) {
