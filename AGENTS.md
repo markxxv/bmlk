@@ -357,6 +357,14 @@ Spatie Translatable fields are stored as PostgreSQL JSONB objects, for example:
 }
 ```
 
+## Warehouse order visibility
+
+- The Warehouse PWA lists **all** orders, matching Filament's order coverage: paid, unpaid, processing, failed, shipped, completed, cancelled, archived and refunded. Default ordering is newest-first.
+- Mobile filters distinguish fulfillment state from payment state, and show independent badges on each card. The bottom counter reflects only paid, refundable-balance orders still awaiting preparation.
+- Staff may inspect an unpaid or failed order, but all fulfillment actions, Sendcloud label purchases and Stripe refund controls are unavailable until payment is confirmed.
+- Fully refunded orders remain in All orders and the Refunds filter for audit, but are excluded from actionable preparation queues.
+- Public customer-facing status messages remain French. Warehouse UI stays English-only.
+
 ## Warehouse refunds
 
 - Warehouse staff can refund a paid order using Stripe PaymentIntent and either a specific purchased item/quantity (at its discounted Checkout price) or the remaining full order balance, including shipping.
