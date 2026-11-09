@@ -564,6 +564,28 @@ Switching into and out of preview invalidates and regenerates the session ID, st
 
 Test with `php artisan test --filter=CustomerPreviewTest`. In the same browser, other admin tabs share the switched session until **Return to admin** is pressed.
 
+## Sendcloud v3 tracking history
+
+The account order list and detail page show a French tracking accordion beneath "Numéro de suivi", with the existing Motion animation. The display includes five milestones (label created, accepted, in transit, out for delivery, delivered), confirmed event times and the actual carrier history. Future stages are inactive; carrier descriptions are displayed as received.
+
+Historical events are stored in the order_tracking_events table with stable deduplication. Orders cache the last tracking phase, sync time and expected delivery date. The frontend only reads local data, and never calls Sendcloud while rendering an account page.
+
+Initial historical import (also includes completed and archived orders):
+    php artisan migrate --force
+    php artisan shipping:sync-tracking --all
+
+Sample and individual repair:
+    php artisan shipping:sync-tracking --all --limit=5
+    php artisan shipping:sync-tracking --order=BM-YYYYMMDD-XXXXXX
+
+Sendcloud API v3 supports GET /api/v3/parcels/tracking/{tracking_number} to retrieve tracking events by number. It does not document a batch history fetch for multiple numbers, so the progress-bar command handles them sequentially with an adjustable delay. Upserts are idempotent, errors are reported per order, and HTTP 429 stops the run.
+
+Existing signed Sendcloud parcel_status_changed webhooks trigger a history refresh. The Laravel scheduler also runs shipping:sync-tracking hourly for non-terminal paid shipments if the previous sync is at least 50 minutes old. Only an actual delivered phase marks an order completed, and archived/cancelled/completed statuses are never regressed.
+
+Tests: php artisan test --filter=SendcloudTrackingHistoryTest
+Also run: php artisan test --filter=SendcloudWebhookTest
+And: php artisan test --filter=CustomerAccountsTest
+
 ## Warehouse Stripe refunds
 
 Warehouse staff with `is_warehouse` or `is_admin` can refund a paid Stripe order from its detail page. The English-only mobile-first bottom sheet supports **several products in one refund**, with an explicit checkbox and independent quantity stepper in every selected product row. The alternative refunds the entire *remaining* order payment. Selected-product refunds issue **one Stripe refund** for the combined server-calculated amount using the exact discounted unit prices saved for Checkout; shipping is excluded. Refunding the remaining balance includes shipping and any not-yet-refunded funds. The final confirmation displays an itemized list with quantities, line totals and the exact refund amount.
