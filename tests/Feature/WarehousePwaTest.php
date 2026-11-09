@@ -193,6 +193,46 @@ class WarehousePwaTest extends TestCase
             ->assertSee('q=Longwy', false);
     }
 
+    public function test_tracking_number_can_be_copied_and_tracking_page_opens_at_bottom(): void
+    {
+        $this->actingAs($this->staff());
+        $order = $this->order([
+            'status' => 'shipped',
+            'tracking_number' => 'TRK-123-456',
+            'tracking_url' => 'https://tracking.example.com/TRK-123-456',
+        ]);
+
+        $this->get(route('warehouse.orders.show', $order->order_number))
+            ->assertOk()
+            ->assertSeeInOrder(['Tracking number', 'TRK-123-456', 'Items'])
+            ->assertSee('id="warehouse-tracking-copy"', false)
+            ->assertSee('id="warehouse-tracking-check-icon"', false)
+            ->assertSee('Copied')
+            ->assertSee('href="https://tracking.example.com/TRK-123-456"', false)
+            ->assertSee('Track shipment');
+    }
+
+    public function test_tracking_controls_hide_when_missing_and_unsafe_links_are_rejected(): void
+    {
+        $this->actingAs($this->staff());
+
+        $withoutTracking = $this->order();
+        $this->get(route('warehouse.orders.show', $withoutTracking->order_number))
+            ->assertOk()
+            ->assertDontSee('id="warehouse-tracking-copy"', false)
+            ->assertDontSee('Track shipment');
+
+        $unsafe = $this->order([
+            'tracking_number' => 'TRK-999',
+            'tracking_url' => 'javascript:alert(1)',
+        ]);
+        $this->get(route('warehouse.orders.show', $unsafe->order_number))
+            ->assertOk()
+            ->assertSee('TRK-999')
+            ->assertDontSee('Track shipment')
+            ->assertDontSee('javascript:alert(1)');
+    }
+
     public function test_staff_can_start_preparing_and_cannot_ship_without_a_label(): void
     {
         $this->actingAs($this->staff());
