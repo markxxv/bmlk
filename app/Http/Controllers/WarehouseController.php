@@ -39,7 +39,7 @@ class WarehouseController extends Controller
             ->first();
 
         if (! $user || ! $user->password || ! Hash::check($credentials['password'], $user->password)) {
-            return back()->withErrors(['email' => __('Identifiants incorrects.')])->onlyInput('email');
+            return back()->withErrors(['email' => __('Incorrect email or password.')])->onlyInput('email');
         }
 
         Auth::login($user);
@@ -103,6 +103,15 @@ class WarehouseController extends Controller
         return view('warehouse.show', [
             'order' => $order,
             'labelReady' => $this->labelExists($order),
+            'statusLabel' => match ($order->status) {
+                'pending' => __('Pending preparation'),
+                'processing' => __('Preparing'),
+                'shipped' => __('Shipped'),
+                'completed' => __('Completed'),
+                'cancelled' => __('Cancelled'),
+                'archived' => __('Archived'),
+                default => __('Pending'),
+            },
         ]);
     }
 
@@ -133,10 +142,10 @@ class WarehouseController extends Controller
         }
 
         if ($query->update(['status' => $data['status']]) !== 1) {
-            return back()->withErrors(['status' => __('Actualisez la commande avant de modifier son statut.')]);
+            return back()->withErrors(['status' => __('Refresh the order before changing its status.')]);
         }
 
-        return back()->with('success', __('Statut mis à jour.'));
+        return back()->with('success', __('Order status updated.'));
     }
 
     public function createLabel(Order $order): RedirectResponse
@@ -152,15 +161,15 @@ class WarehouseController extends Controller
                 'message' => $exception->getMessage(),
             ]);
 
-            return back()->withErrors(['label' => __('Étiquette indisponible : :message', ['message' => $exception->getMessage()])]);
+            return back()->withErrors(['label' => __('Unable to create the shipping label. Please try again or check Sendcloud.')]);
         }
 
         if (! $this->labelExists($order->fresh())) {
-            return back()->withErrors(['label' => __('Étiquette créée, mais le PDF est indisponible. Vérifiez Sendcloud.')]);
+            return back()->withErrors(['label' => __('Shipping label created, but the PDF is unavailable. Check Sendcloud.')]);
         }
 
         return redirect()->route('warehouse.orders.show', $order->order_number)
-            ->with('success', __('Étiquette créée. Ouvrez le PDF pour imprimer.'));
+            ->with('success', __('Shipping label created. Open the PDF to print.'));
     }
 
     public function label(Order $order): BinaryFileResponse
