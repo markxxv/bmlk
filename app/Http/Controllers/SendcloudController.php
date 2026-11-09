@@ -405,6 +405,8 @@ class SendcloudController extends Controller
                     'postal_code' => $order->zip,
                     'city' => $order->city,
                     'country_code' => $order->shipping_country_code,
+                    'phone_number' => $order->phone,
+                    ...($order->email ? ['email' => $order->email] : []),
                 ],
                 'shipping_details' => [
                     'is_local_pickup' => false,
