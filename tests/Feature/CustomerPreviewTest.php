@@ -85,9 +85,36 @@ class CustomerPreviewTest extends TestCase
             ->post(route('customer-preview.start', $customer))
             ->assertRedirect(route('account.index'));
 
-        $this->get(route('account.index'))->assertOk();
+        $this->get(route('account.index'))
+            ->assertOk()
+            ->assertSee($orphan->order_number);
+
+        $this->get(route('account.order', $orphan))
+            ->assertOk()
+            ->assertSee($orphan->order_number);
 
         $this->assertNull($orphan->fresh()->user_id);
+    }
+
+    public function test_preview_does_not_expose_other_people_or_unverified_email_orders(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $customer = User::factory()->unverified()->create();
+        $another = User::factory()->create();
+        $unclaimed = $this->order($customer, ['user_id' => null]);
+        $other = $this->order($another);
+
+        $this->actingAs($admin)
+            ->post(route('customer-preview.start', $customer))
+            ->assertRedirect(route('account.index'));
+
+        $this->get(route('account.index'))
+            ->assertOk()
+            ->assertDontSee($unclaimed->order_number)
+            ->assertDontSee($other->order_number);
+
+        $this->get(route('account.order', $unclaimed))->assertNotFound();
+        $this->get(route('account.order', $other))->assertNotFound();
     }
 
     public function test_non_admin_cannot_start_preview_or_restore_an_admin(): void
