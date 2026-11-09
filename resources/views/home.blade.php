@@ -21,7 +21,9 @@
                         <div class="flex flex-1 items-center sm:py-16 lg:py-10">
                             <div>
                                 <h1 class="max-w-2xl pt-10 font-serif text-4xl font-medium leading-[1.06] tracking-tight text-[color:var(--bmc-accent)] sm:text-6xl md:pt-0" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
-                                    <span class="block font-script text-[12vw] font-normal leading-[1.3] tracking-normal text-[#70879C] [text-shadow:2px_2px_0_#F6E8E6] sm:text-[5.5rem] lg:text-[4.125rem] xl:text-[5.125rem] 2xl:text-[5.75rem]">{{ __('Moins de produits,') }}</span>
+                                    <span class="block">
+                                        <span class="home-hero-script">{{ rtrim(__('Moins de produits,'), ', ') }}</span>
+                                    </span>
                                     <span class="block">{{ __('plus de précision :') }}</span>
                                 </h1>
 
