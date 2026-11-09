@@ -28,9 +28,12 @@ class WarehouseRefundController extends Controller
     {
         $data = $request->validate([
             'request_key' => ['required', 'uuid'],
-            'type' => ['required', Rule::in(['order', 'item'])],
+            'type' => ['required', Rule::in(['order', 'item', 'items'])],
             'item_index' => ['nullable', 'integer', 'min:0'],
             'quantity' => ['nullable', 'integer', 'min:1'],
+            'items' => ['required_if:type,items', 'array', 'min:1', 'max:50'],
+            'items.*.item_index' => ['required', 'integer', 'min:0'],
+            'items.*.quantity' => ['required', 'integer', 'min:1'],
             'confirmation' => ['required', Rule::in(['CONFIRM REFUND'])],
         ]);
 
@@ -41,6 +44,7 @@ class WarehouseRefundController extends Controller
             $data['type'],
             isset($data['item_index']) ? (int) $data['item_index'] : null,
             isset($data['quantity']) ? (int) $data['quantity'] : null,
+            $data['items'] ?? null,
         );
 
         return match ($refund->status) {
