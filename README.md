@@ -578,6 +578,9 @@ Sample and individual repair:
     php artisan shipping:sync-tracking --all --limit=5
     php artisan shipping:sync-tracking --order=BM-YYYYMMDD-XXXXXX
 
+Tracking responses may have the documented top-level events list, a nested parcel/data object, or an announced parcel whose events array is missing or null (carrier has not scanned it). The sync service accepts these cases without inventing carrier events. Unknown 200 responses are rejected with a **keys-only, sanitized** error that helps diagnose unexpected upstream schemas without logging customer data. To diagnose a single failing shipment after deployment, run:
+    php artisan shipping:sync-tracking --order=BM-20261104-000014
+
 Sendcloud API v3 supports GET /api/v3/parcels/tracking/{tracking_number} to retrieve tracking events by number. It does not document a batch history fetch for multiple numbers, so the progress-bar command handles them sequentially with an adjustable delay. Upserts are idempotent, errors are reported per order, and HTTP 429 stops the run.
 
 Existing signed Sendcloud parcel_status_changed webhooks trigger a history refresh. The Laravel scheduler also runs shipping:sync-tracking hourly for non-terminal paid shipments if the previous sync is at least 50 minutes old. Only an actual delivered phase marks an order completed, and archived/cancelled/completed statuses are never regressed.
