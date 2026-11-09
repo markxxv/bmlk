@@ -34,6 +34,8 @@ Route::prefix('warehouse')->name('warehouse.')->group(function (): void {
         Route::post('/orders/{order:order_number}/status', [WarehouseController::class, 'status'])->name('orders.status');
         Route::post('/orders/{order:order_number}/refund', [WarehouseRefundController::class, 'store'])
             ->middleware('throttle:3,1')->name('orders.refund');
+        Route::post('/orders/{order:order_number}/refunds/{refund}/refresh', [WarehouseRefundController::class, 'refresh'])
+            ->middleware('throttle:6,1')->name('orders.refunds.refresh');
         Route::post('/orders/{order:order_number}/label', [WarehouseController::class, 'createLabel'])
             ->middleware('throttle:5,1')->name('orders.create-label');
         Route::get('/orders/{order:order_number}/label', [WarehouseController::class, 'label'])->name('orders.label');
