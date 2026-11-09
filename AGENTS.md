@@ -366,6 +366,15 @@ Spatie Translatable fields are stored as PostgreSQL JSONB objects, for example:
 - The customer account index may display unclaimed orders belonging to the verified customer email during preview but **must never claim or change order ownership**.
 - Preserve start/stop audit logs and the original administrator password hash check. Never use query-string or signed GET routes to swap identities.
 
+## Sendcloud tracking timeline
+
+- Always use Sendcloud API v3 GET /parcels/tracking/{tracking_number} for historic tracking events, not v2. No bulk history endpoint for multiple tracking numbers is documented.
+- Store actual events in order_tracking_events with stable deduplication; cache last phase and sync time on orders. Do not fabricate missing carrier scans or dates.
+- Customer account list and detail share the French account.partials.tracking accordion and the existing Motion FAQ height animation. Warehouse and Filament remain English.
+- Account views read only local records. Signed Sendcloud webhook updates and the scheduled hourly shipping:sync-tracking command keep them current.
+- Backfill with php artisan shipping:sync-tracking --all, showing progress and pacing API requests. Always run database migrations first.
+- A genuine delivered phase may complete an order. Never regress completed, archived or cancelled fulfillment.
+
 ## Warehouse order visibility
 
 - The Warehouse PWA lists **all** orders, matching Filament's order coverage: paid, unpaid, processing, failed, shipped, completed, cancelled, archived and refunded. Default ordering is newest-first.
