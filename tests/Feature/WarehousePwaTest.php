@@ -43,6 +43,30 @@ class WarehousePwaTest extends TestCase
         $this->assertSame('/img/logo.png', $manifest['icons'][0]['src']);
     }
 
+    public function test_warehouse_staff_pages_use_english_copy(): void
+    {
+        $this->get(route('warehouse.login'))
+            ->assertOk()
+            ->assertSee('Sign in')
+            ->assertSee('Password')
+            ->assertDontSee('Mot de passe');
+
+        $this->actingAs($this->staff());
+        $order = $this->order();
+
+        $this->get(route('warehouse.orders.index'))
+            ->assertOk()
+            ->assertSee('Paid orders')
+            ->assertSee('To prepare')
+            ->assertDontSee('Commandes payées');
+
+        $this->get(route('warehouse.orders.show', $order->order_number))
+            ->assertOk()
+            ->assertSee('Pending preparation')
+            ->assertSee('Shipping label')
+            ->assertDontSee('Étiquette de livraison');
+    }
+
     public function test_guests_are_redirected_to_the_warehouse_login(): void
     {
         $order = $this->order();
