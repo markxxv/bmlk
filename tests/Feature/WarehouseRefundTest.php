@@ -265,6 +265,157 @@ class WarehouseRefundTest extends TestCase
         Http::assertSentCount(1);
     }
 
+    public function test_staff_can_refund_several_products_with_independent_quantities_in_one_stripe_request(): void
+    {
+        $order = $this->multiProductOrder();
+        $this->actingAs($this->staff());
+        Http::fake([
+            'https://api.stripe.com/v1/refunds' => Http::response([
+                'id' => 're_test_multi',
+                'status' => 'succeeded',
+                'amount' => 1800,
+            ]),
+        ]);
+
+        $this->get(route('warehouse.orders.show', $order->order_number))
+            ->assertOk()
+            ->assertSee('Select products')
+            ->assertSee('Choose products and quantities')
+            ->assertSee('data-refund-check', false)
+            ->assertSee('data-refund-minus', false)
+            ->assertSee('data-refund-plus', false)
+            ->assertSee('name="items[0][item_index]"', false)
+            ->assertSee('name="items[1][quantity]"', false)
+            ->assertDontSee('id="refund-quantity-minus"', false);
+
+        $this->post(route('warehouse.orders.refund', $order->order_number), $this->payload([
+            'type' => 'items',
+            'items' => [
+                ['item_index' => 0, 'quantity' => 1],
+                ['item_index' => 1, 'quantity' => 2],
+            ],
+        ]))->assertSessionHas('success');
+
+        Http::assertSentCount(1);
+        Http::assertSent(fn ($request) => $request->url() === 'https://api.stripe.com/v1/refunds'
+            && (int) $request['amount'] === 1800
+            && $request['payment_intent'] === 'pi_test_warehouse'
+            && $request->hasHeader('Idempotency-Key'));
+
+        $refund = $order->refunds()->sole();
+        $this->assertSame('items', $refund->type);
+        $this->assertSame(1800, $refund->amount_cents);
+        $this->assertNull($refund->item_index);
+        $this->assertNull($refund->quantity);
+        $this->assertCount(2, $refund->items);
+        $this->assertSame([
+            ['item_index' => 0, 'quantity' => 1, 'unit_cents' => 800, 'name' => 'Nail care'],
+            ['item_index' => 1, 'quantity' => 2, 'unit_cents' => 500, 'name' => 'Cuticle oil'],
+        ], $refund->items);
+
+        $summary = app(OrderRefundService::class)->summary($order);
+        $this->assertSame(2200, $summary['remaining_cents']);
+        $this->assertSame(1, $summary['items'][0]['available_quantity']);
+        $this->assertSame(1, $summary['items'][1]['available_quantity']);
+        $this->assertSame(1, $summary['items'][2]['available_quantity']);
+
+        $this->get(route('warehouse.orders.show', $order->order_number))
+            ->assertOk()
+            ->assertSee('Nail care × 1')
+            ->assertSee('Cuticle oil × 2');
+        $this->get(route('warehouse.orders.index'))
+            ->assertOk()
+            ->assertSee($order->order_number)
+            ->assertSee('Partial refund')
+            ->assertSee('3 items');
+    }
+
+    public function test_multi_product_refund_rejects_invalid_duplicate_and_excessive_quantities(): void
+    {
+        $order = $this->multiProductOrder();
+        $this->actingAs($this->staff());
+        Http::fake();
+
+        foreach ([
+            [],
+            [['item_index' => 0, 'quantity' => 0]],
+            [['item_index' => 1, 'quantity' => 4]],
+            [['item_index' => 99, 'quantity' => 1]],
+            [['item_index' => 0, 'quantity' => 1], ['item_index' => 0, 'quantity' => 1]],
+        ] as $items) {
+            $this->post(route('warehouse.orders.refund', $order->order_number), $this->payload([
+                'type' => 'items',
+                'items' => $items,
+            ]))->assertSessionHasErrors();
+        }
+
+        $this->assertDatabaseCount('order_refunds', 0);
+        Http::assertNothingSent();
+    }
+
+    public function test_multi_item_refund_respects_legacy_refunds_and_remains_idempotent(): void
+    {
+        $order = $this->multiProductOrder();
+        $this->actingAs($this->staff());
+        $order->refunds()->create([
+            'staff_user_id' => auth()->id(),
+            'request_key' => (string) Str::uuid(),
+            'type' => 'item',
+            'item_index' => 0,
+            'quantity' => 1,
+            'amount_cents' => 800,
+            'status' => 'succeeded',
+        ]);
+
+        $data = $this->payload([
+            'type' => 'items',
+            'items' => [
+                ['item_index' => 0, 'quantity' => 1],
+                ['item_index' => 1, 'quantity' => 3],
+            ],
+        ]);
+        Http::fake([
+            'https://api.stripe.com/v1/refunds' => Http::response(['id' => 're_test_batch', 'status' => 'succeeded']),
+        ]);
+
+        $this->post(route('warehouse.orders.refund', $order->order_number), $data)->assertSessionHas('success');
+        $this->post(route('warehouse.orders.refund', $order->order_number), $data)->assertSessionHas('success');
+
+        Http::assertSentCount(1);
+        Http::assertSent(fn ($request) => (int) $request['amount'] === 2300);
+        $this->assertSame(3100, (int) $order->refunds()->sum('amount_cents'));
+        $summary = app(OrderRefundService::class)->summary($order);
+        $this->assertSame(0, $summary['items'][0]['available_quantity']);
+        $this->assertSame(0, $summary['items'][1]['available_quantity']);
+
+        $this->post(route('warehouse.orders.refund', $order->order_number), $this->payload([
+            'type' => 'items',
+            'items' => [['item_index' => 1, 'quantity' => 1]],
+        ]))->assertSessionHasErrors('refund');
+        Http::assertSentCount(1);
+    }
+
+    private function multiProductOrder(): Order
+    {
+        $order = $this->order();
+        $order->forceFill([
+            'items' => [
+                ['name' => 'Nail care', 'quantity' => 2, 'unit_price' => 10,
+                    'discounted_unit_price' => 8, 'line_total' => 20],
+                ['name' => 'Cuticle oil', 'quantity' => 3, 'unit_price' => 6,
+                    'discounted_unit_price' => 5, 'line_total' => 18],
+                ['name' => 'File', 'quantity' => 1, 'unit_price' => 4,
+                    'discounted_unit_price' => 4, 'line_total' => 4],
+            ],
+            'subtotal' => 42,
+            'discount_amount' => 7,
+            'delivery_cost' => 5,
+            'total_amount' => 40,
+        ])->save();
+
+        return $order;
+    }
+
     private function staff(): User
     {
         $user = User::factory()->create();
