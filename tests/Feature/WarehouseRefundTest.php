@@ -193,6 +193,38 @@ class WarehouseRefundTest extends TestCase
         $this->assertSame('re_webhook_test', $refund->fresh()->stripe_refund_id);
     }
 
+    public function test_all_item_refunds_also_prevent_fulfillment_when_shipping_is_free(): void
+    {
+        $order = $this->order();
+        $order->forceFill(['delivery_cost' => 0, 'total_amount' => 16])->save();
+        $this->actingAs($this->staff());
+
+        $counter = 0;
+        Http::fake(function () use (&$counter) {
+            $counter++;
+
+            return Http::response([
+                'id' => 're_items_'.$counter,
+                'status' => 'succeeded',
+            ]);
+        });
+
+        for ($i = 0; $i < 2; $i++) {
+            $this->post(route('warehouse.orders.refund', $order->order_number), $this->payload([
+                'type' => 'item',
+                'item_index' => 0,
+                'quantity' => 1,
+            ]))->assertSessionHas('success');
+        }
+
+        $this->assertSame(1600, (int) $order->refunds()->sum('amount_cents'));
+        $this->get(route('warehouse.orders.index'))->assertDontSee($order->order_number);
+        $this->get(route('warehouse.orders.show', $order->order_number))
+            ->assertOk()->assertSee('Full payment refunded or reserved.');
+        $this->post(route('warehouse.orders.status', $order->order_number), ['status' => 'processing'])
+            ->assertStatus(409);
+    }
+
     public function test_staff_can_check_an_uncertain_refund_without_creating_another_one(): void
     {
         $order = $this->order();
