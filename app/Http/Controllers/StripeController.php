@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderTelegramNotification;
 use App\Models\User;
+use App\Services\OrderRefundService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
@@ -241,6 +242,10 @@ class StripeController extends Controller
         }
 
         $type = $event['type'] ?? null;
+        if (in_array($type, ['refund.created', 'refund.updated', 'refund.failed'], true)
+            && is_array(data_get($event, 'data.object'))) {
+            app(OrderRefundService::class)->syncWebhook(data_get($event, 'data.object'));
+        }
         if (in_array($type, [
             'checkout.session.completed',
             'checkout.session.async_payment_succeeded',
