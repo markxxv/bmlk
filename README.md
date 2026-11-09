@@ -1,5 +1,13 @@
 # Laravel catalog schema
 
+## Interface language policy
+
+The Filament admin panel (`/admin`) and Warehouse staff PWA (`/warehouse`) are **English-only**. This includes all labels, buttons, validation and error messages, order status text, confirmations, accessibility labels and future interface changes.
+
+The public store, customer account, checkout and customer communications remain French. Keep `APP_LOCALE=fr` and `APP_FALLBACK_LOCALE=fr`; do not switch the global locale.
+
+Filament enforces English in `app/Providers/Filament/AdminPanelProvider.php` using `->bootUsing(fn () => app()->setLocale('en'))`. Warehouse enforces English only for `/warehouse` requests inside `app/Http/Middleware/WarehouseSession.php`. Shared customer status methods and stored customer/order data are not translated globally. All future admin and warehouse UI must follow these rules.
+
 Target stack:
 
 - Laravel
