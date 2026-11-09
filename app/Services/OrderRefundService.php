@@ -153,6 +153,7 @@ class OrderRefundService
                         'quantity' => $lineQty,
                         'unit_cents' => $item['unit_cents'],
                         'name' => $item['name'],
+                        'options' => $item['options'],
                     ];
                     $amountCents += $item['unit_cents'] * $lineQty;
                 }
