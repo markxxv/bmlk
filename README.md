@@ -554,6 +554,16 @@ scan can re-enqueue a pending reminder after its 20-minute dispatch lock expires
 - A signed delivery event marks it `completed`. Once completed, a later carrier event cannot revert it to shipped.
 
 
+## Customer account preview from Filament
+
+Filament **Shop → Customers** has a **Login as user** row action (eye icon) for ordinary customers. Only a currently authenticated `is_admin` user may start a preview; administrators and Warehouse staff cannot be impersonated. The action asks for confirmation and opens the selected customer's actual account at `/account`, including its real order detail pages.
+
+The customer preview is **read-only**. A prominent persistent banner identifies the account and provides **Return to admin** (POST with CSRF). Every non-GET request is blocked server-side except this return action. A strict allowlist also prevents state-changing GET flows (verification, payment completion, checkout onboarding), and the normal order-claiming code is bypassed. For verified accounts, any unclaimed order matching the customer's email is displayed without assigning ownership in the database; other customers' orders remain inaccessible.
+
+Switching into and out of preview invalidates and regenerates the session ID, stores the original admin ID and password hash fingerprint only in the server-side session, and logs start/end actions. Returning requires the original user still to be an administrator whose password hash is unchanged. The preview uses the existing web guard and cannot access the Filament panel until restored. No new database table or dependency is required.
+
+Test with `php artisan test --filter=CustomerPreviewTest`. In the same browser, other admin tabs share the switched session until **Return to admin** is pressed.
+
 ## Warehouse Stripe refunds
 
 Warehouse staff with `is_warehouse` or `is_admin` can refund a paid Stripe order from its detail page. The English-only mobile-first bottom sheet supports **several products in one refund**, with an explicit checkbox and independent quantity stepper in every selected product row. The alternative refunds the entire *remaining* order payment. Selected-product refunds issue **one Stripe refund** for the combined server-calculated amount using the exact discounted unit prices saved for Checkout; shipping is excluded. Refunding the remaining balance includes shipping and any not-yet-refunded funds. The final confirmation displays an itemized list with quantities, line totals and the exact refund amount.
