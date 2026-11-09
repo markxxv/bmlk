@@ -193,6 +193,42 @@ class WarehouseRefundTest extends TestCase
         $this->assertSame('re_webhook_test', $refund->fresh()->stripe_refund_id);
     }
 
+    public function test_staff_can_check_an_uncertain_refund_without_creating_another_one(): void
+    {
+        $order = $this->order();
+        $staff = $this->staff();
+        $this->actingAs($staff);
+        $refund = $order->refunds()->create([
+            'staff_user_id' => $staff->id,
+            'request_key' => (string) Str::uuid(),
+            'type' => 'order',
+            'amount_cents' => 2100,
+            'status' => 'needs_review',
+        ]);
+
+        Http::fake(function ($request) use ($refund, $order) {
+            $this->assertSame('GET', $request->method());
+
+            return Http::response(['data' => [[
+                'id' => 're_confirmed',
+                'amount' => 2100,
+                'status' => 'succeeded',
+                'payment_intent' => 'pi_test_warehouse',
+                'metadata' => [
+                    'request_key' => $refund->request_key,
+                    'order_id' => (string) $order->id,
+                ],
+            ]]]);
+        });
+
+        $this->post(route('warehouse.orders.refunds.refresh', [$order->order_number, $refund->id]))
+            ->assertSessionHas('success');
+
+        $this->assertSame('succeeded', $refund->fresh()->status);
+        $this->assertSame('re_confirmed', $refund->fresh()->stripe_refund_id);
+        Http::assertSentCount(1);
+    }
+
     private function staff(): User
     {
         $user = User::factory()->create();
