@@ -3,36 +3,39 @@
     :meta-description="$metaDescription"
     :canonical="$canonical"
 >
+    @push('head')
+        <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    @endpush
     <section class="relative z-[41] -mt-[92px] overflow-hidden bg-[#DDA1AA] pb-6 pt-[92px] sm:-mt-[100px] sm:pb-8 sm:pt-[100px] lg:-mt-[104px] lg:pb-10 lg:pt-[104px]">
         <div class="relative z-10 mx-auto max-w-[1560px] px-5 pt-3 sm:px-5 sm:pt-5 lg:px-8 lg:pt-6">
             <div class="relative lg:min-h-[720px] xl:min-h-[760px]">
                 <div class="relative z-10 grid h-full lg:min-h-[720px] lg:grid-cols-12 xl:min-h-[760px]">
                     <div class="flex flex-col pb-7 pt-7 sm:px-10 sm:pb-10 sm:pt-12 lg:col-span-6 lg:px-14 lg:pb-10 lg:pt-14 xl:px-16 xl:pt-16">
                         <div class="flex items-center gap-2 sm:gap-3">
-                            <span class="h-px w-8 shrink-0 bg-zinc-800 sm:w-10" data-line-reveal data-line-reveal-duration="0.8"></span>
-                            <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-800 sm:text-xs sm:tracking-widest" data-reveal data-reveal-y="10" data-reveal-duration="0.7" data-reveal-delay="0.08">
+                            <span class="h-px w-8 shrink-0 bg-[var(--bmc-accent)] sm:w-10" data-line-reveal data-line-reveal-duration="0.8"></span>
+                            <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--bmc-accent)] sm:text-xs sm:tracking-widest" data-reveal data-reveal-y="10" data-reveal-duration="0.7" data-reveal-delay="0.08">
                                 {{ __('Conçu par une prothésiste ongulaire, pour les prothésistes ongulaires') }}
                             </p>
                         </div>
 
                         <div class="flex flex-1 items-center sm:py-16 lg:py-10">
                             <div>
-                                <h1 class="max-w-2xl font-serif text-4xl font-medium leading-[0.92] tracking-tight text-zinc-900 sm:text-6xl lg:text-6xl pt-10 md:pt-0" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
-                                    <span class="block">{{ __('Moins de produits,') }}</span>
-                                    <span class="block italic text-white">{{ __('plus de précision :') }}</span>
+                                <h1 class="max-w-2xl pt-10 font-serif text-4xl font-medium leading-[1.06] tracking-tight text-[color:var(--bmc-accent)] sm:text-6xl md:pt-0" data-reveal-title data-reveal-title-duration="1.05" data-reveal-title-stagger="0.08">
+                                    <span class="block font-script text-[12vw] font-normal leading-[1.3] tracking-normal text-[#70879C] [text-shadow:2px_2px_0_#F6E8E6] sm:text-[5.5rem] lg:text-[4.125rem] xl:text-[5.125rem] 2xl:text-[5.75rem]">{{ __('Moins de produits,') }}</span>
+                                    <span class="block">{{ __('plus de précision :') }}</span>
                                 </h1>
 
-                                <p class="mt-5 max-w-lg text-sm leading-6 text-zinc-800 sm:mt-7 sm:text-lg sm:leading-7" data-reveal data-reveal-y="18" data-reveal-duration="0.85" data-reveal-delay="0.18">
+                                <p class="mt-5 max-w-lg text-sm leading-6 text-[color:var(--bmc-accent)] sm:mt-7 sm:text-lg sm:leading-7" data-reveal data-reveal-y="18" data-reveal-duration="0.85" data-reveal-delay="0.18">
                                     {{ __('L’essentiel sans HEMA pour des poses d’ongles rapides, faciles et durables.') }}
                                 </p>
 
-                                <div class="mt-6 flex gap-2 sm:mt-9 sm:flex-wrap sm:gap-3 relative z-10" data-blur-reveal data-blur-duration="0.75" data-blur-delay="0.28" data-blur-y="14" data-blur-pixels="8">
-                                    <a href="{{ route('shop.index') }}" class="group inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-accent px-5 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-accent/90 sm:flex-none sm:gap-3 sm:px-6 sm:tracking-widest">
+                                <div class="relative z-10 mt-6 flex flex-col gap-2 sm:mt-9 sm:flex-row sm:flex-wrap sm:gap-3" data-blur-reveal data-blur-duration="0.75" data-blur-delay="0.28" data-blur-y="14" data-blur-pixels="8">
+                                    <a href="{{ route('shop.index') }}" class="group inline-flex h-12 w-full items-center justify-between gap-3 rounded-full bg-accent px-5 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-accent/90 sm:w-auto sm:justify-center sm:px-6 sm:tracking-widest">
                                         {{ __('Découvrir la boutique') }}
                                         <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                     </a>
 
-                                    <a href="{{ route('where-to-buy') }}" class="inline-flex h-12 shrink-0 items-center justify-center rounded-full bg-white px-5 text-xs font-semibold uppercase tracking-wider text-zinc-900 transition hover:bg-zinc-50 sm:px-6 sm:tracking-widest">
+                                    <a href="{{ route('where-to-buy') }}" class="inline-flex h-12 w-full items-center justify-center rounded-full bg-white px-5 text-xs font-semibold uppercase tracking-wider text-[color:var(--bmc-accent)] transition hover:bg-zinc-50 sm:w-auto sm:px-6 sm:tracking-widest">
                                         {{ __('Points de vente') }}
                                     </a>
                                 </div>
@@ -50,24 +53,24 @@
 
                         <div class="grid grid-cols-3 gap-2 md:border-t md:border-[#C98792] md:pt-5 sm:gap-5 lg:gap-4" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.75" data-blur-y="12" data-blur-pixels="7">
                             <div class="flex items-start gap-3" data-blur-reveal-item>
-                                <x-lucide-leaf class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
+                                <x-lucide-leaf class="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--bmc-accent)] sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
-                                    <p class="text-[9px] font-semibold text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('Formule sans HEMA') }}</p>
-                                    <p class="mt-1 hidden text-[10px] text-zinc-700 sm:block">{{ __('Préserve vos ongles') }}</p>
+                                    <p class="text-[9px] font-semibold text-[color:var(--bmc-accent)] sm:text-[11px] sm:tracking-widest">{{ __('Formule sans HEMA') }}</p>
+                                    <p class="mt-1 hidden text-[10px] text-[color:var(--bmc-accent)] sm:block">{{ __('Préserve vos ongles') }}</p>
                                 </div>
                             </div>
 
                             <div class="flex items-start gap-3" data-blur-reveal-item>
-                                <x-lucide-globe-2 class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
+                                <x-lucide-globe-2 class="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--bmc-accent)] sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
-                                    <p class="text-[9px] font-semibold text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('Disponible dans +50 pays') }}</p>
+                                    <p class="text-[9px] font-semibold text-[color:var(--bmc-accent)] sm:text-[11px] sm:tracking-widest">{{ __('Disponible dans +50 pays') }}</p>
                                 </div>
                             </div>
 
                             <div class="flex items-start gap-3" data-blur-reveal-item>
-                                <x-lucide-graduation-cap class="mt-0.5 h-4 w-4 shrink-0 text-zinc-800 sm:h-5 sm:w-5" stroke-width="1.4" />
+                                <x-lucide-graduation-cap class="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--bmc-accent)] sm:h-5 sm:w-5" stroke-width="1.4" />
                                 <div>
-                                    <p class="text-[9px] font-semibold text-zinc-800 sm:text-[11px] sm:tracking-widest">{{ __('Qualité professionnelle') }}</p>
+                                    <p class="text-[9px] font-semibold text-[color:var(--bmc-accent)] sm:text-[11px] sm:tracking-widest">{{ __('Qualité professionnelle') }}</p>
                                 </div>
                             </div>
                         </div>
