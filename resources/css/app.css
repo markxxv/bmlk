@@ -50,3 +50,15 @@
         font-size: clamp(44px, 12vw, 72px);
     }
 }
+
+@media (min-width: 1024px) {
+    .home-hero-script {
+        font-size: 120px;
+    }
+}
+
+@media (min-width: 1300px) {
+    .home-hero-script {
+        font-size: 146px;
+    }
+}
