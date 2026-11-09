@@ -160,7 +160,8 @@ class OrderRefundService
 
             // Timeout, rate limit and 5xx responses may have created a refund remotely.
             // Keep their amount reserved; a second refund with a new key is unsafe.
-            $uncertain = $response->status() === 409 || $response->status() === 429 || $response->serverError();
+            $uncertain = $response->successful() || $response->status() === 409
+                || $response->status() === 429 || $response->serverError();
             $refund->refresh();
             if ($refund->status !== 'succeeded') {
                 $refund->forceFill(['status' => $uncertain ? 'needs_review' : 'failed'])->save();
