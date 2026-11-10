@@ -34,7 +34,7 @@ class CustomerResource extends Resource
         return $schema->components([
             Section::make('Customer')->icon('lucide-user-round')->columns(2)->schema([
                 TextInput::make('name')->prefixIcon('lucide-user-round')->required()->maxLength(255),
-                TextInput::make('email')->prefixIcon('lucide-mail')->disabled(),
+                TextInput::make('email')->prefixIcon('lucide-mail')->disabled()->copyable(),
             ]),
             Section::make('Partner statuses')->icon('lucide-badge-check')->columns(2)->schema([
                 Toggle::make('is_wholesale')->label('Wholesale')->onIcon('lucide-check')->offIcon('lucide-x'),
