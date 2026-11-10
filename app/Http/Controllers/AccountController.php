@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Log;
@@ -90,7 +92,11 @@ class AccountController extends Controller
         abort_unless($order->access_token
             && hash_equals($order->access_token, (string) $request->query('token', '')), 404);
 
-        return view('account.checkout-order', ['order' => $order]);
+        $ratingProducts = $request->user() && $order->user_id === $request->user()->id
+            ? $this->ratingProductsFor([$order])
+            : collect();
+
+        return view('account.checkout-order', compact('order', 'ratingProducts'));
     }
 
     public function loginForm(): View { return view('account.login'); }
@@ -153,6 +159,7 @@ class AccountController extends Controller
 
         return view('account.index', [
             'pendingRatingOrders' => $pendingRatingOrders,
+            'ratingProducts' => $this->ratingProductsFor($pendingRatingOrders),
             'user' => $user,
             'currentOrder' => (clone $orders)->whereKey($user->onboarding_order_id)->first(),
             'orders' => $orders->latest()->paginate(12),
@@ -171,9 +178,10 @@ class AccountController extends Controller
 
         abort_unless($ownsOrder || $previewMatchesEmail, 404);
 
-        $order->load('trackingEvents');
+        $order->load(['trackingEvents', 'ratings']);
+        $ratingProducts = $this->ratingProductsFor([$order]);
 
-        return view('account.checkout-order', compact('order'));
+        return view('account.checkout-order', compact('order', 'ratingProducts'));
     }
 
     public function profile(Request $request): View
@@ -355,6 +363,31 @@ class AccountController extends Controller
             ->update(['influencer_code' => $data['code']]);
         abort_unless($changed === 1, 403);
         return back()->with('success', __('Votre code unique est enregistré définitivement.'));
+    }
+
+    /**
+     * Fetch current catalog media once for all rating cards, including products
+     * removed from storefront visibility. Order JSON retains historical names.
+     */
+    private function ratingProductsFor(iterable $orders): Collection
+    {
+        $ids = collect($orders)
+            ->flatMap(fn (Order $order): array => array_values($order->rateableItems()))
+            ->pluck('product_id')
+            ->map(fn (mixed $id): int => (int) $id)
+            ->filter(fn (int $id): bool => $id > 0)
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($ids === []) {
+            return collect();
+        }
+
+        return Product::query()->withTrashed()->with('media')
+            ->whereKey($ids)
+            ->get()
+            ->keyBy('id');
     }
 
     private function claimOrders(Request $request): void

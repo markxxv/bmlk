@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Support\Str;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -92,6 +94,57 @@ class ProductRatingsTest extends TestCase
         $this->assertEqualsWithDelta(3.0, (float) $summary->ratings_avg_rating, 0.001);
         $product->delete();
         $this->assertSame(3, $product->ratings()->count());
+    }
+
+    public function test_rating_card_uses_current_product_image_not_stale_checkout_snapshot(): void
+    {
+        $buyer = User::factory()->create();
+        $product = $this->product();
+        $order = $this->order($buyer, [$product], ['status' => 'completed']);
+
+        $items = $order->items;
+        $items[0]['image'] = 'https://old.example.com/removed-image.jpg';
+        $order->update(['items' => $items]);
+
+        $media = Media::query()->create([
+            'model_type' => Product::class,
+            'model_id' => $product->id,
+            'uuid' => (string) Str::uuid(),
+            'collection_name' => 'images',
+            'name' => 'current',
+            'file_name' => 'current.jpg',
+            'mime_type' => 'image/jpeg',
+            'disk' => 'public',
+            'conversions_disk' => 'public',
+            'size' => 100,
+            'manipulations' => [],
+            'custom_properties' => [],
+            'generated_conversions' => ['thumb' => true],
+            'responsive_images' => [],
+            'order_column' => 1,
+        ]);
+
+        $this->actingAs($buyer)
+            ->get(route('account.index'))
+            ->assertOk()
+            ->assertSee($media->getUrl('thumb'), false)
+            ->assertDontSee('https://old.example.com/removed-image.jpg');
+
+        $this->get(route('account.order', $order))
+            ->assertOk()
+            ->assertSee($media->getUrl('thumb'), false);
+    }
+
+    public function test_rating_markup_has_hover_preview_and_mobile_stacked_layout(): void
+    {
+        $buyer = User::factory()->create();
+        $order = $this->order($buyer, [$this->product()], ['status' => 'completed']);
+
+        $this->actingAs($buyer)->get(route('account.index'))
+            ->assertOk()
+            ->assertSee('hovered =', false)
+            ->assertSee('sm:flex-row', false)
+            ->assertSee('size-11', false);
     }
 
     public function test_preview_cannot_post_ratings(): void
