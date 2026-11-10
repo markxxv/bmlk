@@ -219,7 +219,9 @@ class SendcloudTrackingService
         // Use the carrier's event time, not the tracking synchronization time.
         // Never overwrite a confirmed delivery timestamp with a later scan.
         if ($eventType === 'carrier' && $phase === 'delivered') {
-            $updated = Order::query()->whereKey($order->id)->whereNull('delivered_at')
+            $updated = Order::query()->whereKey($order->id)
+                ->where(fn ($query) => $query->whereNull('delivered_at')
+                    ->orWhere('delivered_at', '>', $time->toDateTimeString()))
                 ->update(['delivered_at' => $time->toDateTimeString()]);
 
             if ($updated === 1) {

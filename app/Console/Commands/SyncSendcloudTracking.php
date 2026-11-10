@@ -29,7 +29,15 @@ class SyncSendcloudTracking extends Command
             $query->where('order_number', $number);
         } elseif (! $this->option('all')) {
             $query->where('payment_status', 'paid')
-                ->whereNotIn('status', ['completed', 'cancelled', 'archived'])
+                ->where(function ($q): void {
+                    $q->whereNotIn('status', ['completed', 'cancelled', 'archived'])
+                        // Retry the delivery date if the final webhook sync failed.
+                        ->orWhere(fn ($delivered) => $delivered
+                            ->where('status', 'completed')
+                            ->where('ratings_enabled', true)
+                            ->where('sendcloud_tracking_phase', 'delivered')
+                            ->whereNull('delivered_at'));
+                })
                 ->where(fn ($q) => $q->whereNull('sendcloud_tracking_synced_at')
                     ->orWhere('sendcloud_tracking_synced_at', '<=', now()->subMinutes(50)));
         }
