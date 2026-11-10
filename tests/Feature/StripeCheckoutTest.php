@@ -49,7 +49,7 @@ class StripeCheckoutTest extends TestCase
 
         $event = [
             'type' => 'checkout.session.completed',
-            'data' => ['object' => $this->session($order)],
+            'data' => ['object' => $this->stripeSession($order)],
         ];
 
         $this->withHeader('Stripe-Signature', 't=1,v1=wrong')
@@ -145,7 +145,7 @@ class StripeCheckoutTest extends TestCase
         $order->update(['stripe_session_id' => 'cs_test_one', 'payment_status' => 'failed']);
 
         Http::fake([
-            'https://api.stripe.com/v1/checkout/sessions/cs_test_one' => Http::response($this->session($order, 'unpaid')),
+            'https://api.stripe.com/v1/checkout/sessions/cs_test_one' => Http::response($this->stripeSession($order, 'unpaid')),
             'https://api.stripe.com/v1/checkout/sessions' => Http::response([
                 'id' => 'cs_test_two',
                 'url' => 'https://checkout.stripe.com/c/pay/cs_test_two',
@@ -166,7 +166,7 @@ class StripeCheckoutTest extends TestCase
         $order->update(['stripe_session_id' => 'cs_test_one']);
 
         Http::fake(['api.stripe.com/*' => Http::response(
-            $this->session($order, 'unpaid') + [
+            $this->stripeSession($order, 'unpaid') + [
                 'status' => 'open',
                 'url' => 'https://checkout.stripe.com/c/pay/cs_test_one',
             ],
@@ -235,7 +235,7 @@ class StripeCheckoutTest extends TestCase
         ]);
     }
 
-    private function session(Order $order, string $paymentStatus = 'paid'): array
+    private function stripeSession(Order $order, string $paymentStatus = 'paid'): array
     {
         return [
             'id' => 'cs_test_one',
