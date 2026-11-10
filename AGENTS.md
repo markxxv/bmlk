@@ -507,3 +507,13 @@ Sales logic:
 - Main navigation links to `route('events')`.
 - Home and events page use the same upcoming-events query and date relevance ordering.
 - Event type filtering is client-side with Alpine.js and no transition animation.
+
+## Post-delivery review email
+
+- Historical/imported orders keep ratings_enabled=false by default. New checkout orders opt in; do not enable imported orders.
+- Save delivered_at from the verified carrier event timestamp (Sendcloud v3 or signed webhook), never from updated_at except for a specifically approved one-off SQL backfill.
+- orders:send-review-requests runs every 15 minutes during 10:00–19:00 Europe/Paris business hours, skipping weekends and French public holidays. It sends once after seven complete days, and only to paid, delivered, not-fully-refunded orders with unrated items and ratings_enabled=true.
+- review_request_sent_at is claimed before SMTP. Failed send attempts release the claim. Mail links use random 32-byte tokens stored only as SHA-256 hashes; tokens expire after 30 days.
+- /avis/{token} is a standalone Alpine-only page for reviewing one order without authentication. Never add marketing, analytics, GTM or cart scripts to resources/js/reviews.js. No order address, phone or email is exposed there.
+- The opt-out link is signed and requires a CSRF-protected confirmation POST. Hashed email preferences live in review_email_opt_outs across orders.
+- Deployment: php artisan migrate --force, npm run build, php artisan view:cache. Verify with php artisan test --filter=ReviewRequestsTest and php artisan test --filter=ProductRatingsTest.
