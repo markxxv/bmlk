@@ -95,7 +95,6 @@ class WarehouseController extends Controller
                 });
             })
             ->orderBy('created_at', $sort === 'newest' ? 'desc' : 'asc')
-            ->orderBy('created_at', $sort === 'newest' ? 'desc' : 'asc')
             ->orderBy('id', $sort === 'newest' ? 'desc' : 'asc')
             ->paginate(20)
             ->withQueryString();
