@@ -21,6 +21,41 @@ class ProductRatingsTest extends TestCase
         $this->withoutVite();
     }
 
+    public function test_historical_imported_orders_never_request_ratings_by_default(): void
+    {
+        $buyer = User::factory()->create();
+        $order = $this->order($buyer, [$this->product()], [
+            'status' => 'completed',
+            'ratings_enabled' => false,
+        ]);
+
+        $this->assertFalse($order->fresh()->ratings_enabled);
+        $this->actingAs($buyer)->get(route('account.index'))
+            ->assertOk()->assertDontSee('Évaluez vos produits');
+
+        $this->get(route('account.order', $order))
+            ->assertOk()->assertDontSee('Vos évaluations');
+
+        $this->post(route('account.ratings.store', $order), ['ratings' => [0 => 5]])
+            ->assertForbidden();
+
+        $this->assertDatabaseCount('product_ratings', 0);
+
+        // Explicit opt-in is available for a test or selected historical order.
+        $order->update(['ratings_enabled' => true]);
+        $this->get(route('account.index'))
+            ->assertOk()->assertSee('Évaluez vos produits');
+    }
+
+    public function test_database_default_excludes_directly_imported_orders(): void
+    {
+        $buyer = User::factory()->create();
+        $order = $this->order($buyer, [$this->product()], ['status' => 'completed']);
+        $order->update(['ratings_enabled' => false]);
+
+        $this->assertDatabaseHas('orders', ['id' => $order->id, 'ratings_enabled' => false]);
+    }
+
     public function test_only_paid_delivered_orders_allow_ratings(): void
     {
         $buyer = User::factory()->create();
@@ -194,6 +229,7 @@ class ProductRatingsTest extends TestCase
             'total_amount' => 20 * count($products),
             'status' => 'pending',
             'payment_status' => 'paid',
+            'ratings_enabled' => true,
             ...$overrides,
         ]);
     }

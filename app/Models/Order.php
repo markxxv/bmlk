@@ -18,6 +18,7 @@ class Order extends Model
     {
         return [
             'items' => 'array',
+            'ratings_enabled' => 'boolean',
             'shipping_parcel' => 'array',
             'sendcloud_rate' => 'decimal:2',
             'sendcloud_event_at' => 'integer',
@@ -76,7 +77,8 @@ class Order extends Model
 
     public function canBeRated(): bool
     {
-        return $this->payment_status === 'paid'
+        return $this->ratings_enabled === true
+            && $this->payment_status === 'paid'
             && $this->status !== 'cancelled'
             && ($this->status === 'completed' || $this->sendcloud_tracking_phase === 'delivered');
     }

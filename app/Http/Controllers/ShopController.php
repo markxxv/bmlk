@@ -364,6 +364,7 @@ class ShopController extends Controller
             'promo_code' => $influencer?->influencer_code,
             'discount_amount' => $discountAmount,
             'status' => 'pending',
+            'ratings_enabled' => true,
             'user_id' => $request->user() && Str::lower($request->user()->email) === Str::lower($validated['email'])
                 ? $request->user()->id : null,
             'payment_status' => 'unpaid',

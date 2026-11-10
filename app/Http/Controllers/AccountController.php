@@ -148,6 +148,7 @@ class AccountController extends Controller
 
         // Independent of orders pagination, so older incomplete ratings stay visible.
         $pendingRatingOrders = $preview ? collect() : (clone $orders)
+            ->where('ratings_enabled', true)
             ->where('payment_status', 'paid')
             ->where(fn ($query) => $query->where('status', 'completed')
                 ->orWhere('sendcloud_tracking_phase', 'delivered'))
