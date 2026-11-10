@@ -47,7 +47,7 @@
                                 x-data="{ imageError: false }">
                                 @if (filled($image))
                                     <img src="{{ $image }}" alt="" loading="lazy"
-                                        x-show="!imageError" @error="imageError = true"
+                                        x-show="!imageError" x-on:error="imageError = true"
                                         class="size-full object-cover">
                                 @endif
                                 <span x-show="{{ filled($image) ? 'imageError' : 'true' }}" x-cloak
