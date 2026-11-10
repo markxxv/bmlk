@@ -101,10 +101,12 @@ export function registerCartStore(Alpine) {
                 const data = await this.requestAvailability([Number(product.id)]);
                 if (!(data.available_ids || []).map(Number).includes(Number(product.id))) {
                     this.availabilityNotice = 'Ce produit est temporairement indisponible.';
+                    this.isOpen = true;
                     return false;
                 }
             } catch {
                 this.availabilityNotice = 'Impossible de vérifier la disponibilité du produit. Réessayez.';
+                this.isOpen = true;
                 return false;
             }
 
