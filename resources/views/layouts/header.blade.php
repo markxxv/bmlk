@@ -47,7 +47,7 @@
                     </nav>
 
                     <div class="flex shrink-0 items-center gap-3 xl:gap-6" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
-                        @include('layouts.language-switcher')
+                        @include('layouts.language-switcher', ['variant' => 'dropdown'])
                         <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}"
                             class="inline-flex h-11 items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-800 transition hover:text-bmlk-brand"
                             data-blur-reveal-item>
