@@ -157,6 +157,7 @@ class SendcloudTrackingHistoryTest extends TestCase
         $this->assertSame('completed', $order->fresh()->status);
         $this->assertSame('archived', $archive->fresh()->status);
         $this->assertSame('delivered', $order->fresh()->sendcloud_tracking_phase);
+        $this->assertSame('2026-11-07 15:20:00', $order->fresh()->delivered_at->utc()->format('Y-m-d H:i:s'));
     }
 
     public function test_customer_can_expand_real_events_but_no_tracking_history_is_invented(): void

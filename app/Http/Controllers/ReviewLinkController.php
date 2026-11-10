@@ -8,12 +8,12 @@ use App\Models\ReviewAccessToken;
 use App\Models\ReviewEmailOptOut;
 use App\Services\ProductRatingWriter;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 class ReviewLinkController extends Controller
 {
-    public function show(string $token): View
+    public function show(string $token): Response
     {
         $link = $this->link($token);
 
@@ -55,7 +55,7 @@ class ReviewLinkController extends Controller
             ->with('success', __('Vos évaluations ont été enregistrées. Merci !'));
     }
 
-    public function unsubscribeForm(Order $order): View
+    public function unsubscribeForm(Order $order): Response
     {
         return response()->view('reviews.unsubscribe', [
             'order' => $order,
