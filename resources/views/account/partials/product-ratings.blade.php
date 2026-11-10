@@ -1,6 +1,7 @@
 @php
     $ratingItems = $order->rateableItems();
     $savedRatings = $order->ratings->keyBy('order_item_index');
+    $initialScores = $savedRatings->mapWithKeys(fn ($rating) => [$rating->order_item_index => $rating->rating])->all();
     $remainingRatings = collect(array_keys($ratingItems))->filter(fn ($index) => ! $savedRatings->has($index))->count();
 @endphp
 
@@ -29,7 +30,7 @@
         </div>
 
         <form method="POST" action="{{ route('account.ratings.store', $order) }}"
-            class="mt-6" x-data="{ scores: @js($savedRatings->mapWithKeys(fn ($rating) => [$rating->order_item_index => $rating->rating])->all()) }">
+            class="mt-6" x-data="{ scores: @js($initialScores) }">
             @csrf
             <div class="divide-y divide-zinc-100">
                 @foreach ($ratingItems as $index => $item)
