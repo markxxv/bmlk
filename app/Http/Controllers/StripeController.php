@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\OrderLocale;
 use App\Models\Order;
 use App\Models\OrderTelegramNotification;
 use App\Models\User;
@@ -80,7 +81,7 @@ class StripeController extends Controller
                     'price_data' => [
                         'currency' => 'eur',
                         'unit_amount' => (int) round((float) $order->delivery_cost * 100),
-                        'product_data' => ['name' => 'Livraison'],
+                        'product_data' => ['name' => __('Livraison')],
                     ],
                     'quantity' => 1,
                 ];
@@ -88,6 +89,7 @@ class StripeController extends Controller
 
             $params = [
                 'mode' => 'payment',
+                'locale' => \App\Support\OrderLocale::for($order),
                 'client_reference_id' => (string) $order->id,
                 'metadata' => ['order_id' => (string) $order->id, 'order_number' => $order->order_number],
                 'payment_intent_data' => ['metadata' => ['order_number' => $order->order_number]],
@@ -392,11 +394,11 @@ class StripeController extends Controller
 
     private function statusUrl(Order $order): string
     {
-        return route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token]);
+        return route('order.status', ['orderNumber' => $order->order_number, 'token' => $order->access_token, 'locale' => OrderLocale::for($order)]);
     }
 
     private function thanksUrl(Order $order): string
     {
-        return route('order.thanks', ['orderNumber' => $order->order_number, 'token' => $order->access_token]);
+        return route('order.thanks', ['orderNumber' => $order->order_number, 'token' => $order->access_token, 'locale' => OrderLocale::for($order)]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Support\OrderLocale;
 use App\Mail\ReviewRequestMail;
 use App\Models\Order;
 use App\Models\ReviewAccessToken;
@@ -88,7 +89,9 @@ class SendReviewRequests extends Command
                 ['order' => $order->id],
             );
 
-            Mail::to($order->email)->send(new ReviewRequestMail($order, $reviewUrl, $unsubscribeUrl));
+            OrderLocale::run($order, fn () => Mail::to($order->email)
+                ->locale(OrderLocale::for($order))
+                ->send(new ReviewRequestMail($order, $reviewUrl, $unsubscribeUrl)));
             $this->info("Review request sent: {$order->order_number}");
         } catch (Throwable $exception) {
             // Retry on the next eligible scheduled run without claiming success.

@@ -17,7 +17,7 @@ class ReviewRequestMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'BLACK MILK · Votre avis sur les produits reçus');
+        return new Envelope(subject: 'BLACK MILK · '.__('Votre avis sur les produits reçus'));
     }
 
     public function content(): Content

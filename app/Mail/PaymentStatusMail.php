@@ -16,11 +16,13 @@ class PaymentStatusMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: match ($this->kind) {
-            'paid' => "BLACK MILK · Paiement confirmé · {$this->order->order_number}",
-            'reminder' => "BLACK MILK · Votre commande vous attend · {$this->order->order_number}",
-            default => "BLACK MILK · Paiement non finalisé · {$this->order->order_number}",
-        });
+        $label = match ($this->kind) {
+            'paid' => __('Paiement confirmé'),
+            'reminder' => __('Votre commande vous attend'),
+            default => __('Paiement non finalisé'),
+        };
+
+        return new Envelope(subject: "BLACK MILK · {$label} · {$this->order->order_number}");
     }
 
     public function content(): Content
