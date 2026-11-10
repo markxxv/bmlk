@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Orders;
 
+use App\Filament\Resources\Customers\CustomerResource;
 use App\Filament\Resources\Orders\Pages;
 use App\Models\Order;
 use BackedEnum;
@@ -283,7 +284,12 @@ class OrderResource extends Resource
             TextColumn::make('order_number')->label('Order')->searchable()->weight('medium'),
             TextColumn::make('created_at')->label('Created')->dateTime('d M Y, H:i')->sortable(),
             TextColumn::make('first_name')->label('Customer')
-                ->formatStateUsing(fn (Order $record): string => trim($record->first_name.' '.$record->last_name)),
+                ->formatStateUsing(fn (Order $record): string => trim($record->first_name.' '.$record->last_name))
+                // Guests (no account) are shown as plain text.
+                ->url(fn (Order $record): ?string => $record->user_id
+                    ? CustomerResource::getUrl('edit', ['record' => $record->user_id])
+                    : null)
+                ->color(fn (Order $record): ?string => $record->user_id ? 'primary' : null),
             TextColumn::make('email')->icon('lucide-mail')->searchable()->copyable()->toggleable(),
             TextColumn::make('total_amount')->label('Total')->money('EUR')->sortable(),
             TextColumn::make('payment_status')->label('Payment')->badge()
