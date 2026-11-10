@@ -44,9 +44,9 @@ class FrontController extends Controller
                 'title' => 'HEMA-Free UV Gels, Bases & Tops | BLACK MILK France',
                 'description' => 'Discover BLACK MILK UV gels, camouflage bases, top coats, polygels and cuticle care. Professional nail products featuring HEMA-free formulas.',
             ],
-            'ro' => [
-                'title' => 'Geluri UV, baze și topuri fără HEMA | BLACK MILK France',
-                'description' => 'Descoperă gelurile UV, bazele camouflage, topurile, polygelurile și produsele pentru cuticule BLACK MILK. Produse profesionale cu formule fără HEMA.',
+            'es' => [
+                'title' => 'Geles UV, bases y tops sin HEMA | BLACK MILK France',
+                'description' => 'Descubre los geles UV, bases camuflaje, tops, polygels y cuidado de cutículas BLACK MILK. Productos profesionales de manicura con fórmulas sin HEMA.',
             ],
             default => [
                 'title' => 'Gels UV, bases et tops sans HEMA | BLACK MILK France',
@@ -130,6 +130,8 @@ class FrontController extends Controller
             }
         }
 
+        \App\Support\LocaleUrls::slugs($page->getTranslations('slug'));
+
         $title = $page->getTranslation('title', $locale, false)
             ?: $page->getTranslation('title', 'fr', false);
 
@@ -203,6 +205,6 @@ class FrontController extends Controller
     {
         $locale = app()->getLocale();
 
-        return in_array($locale, ['fr', 'en', 'ro'], true) ? $locale : 'fr';
+        return in_array($locale, config('app.supported_locales', ['fr']), true) ? $locale : 'fr';
     }
 }

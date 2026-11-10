@@ -60,6 +60,8 @@ class ShopController extends Controller
             }
         }
 
+        \App\Support\LocaleUrls::slugs($category->getTranslations('slug'));
+
         $categories = $this->categories();
 
         $products = $this->products()
@@ -129,6 +131,8 @@ class ShopController extends Controller
                 return redirect()->route('shop.product', ['slug' => $localizedSlug], 301);
             }
         }
+
+        \App\Support\LocaleUrls::slugs($product->getTranslations('slug'));
 
         $name = $product->getTranslation('name', $locale, false)
             ?: $product->getTranslation('name', 'fr', false);
@@ -729,6 +733,6 @@ class ShopController extends Controller
     {
         $locale = app()->getLocale();
 
-        return in_array($locale, ['fr', 'en', 'ro'], true) ? $locale : 'fr';
+        return in_array($locale, config('app.supported_locales', ['fr']), true) ? $locale : 'fr';
     }
 }

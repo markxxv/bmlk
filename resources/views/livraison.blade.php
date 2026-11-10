@@ -136,7 +136,7 @@
                             Les présentes informations ne limitent aucun de ces droits.
                         </p>
                         <div class="mt-7 flex flex-wrap items-center gap-x-7 gap-y-4 text-sm">
-                            <a href="/conditions-generales-de-vente" class="inline-flex items-center gap-2 font-medium text-bmlk-brand transition hover:text-[#945763]">
+                            <a href="{{ route('page', ['slug' => 'conditions-generales-de-vente']) }}" class="inline-flex items-center gap-2 font-medium text-bmlk-brand transition hover:text-[#945763]">
                                 {{ __('Consulter les conditions générales de vente') }}
                                 <x-lucide-arrow-up-right class="size-4" />
                             </a>

@@ -173,7 +173,7 @@
                                 <div class="mt-5 space-y-4 text-sm leading-6 text-[#53616C]">
                                     <p>Résultat non satisfaisant : nouvel affûtage gratuit sous 30 jours, livraison à nos frais.</p>
                                     <p>Colis assurés auprès du transporteur en cas de perte ou de dommage.</p>
-                                    <p>Droit de rétractation de 14 jours pour les particuliers. Conditions complètes dans les <a href="/conditions-generales-de-vente" class="font-semibold underline decoration-[#A77B8B] underline-offset-4 hover:text-accent">CGV</a>.</p>
+                                    <p>Droit de rétractation de 14 jours pour les particuliers. Conditions complètes dans les <a href="{{ route('page', ['slug' => 'conditions-generales-de-vente']) }}" class="font-semibold underline decoration-[#A77B8B] underline-offset-4 hover:text-accent">CGV</a>.</p>
                                 </div>
                             </div>
                             <div class="rounded-3xl bg-white/60 p-5 sm:p-7">
