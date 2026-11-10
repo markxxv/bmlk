@@ -73,6 +73,14 @@
                 @endforeach
             </div>
 
+            @auth
+                @if ($order->user_id === auth()->id() && ! session()->has('customer_preview') && $order->canBeRated())
+                    <div class="mt-7">
+                        @include('account.partials.product-ratings', ['order' => $order, 'showCompletedRatings' => true])
+                    </div>
+                @endif
+            @endauth
+
             <div class="mt-6 space-y-3 border-t border-zinc-100 pt-6 text-sm">
                 <div class="flex items-center justify-between gap-4">
                     <span class="text-zinc-500">{{ __('Sous-total') }}</span>

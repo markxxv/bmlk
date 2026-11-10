@@ -140,7 +140,19 @@ class AccountController extends Controller
             }
         });
 
+        // Independent of orders pagination, so older incomplete ratings stay visible.
+        $pendingRatingOrders = $preview ? collect() : (clone $orders)
+            ->where('payment_status', 'paid')
+            ->where(fn ($query) => $query->where('status', 'completed')
+                ->orWhere('sendcloud_tracking_phase', 'delivered'))
+            ->with('ratings')
+            ->latest()
+            ->get()
+            ->filter(fn (Order $order): bool => $order->hasUnratedItems())
+            ->values();
+
         return view('account.index', [
+            'pendingRatingOrders' => $pendingRatingOrders,
             'user' => $user,
             'currentOrder' => (clone $orders)->whereKey($user->onboarding_order_id)->first(),
             'orders' => $orders->latest()->paginate(12),

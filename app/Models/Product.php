@@ -102,6 +102,11 @@ class Product extends Model implements HasMedia
         ];
     }
 
+    public function ratings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProductRating::class);
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

@@ -28,6 +28,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -306,6 +307,15 @@ class ProductResource extends Resource
                 //     ->placeholder('—')
                 //     ->toggleable(),
 
+                TextColumn::make('ratings_avg_rating')
+                    ->label('Avg rating')
+                    ->formatStateUsing(fn (mixed $state): string => $state === null ? '—' : number_format((float) $state, 2).' / 5')
+                    ->sortable(),
+
+                TextColumn::make('ratings_count')
+                    ->label('Ratings')
+                    ->sortable(),
+
                 TextColumn::make('price_display')
                     ->label('Price')
                     ->state(fn (Product $record): string => static::priceLabel($record))
@@ -353,6 +363,11 @@ class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Filter::make('needs_attention')
+                    ->label('Needs attention (5+ ratings, avg ≤ 3)')
+                    ->query(fn (Builder $query): Builder => $query
+                        ->whereRaw('(SELECT COUNT(*) FROM product_ratings WHERE product_id = products.id) >= 5')
+                        ->whereRaw('(SELECT AVG(rating) FROM product_ratings WHERE product_id = products.id) <= 3')),
                 SelectFilter::make('category_id')
                     ->label('Category')
                     ->options(fn (): array => static::categoryOptions()),
@@ -373,6 +388,13 @@ class ProductResource extends Resource
                 ]),
             ])
             ->defaultSort('id', 'desc');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating');
     }
 
     public static function getPages(): array

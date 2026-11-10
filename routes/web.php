@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerPreviewController;
 
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\RepairController;
+use App\Http\Controllers\ProductRatingController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\WarehouseController;
@@ -128,6 +129,8 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/account/logout', [AccountController::class, 'logout'])->name('account.logout');
     Route::get('/account', [AccountController::class, 'index'])->name('account.index');
     Route::get('/account/orders/{order}', [AccountController::class, 'order'])->name('account.order');
+    Route::post('/account/orders/{order}/ratings', [ProductRatingController::class, 'store'])
+        ->middleware('throttle:20,1')->name('account.ratings.store');
     Route::get('/account/profile', [AccountController::class, 'profile'])->name('account.profile');
     Route::post('/account/password', [AccountController::class, 'savePassword'])->middleware('throttle:5,1')->name('account.password');
     Route::post('/account/verification-notification', [AccountController::class, 'resendVerification'])

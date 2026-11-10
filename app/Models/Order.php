@@ -69,6 +69,43 @@ class Order extends Model
         return $this->hasMany(OrderTrackingEvent::class);
     }
 
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(ProductRating::class);
+    }
+
+    public function canBeRated(): bool
+    {
+        return $this->payment_status === 'paid'
+            && $this->status !== 'cancelled'
+            && ($this->status === 'completed' || $this->sendcloud_tracking_phase === 'delivered');
+    }
+
+    /** Preserve order snapshot line indices, even for inactive catalog items. */
+    public function rateableItems(): array
+    {
+        return collect($this->items ?? [])
+            ->filter(fn (mixed $item): bool => is_array($item) && (int) ($item['product_id'] ?? 0) > 0)
+            ->all();
+    }
+
+    public function hasUnratedItems(): bool
+    {
+        if (! $this->canBeRated()) {
+            return false;
+        }
+
+        $ratedIndices = $this->ratings->pluck('order_item_index')->map(fn ($index): int => (int) $index)->all();
+
+        foreach (array_keys($this->rateableItems()) as $index) {
+            if (! in_array($index, $ratedIndices, true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function refunds(): HasMany
     {
         return $this->hasMany(OrderRefund::class);

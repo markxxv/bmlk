@@ -52,6 +52,12 @@
             </section>
         @endif
 
+        @foreach ($pendingRatingOrders as $ratingOrder)
+            <div class="mb-6">
+                @include('account.partials.product-ratings', ['order' => $ratingOrder])
+            </div>
+        @endforeach
+
         <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
             <section class="rounded-3xl bg-white p-6 sm:p-8">
                 <div class="flex items-center gap-3">
