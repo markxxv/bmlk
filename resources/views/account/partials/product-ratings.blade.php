@@ -30,7 +30,7 @@
             @endif
         </div>
 
-        <form method="POST" action="{{ route('account.ratings.store', $order) }}"
+        <form method="POST" action="{{ $ratingsAction ?? route('account.ratings.store', $order) }}"
             class="mt-5 sm:mt-6" x-data="{ scores: @js($initialScores) }">
             @csrf
             <div class="divide-y divide-zinc-100">

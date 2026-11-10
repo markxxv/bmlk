@@ -7,6 +7,7 @@ use App\Http\Controllers\CustomerPreviewController;
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ProductRatingController;
+use App\Http\Controllers\ReviewLinkController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\WarehouseController;
@@ -64,6 +65,20 @@ Route::get('/shop/product/{slug}', [ShopController::class, 'product'])
     ->name('shop.product');
 
 Route::view('/livraison', 'livraison')->name('delivery.terms');
+// Email-only review links grant rating access, not account authentication.
+Route::get('/avis/{token}', [ReviewLinkController::class, 'show'])
+    ->where('token', '[a-f0-9]{64}')
+    ->middleware('throttle:30,1')->name('reviews.show');
+Route::post('/avis/{token}', [ReviewLinkController::class, 'store'])
+    ->where('token', '[a-f0-9]{64}')
+    ->middleware('throttle:10,1')->name('reviews.store');
+
+// A scanner may prefetch GET links: opt-out is confirmed by a CSRF-protected POST.
+Route::get('/avis/desabonnement/{order}', [ReviewLinkController::class, 'unsubscribeForm'])
+    ->middleware(['signed', 'throttle:15,1'])->name('reviews.unsubscribe');
+Route::post('/avis/desabonnement/{order}', [ReviewLinkController::class, 'unsubscribe'])
+    ->middleware(['signed', 'throttle:5,1'])->name('reviews.unsubscribe.store');
+
 Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
 Route::post('/checkout', [ShopController::class, 'processOrder'])->name('checkout.store');
 Route::post('/api/cart/availability', [ShopController::class, 'cartAvailability'])
