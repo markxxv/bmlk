@@ -114,7 +114,8 @@ class OrderResource extends Resource
 
                                 TextInput::make('email')
                                     ->prefixIcon('lucide-mail')
-                                    ->disabled(),
+                                    ->disabled()
+                                    ->copyable(),
 
                                 TextInput::make('phone')
                                     ->prefixIcon('lucide-phone')
@@ -283,7 +284,7 @@ class OrderResource extends Resource
             TextColumn::make('created_at')->label('Created')->dateTime('d M Y, H:i')->sortable(),
             TextColumn::make('first_name')->label('Customer')
                 ->formatStateUsing(fn (Order $record): string => trim($record->first_name.' '.$record->last_name)),
-            TextColumn::make('email')->searchable()->toggleable(),
+            TextColumn::make('email')->icon('lucide-mail')->searchable()->copyable()->toggleable(),
             TextColumn::make('total_amount')->label('Total')->money('EUR')->sortable(),
             TextColumn::make('payment_status')->label('Payment')->badge()
                 ->color(fn (string $state): string => match ($state) {
