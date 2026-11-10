@@ -100,6 +100,7 @@
 
                 init() {
                     this.$watch('$store.cart.items', () => this.updateDeliveryCost());
+                    this.$watch('$store.cart.checkingAvailability', checking => { if (!checking) this.updateDeliveryCost(); });
                     try {
                         const saved = JSON.parse(localStorage.getItem('bm_unpaid_order') || 'null');
                         if (saved?.number && saved?.url) this.savedOrder = saved;
@@ -181,7 +182,7 @@
                     this.form.service_point_id = '';
                     this.servicePoints = [];
 
-                    if (!this.form.country || !this.form.zip.trim() || !this.$store.cart.items.length) {
+                    if (this.$store.cart.checkingAvailability || !this.$store.cart.availabilityChecked || !this.form.country || !this.form.zip.trim() || !this.$store.cart.items.length) {
                         this.isCalculating = false;
                         return;
                     }
@@ -287,6 +288,21 @@
                     }
 
                     this.errors = {};
+                    if (!this.paymentRetryUrl) {
+                        this.isSubmitting = true;
+                        const availability = await this.$store.cart.refreshAvailability();
+                        this.isSubmitting = false;
+                        if (!availability.ok) {
+                            this.errors.general = this.$store.cart.availabilityNotice;
+                            return;
+                        }
+                        if (availability.removed) {
+                            this.cartNotice = this.$store.cart.availabilityNotice;
+                            this.errors.cart_items = [this.cartNotice];
+                            return;
+                        }
+                        if (!this.$store.cart.items.length) return;
+                    }
                     if (!this.paymentRetryUrl && (this.isCalculating || !this.selectedShipping ||
                         (this.selectedShipping.type === 'pickup' && !this.form.service_point_id))) {
                         this.errors.shipping_option = [@js(__('Choisissez un mode de livraison et un point relais si nécessaire.'))];
@@ -350,7 +366,13 @@
                             this.errors = data.errors || {
                                 general: data.message || @js(__('Impossible de démarrer le paiement.')),
                             };
-
+                            if (data.errors?.cart_items) {
+                                const availability = await this.$store.cart.refreshAvailability();
+                                if (availability.removed) {
+                                    this.cartNotice = this.$store.cart.availabilityNotice;
+                                    this.errors.cart_items = [this.cartNotice];
+                                }
+                            }
                             return;
                         }
 
@@ -394,6 +416,7 @@
             </div>
 
             <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start xl:grid-cols-[minmax(0,1fr)_420px] xl:gap-8">
+                <div x-show="$store.cart.availabilityNotice" x-cloak role="status" aria-live="polite" class="lg:col-span-2 rounded-2xl bg-[#F3E4E7] px-5 py-4 text-sm text-bmlk-brand" x-text="$store.cart.availabilityNotice"></div>
                 <form @submit.prevent="submit()" class="min-w-0 rounded-3xl bg-white px-5 py-7 sm:px-9 sm:py-9 lg:px-10 lg:py-10">
                     <section class="border-b border-zinc-100 pb-9 sm:pb-10">
                         <div class="flex items-center gap-3">
@@ -649,7 +672,7 @@
 
                         <button
                             type="submit"
-                            :disabled="isSubmitting || isCalculating || ($store.cart.items.length === 0 && !paymentRetryUrl) || (!paymentRetryUrl && !selectedShipping)"
+                            :disabled="isSubmitting || isCalculating || (!paymentRetryUrl && ($store.cart.checkingAvailability || !$store.cart.availabilityChecked)) || ($store.cart.items.length === 0 && !paymentRetryUrl) || (!paymentRetryUrl && !selectedShipping)"
                             class="mt-7 flex w-full items-center justify-center rounded-full bg-bmlk-brand px-6 py-4 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#945763] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bmlk-brand disabled:cursor-not-allowed disabled:bg-zinc-300"
                         >
                             <span x-show="!isSubmitting && !paymentRetryUrl">{{ __('Payer la commande') }}</span>

@@ -64,6 +64,8 @@ Route::get('/shop/product/{slug}', [ShopController::class, 'product'])
 
 Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
 Route::post('/checkout', [ShopController::class, 'processOrder'])->name('checkout.store');
+Route::post('/api/cart/availability', [ShopController::class, 'cartAvailability'])
+    ->middleware('throttle:60,1')->name('api.cart.availability');
 
 Route::get('/api/promo/{code}', [ShopController::class, 'promo'])
     ->middleware('throttle:15,1')

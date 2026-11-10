@@ -194,6 +194,27 @@ class ShopController extends Controller
         ]);
     }
 
+    public function cartAvailability(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'product_ids' => ['present', 'array', 'max:100'],
+            'product_ids.*' => ['required', 'integer', 'min:1', 'distinct'],
+        ]);
+
+        $availableIds = Product::query()
+            ->where('active', true)
+            ->where('available', true)
+            ->whereIn('id', $validated['product_ids'])
+            ->pluck('id')
+            ->map(fn (mixed $id): int => (int) $id)
+            ->values();
+
+        return response()->json([
+            'available_ids' => $availableIds,
+            'removed_message' => __('Ces articles ne sont plus disponibles et ont été retirés du panier :'),
+        ]);
+    }
+
     public function checkout(): View
     {
         return view('shop.checkout', [
@@ -494,6 +515,7 @@ class ShopController extends Controller
 
         $products = Product::query()
             ->where('active', true)
+            ->where('available', true)
             ->whereIn('id', $productIds)
             ->with('media')
             ->get()

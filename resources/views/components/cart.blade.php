@@ -33,6 +33,7 @@
         </div>
 
         <div class="flex-1 overflow-y-auto">
+            <div x-show="$store.cart.availabilityNotice" x-cloak role="status" aria-live="polite" class="mx-5 mt-4 rounded-xl bg-[#F3E4E7] px-4 py-3 text-sm text-bmlk-brand" x-text="$store.cart.availabilityNotice"></div>
             <template x-if="$store.cart.items.length === 0">
                 <div class="flex h-full flex-col items-center justify-center px-6 py-16 text-center" data-toggle-reveal-item>
                     <span class="flex h-14 w-14 items-center justify-center rounded-full bg-zinc-50 text-zinc-300">
@@ -134,8 +135,10 @@
             </div>
 
             <a
-                href="{{ route('checkout') }}"
-                @click="$store.cart.close()"
+                :href="$store.cart.availabilityChecked && !$store.cart.checkingAvailability ? @js(route('checkout')) : null"
+                :aria-disabled="(!$store.cart.availabilityChecked || $store.cart.checkingAvailability).toString()"
+                :class="(!$store.cart.availabilityChecked || $store.cart.checkingAvailability) ? 'cursor-not-allowed opacity-50' : ''"
+                @click="if (!$store.cart.availabilityChecked || $store.cart.checkingAvailability) { $event.preventDefault(); return; } $store.cart.close()"
                 class="block w-full rounded-lg bg-bmlk-brand px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-bmlk-brand-hover"
             >
                 {{ __('Passer commande') }}

@@ -88,6 +88,7 @@ class Product extends Model implements HasMedia
     {
         return [
             'active' => 'boolean',
+            'available' => 'boolean',
             'featured' => 'boolean',
             'is_new' => 'boolean',
             'claims' => 'array',

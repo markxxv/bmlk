@@ -159,6 +159,7 @@
             'url' => $canonical,
             'image' => $product->storefrontImageUrl('thumb'),
             'price' => $product->price !== null ? (float) $product->price : null,
+            'available' => $product->available,
         ];
 
         $offerSchema = null;
@@ -168,6 +169,7 @@
                 '@type' => 'Offer',
                 'url' => $canonical,
                 'priceCurrency' => 'EUR',
+                'availability' => $product->available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
                 'price' => (float) $product->price,
             ];
         } elseif ($product->price_min !== null || $product->price_max !== null) {
@@ -175,6 +177,7 @@
                 '@type' => 'AggregateOffer',
                 'url' => $canonical,
                 'priceCurrency' => 'EUR',
+                'availability' => $product->available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
                 'lowPrice' => $product->price_min !== null ? (float) $product->price_min : null,
                 'highPrice' => $product->price_max !== null ? (float) $product->price_max : null,
             ], fn ($value) => $value !== null);
@@ -357,7 +360,7 @@
                 },
 
                 get isReady() {
-                    return this.allOptionsSelected
+                    return product.available && this.allOptionsSelected
                         && this.currentPrice !== null
                         && Number.isFinite(Number(this.currentPrice));
                 },
@@ -378,7 +381,7 @@
                 },
 
                 addToCart() {
-                    if (! this.isReady) {
+                    if (! this.isReady || ! product.available) {
                         return;
                     }
 
@@ -637,6 +640,7 @@
                                 </div>
                             @endif
 
+                            @if ($product->available)
                             <div class="mt-9 flex flex-col gap-3 sm:flex-row">
                                 <div class="flex h-13 items-center justify-between rounded-full bg-white px-2 sm:w-36">
                                     <button
@@ -674,6 +678,12 @@
                                     <span x-show="! isReady">{{ __('Choisissez les options') }}</span>
                                 </button>
                             </div>
+
+                            @else
+                                <p class="mt-9 inline-flex rounded-full bg-[#F3E4E7] px-5 py-3 text-sm font-medium text-bmlk-brand" role="status">
+                                    {{ __('Ce produit est temporairement indisponible.') }}
+                                </p>
+                            @endif
 
                             <div class="mt-5 grid gap-3 text-sm leading-6 text-zinc-500 sm:grid-cols-2">
                                 <div class="flex gap-3">
@@ -822,6 +832,9 @@
                             <article class="group/card w-3/4 shrink-0 snap-start sm:w-2/5 lg:w-auto">
                                 <a href="{{ $recommendedUrl }}" class="block">
                                     <div class="relative aspect-[3/4] overflow-hidden rounded-2xl">
+                                        @unless ($recommendedProduct->available)
+                                            <span class="absolute right-3 top-3 z-20 rounded-full bg-white/95 px-3 py-1.5 text-xs font-medium text-bmlk-brand">{{ __('Indisponible') }}</span>
+                                        @endunless
                                         @if ($recommendedImage)
                                             <img
                                                 src="{{ $recommendedImage }}"

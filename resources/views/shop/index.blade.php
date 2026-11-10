@@ -122,6 +122,9 @@
                             <article class="group min-w-0" data-blur-reveal-item>
                                 <a href="{{ $productUrl }}" class="block">
                                     <div class="relative aspect-[3/4] overflow-hidden rounded-2xl">
+                                        @unless ($product->available)
+                                            <span class="absolute right-3 top-3 z-20 rounded-full bg-white/95 px-3 py-1.5 text-xs font-medium text-bmlk-brand">{{ __('Indisponible') }}</span>
+                                        @endunless
                                         @if ($product->is_new)
                                             <span class="absolute left-3 top-3 z-10 rounded-full bg-[#DDA1AA] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-900 sm:left-4 sm:top-4 sm:px-4 sm:py-2 sm:text-xs">
                                                 {{ __('Nouveau') }}

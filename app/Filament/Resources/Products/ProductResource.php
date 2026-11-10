@@ -188,6 +188,14 @@ class ProductResource extends Resource
                                             ->offIcon('lucide-x')
                                             ->onColor('success')
                                             ->offColor('danger'),
+                                        Toggle::make('available')
+                                            ->label('Available')
+                                            ->helperText('Pause sales without hiding this product.')
+                                            ->default(true)
+                                            ->onIcon('lucide-check')
+                                            ->offIcon('lucide-x')
+                                            ->onColor('success')
+                                            ->offColor('danger'),
                                         Toggle::make('featured')
                                             ->label('Featured')
                                             ->onIcon('lucide-star')
@@ -311,6 +319,15 @@ class ProductResource extends Resource
                     ->trueColor('success')
                     ->falseColor('danger'),
 
+                IconColumn::make('available')
+                    ->label('Available')
+                    ->boolean()
+                    ->trueIcon('lucide-circle-check')
+                    ->falseIcon('lucide-circle-x')
+                    ->trueColor('success')
+                    ->falseColor('danger')
+                    ->sortable(),
+
                 IconColumn::make('featured')
                     ->label('Featured')
                     ->boolean()
@@ -340,6 +357,7 @@ class ProductResource extends Resource
                     ->label('Category')
                     ->options(fn (): array => static::categoryOptions()),
                 TernaryFilter::make('active'),
+                TernaryFilter::make('available'),
                 TernaryFilter::make('featured'),
                 TernaryFilter::make('is_new')
                     ->label('New'),
