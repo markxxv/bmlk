@@ -5,7 +5,12 @@ namespace App\Filament\Resources\CoursePurchases;
 use App\Filament\Resources\CoursePurchases\Pages;
 use App\Models\CoursePurchase;
 use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -23,7 +28,7 @@ class CoursePurchaseResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'General';
+        return 'Education';
     }
 
     public static function getModelLabel(): string
@@ -36,7 +41,7 @@ class CoursePurchaseResource extends Resource
         return 'Course purchases';
     }
 
-    /** Purchases come from Stripe; the form only grants access manually. */
+    /** Purchases come from Stripe; here an admin can grant, correct or remove access. */
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -54,6 +59,25 @@ class CoursePurchaseResource extends Resource
                 ->searchable()
                 ->preload()
                 ->required(),
+
+            Select::make('status')
+                ->label('Status')
+                ->options([
+                    'paid' => 'Paid (access granted)',
+                    'pending' => 'Pending',
+                    'failed' => 'Failed',
+                    'expired' => 'Expired',
+                    'refunded' => 'Refunded (no access)',
+                ])
+                ->default('paid')
+                ->required()
+                ->native(false),
+
+            TextInput::make('email')->label('E-mail')->email()->disabled()->dehydrated(false)
+                ->visibleOn('edit'),
+
+            TextInput::make('stripe_payment_intent_id')->label('Stripe payment intent')->disabled()->dehydrated(false)
+                ->visibleOn('edit'),
         ]);
     }
 
@@ -81,6 +105,15 @@ class CoursePurchaseResource extends Resource
                     'paid' => 'Paid', 'pending' => 'Pending', 'failed' => 'Failed', 'expired' => 'Expired', 'refunded' => 'Refunded',
                 ]),
             ])
+            ->recordActions([
+                EditAction::make()->icon('lucide-pencil'),
+                DeleteAction::make()->icon('lucide-trash-2'),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()->icon('lucide-trash-2'),
+                ]),
+            ])
             ->defaultSort('id', 'desc');
     }
 
@@ -89,6 +122,7 @@ class CoursePurchaseResource extends Resource
         return [
             'index' => Pages\ListCoursePurchases::route('/'),
             'create' => Pages\CreateCoursePurchase::route('/create'),
+            'edit' => Pages\EditCoursePurchase::route('/{record}/edit'),
         ];
     }
 }
