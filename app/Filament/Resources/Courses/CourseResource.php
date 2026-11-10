@@ -56,6 +56,23 @@ class CourseResource extends Resource
                 ->schema([
                     Grid::make(1)
                         ->schema([
+                            Section::make('Header')
+                                ->icon('lucide-heading')
+                                ->schema([
+                                    Grid::make(['default' => 1, 'md' => 3])
+                                        ->schema(array_map(
+                                            fn (string $locale): TextInput => TextInput::make("tag.{$locale}")
+                                                ->label('Pre header · '.strtoupper($locale))
+                                                ->maxLength(255),
+                                            static::locales(),
+                                        )),
+
+                                    TextInput::make('name')
+                                        ->label('Name')
+                                        ->required()
+                                        ->maxLength(255),
+                                ]),
+
                             Section::make('Content')
                                 ->icon('lucide-languages')
                                 ->schema([Tabs::make('Translations')->tabs(static::translationTabs())]),
@@ -93,21 +110,10 @@ class CourseResource extends Resource
                                         ->required()
                                         ->native(false),
 
-                                    TextInput::make('name')->label('Name')->required()->maxLength(255),
-
-                                    TextInput::make('slug')
-                                        ->label('Slug')
-                                        ->required()
-                                        ->alphaDash()
-                                        ->unique(ignoreRecord: true)
-                                        ->maxLength(255),
-
                                     TextInput::make('image')
                                         ->label('Image file')
                                         ->helperText('File name inside public/img/formations.')
                                         ->maxLength(255),
-
-                                    TextInput::make('sort')->label('Sort order')->numeric()->default(0)->minValue(0),
                                 ]),
 
                             Section::make('Price')
@@ -143,13 +149,13 @@ class CourseResource extends Resource
                 IconColumn::make('telegram_chat_url')->label('Chat')->boolean()
                     ->getStateUsing(fn (Course $record): bool => filled($record->telegram_chat_url)),
                 IconColumn::make('active')->label('Active')->boolean(),
-                TextColumn::make('sort')->label('Order')->sortable()->alignCenter(),
             ])
             ->filters([
                 SelectFilter::make('mode')->options(['online' => 'Online', 'live' => 'Live']),
                 TernaryFilter::make('active'),
             ])
             ->recordActions([EditAction::make()->icon('lucide-pencil')])
+            ->reorderable('sort')
             ->defaultSort('sort');
     }
 
@@ -167,8 +173,6 @@ class CourseResource extends Resource
         return array_map(
             fn (string $locale): Tab => Tab::make(strtoupper($locale))
                 ->schema([
-                    TextInput::make("tag.{$locale}")->label('Tag')->maxLength(255),
-
                     Textarea::make("description.{$locale}")->label('Description')->rows(4),
 
                     Repeater::make("points.{$locale}")
@@ -187,7 +191,12 @@ class CourseResource extends Resource
                         ->openable(),
                 ])
                 ->columns(1),
-            config('app.supported_locales', ['fr', 'en', 'es']),
+            static::locales(),
         );
+    }
+
+    protected static function locales(): array
+    {
+        return config('app.supported_locales', ['fr', 'en', 'es']);
     }
 }
