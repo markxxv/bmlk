@@ -56,15 +56,15 @@ class AppServiceProvider extends ServiceProvider
         // Laravel still owns its signed verification and reset-token logic.
         VerifyEmail::toMailUsing(function (object $notifiable, string $verificationUrl): MailMessage {
             return (new MailMessage)
-                ->subject('BLACK MILK · Confirmez votre adresse e-mail')
+                ->subject('BLACK MILK · '.__('Confirmez votre adresse e-mail'))
                 ->view('emails.account-action', [
-                    'title' => 'Confirmez votre adresse e-mail',
+                    'title' => __('Confirmez votre adresse e-mail'),
                     'name' => $notifiable->name,
-                    'bodyText' => 'Confirmez votre adresse e-mail pour sécuriser votre compte BLACK MILK et retrouver toutes vos commandes.',
-                    'actionLabel' => 'Confirmer mon adresse e-mail',
+                    'bodyText' => __('Confirmez votre adresse e-mail pour sécuriser votre compte BLACK MILK et retrouver toutes vos commandes.'),
+                    'actionLabel' => __('Confirmer mon adresse e-mail'),
                     'actionUrl' => $verificationUrl,
-                    'expiry' => 'Ce lien est valable pendant '.config('auth.verification.expire', 60).' minutes.',
-                    'disclaimer' => 'Si vous n’avez pas créé de compte, vous pouvez ignorer cet e-mail.',
+                    'expiry' => __('Ce lien est valable pendant :minutes minutes.', ['minutes' => config('auth.verification.expire', 60)]),
+                    'disclaimer' => __('Si vous n’avez pas créé de compte, vous pouvez ignorer cet e-mail.'),
                 ]);
         });
 
@@ -75,15 +75,15 @@ class AppServiceProvider extends ServiceProvider
             ]);
 
             return (new MailMessage)
-                ->subject('BLACK MILK · Créez votre mot de passe')
+                ->subject('BLACK MILK · '.__('Créez votre mot de passe'))
                 ->view('emails.account-action', [
-                    'title' => 'Votre mot de passe',
+                    'title' => __('Votre mot de passe'),
                     'name' => $notifiable->name,
-                    'bodyText' => 'Vous pouvez définir un nouveau mot de passe pour accéder à votre espace BLACK MILK et consulter vos commandes.',
-                    'actionLabel' => 'Créer mon mot de passe',
+                    'bodyText' => __('Vous pouvez définir un nouveau mot de passe pour accéder à votre espace BLACK MILK et consulter vos commandes.'),
+                    'actionLabel' => __('Créer mon mot de passe'),
                     'actionUrl' => $resetUrl,
-                    'expiry' => 'Ce lien est valable pendant '.config('auth.passwords.users.expire', 60).' minutes.',
-                    'disclaimer' => 'Si vous n’avez pas demandé ce lien, aucune action n’est nécessaire.',
+                    'expiry' => __('Ce lien est valable pendant :minutes minutes.', ['minutes' => config('auth.passwords.users.expire', 60)]),
+                    'disclaimer' => __('Si vous n’avez pas demandé ce lien, aucune action n’est nécessaire.'),
                 ]);
         });
 

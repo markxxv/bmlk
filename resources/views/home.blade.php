@@ -438,10 +438,10 @@
                                 ->reject(fn ($value) => in_array(mb_strtolower(trim($value)), [
                                     'ville à venir',
                                     'city to come',
-                                    'oraș de anunțat',
+                                    'ciudad por anunciar',
                                     'lieu à venir',
                                     'venue to come',
-                                    'loc de anunțat',
+                                    'lugar por anunciar',
                                     '—',
                                 ], true))
                                 ->join(', ');
