@@ -4,7 +4,7 @@
     :canonical="$canonical"
 >
     @php
-        $eventLocale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
+        $eventLocale = in_array(app()->getLocale(), config('app.supported_locales', ['fr']), true)
             ? app()->getLocale()
             : 'fr';
 

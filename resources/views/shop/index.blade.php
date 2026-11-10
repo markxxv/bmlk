@@ -5,7 +5,7 @@
     :admin-edit-url="$currentCategory && auth()->user()?->is_admin ? \App\Filament\Resources\Categories\CategoryResource::getUrl('edit', ['record' => $currentCategory], panel: 'admin') : null"
 >
     @php
-        $locale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true) ? app()->getLocale() : 'fr';
+        $locale = in_array(app()->getLocale(), config('app.supported_locales', ['fr']), true) ? app()->getLocale() : 'fr';
 
         $pageTitle = $currentCategory
             ? ($currentCategory->getTranslation('name', $locale, false) ?: $currentCategory->getTranslation('name', 'fr', false))

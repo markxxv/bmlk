@@ -56,10 +56,10 @@ class TranslatableSlugObserver
 
     private function resolveLocales(array $titles, array $slugs): array
     {
-        $configuredLocales = config('app.supported_locales', ['fr', 'en', 'ro']);
+        $configuredLocales = config('app.supported_locales', ['fr', 'en', 'es']);
 
         if (! is_array($configuredLocales) || $configuredLocales === []) {
-            $configuredLocales = ['fr', 'en', 'ro'];
+            $configuredLocales = ['fr', 'en', 'es'];
         }
 
         if (! array_is_list($configuredLocales)) {

@@ -52,19 +52,8 @@ Route::prefix('warehouse')->name('warehouse.')->group(function (): void {
     });
 });
 
-Route::get('/', [FrontController::class, 'home'])->name('home');
+// --- Not localized: signed/emailed links, JSON APIs and webhooks stay unprefixed. ---
 
-Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
-
-Route::get('/shop/category/{slug}', [ShopController::class, 'category'])
-    ->where('slug', '[A-Za-z0-9-]+')
-    ->name('shop.category');
-
-Route::get('/shop/product/{slug}', [ShopController::class, 'product'])
-    ->where('slug', '[A-Za-z0-9-]+')
-    ->name('shop.product');
-
-Route::view('/livraison', 'livraison')->name('delivery.terms');
 // Email-only review links grant rating access, not account authentication.
 Route::get('/avis/{token}', [ReviewLinkController::class, 'show'])
     ->where('token', '[a-f0-9]{64}')
@@ -79,8 +68,6 @@ Route::get('/avis/desabonnement/{order}', [ReviewLinkController::class, 'unsubsc
 Route::post('/avis/desabonnement/{order}', [ReviewLinkController::class, 'unsubscribe'])
     ->middleware(['signed', 'throttle:5,1'])->name('reviews.unsubscribe.store');
 
-Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
-Route::post('/checkout', [ShopController::class, 'processOrder'])->name('checkout.store');
 Route::post('/api/cart/availability', [ShopController::class, 'cartAvailability'])
     ->middleware('throttle:60,1')->name('api.cart.availability');
 
@@ -101,80 +88,117 @@ Route::get('/api/sendcloud/labels/{order}', [\App\Http\Controllers\SendcloudCont
 
 Route::post('/stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
 
-Route::get('/order/recover', [ShopController::class, 'recoveryForm'])
-    ->name('order.recover');
-
-Route::post('/order/recover', [ShopController::class, 'recoverOrder'])
-    ->middleware('throttle:5,1')
-    ->name('order.recover.submit');
-
-Route::post('/order/{orderNumber}/pay', [StripeController::class, 'retry'])
-    ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
-    ->name('order.pay');
-
-Route::get('/order/{orderNumber}/thanks', [StripeController::class, 'thanks'])
-    ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
-    ->name('order.thanks');
-
-Route::get('/order/{orderNumber}', [ShopController::class, 'orderStatus'])
-    ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
-    ->name('order.status');
-
-Route::post('/account/complete-checkout', [AccountController::class, 'completeCheckout'])
-    ->middleware('throttle:6,1')->name('account.complete_checkout');
-Route::get('/account/checkout/{orderNumber}', [AccountController::class, 'checkoutOrder'])
-    ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
-    ->name('account.checkout');
-
 // Verification works even if the email link opens on a different device.
 Route::get('/account/verify-email/{id}/{hash}', [AccountController::class, 'verify'])
     ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
 
-Route::middleware('guest')->group(function (): void {
-    Route::get('/account/login', [AccountController::class, 'loginForm'])->name('account.login');
-    Route::post('/account/login', [AccountController::class, 'login'])->middleware('throttle:5,1')->name('account.login.submit');
-    Route::get('/account/forgot-password', [AccountController::class, 'forgotForm'])->name('password.request');
-    Route::post('/account/forgot-password', [AccountController::class, 'sendResetLink'])->middleware('throttle:3,1')->name('password.email');
-    Route::get('/account/reset-password/{token}', [AccountController::class, 'resetForm'])->name('password.reset');
-    Route::post('/account/reset-password', [AccountController::class, 'resetPassword'])->middleware('throttle:5,1')->name('password.update');
-});
-
-Route::middleware('auth')->group(function (): void {
-    Route::post('/account/logout', [AccountController::class, 'logout'])->name('account.logout');
-    Route::get('/account', [AccountController::class, 'index'])->name('account.index');
-    Route::get('/account/orders/{order}', [AccountController::class, 'order'])->name('account.order');
-    Route::post('/account/orders/{order}/ratings', [ProductRatingController::class, 'store'])
-        ->middleware('throttle:20,1')->name('account.ratings.store');
-    Route::get('/account/profile', [AccountController::class, 'profile'])->name('account.profile');
-    Route::post('/account/password', [AccountController::class, 'savePassword'])->middleware('throttle:5,1')->name('account.password');
-    Route::post('/account/verification-notification', [AccountController::class, 'resendVerification'])
-        ->middleware('throttle:2,1')->name('verification.send');
-    Route::get('/account/roles', [AccountController::class, 'roles'])->name('account.roles');
-    Route::post('/account/roles', [AccountController::class, 'apply'])->middleware('throttle:3,1')->name('account.roles.apply');
-    Route::get('/account/wholesale', [AccountController::class, 'wholesale'])->name('account.wholesale');
-    Route::get('/account/influencer', [AccountController::class, 'influencer'])->name('account.influencer');
-    Route::post('/account/influencer/code', [AccountController::class, 'saveCode'])
-        ->middleware('throttle:3,1')->name('account.influencer.code');
-});
-
-// Public programme / lightweight application, stored in existing role_applications.
-Route::get('/createurs', [CreatorsController::class, 'index'])->name('createurs');
-Route::post('/createurs', [CreatorsController::class, 'apply'])
-    ->middleware('throttle:3,1')->name('createurs.apply');
-
-// Workshop requests are sent directly to Telegram without a queue or checkout.
-Route::get('/reparation', [RepairController::class, 'index'])->name('reparation');
-Route::post('/reparation', [RepairController::class, 'submit'])
-    ->middleware('throttle:3,1')->name('reparation.submit');
-
-Route::get('/events', [FrontController::class, 'events'])->name('events');
-Route::get('/formations', [FrontController::class, 'formations'])->name('formations');
-
-Route::get('/ou-acheter', [FrontController::class, 'whereToBuy'])->name('where-to-buy');
+// Emailed token link: always unprefixed, renders in the default locale.
+Route::middleware('guest')->get('/account/reset-password/{token}', [AccountController::class, 'resetForm'])
+    ->name('password.reset');
 
 Route::get('/sitemap.xml', [FrontController::class, 'sitemap'])->name('sitemap');
 
-Route::get('/{slug}', [FrontController::class, 'page'])
-    ->where('slug', '[A-Za-z0-9-]+')
-    ->name('page');
+// --- Localized storefront ---------------------------------------------------
+// Registered twice with identical names: the prefixed copy (/en/..., /es/...)
+// comes first, so route() resolves to it and URL::defaults() fills {locale}.
+// The unprefixed copy serves the default locale (see SetLocale and the URL
+// path formatter in AppServiceProvider, which strips the default prefix).
+// The catch-all page route must stay last inside the group.
+$localized = function (): void {
+    Route::get('/', [FrontController::class, 'home'])->name('home');
+
+    Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+
+    Route::get('/shop/category/{slug}', [ShopController::class, 'category'])
+        ->where('slug', '[A-Za-z0-9-]+')
+        ->name('shop.category');
+
+    Route::get('/shop/product/{slug}', [ShopController::class, 'product'])
+        ->where('slug', '[A-Za-z0-9-]+')
+        ->name('shop.product');
+
+    Route::view('/livraison', 'livraison')->name('delivery.terms');
+
+    Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
+    Route::post('/checkout', [ShopController::class, 'processOrder'])->name('checkout.store');
+
+
+    Route::get('/order/recover', [ShopController::class, 'recoveryForm'])
+        ->name('order.recover');
+
+    Route::post('/order/recover', [ShopController::class, 'recoverOrder'])
+        ->middleware('throttle:5,1')
+        ->name('order.recover.submit');
+
+    Route::post('/order/{orderNumber}/pay', [StripeController::class, 'retry'])
+        ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
+        ->name('order.pay');
+
+    Route::get('/order/{orderNumber}/thanks', [StripeController::class, 'thanks'])
+        ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
+        ->name('order.thanks');
+
+    Route::get('/order/{orderNumber}', [ShopController::class, 'orderStatus'])
+        ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
+        ->name('order.status');
+
+    Route::post('/account/complete-checkout', [AccountController::class, 'completeCheckout'])
+        ->middleware('throttle:6,1')->name('account.complete_checkout');
+    Route::get('/account/checkout/{orderNumber}', [AccountController::class, 'checkoutOrder'])
+        ->where('orderNumber', 'BM-[0-9]{8}-[0-9]{6}')
+        ->name('account.checkout');
+
+
+    Route::middleware('guest')->group(function (): void {
+        Route::get('/account/login', [AccountController::class, 'loginForm'])->name('account.login');
+        Route::post('/account/login', [AccountController::class, 'login'])->middleware('throttle:5,1')->name('account.login.submit');
+        Route::get('/account/forgot-password', [AccountController::class, 'forgotForm'])->name('password.request');
+        Route::post('/account/forgot-password', [AccountController::class, 'sendResetLink'])->middleware('throttle:3,1')->name('password.email');
+        Route::post('/account/reset-password', [AccountController::class, 'resetPassword'])->middleware('throttle:5,1')->name('password.update');
+    });
+
+    Route::middleware('auth')->group(function (): void {
+        Route::post('/account/logout', [AccountController::class, 'logout'])->name('account.logout');
+        Route::get('/account', [AccountController::class, 'index'])->name('account.index');
+        Route::get('/account/orders/{order}', [AccountController::class, 'order'])->name('account.order');
+        Route::post('/account/orders/{order}/ratings', [ProductRatingController::class, 'store'])
+            ->middleware('throttle:20,1')->name('account.ratings.store');
+        Route::get('/account/profile', [AccountController::class, 'profile'])->name('account.profile');
+        Route::post('/account/password', [AccountController::class, 'savePassword'])->middleware('throttle:5,1')->name('account.password');
+        Route::post('/account/verification-notification', [AccountController::class, 'resendVerification'])
+            ->middleware('throttle:2,1')->name('verification.send');
+        Route::get('/account/roles', [AccountController::class, 'roles'])->name('account.roles');
+        Route::post('/account/roles', [AccountController::class, 'apply'])->middleware('throttle:3,1')->name('account.roles.apply');
+        Route::get('/account/wholesale', [AccountController::class, 'wholesale'])->name('account.wholesale');
+        Route::get('/account/influencer', [AccountController::class, 'influencer'])->name('account.influencer');
+        Route::post('/account/influencer/code', [AccountController::class, 'saveCode'])
+            ->middleware('throttle:3,1')->name('account.influencer.code');
+    });
+
+    // Public programme / lightweight application, stored in existing role_applications.
+    Route::get('/createurs', [CreatorsController::class, 'index'])->name('createurs');
+    Route::post('/createurs', [CreatorsController::class, 'apply'])
+        ->middleware('throttle:3,1')->name('createurs.apply');
+
+    // Workshop requests are sent directly to Telegram without a queue or checkout.
+    Route::get('/reparation', [RepairController::class, 'index'])->name('reparation');
+    Route::post('/reparation', [RepairController::class, 'submit'])
+        ->middleware('throttle:3,1')->name('reparation.submit');
+
+    Route::get('/events', [FrontController::class, 'events'])->name('events');
+    Route::get('/formations', [FrontController::class, 'formations'])->name('formations');
+
+    Route::get('/ou-acheter', [FrontController::class, 'whereToBuy'])->name('where-to-buy');
+
+
+    Route::get('/{slug}', [FrontController::class, 'page'])
+        ->where('slug', '[A-Za-z0-9-]+')
+        ->name('page');
+};
+
+Route::prefix('{locale}')
+    ->where(['locale' => implode('|', config('app.supported_locales', ['fr']))])
+    ->group($localized);
+
+Route::group([], $localized);

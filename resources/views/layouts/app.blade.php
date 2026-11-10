@@ -26,6 +26,10 @@
         <link rel="canonical" href="{{ $canonical }}">
     @endif
 
+    @foreach (\App\Support\LocaleUrls::hreflang() as $hreflang => $hreflangUrl)
+        <link rel="alternate" hreflang="{{ $hreflang }}" href="{{ $hreflangUrl }}">
+    @endforeach
+
     <meta property="og:site_name" content="{{ __('BLACK MILK') }}">
     <meta property="og:type" content="{{ $ogType }}">
     <meta property="og:title" content="{{ $title ?? __('BLACK MILK') }}">

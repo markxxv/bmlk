@@ -18,7 +18,7 @@ class ImportCatalog extends Command
 
     protected $description = 'Import BLACK MILK categories, products and product images from products.json';
 
-    private array $locales = ['fr', 'en', 'ro'];
+    private array $locales = ['fr', 'en', 'es'];
 
     private int $importedImages = 0;
 

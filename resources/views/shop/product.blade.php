@@ -9,7 +9,7 @@
     @vite('resources/js/product.js')
 
     @php
-        $locale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
+        $locale = in_array(app()->getLocale(), config('app.supported_locales', ['fr']), true)
             ? app()->getLocale()
             : 'fr';
 
@@ -17,7 +17,7 @@
 
         $numberLocale = match ($locale) {
             'en' => 'en-GB',
-            'ro' => 'ro-RO',
+            'es' => 'es-ES',
             default => 'fr-FR',
         };
 

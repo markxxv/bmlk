@@ -3,7 +3,7 @@
         <div class="grid gap-14 px-7 py-10 sm:px-10 sm:py-12 lg:grid-cols-12 lg:px-14 lg:py-16 xl:px-16">
             <div class="lg:col-span-7">
                 <a
-                    href="{{ url('/') }}"
+                    href="{{ route('home') }}"
                     class="inline-flex items-center gap-3"
                     aria-label="{{ __('BLACK MILK') }}"
                 >
@@ -103,7 +103,7 @@
 
                         <div class="mt-5 space-y-3">
                             <a href="{{ route('shop.index') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Produits') }}</a>
-                            <a href="{{ url('/') }}#coffrets" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Coffrets') }}</a>
+                            <a href="{{ route('home') }}#coffrets" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Coffrets') }}</a>
                             <a href="{{ route('formations') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Formations') }}</a>
                             <a href="{{ route('reparation') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Réparation d’outils') }}</a>
                             <a href="{{ route('createurs') }}" class="block text-sm text-bmlk-footer-muted transition hover:text-accent">{{ __('Ambassadeurs') }}</a>
@@ -121,7 +121,7 @@
                         <div class="mt-5 space-y-3">
                             @foreach ($footerCategories as $footerCategory)
                                 @php
-                                    $footerLocale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true) ? app()->getLocale() : 'fr';
+                                    $footerLocale = in_array(app()->getLocale(), config('app.supported_locales', ['fr']), true) ? app()->getLocale() : 'fr';
                                     $footerCategorySlug = $footerCategory->getTranslation('slug', $footerLocale, false)
                                         ?: $footerCategory->getTranslation('slug', 'fr', false);
                                 @endphp
@@ -175,10 +175,10 @@
 
             <nav class="flex flex-wrap gap-x-5 gap-y-2 text-xs">
                 <a href="{{ route('delivery.terms') }}" class="transition hover:text-bmlk-footer">{{ __('Livraison') }}</a>
-                <a href="/conditions-generales-de-vente" class="transition hover:text-bmlk-footer">{{ __('CGV') }}</a>
-                <a href="/mentions-legales" class="transition hover:text-bmlk-footer">{{ __('Mentions légales') }}</a>
-                <a href="/politique-de-confidentialite" class="transition hover:text-bmlk-footer">{{ __('Confidentialité') }}</a>
-                <a href="/politique-de-cookies" class="transition hover:text-bmlk-footer">{{ __('Cookies') }}</a>
+                <a href="{{ route('page', ['slug' => 'conditions-generales-de-vente']) }}" class="transition hover:text-bmlk-footer">{{ __('CGV') }}</a>
+                <a href="{{ route('page', ['slug' => 'mentions-legales']) }}" class="transition hover:text-bmlk-footer">{{ __('Mentions légales') }}</a>
+                <a href="{{ route('page', ['slug' => 'politique-de-confidentialite']) }}" class="transition hover:text-bmlk-footer">{{ __('Confidentialité') }}</a>
+                <a href="{{ route('page', ['slug' => 'politique-de-cookies']) }}" class="transition hover:text-bmlk-footer">{{ __('Cookies') }}</a>
             </nav>
         </div>
         <div class="bmlk-packaging-stripe" aria-hidden="true"></div>

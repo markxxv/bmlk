@@ -227,10 +227,10 @@ class RepresentativeResource extends Resource
 
     protected static function locales(): array
     {
-        $locales = config('app.supported_locales', ['fr', 'en', 'ro']);
+        $locales = config('app.supported_locales', ['fr', 'en', 'es']);
 
         if (! is_array($locales) || $locales === []) {
-            return ['fr', 'en', 'ro'];
+            return ['fr', 'en', 'es'];
         }
 
         return array_is_list($locales)

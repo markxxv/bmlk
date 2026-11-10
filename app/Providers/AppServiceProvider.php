@@ -12,6 +12,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use App\Observers\TranslatableSlugObserver;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,6 +32,20 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Blade::component('layouts.app', 'layout');
+
+        // Localized routes are generated with a {locale} segment; the default
+        // locale is served unprefixed, so strip its segment from the path.
+        $defaultLocale = config('app.locale');
+        URL::defaults(['locale' => $defaultLocale]);
+        URL::formatPathUsing(function (string $path) use ($defaultLocale): string {
+            $prefix = '/'.$defaultLocale;
+
+            if ($path === $prefix) {
+                return '/';
+            }
+
+            return str_starts_with($path, $prefix.'/') ? substr($path, strlen($prefix)) : $path;
+        });
 
         // Use one default page size for every Filament resource table.
         Table::configureUsing(fn (Table $table): Table => $table

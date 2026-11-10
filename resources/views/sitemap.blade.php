@@ -1,59 +1,51 @@
+@php
+    $locales = config('app.supported_locales', ['fr']);
+    $default = config('app.locale');
+
+    // One <url> per locale, each listing every language version as alternates.
+    // $slugs: null for static routes, or a locale => slug map for slug routes.
+    $urlsFor = function (string $name, ?array $slugs = null) use ($locales, $default): array {
+        $urls = [];
+        foreach ($locales as $locale) {
+            $params = ['locale' => $locale];
+            if ($slugs !== null) {
+                $slug = $slugs[$locale] ?? $slugs['fr'] ?? null;
+                if (! $slug) {
+                    continue;
+                }
+                $params['slug'] = $slug;
+            }
+            $urls[$locale] = route($name, $params);
+        }
+
+        return $urls;
+    };
+@endphp
 {!! '<?xml version="1.0" encoding="UTF-8"?>' !!}
 <urlset
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
 >
-    <url>
-        <loc>{{ route('home') }}</loc>
-    </url>
-    <url>
-        <loc>{{ route('shop.index') }}</loc>
-    </url>
-    <url>
-        <loc>{{ route('events') }}</loc>
-    </url>
-    <url>
-        <loc>{{ route('formations') }}</loc>
-    </url>
-    <url>
-        <loc>{{ route('createurs') }}</loc>
-    </url>
-    <url>
-        <loc>{{ route('where-to-buy') }}</loc>
-    </url>
-    <url>
-        <loc>{{ route('delivery.terms') }}</loc>
-    </url>
+    @foreach (['home', 'shop.index', 'events', 'formations', 'createurs', 'where-to-buy', 'delivery.terms'] as $routeName)
+        @include('sitemap-entry', ['urls' => $urlsFor($routeName), 'default' => $default])
+    @endforeach
 
     @foreach ($categories as $category)
-        @php
-            $slug = $category->getTranslation('slug', 'fr', false);
-        @endphp
-        @if ($slug)
-            <url>
-                <loc>{{ route('shop.category', ['slug' => $slug]) }}</loc>
-                <lastmod>{{ $category->updated_at?->toAtomString() }}</lastmod>
-            </url>
-        @endif
+        @include('sitemap-entry', [
+            'urls' => $urlsFor('shop.category', $category->getTranslations('slug')),
+            'default' => $default,
+            'lastmod' => $category->updated_at?->toAtomString(),
+        ])
     @endforeach
 
     @foreach ($products as $product)
-        @php
-            $slug = $product->getTranslation('slug', 'fr', false);
-            $image = $product->getFirstMediaUrl('images');
-            $name = $product->getTranslation('name', 'fr', false);
-        @endphp
-        @if ($slug)
-            <url>
-                <loc>{{ route('shop.product', ['slug' => $slug]) }}</loc>
-                <lastmod>{{ $product->updated_at?->toAtomString() }}</lastmod>
-                @if ($image)
-                    <image:image>
-                        <image:loc>{{ $image }}</image:loc>
-                        <image:title>{{ $name }}</image:title>
-                    </image:image>
-                @endif
-            </url>
-        @endif
+        @include('sitemap-entry', [
+            'urls' => $urlsFor('shop.product', $product->getTranslations('slug')),
+            'default' => $default,
+            'lastmod' => $product->updated_at?->toAtomString(),
+            'image' => $product->getFirstMediaUrl('images'),
+            'imageTitle' => $product->getTranslation('name', 'fr', false),
+        ])
     @endforeach
 </urlset>

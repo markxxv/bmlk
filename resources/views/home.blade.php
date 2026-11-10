@@ -116,7 +116,7 @@
                 @foreach ($coffrets as $product)
                     @php
                         $image = $product->storefrontImageUrl('card');
-                        $coffretLocale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
+                        $coffretLocale = in_array(app()->getLocale(), config('app.supported_locales', ['fr']), true)
                             ? app()->getLocale()
                             : 'fr';
                         $coffretSlug = $product->getTranslation('slug', $coffretLocale, false)
@@ -252,7 +252,7 @@
 
     @foreach ($categories as $category)
         @php
-            $locale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
+            $locale = in_array(app()->getLocale(), config('app.supported_locales', ['fr']), true)
                 ? app()->getLocale()
                 : 'fr';
 
@@ -364,7 +364,7 @@
 
      @if ($events->isNotEmpty())
         @php
-            $eventLocale = in_array(app()->getLocale(), ['fr', 'en', 'ro'], true)
+            $eventLocale = in_array(app()->getLocale(), config('app.supported_locales', ['fr']), true)
                 ? app()->getLocale()
                 : 'fr';
 

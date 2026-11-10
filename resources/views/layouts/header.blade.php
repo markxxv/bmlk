@@ -7,7 +7,7 @@
         <div class="relative rounded-full bg-white px-3 shadow-xl shadow-zinc-800/10 sm:px-5 lg:px-7">
             <div class="flex min-h-20 items-center justify-between gap-2 lg:gap-4">
                 <a
-                    href="{{ url('/') }}"
+                    href="{{ route('home') }}"
                     class="flex shrink-0 items-center gap-2 sm:gap-3"
                     aria-label="{{ __('BLACK MILK') }}"
                 >
@@ -47,6 +47,7 @@
                     </nav>
 
                     <div class="flex shrink-0 items-center gap-3 xl:gap-6" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.65" data-blur-y="10" data-blur-pixels="6">
+                        @include('layouts.language-switcher')
                         <a href="{{ auth()->check() ? route('account.index') : route('account.login') }}"
                             class="inline-flex h-11 items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-800 transition hover:text-bmlk-brand"
                             data-blur-reveal-item>
@@ -124,7 +125,7 @@
     >
         <div class="flex h-full flex-col px-5 py-5">
             <div class="flex items-center justify-between pt-2">
-                <a href="{{ url('/') }}" class="flex items-center gap-3" aria-label="{{ __('BLACK MILK') }}" @click="open = false">
+                <a href="{{ route('home') }}" class="flex items-center gap-3" aria-label="{{ __('BLACK MILK') }}" @click="open = false">
                     <img src="/img/logo.png" alt="" class="h-12 w-12 object-contain">
 
                     <span>
@@ -169,6 +170,8 @@
                     {{ __('Créatrices') }}
                 </a>
             </nav>
+
+            @include('layouts.language-switcher', ['class' => 'mb-4 justify-center'])
 
             <div class="flex items-center justify-between border-t border-[#C98792] pt-5">
                 <span class="text-xs font-semibold uppercase tracking-widest text-zinc-700">
