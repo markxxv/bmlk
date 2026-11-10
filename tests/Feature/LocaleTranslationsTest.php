@@ -45,6 +45,28 @@ class LocaleTranslationsTest extends TestCase
         $this->get('/es/livraison')->assertOk()->assertSee('Mi cuenta')->assertDontSee('Mon espace');
     }
 
+    public function test_delivery_and_repair_pages_are_translated(): void
+    {
+        $this->get('/en/livraison')->assertOk()
+            ->assertSee('Lead times are calculated in')
+            ->assertSee('<strong class="font-semibold text-zinc-900">order processing</strong>', false)
+            ->assertSee('Wednesday')
+            ->assertDontSee('Les délais sont calculés');
+
+        $this->get('/es/livraison')->assertOk()
+            ->assertSee('Los plazos se calculan en')
+            ->assertSee('Miércoles')
+            ->assertSee('office.blackmilk@gmail.com');
+
+        $this->get('/es/reparation')->assertOk()
+            ->assertSee('Afilado')
+            ->assertSee('Solicitar el afilado')
+            ->assertDontSee('Demander l’affûtage');
+
+        $this->get('/en/reparation')->assertOk()->assertSee('Request a diagnosis');
+        $this->get('/reparation')->assertOk()->assertSee('Demander un diagnostic');
+    }
+
     public function test_orders_default_to_french_and_helper_falls_back_for_unknown_locales(): void
     {
         $order = $this->order();
