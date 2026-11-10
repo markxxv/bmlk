@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Support\OrderLocale;
 use App\Mail\PaymentStatusMail;
 use App\Models\Order;
 use Carbon\CarbonInterface;
@@ -99,7 +100,9 @@ class SendPaymentEmails extends Command
         }
 
         try {
-            Mail::to($order->email)->send(new PaymentStatusMail($order, $kind));
+            OrderLocale::run($order, fn () => Mail::to($order->email)
+                ->locale(OrderLocale::for($order))
+                ->send(new PaymentStatusMail($order, $kind)));
             $this->info("{$kind}: {$order->order_number}");
         } catch (Throwable $e) {
             Order::query()->whereKey($order->id)->where($column, $claim)

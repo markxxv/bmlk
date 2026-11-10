@@ -16,8 +16,8 @@ class RepairController extends Controller
     public function index(): View
     {
         return view('reparation', [
-            'metaTitle' => 'Réparation et affûtage d’outils | BLACK MILK France',
-            'metaDescription' => 'Confiez vos ciseaux, pinces et repousse-peaux à notre atelier. Affûtage, diagnostic gratuit avant réparation et formules annuelles BLACK MILK.',
+            'metaTitle' => __('Réparation et affûtage d’outils | BLACK MILK France'),
+            'metaDescription' => __('Confiez vos ciseaux, pinces et repousse-peaux à notre atelier. Affûtage, diagnostic gratuit avant réparation et formules annuelles BLACK MILK.'),
             'canonical' => route('reparation'),
         ]);
     }
@@ -26,7 +26,7 @@ class RepairController extends Controller
     {
         // Honeypot: silently ignore automated submissions.
         if ($request->filled('website')) {
-            return redirect()->route('reparation')->with('success', 'Votre demande a bien été reçue.');
+            return redirect()->route('reparation')->with('success', __('Votre demande a bien été reçue.'));
         }
 
         $data = $request->validate([
@@ -114,7 +114,7 @@ class RepairController extends Controller
             Log::error('Repair Telegram request: bot configuration is missing.');
 
             return back()->withInput()->withErrors([
-                'request' => 'Le service est momentanément indisponible. Veuillez réessayer plus tard.',
+                'request' => __('Le service est momentanément indisponible. Veuillez réessayer plus tard.'),
             ]);
         }
 
@@ -155,15 +155,15 @@ class RepairController extends Controller
             ]);
 
             return back()->withInput()->withErrors([
-                'request' => 'L’envoi à notre atelier a échoué ou est incomplet. Contactez-nous par e-mail avant de réessayer pour éviter un doublon.',
+                'request' => __('L’envoi à notre atelier a échoué ou est incomplet. Contactez-nous par e-mail avant de réessayer pour éviter un doublon.'),
             ]);
         }
 
         return redirect()->route('reparation')->with(
             'success',
             $data['mode'] === 'diagnostic'
-                ? 'Votre demande de diagnostic et vos photos ont été envoyées à notre atelier.'
-                : 'Votre demande a été envoyée à notre atelier. Nous vous contacterons par e-mail.'
+                ? __('Votre demande de diagnostic et vos photos ont été envoyées à notre atelier.')
+                : __('Votre demande a été envoyée à notre atelier. Nous vous contacterons par e-mail.')
         );
     }
 

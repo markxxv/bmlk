@@ -3,6 +3,14 @@
     :meta-description="__('Découvrez comment sont calculés les délais de livraison BLACK MILK : 3 à 5 jours ouvrés, horaires de traitement, week-ends et jours fériés.')"
     :canonical="route('delivery.terms')"
 >
+    @php
+        // Translations may contain <b>…</b>: they are static lang strings, never user input.
+        $rich = fn (string $key, array $replace = []) => str_replace(
+            ['<b>', '</b>'],
+            ['<strong class="font-semibold text-zinc-900">', '</strong>'],
+            __($key, $replace),
+        );
+    @endphp
     <main class="px-3 pb-16 pt-5 sm:px-5 sm:pb-20 lg:px-8">
         <div class="mx-auto max-w-[1560px]">
             <section class="relative overflow-hidden rounded-3xl bg-[#EFDDE0] px-6 py-12 sm:px-10 sm:py-16 lg:px-16 lg:py-20">
@@ -32,11 +40,10 @@
                         <div>
                             <h2 class="font-serif text-3xl font-medium tracking-tight text-zinc-900">{{ __('Quels jours sont comptés ?') }}</h2>
                             <p class="mt-4 max-w-2xl text-sm leading-7 text-zinc-600 sm:text-base">
-                                Les délais sont calculés en <strong class="font-semibold text-zinc-900">jours ouvrés, du lundi au vendredi, de 10 h à 19 h (heure de Paris)</strong>.
-                                Les heures en dehors de cette plage, les samedis, les dimanches et les jours fériés légaux en France ne sont pas comptabilisés.
+                                {!! $rich('Les délais sont calculés en <b>jours ouvrés, du lundi au vendredi, de 10 h à 19 h (heure de Paris)</b>. Les heures en dehors de cette plage, les samedis, les dimanches et les jours fériés légaux en France ne sont pas comptabilisés.') !!}
                             </p>
                             <p class="mt-4 max-w-2xl text-sm leading-7 text-zinc-600 sm:text-base">
-                                Ces horaires correspondent au <strong class="font-semibold text-zinc-900">traitement des commandes</strong> : ils ne constituent pas un rendez-vous ni une plage de passage garantie du transporteur.
+                                {!! $rich('Ces horaires correspondent au <b>traitement des commandes</b> : ils ne constituent pas un rendez-vous ni une plage de passage garantie du transporteur.') !!}
                             </p>
                         </div>
                     </div>
@@ -48,11 +55,10 @@
                         <div>
                             <h2 class="font-serif text-3xl font-medium tracking-tight text-zinc-900">{{ __('Quand commence le délai ?') }}</h2>
                             <p class="mt-4 text-sm leading-7 text-zinc-600 sm:text-base">
-                                Le point de départ est la confirmation d’une commande <strong class="font-semibold text-zinc-900">validée et payée</strong>, pendant les horaires de traitement.
-                                Une commande confirmée avant 10 h, après 19 h, le week-end ou un jour férié est prise en compte <strong class="font-semibold text-zinc-900">à 10 h le prochain jour ouvré</strong>.
+                                {!! $rich('Le point de départ est la confirmation d’une commande <b>validée et payée</b>, pendant les horaires de traitement. Une commande confirmée avant 10 h, après 19 h, le week-end ou un jour férié est prise en compte <b>à 10 h le prochain jour ouvré</b>.') !!}
                             </p>
                             <p class="mt-4 text-sm leading-7 text-zinc-600 sm:text-base">
-                                Un panier enregistré ou un paiement en attente ne déclenche pas le délai.
+                                {!! $rich('Un panier enregistré ou un paiement en attente ne déclenche pas le délai.') !!}
                             </p>
                         </div>
                     </div>
@@ -67,18 +73,17 @@
                             {{ __('Commande le vendredi à 19 h 30') }}
                         </h2>
                         <p class="mt-4 max-w-lg text-sm leading-7 text-zinc-600 sm:text-base">
-                            Les bureaux sont fermés. <strong class="font-semibold text-zinc-900">Le samedi et le dimanche ne comptent pas.</strong>
-                            En l’absence de jour férié, le décompte commence le <strong class="font-semibold text-zinc-900">lundi à 10 h</strong>.
+                            {!! $rich('Les bureaux sont fermés. <b>Le samedi et le dimanche ne comptent pas.</b> En l’absence de jour férié, le décompte commence le <b>lundi à 10 h</b>.') !!}
                         </p>
                     </div>
                     <div class="lg:col-span-7">
                         <div class="grid grid-cols-2 gap-2 sm:grid-cols-5 sm:gap-3">
                             @foreach ([
-                                ['day' => 'Lundi', 'number' => '1', 'delivery' => false],
-                                ['day' => 'Mardi', 'number' => '2', 'delivery' => false],
-                                ['day' => 'Mercredi', 'number' => '3', 'delivery' => true],
-                                ['day' => 'Jeudi', 'number' => '4', 'delivery' => true],
-                                ['day' => 'Vendredi', 'number' => '5', 'delivery' => true],
+                                ['day' => __('Lundi'), 'number' => '1', 'delivery' => false],
+                                ['day' => __('Mardi'), 'number' => '2', 'delivery' => false],
+                                ['day' => __('Mercredi'), 'number' => '3', 'delivery' => true],
+                                ['day' => __('Jeudi'), 'number' => '4', 'delivery' => true],
+                                ['day' => __('Vendredi'), 'number' => '5', 'delivery' => true],
                             ] as $day)
                                 <div class="rounded-2xl p-4 {{ $day['delivery'] ? 'bg-white' : 'bg-white/50' }}">
                                     <p class="text-sm font-medium text-zinc-900">{{ $day['day'] }}</p>
@@ -100,21 +105,20 @@
                 <section class="rounded-3xl bg-white p-7 sm:p-10 lg:p-12">
                     <h2 class="font-serif text-3xl font-medium tracking-tight text-zinc-900">{{ __('Et s’il y a un jour férié ?') }}</h2>
                     <p class="mt-4 text-sm leading-7 text-zinc-600 sm:text-base">
-                        Chaque jour férié non ouvré est exclu du décompte. Si le lundi de notre exemple est férié, le premier jour compté devient <strong class="font-semibold text-zinc-900">le mardi à 10 h</strong> ; la plage de livraison se décale d’autant.
-                        La même règle s’applique à tout jour férié intervenant pendant le délai.
+                        {!! $rich('Chaque jour férié non ouvré est exclu du décompte. Si le lundi de notre exemple est férié, le premier jour compté devient <b>le mardi à 10 h</b> ; la plage de livraison se décale d’autant. La même règle s’applique à tout jour férié intervenant pendant le délai.') !!}
                     </p>
                     <p class="mt-4 text-sm leading-7 text-zinc-600 sm:text-base">
-                        Selon le pays de destination, d’autres jours non ouvrés peuvent s’ajouter ; un délai spécifique vous est alors communiqué avant la validation de la commande.
+                        {!! $rich('Selon le pays de destination, d’autres jours non ouvrés peuvent s’ajouter ; un délai spécifique vous est alors communiqué avant la validation de la commande.') !!}
                     </p>
                 </section>
 
                 <section class="rounded-3xl bg-white p-7 sm:p-10 lg:p-12">
                     <h2 class="font-serif text-3xl font-medium tracking-tight text-zinc-900">{{ __('Livraison et suivi de votre colis') }}</h2>
                     <p class="mt-4 text-sm leading-7 text-zinc-600 sm:text-base">
-                        Le mode de livraison, les frais correspondants et le délai applicable à votre destination sont présentés avant le paiement. En cas de délai différent expressément annoncé pour le mode de transport choisi, <strong class="font-semibold text-zinc-900">ce délai est celui de votre commande</strong>.
+                        {!! $rich('Le mode de livraison, les frais correspondants et le délai applicable à votre destination sont présentés avant le paiement. En cas de délai différent expressément annoncé pour le mode de transport choisi, <b>ce délai est celui de votre commande</b>.') !!}
                     </p>
                     <p class="mt-4 text-sm leading-7 text-zinc-600 sm:text-base">
-                        Dès l’expédition, les informations de suivi disponibles vous permettent de connaître l’acheminement de votre colis. Les jours ouvrés décrivent notre méthode de calcul du délai ; ils ne signifient pas que le transporteur livre nécessairement entre 10 h et 19 h.
+                        {!! $rich('Dès l’expédition, les informations de suivi disponibles vous permettent de connaître l’acheminement de votre colis. Les jours ouvrés décrivent notre méthode de calcul du délai ; ils ne signifient pas que le transporteur livre nécessairement entre 10 h et 19 h.') !!}
                     </p>
                 </section>
             </div>
@@ -126,14 +130,10 @@
                     </div>
                     <div class="lg:col-span-8">
                         <p class="text-sm leading-7 text-zinc-600 sm:text-base">
-                            Si nous prévoyons un retard par rapport au délai annoncé pour votre commande, contactez-nous à
-                            <a class="font-medium text-bmlk-brand underline underline-offset-4" href="mailto:office.blackmilk@gmail.com">office.blackmilk@gmail.com</a>.
-                            Nous vous communiquerons les informations dont nous disposons et chercherons une solution.
+                            {!! $rich('Si nous prévoyons un retard par rapport au délai annoncé pour votre commande, contactez-nous à :email. Nous vous communiquerons les informations dont nous disposons et chercherons une solution.', ['email' => '<a class="font-medium text-bmlk-brand underline underline-offset-4" href="mailto:office.blackmilk@gmail.com">office.blackmilk@gmail.com</a>']) !!}
                         </p>
                         <p class="mt-4 text-sm leading-7 text-zinc-600 sm:text-base">
-                            <strong class="font-semibold text-zinc-900">Vos droits légaux restent pleinement applicables.</strong>
-                            En cas de livraison hors du délai convenu, le Code de la consommation prévoit notamment la possibilité de demander une livraison dans un délai supplémentaire raisonnable, puis, si nécessaire, de résoudre le contrat et d’obtenir le remboursement dans les conditions prévues par la loi. Dans certains cas, la résolution peut être immédiate.
-                            Les présentes informations ne limitent aucun de ces droits.
+                            {!! $rich('<b>Vos droits légaux restent pleinement applicables.</b> En cas de livraison hors du délai convenu, le Code de la consommation prévoit notamment la possibilité de demander une livraison dans un délai supplémentaire raisonnable, puis, si nécessaire, de résoudre le contrat et d’obtenir le remboursement dans les conditions prévues par la loi. Dans certains cas, la résolution peut être immédiate. Les présentes informations ne limitent aucun de ces droits.') !!}
                         </p>
                         <div class="mt-7 flex flex-wrap items-center gap-x-7 gap-y-4 text-sm">
                             <a href="{{ route('page', ['slug' => 'conditions-generales-de-vente']) }}" class="inline-flex items-center gap-2 font-medium text-bmlk-brand transition hover:text-[#945763]">
