@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Spatie\Translatable\HasTranslations;
 
 class Course extends Model
@@ -26,6 +27,26 @@ class Course extends Model
             'active' => 'boolean',
             'sort' => 'integer',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Course $course): void {
+            if (blank($course->slug)) {
+                $base = Str::slug($course->name) ?: 'course';
+                $slug = $base;
+
+                for ($i = 2; static::query()->where('slug', $slug)->exists(); $i++) {
+                    $slug = "{$base}-{$i}";
+                }
+
+                $course->slug = $slug;
+            }
+
+            if (! $course->sort) {
+                $course->sort = ((int) static::query()->max('sort')) + 10;
+            }
+        });
     }
 
     public function purchases(): HasMany
