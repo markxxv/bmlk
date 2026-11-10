@@ -21,6 +21,9 @@
     <url>
         <loc>{{ route('where-to-buy') }}</loc>
     </url>
+    <url>
+        <loc>{{ route('delivery.terms') }}</loc>
+    </url>
 
     @foreach ($categories as $category)
         @php

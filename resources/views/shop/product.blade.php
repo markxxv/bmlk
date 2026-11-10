@@ -688,7 +688,7 @@
                             <div class="mt-5 grid gap-3 text-sm leading-6 text-zinc-500 sm:grid-cols-2">
                                 <div class="flex gap-3">
                                     <x-lucide-package-check class="mt-1 h-4 w-4 shrink-0 text-bmlk-brand" />
-                                    <span>{{ __('Expédition sous 1 à 3 jours ouvrés') }}</span>
+                                    <a href="{{ route('delivery.terms') }}" class="underline decoration-bmlk-brand/40 underline-offset-4 transition hover:text-bmlk-brand hover:decoration-bmlk-brand">{{ __('Livraison sous 3 à 5 jours ouvrés') }}</a>
                                 </div>
 
                                 <div class="flex gap-3">

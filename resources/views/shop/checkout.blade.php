@@ -609,6 +609,10 @@
                            class="mt-4 text-xs text-zinc-500">Sélectionnez votre pays et indiquez votre code postal pour voir les tarifs.</p>
                         <p x-show="isCalculating" class="mt-4 text-xs text-zinc-500">Calcul des tarifs Sendcloud…</p>
                         <p x-show="cartNotice" x-text="cartNotice" class="mt-4 text-xs text-bmlk-brand"></p>
+                        <a href="{{ route('delivery.terms') }}" class="mt-3 inline-flex items-center gap-1.5 text-sm text-bmlk-brand underline decoration-bmlk-brand/30 underline-offset-4 transition hover:decoration-bmlk-brand">
+                            {{ __('Livraison sous 3 à 5 jours ouvrés · Comprendre les délais') }}
+                            <x-lucide-arrow-up-right class="h-3.5 w-3.5" />
+                        </a>
                         <p x-show="shippingError" x-text="shippingError" class="mt-4 text-xs text-red-500"></p>
                         <button x-show="shippingCartError" type="button" @click="$store.cart.isOpen = true"
                             class="mt-2 text-xs font-medium text-bmlk-brand underline underline-offset-4">Vérifier le panier</button>

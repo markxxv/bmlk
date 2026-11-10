@@ -62,6 +62,7 @@ Route::get('/shop/product/{slug}', [ShopController::class, 'product'])
     ->where('slug', '[A-Za-z0-9-]+')
     ->name('shop.product');
 
+Route::view('/livraison', 'livraison')->name('delivery.terms');
 Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
 Route::post('/checkout', [ShopController::class, 'processOrder'])->name('checkout.store');
 Route::post('/api/cart/availability', [ShopController::class, 'cartAvailability'])

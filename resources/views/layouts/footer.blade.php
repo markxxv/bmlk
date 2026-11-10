@@ -174,6 +174,7 @@
             </div>
 
             <nav class="flex flex-wrap gap-x-5 gap-y-2 text-xs">
+                <a href="{{ route('delivery.terms') }}" class="transition hover:text-bmlk-footer">{{ __('Livraison') }}</a>
                 <a href="/conditions-generales-de-vente" class="transition hover:text-bmlk-footer">{{ __('CGV') }}</a>
                 <a href="/mentions-legales" class="transition hover:text-bmlk-footer">{{ __('Mentions légales') }}</a>
                 <a href="/politique-de-confidentialite" class="transition hover:text-bmlk-footer">{{ __('Confidentialité') }}</a>
