@@ -332,7 +332,7 @@ class OrderResource extends Resource
             ]),
         ])
         ->recordActions([EditAction::make()])
-        ->defaultSort('id', 'desc');
+        ->defaultSort('created_at', 'desc');
     }
 
     public static function getPages(): array
