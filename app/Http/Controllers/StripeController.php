@@ -254,7 +254,12 @@ class StripeController extends Controller
             'checkout.session.async_payment_failed',
             'checkout.session.expired',
         ], true) && is_array(data_get($event, 'data.object'))) {
-            $this->sync(data_get($event, 'data.object'), $type);
+            $object = data_get($event, 'data.object');
+            if (data_get($object, 'metadata.course_purchase_id')) {
+                app(\App\Services\CoursePurchaseService::class)->sync($object, $type);
+            } else {
+                $this->sync($object, $type);
+            }
         }
 
         return response('OK', 200);

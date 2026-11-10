@@ -9,6 +9,7 @@ use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ProductRatingController;
 use App\Http\Controllers\ReviewLinkController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\WarehouseRefundController;
@@ -164,6 +165,7 @@ $localized = function (): void {
         Route::get('/account/orders/{order}', [AccountController::class, 'order'])->name('account.order');
         Route::post('/account/orders/{order}/ratings', [ProductRatingController::class, 'store'])
             ->middleware('throttle:20,1')->name('account.ratings.store');
+        Route::get('/account/courses', [AccountController::class, 'courses'])->name('account.courses');
         Route::get('/account/profile', [AccountController::class, 'profile'])->name('account.profile');
         Route::post('/account/password', [AccountController::class, 'savePassword'])->middleware('throttle:5,1')->name('account.password');
         Route::post('/account/verification-notification', [AccountController::class, 'resendVerification'])
@@ -188,6 +190,13 @@ $localized = function (): void {
 
     Route::get('/events', [FrontController::class, 'events'])->name('events');
     Route::get('/formations', [FrontController::class, 'formations'])->name('formations');
+    Route::post('/formations/{slug}/buy', [CourseController::class, 'buy'])
+        ->where('slug', '[A-Za-z0-9-]+')
+        ->middleware('throttle:10,1')
+        ->name('courses.buy');
+    Route::get('/formations/thanks/{purchase}', [CourseController::class, 'thanks'])
+        ->whereNumber('purchase')
+        ->name('courses.thanks');
 
     Route::get('/ou-acheter', [FrontController::class, 'whereToBuy'])->name('where-to-buy');
 

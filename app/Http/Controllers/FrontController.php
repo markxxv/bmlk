@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Course;
 use App\Models\Event;
 use App\Models\Page;
 use App\Models\Product;
@@ -76,15 +77,18 @@ class FrontController extends Controller
 
     public function formations(): View
     {
+        $courses = Course::query()->active()->orderBy('sort')->orderBy('id')->get();
+        $onlineCourses = $courses->where('mode', 'online')->values();
+
         return view('formations', [
-            'onlineCourses' => config('formations.online'),
-            'liveCourses' => config('formations.live'),
-            'waxModules' => config('formations.wax_modules'),
-            'waxFacts' => config('formations.wax_facts'),
-            'waxAbout' => config('formations.wax_about'),
+            'onlineCourses' => $onlineCourses,
+            'liveCourses' => $courses->where('mode', 'live')->values(),
+            // The detailed programme belongs to whichever online course carries one.
+            'programmeCourse' => $onlineCourses->first(fn (Course $course): bool => $course->programmeData() !== null),
             'waxSkins' => config('formations.wax_skins'),
-            'waxGoals' => config('formations.wax_goals'),
-            'waxIncluded' => config('formations.wax_included'),
+            'ownedIds' => auth()->check()
+                ? auth()->user()->coursePurchases()->where('status', 'paid')->pluck('course_id')->all()
+                : [],
             'metaTitle' => __('Formations pour prothésistes ongulaires | BLACK MILK'),
             'metaDescription' => __('Découvrez les formations de la Smirnova School : Wax Manicure, Pop-It Architect, BLACK MILK Instructor et Instagram Creator, en ligne ou en présentiel.'),
             'canonical' => route('formations'),
