@@ -268,6 +268,7 @@ class ProductRatingsTest extends TestCase
         return Order::query()->create([
             'user_id' => $buyer->id,
             'first_name' => 'Marie',
+            'phone' => '0102030405',
             'email' => $buyer->email,
             'country' => 'France',
             'city' => 'Paris',

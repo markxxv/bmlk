@@ -196,6 +196,7 @@ class ReviewRequestsTest extends TestCase
         return Order::query()->create([
             'user_id' => User::factory()->create()->id,
             'first_name' => 'Marie',
+            'phone' => '0102030405',
             'email' => 'marie@example.com',
             'country' => 'France',
             'city' => 'Paris',
