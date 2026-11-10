@@ -26,7 +26,7 @@ class FormationsPageTest extends TestCase
             ->assertSee('WAX MANICURE')
             ->assertSee('POP-IT ARCHITECT')
             ->assertSee('INSTAGRAM CREATOR')
-            ->assertSee('img/formations/wax-tin.webp')
+            ->assertSee('storage/')
             ->assertSee('mailto:office.blackmilk@gmail.com')
             ->assertSee(route('events'))
             ->assertSee('Objectifs de la formation');
@@ -44,6 +44,14 @@ class FormationsPageTest extends TestCase
         $this->assertSame('Acceso de por vida al curso online', $wax->getTranslation('points', 'es')[0]);
         $this->assertCount(6, $wax->getTranslation('programme', 'es')['modules']);
         $this->assertNull(Course::where('slug', 'instagram-creator')->value('price'));
+    }
+
+    public function test_seeder_attaches_covers_to_the_media_library(): void
+    {
+        $wax = Course::where('slug', 'wax-manicure')->firstOrFail();
+        $this->assertNotNull($wax->getFirstMedia('image'));
+        $this->assertSame(1, $wax->getMedia('image')->count());
+        $this->assertNull(Course::where('slug', 'instagram-creator')->firstOrFail()->imageUrl());
     }
 
     public function test_seeder_does_not_overwrite_admin_edits(): void

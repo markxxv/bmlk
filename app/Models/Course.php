@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Translatable\HasTranslations;
 
-class Course extends Model
+class Course extends Model implements HasMedia
 {
-    use HasTranslations;
+    use HasTranslations, InteractsWithMedia;
 
     protected $guarded = ['id'];
 
@@ -47,6 +49,23 @@ class Course extends Model
                 $course->sort = ((int) static::query()->max('sort')) + 10;
             }
         });
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('image')->singleFile()->useDisk('public');
+    }
+
+    /** Uploaded cover, falling back to the legacy file name in public/img/formations. */
+    public function imageUrl(): ?string
+    {
+        $media = $this->getFirstMedia('image');
+
+        if ($media) {
+            return $media->getUrl();
+        }
+
+        return $this->image ? asset('img/formations/'.$this->image) : null;
     }
 
     public function purchases(): HasMany

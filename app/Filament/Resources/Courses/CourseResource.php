@@ -9,6 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -110,10 +111,12 @@ class CourseResource extends Resource
                                         ->required()
                                         ->native(false),
 
-                                    TextInput::make('image')
-                                        ->label('Image file')
-                                        ->helperText('File name inside public/img/formations.')
-                                        ->maxLength(255),
+                                    SpatieMediaLibraryFileUpload::make('image')
+                                        ->label('Cover image')
+                                        ->collection('image')
+                                        ->disk('public')
+                                        ->image()
+                                        ->imageEditor(),
                                 ]),
 
                             Section::make('Price')
