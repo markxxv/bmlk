@@ -57,23 +57,6 @@ class CourseResource extends Resource
                 ->schema([
                     Grid::make(1)
                         ->schema([
-                            Section::make('Header')
-                                ->icon('lucide-heading')
-                                ->schema([
-                                    Grid::make(['default' => 1, 'md' => 3])
-                                        ->schema(array_map(
-                                            fn (string $locale): TextInput => TextInput::make("tag.{$locale}")
-                                                ->label('Pre header · '.strtoupper($locale))
-                                                ->maxLength(255),
-                                            static::locales(),
-                                        )),
-
-                                    TextInput::make('name')
-                                        ->label('Name')
-                                        ->required()
-                                        ->maxLength(255),
-                                ]),
-
                             Section::make('Content')
                                 ->icon('lucide-languages')
                                 ->schema([Tabs::make('Translations')->tabs(static::translationTabs())]),
@@ -141,7 +124,11 @@ class CourseResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label('Course')->searchable()->weight('medium'),
+                TextColumn::make('name_fr')
+                    ->label('Course')
+                    ->state(fn (Course $record): string => $record->getTranslation('name', 'fr', false) ?: '—')
+                    ->searchable(query: fn ($query, string $search) => $query->whereRaw("name->>'fr' ILIKE ?", ["%{$search}%"]))
+                    ->weight('medium'),
                 TextColumn::make('mode')->label('Format')->badge()->color('gray'),
                 TextColumn::make('price')->label('Price')->money('EUR')->placeholder('—')->sortable(),
                 TextColumn::make('purchases_count')->label('Sold')
@@ -176,6 +163,15 @@ class CourseResource extends Resource
         return array_map(
             fn (string $locale): Tab => Tab::make(strtoupper($locale))
                 ->schema([
+                    TextInput::make("tag.{$locale}")
+                        ->label('Pre header')
+                        ->maxLength(255),
+
+                    TextInput::make("name.{$locale}")
+                        ->label('Name')
+                        ->required($locale === 'fr')
+                        ->maxLength(255),
+
                     Textarea::make("description.{$locale}")->label('Description')->rows(4),
 
                     Repeater::make("points.{$locale}")

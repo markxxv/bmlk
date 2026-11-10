@@ -20,7 +20,7 @@ class Course extends Model implements HasMedia
     // Telegram links (telegram_channel_url, telegram_chat_url) are private: they are
     // only rendered in the account of customers who bought the course.
 
-    public array $translatable = ['tag', 'description', 'points', 'programme', 'info_pdf'];
+    public array $translatable = ['name', 'tag', 'description', 'points', 'programme', 'info_pdf'];
 
     protected function casts(): array
     {
@@ -35,7 +35,8 @@ class Course extends Model implements HasMedia
     {
         static::creating(function (Course $course): void {
             if (blank($course->slug)) {
-                $base = Str::slug($course->name) ?: 'course';
+                $name = $course->getTranslation('name', 'fr', false) ?: collect($course->getTranslations('name'))->filter()->first();
+                $base = Str::slug((string) $name) ?: 'course';
                 $slug = $base;
 
                 for ($i = 2; static::query()->where('slug', $slug)->exists(); $i++) {

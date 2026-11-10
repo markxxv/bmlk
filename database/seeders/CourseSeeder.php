@@ -28,7 +28,6 @@ class CourseSeeder extends Seeder
 
                 $course->fill([
                     'mode' => $mode,
-                    'name' => $item['name'],
                     'price' => $item['price'],
                     'image' => $item['image'],
                     'active' => true,
@@ -36,6 +35,7 @@ class CourseSeeder extends Seeder
                 ]);
 
                 foreach ($locales as $locale) {
+                    $course->setTranslation('name', $locale, $item['name']);
                     $course->setTranslation('tag', $locale, $this->t($item['tag'], $locale));
                     $course->setTranslation('description', $locale, $this->t($item['description'], $locale));
                     $course->setTranslation('points', $locale, array_map(fn (string $p) => $this->t($p, $locale), $item['points']));

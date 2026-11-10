@@ -50,6 +50,7 @@ class CoursePurchaseResource extends Resource
             Select::make('course_id')
                 ->label('Course')
                 ->relationship('course', 'name')
+                ->getOptionLabelFromRecordUsing(fn ($record): string => $record->getTranslation('name', 'fr', false) ?: '—')
                 ->searchable()
                 ->preload()
                 ->required(),
@@ -61,7 +62,10 @@ class CoursePurchaseResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('paid_at')->label('Paid')->dateTime('d M Y, H:i')->placeholder('—')->sortable(),
-                TextColumn::make('course.name')->label('Course')->searchable(),
+                TextColumn::make('course_name')
+                    ->label('Course')
+                    ->state(fn (CoursePurchase $record): string => $record->course?->getTranslation('name', 'fr', false) ?: '—')
+                    ->searchable(query: fn ($query, string $search) => $query->whereHas('course', fn ($q) => $q->whereRaw("name->>'fr' ILIKE ?", ["%{$search}%"]))),
                 TextColumn::make('email')->label('E-mail')->searchable()->placeholder('—'),
                 TextColumn::make('user.name')->label('Account')->placeholder('— (not attached)'),
                 TextColumn::make('amount_cents')->label('Amount')
