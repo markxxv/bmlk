@@ -37,7 +37,7 @@ class CourseResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'General';
+        return 'Education';
     }
 
     public static function getModelLabel(): string
