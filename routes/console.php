@@ -10,6 +10,15 @@ Artisan::command('inspire', function () {
 
 // The server already runs "php artisan schedule:run" every minute.
 Schedule::command('orders:payment-emails')->everyMinute()->withoutOverlapping(10);
+
+// One post-delivery rating request, only during French business hours.
+// The command independently excludes holidays and rechecks its time window.
+Schedule::command('orders:send-review-requests')
+    ->everyFifteenMinutes()
+    ->weekdays()
+    ->between('10:00', '18:59')
+    ->timezone('Europe/Paris')
+    ->withoutOverlapping(15);
 // Immediate paid-order alerts are retried hourly, even outside business hours.
 Schedule::command('orders:telegram-notifications --initial-only')->hourly()->withoutOverlapping(10);
 

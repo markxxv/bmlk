@@ -19,6 +19,8 @@ class Order extends Model
         return [
             'items' => 'array',
             'ratings_enabled' => 'boolean',
+            'delivered_at' => 'datetime',
+            'review_request_sent_at' => 'datetime',
             'shipping_parcel' => 'array',
             'sendcloud_rate' => 'decimal:2',
             'sendcloud_event_at' => 'integer',
@@ -73,6 +75,11 @@ class Order extends Model
     public function ratings(): HasMany
     {
         return $this->hasMany(ProductRating::class);
+    }
+
+    public function reviewAccessToken(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ReviewAccessToken::class);
     }
 
     public function canBeRated(): bool

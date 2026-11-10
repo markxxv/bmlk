@@ -532,11 +532,12 @@ class SendcloudController extends Controller
             $timestamp = (int) ($event['carrier_status_change_timestamp'] ?? $event['timestamp'] ?? 0);
             if ($timestamp > (int) ($order->sendcloud_event_at ?? 0)) {
                 $message = strtolower((string) data_get($parcel, 'status.message', ''));
+                $isDelivered = (bool) preg_match('/^(delivered|livr[ée]|distribu[ée])/iu', $message);
                 $status = $order->status;
                 // Completed and manually archived orders are terminal: carrier
                 // updates may refresh tracking, but cannot change their status.
                 if (! in_array($status, ['completed', 'archived'], true)) {
-                    if (preg_match('/^(delivered|livr[ée]|distribu[ée])/iu', $message)) {
+                    if ($isDelivered) {
                         $status = 'completed';
                     } elseif (! empty($parcel['tracking_number']) || $order->tracking_number
                         || str_contains($message, 'transit') || str_contains($message, 'en route')
@@ -544,8 +545,19 @@ class SendcloudController extends Controller
                         $status = 'shipped';
                     }
                 }
+                // The signed classic webhook supplies a carrier event timestamp in
+                // milliseconds; use it as a fallback when v3 tracking is delayed.
+                $deliveryTimestamp = $timestamp > 100000000000 ? intdiv($timestamp, 1000) : $timestamp;
+                $deliveredAt = null;
+                if ($isDelivered && $order->delivered_at === null
+                    && $deliveryTimestamp >= 1577836800
+                    && $deliveryTimestamp <= now()->addDay()->timestamp) {
+                    $deliveredAt = \Carbon\CarbonImmutable::createFromTimestamp($deliveryTimestamp, 'UTC');
+                }
+
                 $order->forceFill([
                     'sendcloud_event_at' => $timestamp,
+                    'delivered_at' => $deliveredAt ?? $order->delivered_at,
                     'sendcloud_status' => data_get($parcel, 'status.message'),
                     'tracking_number' => $parcel['tracking_number'] ?? $order->tracking_number,
                     'tracking_url' => $parcel['tracking_url'] ?? $order->tracking_url,
