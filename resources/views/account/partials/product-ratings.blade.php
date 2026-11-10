@@ -3,6 +3,7 @@
     $savedRatings = $order->ratings->keyBy('order_item_index');
     $initialScores = $savedRatings->mapWithKeys(fn ($rating) => [$rating->order_item_index => $rating->rating])->all();
     $remainingRatings = collect(array_keys($ratingItems))->filter(fn ($index) => ! $savedRatings->has($index))->count();
+    $ratingsReadOnly = session()->has('customer_preview');
 @endphp
 
 @if ($order->canBeRated() && count($ratingItems) && ($remainingRatings || ($showCompletedRatings ?? false)))
@@ -72,6 +73,7 @@
                                 <button type="button" @click="scores[{{ $index }}] = {{ $star }}"
                                     @mouseenter="hovered = {{ $star }}"
                                     @focus="hovered = {{ $star }}" @blur="hovered = 0"
+                                    @disabled($ratingsReadOnly)
                                     :aria-pressed="Number(scores[{{ $index }}] || 0) === {{ $star }}"
                                     :class="(hovered || Number(scores[{{ $index }}] || 0)) >= {{ $star }} ? 'text-amber-500' : 'text-zinc-300'"
                                     class="flex size-11 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bmlk-brand sm:size-10"
@@ -90,12 +92,16 @@
             @enderror
 
             <div class="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <p class="text-xs text-zinc-500">{{ __('Vos notes sont privées et servent à améliorer nos produits.') }}</p>
-                <button type="submit" :disabled="!Object.values(scores).some(value => Number(value) >= 1)"
-                    class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto">
-                    <x-lucide-check class="size-4" aria-hidden="true" />
-                    {{ __('Enregistrer mes notes') }}
-                </button>
+                @if ($ratingsReadOnly)
+                    <p class="text-xs font-medium text-bmlk-brand">{{ __('Aperçu administrateur : les évaluations ne peuvent pas être modifiées.') }}</p>
+                @else
+                    <p class="text-xs text-zinc-500">{{ __('Vos notes sont privées et servent à améliorer nos produits.') }}</p>
+                    <button type="submit" :disabled="!Object.values(scores).some(value => Number(value) >= 1)"
+                        class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-bmlk-brand px-6 py-3 text-sm font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto">
+                        <x-lucide-check class="size-4" aria-hidden="true" />
+                        {{ __('Enregistrer mes notes') }}
+                    </button>
+                @endif
             </div>
         </form>
     </section>

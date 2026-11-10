@@ -92,11 +92,12 @@ class AccountController extends Controller
         abort_unless($order->access_token
             && hash_equals($order->access_token, (string) $request->query('token', '')), 404);
 
-        $ratingProducts = $request->user() && $order->user_id === $request->user()->id
+        $canShowRatings = $request->user() && $order->user_id === $request->user()->id;
+        $ratingProducts = $canShowRatings
             ? $this->ratingProductsFor([$order])
             : collect();
 
-        return view('account.checkout-order', compact('order', 'ratingProducts'));
+        return view('account.checkout-order', compact('order', 'ratingProducts', 'canShowRatings'));
     }
 
     public function loginForm(): View { return view('account.login'); }
@@ -147,7 +148,7 @@ class AccountController extends Controller
         });
 
         // Independent of orders pagination, so older incomplete ratings stay visible.
-        $pendingRatingOrders = $preview ? collect() : (clone $orders)
+        $pendingRatingOrders = (clone $orders)
             ->where('ratings_enabled', true)
             ->where('payment_status', 'paid')
             ->where(fn ($query) => $query->where('status', 'completed')
@@ -181,8 +182,9 @@ class AccountController extends Controller
 
         $order->load(['trackingEvents', 'ratings']);
         $ratingProducts = $this->ratingProductsFor([$order]);
+        $canShowRatings = true; // Ownership or verified-email preview was checked above.
 
-        return view('account.checkout-order', compact('order', 'ratingProducts'));
+        return view('account.checkout-order', compact('order', 'ratingProducts', 'canShowRatings'));
     }
 
     public function profile(Request $request): View

@@ -201,6 +201,36 @@ class ProductRatingsTest extends TestCase
             ->assertSee('size-11', false);
     }
 
+    public function test_customer_preview_displays_pending_ratings_without_save_controls(): void
+    {
+        $buyer = User::factory()->create();
+        $order = $this->order($buyer, [$this->product()], [
+            'status' => 'completed',
+        ]);
+
+        $this->actingAs($buyer)->withSession([
+            'customer_preview' => ['user_id' => $buyer->id],
+        ]);
+
+        $this->get(route('account.index'))
+            ->assertOk()
+            ->assertSee('Évaluez vos produits')
+            ->assertSee('Aperçu administrateur')
+            ->assertDontSee('Enregistrer mes notes');
+
+        $this->get(route('account.order', $order))
+            ->assertOk()
+            ->assertSee('Évaluez vos produits')
+            ->assertSee('Aperçu administrateur')
+            ->assertDontSee('Enregistrer mes notes');
+
+        $this->post(route('account.ratings.store', $order), [
+            'ratings' => [0 => 5],
+        ])->assertForbidden();
+
+        $this->assertDatabaseCount('product_ratings', 0);
+    }
+
     public function test_preview_cannot_post_ratings(): void
     {
         $buyer = User::factory()->create();

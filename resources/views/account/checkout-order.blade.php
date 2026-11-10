@@ -74,7 +74,7 @@
             </div>
 
             @auth
-                @if ($order->user_id === auth()->id() && ! session()->has('customer_preview') && $order->canBeRated())
+                @if (($canShowRatings ?? false) && $order->canBeRated())
                     <div class="mt-7">
                         @include('account.partials.product-ratings', ['order' => $order, 'showCompletedRatings' => true])
                     </div>
