@@ -1,4 +1,4 @@
-<x-layout :title="__('Notifications d’avis | BLACK MILK')" robots="noindex, nofollow">
+<x-reviews.layout :title="__('Notifications d’avis | BLACK MILK')" robots="noindex, nofollow">
     <main class="mx-auto max-w-xl px-4 py-12 sm:py-20">
         <section class="rounded-3xl bg-white p-6 text-center sm:p-9">
             <span class="mx-auto flex size-12 items-center justify-center rounded-full bg-bmlk-soft text-bmlk-brand">
@@ -23,4 +23,4 @@
             @endif
         </section>
     </main>
-</x-layout>
+</x-reviews.layout>

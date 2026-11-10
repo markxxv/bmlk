@@ -39,7 +39,7 @@ class ReviewRequestsTest extends TestCase
         $this->assertNotNull($order->fresh()->review_request_sent_at);
 
         /** @var ReviewRequestMail $mail */
-        $mail = Mail::assertSent(ReviewRequestMail::class)->first();
+        $mail = Mail::sent(ReviewRequestMail::class)->first();
         $token = basename(parse_url($mail->reviewUrl, PHP_URL_PATH));
 
         $this->assertSame(hash('sha256', $token), ReviewAccessToken::query()->where('order_id', $order->id)->value('token_hash'));
@@ -117,7 +117,7 @@ class ReviewRequestsTest extends TestCase
         $order = $this->order(deliveredAt: '2026-11-01 10:00:00');
         $this->artisan('orders:send-review-requests')->assertSuccessful();
 
-        $mail = Mail::assertSent(ReviewRequestMail::class)->first();
+        $mail = Mail::sent(ReviewRequestMail::class)->first();
         $token = basename(parse_url($mail->reviewUrl, PHP_URL_PATH));
 
         $this->post(route('reviews.store', ['token' => $token]), [
@@ -140,7 +140,7 @@ class ReviewRequestsTest extends TestCase
     {
         $order = $this->order(deliveredAt: '2026-11-01 10:00:00');
         $this->artisan('orders:send-review-requests')->assertSuccessful();
-        $mail = Mail::assertSent(ReviewRequestMail::class)->first();
+        $mail = Mail::sent(ReviewRequestMail::class)->first();
 
         $this->get($mail->unsubscribeUrl)->assertOk();
         $this->assertDatabaseCount('review_email_opt_outs', 0);

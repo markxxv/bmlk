@@ -668,6 +668,9 @@
                             >
                             <span>{{ __('J’accepte le traitement de mes données pour la gestion de cette commande.') }}</span>
                         </label>
+                        <p class="mt-2 pl-7 text-xs leading-5 text-zinc-500">
+                            {{ __('Après la livraison, nous pouvons vous envoyer un seul e-mail pour connaître votre avis sur les produits reçus. Vous pourrez vous désinscrire depuis cet e-mail.') }}
+                        </p>
 
                         <p x-show="errors.privacy" x-text="errors.privacy?.[0]" class="mt-2 text-xs text-red-500"></p>
                         <p x-show="errors.promo_code" x-text="errors.promo_code?.[0]" class="mt-2 text-xs text-red-500"></p>

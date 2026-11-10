@@ -1,4 +1,4 @@
-<x-layout :title="__('Votre avis | BLACK MILK')" robots="noindex, nofollow">
+<x-reviews.layout :title="__('Votre avis | BLACK MILK')" robots="noindex, nofollow">
     <main class="mx-auto max-w-2xl px-4 py-8 sm:py-16">
         <div class="mb-6 text-center">
             <span class="inline-flex size-12 items-center justify-center rounded-full bg-bmlk-soft text-bmlk-brand">
@@ -33,4 +33,4 @@
             {{ __('Ce lien privé permet uniquement d’évaluer les produits de cette commande. Il expire 30 jours après l’envoi de l’e-mail.') }}
         </p>
     </main>
-</x-layout>
+</x-reviews.layout>
