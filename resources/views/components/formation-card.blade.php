@@ -8,13 +8,14 @@
         : __('Sur demande');
     $pdfUrl = $course->infoPdfUrl();
     $points = $course->points ?: [];
+    $imageUrl = $course->imageUrl();
 @endphp
 
 <article id="{{ $mode }}-{{ $course->slug }}" class="group flex h-full flex-col overflow-hidden rounded-3xl bg-white" data-blur-reveal-item>
     <div class="relative aspect-[5/4] overflow-hidden bg-[#EFDDE0]">
-        @if ($course->image)
+        @if ($imageUrl)
             <img
-                src="{{ asset('img/formations/'.$course->image) }}"
+                src="{{ $imageUrl }}"
                 alt="{{ $course->name }}"
                 width="1000"
                 height="800"

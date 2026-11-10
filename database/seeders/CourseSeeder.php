@@ -21,6 +21,8 @@ class CourseSeeder extends Seeder
                 $course = Course::firstOrNew(['slug' => $item['slug']]);
 
                 if ($course->exists) {
+                    $this->attachImage($course, $item['image']);
+
                     continue;
                 }
 
@@ -44,8 +46,21 @@ class CourseSeeder extends Seeder
                 }
 
                 $course->save();
+                $this->attachImage($course, $item['image']);
             }
         }
+    }
+
+    /** Copies the bundled cover into the media library unless one was uploaded already. */
+    private function attachImage(Course $course, ?string $file): void
+    {
+        $path = $file ? public_path('img/formations/'.$file) : null;
+
+        if (! $path || ! is_file($path) || $course->getFirstMedia('image')) {
+            return;
+        }
+
+        $course->addMedia($path)->preservingOriginal()->toMediaCollection('image');
     }
 
     private function waxProgramme(string $locale): array
