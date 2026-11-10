@@ -5,6 +5,13 @@
     :og-image="asset('img/elena.webp')"
 >
     <main>
+        @if (session('error'))
+            <div class="mx-auto mt-5 max-w-[1560px] px-3 sm:px-5 lg:px-8"><p class="rounded-2xl bg-white px-5 py-4 text-sm text-red-600">{{ session('error') }}</p></div>
+        @endif
+        @if (session('success'))
+            <div class="mx-auto mt-5 max-w-[1560px] px-3 sm:px-5 lg:px-8"><p class="rounded-2xl bg-bmlk-soft px-5 py-4 text-sm text-bmlk-ink">{{ session('success') }}</p></div>
+        @endif
+
         {{-- Hero --}}
         <section class="px-3 pb-5 pt-5 sm:px-5 sm:pb-10 lg:px-8">
             <div class="relative mx-auto max-w-[1560px] overflow-hidden rounded-3xl bg-[#DDA1AA]">
@@ -96,7 +103,7 @@
 
                 <div class="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:mt-12 lg:grid-cols-3 lg:gap-8" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.8" data-blur-y="20" data-blur-pixels="9">
                     @foreach ($onlineCourses as $course)
-                        <x-formation-card :course="$course" />
+                        <x-formation-card :course="$course" :owned="in_array($course->id, $ownedIds)" />
                     @endforeach
 
                     @if (count($onlineCourses) % 6 === 5)
@@ -119,7 +126,9 @@
             </div>
         </section>
 
-        {{-- Wax Manicure : programme détaillé --}}
+        {{-- Detailed programme of the online course which carries one --}}
+        @if ($programmeCourse)
+        @php($programme = $programmeCourse->programmeData())
         <section id="programme" class="scroll-mt-8 px-3 pb-16 sm:px-5 sm:pb-20 lg:px-8 lg:pb-24">
             <div class="mx-auto max-w-[1560px] rounded-3xl bg-white px-6 py-12 sm:px-10 sm:py-14 lg:px-14 lg:py-16 xl:px-16">
                 <div class="grid gap-6 lg:grid-cols-2 lg:items-end">
@@ -140,10 +149,10 @@
                 </div>
 
                 <div class="mt-10 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5" data-blur-reveal data-blur-stagger="0.08" data-blur-duration="0.75" data-blur-y="14" data-blur-pixels="7">
-                    @foreach ($waxFacts as $fact)
+                    @foreach ($programme['facts'] as $fact)
                         <div class="rounded-2xl bg-[#FCF8F4] px-5 py-5 sm:px-6 sm:py-6" data-blur-reveal-item>
-                            <p class="font-serif text-3xl font-medium leading-none text-bmlk-brand sm:text-4xl">{{ __($fact['value']) }}</p>
-                            <p class="mt-3 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">{{ __($fact['label']) }}</p>
+                            <p class="font-serif text-3xl font-medium leading-none text-bmlk-brand sm:text-4xl">{{ $fact['value'] }}</p>
+                            <p class="mt-3 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">{{ $fact['label'] }}</p>
                         </div>
                     @endforeach
                 </div>
@@ -174,8 +183,8 @@
                         <h3 class="font-serif text-2xl font-medium text-zinc-900 sm:text-3xl" data-reveal data-reveal-y="12" data-reveal-duration="0.75">{{ __('À propos de la formation') }}</h3>
 
                         <div class="mt-5 space-y-4 text-sm leading-7 text-zinc-600 sm:text-base" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.8" data-blur-y="14" data-blur-pixels="7">
-                            @foreach ($waxAbout as $paragraph)
-                                <p data-blur-reveal-item>{{ __($paragraph) }}</p>
+                            @foreach ($programme['about'] as $paragraph)
+                                <p data-blur-reveal-item>{{ $paragraph }}</p>
                             @endforeach
                         </div>
                     </div>
@@ -185,31 +194,31 @@
                         <p class="mt-3 text-sm leading-6 text-zinc-500">{{ __('À l’issue de la formation, vous serez en mesure de :') }}</p>
 
                         <ul class="mt-5 space-y-3" data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.75" data-blur-y="12" data-blur-pixels="6">
-                            @foreach ($waxGoals as $goal)
+                            @foreach ($programme['goals'] as $goal)
                                 <li class="flex items-start gap-3 text-sm leading-6 text-zinc-700 sm:text-base sm:leading-7" data-blur-reveal-item>
                                     <x-lucide-check class="mt-1 h-4 w-4 shrink-0 text-bmlk-brand" stroke-width="1.7" />
-                                    <span>{{ __($goal) }}</span>
+                                    <span>{{ $goal }}</span>
                                 </li>
                             @endforeach
                         </ul>
 
                         <div class="mt-12 flex items-end justify-between gap-4">
                             <h3 class="font-serif text-2xl font-medium text-zinc-900 sm:text-3xl" data-reveal data-reveal-y="12" data-reveal-duration="0.75">{{ __('Programme') }}</h3>
-                            <span class="rounded-full bg-[#EFDDE0] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-900 sm:px-4 sm:py-2 sm:text-xs">{{ count($waxModules) }} {{ __('modules') }}</span>
+                            <span class="rounded-full bg-[#EFDDE0] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-900 sm:px-4 sm:py-2 sm:text-xs">{{ count($programme['modules']) }} {{ __('modules') }}</span>
                         </div>
 
                         <div class="mt-5 space-y-2.5" data-creator-faq data-blur-reveal data-blur-stagger="0.07" data-blur-duration="0.75" data-blur-y="12" data-blur-pixels="6" data-blur-once="true">
-                            @foreach ($waxModules as $index => $module)
+                            @foreach ($programme['modules'] as $index => $module)
                                 <details class="group/module rounded-2xl bg-[#FCF8F4] transition-colors duration-300 open:bg-[#F6ECEE]" data-blur-reveal-item @if ($index === 0) open @endif>
                                     <summary class="flex cursor-pointer list-none items-center gap-4 px-5 py-5 sm:px-6 [&::-webkit-details-marker]:hidden">
                                         <span class="w-8 shrink-0 font-serif text-xl text-bmlk-brand">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</span>
-                                        <span class="min-w-0 flex-1 font-serif text-lg font-medium leading-snug text-zinc-900 sm:text-xl">{{ __($module['title']) }}</span>
+                                        <span class="min-w-0 flex-1 font-serif text-lg font-medium leading-snug text-zinc-900 sm:text-xl">{{ $module['title'] }}</span>
                                         <x-lucide-plus class="h-4 w-4 shrink-0 text-bmlk-brand transition-transform duration-300 group-data-[faq-expanded=true]/module:rotate-45" stroke-width="1.6" />
                                     </summary>
 
                                     <div class="overflow-hidden" data-creator-faq-panel>
                                         <div class="space-y-3 px-5 pb-6 text-sm leading-7 text-zinc-600 sm:pl-[4.5rem] sm:pr-6">
-                                            @foreach (explode("\n\n", __($module['description'])) as $paragraph)
+                                            @foreach (explode("\n\n", $module['description']) as $paragraph)
                                                 <p>{{ $paragraph }}</p>
                                             @endforeach
                                         </div>
@@ -225,10 +234,10 @@
                         <h3 class="font-serif text-2xl font-medium text-zinc-900 sm:text-3xl">{{ __('Ce qui est inclus') }}</h3>
 
                         <ul class="mt-6 space-y-3">
-                            @foreach ($waxIncluded as $item)
+                            @foreach ($programme['included'] as $item)
                                 <li class="flex items-start gap-3 text-sm leading-6 text-zinc-700">
                                     <x-lucide-check class="mt-0.5 h-4 w-4 shrink-0 text-bmlk-brand" stroke-width="1.7" />
-                                    <span>{{ __($item) }}</span>
+                                    <span>{{ $item }}</span>
                                 </li>
                             @endforeach
                         </ul>
@@ -237,18 +246,34 @@
                     <div class="flex flex-col justify-between rounded-3xl bg-[#DDA1AA] p-6 sm:p-9 lg:col-span-5" data-blur-reveal-item>
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-widest text-zinc-800">{{ __('Tarif') }}</p>
-                            <p class="mt-3 font-serif text-6xl font-medium leading-none text-zinc-900">150&nbsp;€</p>
+                            <p class="mt-3 font-serif text-6xl font-medium leading-none text-zinc-900">{{ number_format((float) $programmeCourse->price, 0, ',', "\u{202F}") }}&nbsp;€</p>
                             <p class="mt-5 text-sm leading-6 text-zinc-800">{{ __('Cire signature offerte, certificat envoyé par la poste avec la cire. Commencez dès aujourd’hui : dès votre prochaine cliente, vous travaillerez autrement.') }}</p>
                         </div>
 
-                        <a href="mailto:office.blackmilk@gmail.com?subject={{ rawurlencode('Formation BLACK MILK — WAX MANICURE') }}" class="group mt-8 inline-flex h-12 items-center justify-center gap-3 rounded-full bg-accent px-6 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent/90">
-                            {{ __('Réserver ma place') }}
-                            <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                        </a>
+                        @if (in_array($programmeCourse->id, $ownedIds))
+                            <a href="{{ route('account.courses') }}" class="group mt-8 inline-flex h-12 items-center justify-center gap-3 rounded-full bg-accent px-6 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent/90">
+                                {{ __('Accéder à ma formation') }}
+                                <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            </a>
+                        @elseif ($programmeCourse->isPurchasable())
+                            <form method="POST" action="{{ route('courses.buy', ['slug' => $programmeCourse->slug]) }}" class="mt-8">
+                                @csrf
+                                <button type="submit" class="group inline-flex h-12 items-center justify-center gap-3 rounded-full bg-accent px-6 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent/90">
+                                    {{ __('Réserver ma place') }}
+                                    <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                </button>
+                            </form>
+                        @else
+                            <a href="mailto:office.blackmilk@gmail.com?subject={{ rawurlencode('Formation BLACK MILK — '.$programmeCourse->name) }}" class="group mt-8 inline-flex h-12 items-center justify-center gap-3 rounded-full bg-accent px-6 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-accent/90">
+                                {{ __('Réserver ma place') }}
+                                <x-lucide-arrow-right class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
         </section>
+        @endif
 
         {{-- Live Education --}}
         <section id="presentiel" class="scroll-mt-8 px-3 pb-6 sm:px-5 sm:pb-8 lg:px-8 lg:pb-10">

@@ -187,6 +187,17 @@ class AccountController extends Controller
         return view('account.checkout-order', compact('order', 'ratingProducts', 'canShowRatings'));
     }
 
+    public function courses(Request $request): View
+    {
+        $purchases = $request->user()->coursePurchases()
+            ->where('status', 'paid')
+            ->with('course')
+            ->latest('paid_at')
+            ->get();
+
+        return view('account.courses', ['purchases' => $purchases]);
+    }
+
     public function profile(Request $request): View
     {
         return view('account.profile', ['user' => $request->user()]);

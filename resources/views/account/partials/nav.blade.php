@@ -9,6 +9,8 @@
 <nav class="mb-8 flex flex-wrap gap-2 text-sm">
     <a class="inline-flex items-center gap-2 rounded-full px-4 py-2.5 transition {{ request()->routeIs('account.index','account.order') ? 'bg-bmlk-brand text-white' : 'bg-white text-zinc-700 hover:bg-bmlk-soft' }}"
         href="{{ route('account.index') }}"><x-lucide-package class="h-4 w-4" aria-hidden="true" />{{ __('Mes commandes') }}</a>
+    <a class="inline-flex items-center gap-2 rounded-full px-4 py-2.5 transition {{ request()->routeIs('account.courses') ? 'bg-bmlk-brand text-white' : 'bg-white text-zinc-700 hover:bg-bmlk-soft' }}"
+        href="{{ route('account.courses') }}"><x-lucide-graduation-cap class="h-4 w-4" aria-hidden="true" />{{ __('Mes formations') }}</a>
     <a class="inline-flex items-center gap-2 rounded-full px-4 py-2.5 transition {{ request()->routeIs('account.profile') ? 'bg-bmlk-brand text-white' : 'bg-white text-zinc-700 hover:bg-bmlk-soft' }}"
         href="{{ route('account.profile') }}"><x-lucide-user-round class="h-4 w-4" aria-hidden="true" />{{ __('Mon profil') }}</a>
     <a class="inline-flex items-center gap-2 rounded-full px-4 py-2.5 transition {{ request()->routeIs('account.roles') ? 'bg-bmlk-brand text-white' : 'bg-white text-zinc-700 hover:bg-bmlk-soft' }}"
