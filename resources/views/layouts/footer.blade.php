@@ -145,9 +145,10 @@
                     </div>
 
                     <div class="mt-4 flex gap-5 text-sm">
-                        <a href="#" class="font-semibold text-accent">{{ __('FR') }}</a>
-                        <a href="#" class="text-bmlk-footer-muted transition hover:text-accent">{{ __('EN') }}</a>
-                        <a href="#" class="text-bmlk-footer-muted transition hover:text-accent">{{ __('RO') }}</a>
+                        @foreach (\App\Support\LocaleUrls::all() ?: collect(config('app.supported_locales'))->mapWithKeys(fn ($code) => [$code => route('home', ['locale' => $code])])->all() as $code => $url)
+                            <a href="{{ $url }}" hreflang="{{ $code }}" lang="{{ $code }}"
+                               class="{{ $code === app()->getLocale() ? 'font-semibold text-accent' : 'text-bmlk-footer-muted transition hover:text-accent' }}">{{ strtoupper($code) }}</a>
+                        @endforeach
                     </div>
                 </div>
 

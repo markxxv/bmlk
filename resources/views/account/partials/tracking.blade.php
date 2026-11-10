@@ -12,12 +12,12 @@
     <div class="mt-3" data-creator-faq>
         <details class="group/tracking rounded-2xl bg-bmlk-page/80" data-tracking-details>
             <summary class="flex min-h-16 cursor-pointer list-none items-center gap-3 rounded-2xl px-4 py-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bmlk-brand [&::-webkit-details-marker]:hidden"
-                aria-label="Afficher les étapes et les mises à jour de livraison">
+                aria-label="{{ __('Afficher les étapes et les mises à jour de livraison') }}">
                 <span class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-bmlk-brand">
                     <x-lucide-truck class="size-5" aria-hidden="true" />
                 </span>
                 <span class="min-w-0 flex-1">
-                    <span class="block text-xs font-medium text-zinc-500">Numéro de suivi</span>
+                    <span class="block text-xs font-medium text-zinc-500">{{ __('Numéro de suivi') }}</span>
                     <span class="mt-0.5 block break-all text-sm font-semibold text-zinc-900">{{ $order->tracking_number }}</span>
                     @if ($lastEvent)
                         <span class="mt-1 block text-xs text-bmlk-brand">{{ \App\Support\ShipmentTimeline::label($lastEvent->phase) }}</span>
@@ -67,7 +67,7 @@
                     </ol>
 
                     <div class="mt-1">
-                        <h4 class="text-sm font-semibold text-zinc-900">Mises à jour du transporteur</h4>
+                        <h4 class="text-sm font-semibold text-zinc-900">{{ __('Mises à jour du transporteur') }}</h4>
                         @forelse ($trackingEvents as $event)
                             <div class="mt-3 rounded-xl bg-white px-3.5 py-3">
                                 <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
@@ -84,12 +84,12 @@
                                 @endif
                             </div>
                         @empty
-                            <p class="mt-2 text-sm leading-6 text-zinc-500">Les mises à jour du transporteur apparaîtront ici dès leur réception.</p>
+                            <p class="mt-2 text-sm leading-6 text-zinc-500">{{ __('Les mises à jour du transporteur apparaîtront ici dès leur réception.') }}</p>
                         @endforelse
                     </div>
 
                     @if ($order->sendcloud_tracking_synced_at)
-                        <p class="mt-4 text-xs text-zinc-500">Actualisé le {{ $order->sendcloud_tracking_synced_at->timezone('Europe/Paris')->translatedFormat('d M Y à H:i') }}</p>
+                        <p class="mt-4 text-xs text-zinc-500">{{ __('Actualisé le :date', ['date' => $order->sendcloud_tracking_synced_at->timezone('Europe/Paris')->translatedFormat('d M Y, H:i')]) }}</p>
                     @endif
 
                     @if ($trackingLink)

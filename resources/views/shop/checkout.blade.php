@@ -534,7 +534,7 @@
                                             </span>
                                         </button>
                                     </template>
-                                    <p x-show="filteredCountries.length === 0" class="px-3 py-4 text-center text-xs text-zinc-500">Aucun pays trouvé.</p>
+                                    <p x-show="filteredCountries.length === 0" class="px-3 py-4 text-center text-xs text-zinc-500">{{ __('Aucun pays trouvé.') }}</p>
                                 </div>
 
                                 <p x-show="errors.country" x-text="errors.country?.[0]" class="mt-1 text-xs text-red-500"></p>
@@ -606,7 +606,7 @@
                             <h2 class="font-serif text-2xl font-medium tracking-tight text-zinc-900">Mode de livraison</h2>
                         </div>
                         <p x-show="!form.country || !form.zip"
-                           class="mt-4 text-xs text-zinc-500">Sélectionnez votre pays et indiquez votre code postal pour voir les tarifs.</p>
+                           class="mt-4 text-xs text-zinc-500">{{ __('Sélectionnez votre pays et indiquez votre code postal pour voir les tarifs.') }}</p>
                         <p x-show="isCalculating" class="mt-4 text-xs text-zinc-500">Calcul des tarifs Sendcloud…</p>
                         <p x-show="cartNotice" x-text="cartNotice" class="mt-4 text-xs text-bmlk-brand"></p>
                         <a href="{{ route('delivery.terms') }}" class="mt-3 inline-flex items-center gap-1.5 text-sm text-bmlk-brand underline decoration-bmlk-brand/30 underline-offset-4 transition hover:decoration-bmlk-brand">
@@ -615,7 +615,7 @@
                         </a>
                         <p x-show="shippingError" x-text="shippingError" class="mt-4 text-xs text-red-500"></p>
                         <button x-show="shippingCartError" type="button" @click="$store.cart.isOpen = true"
-                            class="mt-2 text-xs font-medium text-bmlk-brand underline underline-offset-4">Vérifier le panier</button>
+                            class="mt-2 text-xs font-medium text-bmlk-brand underline underline-offset-4">{{ __('Vérifier le panier') }}</button>
                         <p x-show="errors.shipping_option" x-text="errors.shipping_option?.[0]" class="mt-2 text-xs text-red-500"></p>
                         <div class="mt-5 space-y-2" x-show="shippingOptions.length">
                             <template x-for="option in shippingOptions" :key="option.code + option.contract_id">
@@ -629,7 +629,7 @@
                                     <span class="min-w-0 flex-1">
                                         <span class="block text-sm font-medium text-zinc-800" x-text="option.carrier + ' · ' + option.name"></span>
                                         <span class="block text-[11px] text-zinc-500"
-                                            x-text="option.type === 'pickup' ? 'Point relais' : option.type === 'express' ? 'Express' : 'À domicile'"></span>
+                                            x-text="option.type === 'pickup' ? @js(__('Point relais')) : option.type === 'express' ? @js(__('Express')) : @js(__('À domicile'))"></span>
                                     </span>
                                     <span class="shrink-0 text-sm font-semibold text-zinc-800"
                                         x-text="option.price === 0 ? 'Offerte' : formatPrice(option.price)"></span>
@@ -654,7 +654,7 @@
                         </div>
                         <p x-show="delivery?.free_from && !isFreeDelivery"
                            class="mt-3 text-[11px] text-zinc-500">
-                            Livraison standard offerte dès <span x-text="formatPrice(delivery?.free_from)"></span>.
+                            {{ __('Livraison standard offerte dès') }} <span x-text="formatPrice(delivery?.free_from)"></span>.
                         </p>
                     </section>
 
