@@ -50,10 +50,29 @@ class ProductRatingsTest extends TestCase
     public function test_database_default_excludes_directly_imported_orders(): void
     {
         $buyer = User::factory()->create();
-        $order = $this->order($buyer, [$this->product()], ['status' => 'completed']);
-        $order->update(['ratings_enabled' => false]);
+        $product = $this->product();
 
-        $this->assertDatabaseHas('orders', ['id' => $order->id, 'ratings_enabled' => false]);
+        // Simulate the import path: create a historical order without the
+        // new storefront's explicit ratings_enabled opt-in.
+        $order = Order::query()->create([
+            'user_id' => $buyer->id,
+            'first_name' => 'Client historique',
+            'phone' => '0000000000',
+            'email' => $buyer->email,
+            'country' => 'France',
+            'city' => 'Paris',
+            'address' => 'Adresse historique',
+            'items' => [['product_id' => $product->id, 'name' => 'Gel', 'quantity' => 1]],
+            'subtotal' => 20,
+            'delivery_cost' => 0,
+            'total_amount' => 20,
+            'status' => 'completed',
+            'payment_status' => 'paid',
+        ]);
+
+        $this->assertFalse($order->fresh()->ratings_enabled);
+        $this->actingAs($buyer)->get(route('account.index'))
+            ->assertOk()->assertDontSee('Évaluez vos produits');
     }
 
     public function test_only_paid_delivered_orders_allow_ratings(): void
