@@ -17,7 +17,13 @@
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold" for="password">{{ __('Password') }}</label>
-                <input class="w-full rounded-xl bg-zinc-100 px-4 py-3.5 text-base outline-none focus:ring-2 focus:ring-[#712B47]" id="password" type="password" name="password" autocomplete="current-password" required>
+                <div class="relative">
+                    <input class="w-full rounded-xl bg-zinc-100 px-4 py-3.5 pr-14 text-base outline-none focus:ring-2 focus:ring-[#712B47]" id="password" type="password" name="password" autocomplete="current-password" required>
+                    <button type="button" class="absolute inset-y-0 right-1 flex w-11 items-center justify-center rounded-lg text-zinc-500 focus-visible:outline-2 focus-visible:outline-[#712B47]" aria-label="Show password" aria-pressed="false" onclick="const input = document.getElementById('password'); const visible = input.type === 'password'; input.type = visible ? 'text' : 'password'; this.setAttribute('aria-pressed', String(visible)); this.setAttribute('aria-label', visible ? 'Hide password' : 'Show password'); this.querySelector('[data-password-hidden]').classList.toggle('hidden', visible); this.querySelector('[data-password-visible]').classList.toggle('hidden', !visible);">
+                        <x-lucide-eye data-password-hidden class="size-5" />
+                        <x-lucide-eye-off data-password-visible class="hidden size-5" />
+                    </button>
+                </div>
             </div>
             @if ($errors->any())
                 <p role="alert" class="text-sm text-rose-700">{{ $errors->first() }}</p>
