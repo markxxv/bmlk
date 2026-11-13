@@ -114,34 +114,59 @@ class RoleApplicationResource extends Resource
             return new HtmlString('—');
         }
 
-        $orders = Order::query()
+        $base = Order::query()
             ->whereRaw('UPPER(promo_code) = ?', [Str::upper($code)])
             ->where('payment_status', 'paid')
-            ->where('status', '!=', 'cancelled')
-            ->latest('paid_at')
-            ->limit(200)
-            ->get();
+            ->where('status', '!=', 'cancelled');
+
+        $totals = (clone $base)->selectRaw('COUNT(*) AS c, COALESCE(SUM(total_amount), 0) AS s, COALESCE(SUM(discount_amount), 0) AS d')->first();
+        $orders = (clone $base)->latest('paid_at')->limit(200)->get();
+
+        $icon = fn (string $name, int $size = 16): string => svg('lucide-'.$name, '', [
+            'style' => "width:{$size}px;height:{$size}px;flex-shrink:0",
+        ])->toHtml();
+        $money = fn (float $v): string => number_format($v, 2, '.', ' ').' €';
+
+        $muted = 'color:var(--gray-500)';
+        $soft = 'background:color-mix(in srgb,var(--gray-500) 8%,transparent)';
+        $line = 'border:1px solid color-mix(in srgb,var(--gray-500) 18%,transparent)';
+
+        $tile = fn (string $ic, string $label, string $value): string => sprintf(
+            '<div style="%s;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px">'
+            .'<span style="%s;color:var(--primary-600);width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center">%s</span>'
+            .'<div><div style="font-size:12px;%s">%s</div><div style="font-size:18px;font-weight:600;line-height:1.3">%s</div></div></div>',
+            $line, 'background:color-mix(in srgb,var(--primary-600) 10%,transparent)', $icon($ic, 18), $muted, e($label), e($value),
+        );
+
+        $html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">'
+            .$tile('shopping-bag', 'Orders', (string) (int) $totals->c)
+            .$tile('euro', 'Revenue', $money((float) $totals->s))
+            .$tile('ticket-percent', 'Discounts given', $money((float) $totals->d))
+            .'</div>';
 
         if ($orders->isEmpty()) {
-            return new HtmlString('<span class="text-sm text-gray-500">No sales yet.</span>');
+            return new HtmlString($html.'<div style="margin-top:16px;font-size:14px;'.$muted.'">No sales yet.</div>');
         }
 
         $rows = $orders->map(fn (Order $o): string => sprintf(
-            '<tr class="border-t border-gray-100"><td class="py-2 pr-4"><a class="text-primary-600 underline" href="%s">%s</a></td>'
-            .'<td class="py-2 pr-4">%s</td><td class="py-2 pr-4 text-right">%s €</td><td class="py-2 text-right">%s €</td></tr>',
+            '<a href="%s" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;text-decoration:none;color:inherit" '
+            .'onmouseover="this.style.background=\'color-mix(in srgb,var(--gray-500) 8%%,transparent)\'" onmouseout="this.style.background=\'transparent\'">'
+            .'<span style="%s;%s;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center">%s</span>'
+            .'<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">%s</div>'
+            .'<div style="display:flex;align-items:center;gap:6px;font-size:12px;%s">%s<span>%s</span></div></div>'
+            .'<span style="font-size:12px;color:var(--success-600);%s;padding:3px 9px;border-radius:999px;white-space:nowrap">− %s</span>'
+            .'<span style="font-size:14px;font-weight:600;min-width:84px;text-align:right">%s</span>%s</a>',
             e(OrderResource::getUrl('edit', ['record' => $o])),
+            $soft, $muted, $icon('receipt', 16),
             e($o->order_number ?? '#'.$o->id),
-            e(($o->paid_at ?? $o->created_at)?->format('d.m.Y')),
-            number_format((float) $o->discount_amount, 2, '.', ' '),
-            number_format((float) $o->total_amount, 2, '.', ' '),
+            $muted, $icon('calendar', 13), e(($o->paid_at ?? $o->created_at)?->format('d.m.Y')),
+            'background:color-mix(in srgb,var(--success-600) 10%,transparent)',
+            e($money((float) $o->discount_amount)),
+            e($money((float) $o->total_amount)),
+            '<span style="'.$muted.'">'.$icon('chevron-right', 16).'</span>',
         ))->implode('');
 
-        return new HtmlString(
-            '<table class="w-full text-sm"><thead><tr class="text-left text-gray-500">'
-            .'<th class="pb-2 pr-4 font-medium">Order</th><th class="pb-2 pr-4 font-medium">Date</th>'
-            .'<th class="pb-2 pr-4 text-right font-medium">Discount</th><th class="pb-2 text-right font-medium">Total</th>'
-            .'</tr></thead><tbody>'.$rows.'</tbody></table>'
-        );
+        return new HtmlString($html.'<div style="margin-top:14px;max-height:380px;overflow:auto;display:flex;flex-direction:column;gap:2px">'.$rows.'</div>');
     }
 
     /**
