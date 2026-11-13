@@ -5,6 +5,8 @@ namespace App\Filament\Resources\RoleApplications;
 use App\Filament\Resources\RoleApplications\Pages;
 use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Order;
+use App\Models\PartnerPayout;
+use App\Services\PartnerBalance;
 use App\Models\RoleApplication;
 use App\Models\User;
 use Closure;
@@ -104,7 +106,45 @@ class RoleApplicationResource extends Resource
                     Placeholder::make('promo_sales_history')->hiddenLabel()
                         ->content(fn (?RoleApplication $record): HtmlString => self::salesHistory($record)),
                 ]),
+            Section::make('Payouts')->icon('lucide-wallet')
+                ->visible(fn (?RoleApplication $record): bool => $record?->role === 'influencer'
+                    && filled($record?->user?->influencer_code))
+                ->schema([
+                    Placeholder::make('payouts_history')->hiddenLabel()
+                        ->content(fn (?RoleApplication $record): HtmlString => self::payoutsHistory($record)),
+                ]),
         ]);
+    }
+
+    protected static function payoutsHistory(?RoleApplication $record): HtmlString
+    {
+        $payouts = $record?->user_id
+            ? PartnerPayout::query()->where('user_id', $record->user_id)->orderByDesc('paid_at')->orderByDesc('id')->get()
+            : collect();
+
+        $muted = 'color:var(--gray-500)';
+        if ($payouts->isEmpty()) {
+            return new HtmlString('<div style="font-size:14px;'.$muted.'">No payouts recorded yet.</div>');
+        }
+
+        $icon = fn (string $name, int $size = 16): string => svg('lucide-'.$name, '', [
+            'style' => "width:{$size}px;height:{$size}px;flex-shrink:0",
+        ])->toHtml();
+
+        $rows = $payouts->map(fn (PartnerPayout $p): string => sprintf(
+            '<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px">'
+            .'<span style="background:color-mix(in srgb,var(--success-600) 10%%,transparent);color:var(--success-600);width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center">%s</span>'
+            .'<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:500">%s</div>'
+            .'<div style="font-size:12px;%s">%s</div></div>'
+            .'<span style="font-size:14px;font-weight:600">%s</span></div>',
+            $icon('check', 16),
+            e($p->paid_at?->format('d.m.Y')),
+            $muted,
+            e($p->note ?: 'Payout'),
+            e(PartnerBalance::money((float) $p->amount)),
+        ))->implode('');
+
+        return new HtmlString('<div style="display:flex;flex-direction:column;gap:2px">'.$rows.'</div>');
     }
 
     protected static function salesHistory(?RoleApplication $record): HtmlString
