@@ -100,7 +100,10 @@
 
                 init() {
                     this.$watch('$store.cart.items', () => this.updateDeliveryCost());
-                    this.$watch('$store.cart.checkingAvailability', checking => { if (!checking) this.updateDeliveryCost(); });
+                    this.$watch('$store.cart.checkingAvailability', checking => {
+                        // Rechecking an unchanged cart must not discard the selected shipping method.
+                        if (!checking && !this.isCalculating && !this.shippingOptions.length) this.updateDeliveryCost();
+                    });
                     try {
                         const saved = JSON.parse(localStorage.getItem('bm_unpaid_order') || 'null');
                         if (saved?.number && saved?.url) this.savedOrder = saved;
