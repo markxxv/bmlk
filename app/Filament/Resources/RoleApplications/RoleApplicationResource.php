@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\RoleApplications;
 
 use App\Filament\Resources\RoleApplications\Pages;
+use App\Filament\Resources\Orders\OrderResource;
 use App\Models\Order;
 use App\Models\RoleApplication;
 use App\Models\User;
@@ -96,7 +97,51 @@ class RoleApplicationResource extends Resource
                         ->numeric()->step(0.01)->minValue(0)->maxValue(95)
                         ->required()->default(30),
                 ]),
+            Section::make('Sales by promo code')->icon('lucide-receipt')
+                ->visible(fn (?RoleApplication $record): bool => $record?->role === 'influencer'
+                    && filled($record?->user?->influencer_code))
+                ->schema([
+                    Placeholder::make('promo_sales_history')->hiddenLabel()
+                        ->content(fn (?RoleApplication $record): HtmlString => self::salesHistory($record)),
+                ]),
         ]);
+    }
+
+    protected static function salesHistory(?RoleApplication $record): HtmlString
+    {
+        $code = $record?->user?->influencer_code;
+        if (blank($code)) {
+            return new HtmlString('—');
+        }
+
+        $orders = Order::query()
+            ->whereRaw('UPPER(promo_code) = ?', [Str::upper($code)])
+            ->where('payment_status', 'paid')
+            ->where('status', '!=', 'cancelled')
+            ->latest('paid_at')
+            ->limit(200)
+            ->get();
+
+        if ($orders->isEmpty()) {
+            return new HtmlString('<span class="text-sm text-gray-500">No sales yet.</span>');
+        }
+
+        $rows = $orders->map(fn (Order $o): string => sprintf(
+            '<tr class="border-t border-gray-100"><td class="py-2 pr-4"><a class="text-primary-600 underline" href="%s">%s</a></td>'
+            .'<td class="py-2 pr-4">%s</td><td class="py-2 pr-4 text-right">%s €</td><td class="py-2 text-right">%s €</td></tr>',
+            e(OrderResource::getUrl('edit', ['record' => $o])),
+            e($o->order_number ?? '#'.$o->id),
+            e(($o->paid_at ?? $o->created_at)?->format('d.m.Y')),
+            number_format((float) $o->discount_amount, 2, '.', ' '),
+            number_format((float) $o->total_amount, 2, '.', ' '),
+        ))->implode('');
+
+        return new HtmlString(
+            '<table class="w-full text-sm"><thead><tr class="text-left text-gray-500">'
+            .'<th class="pb-2 pr-4 font-medium">Order</th><th class="pb-2 pr-4 font-medium">Date</th>'
+            .'<th class="pb-2 pr-4 text-right font-medium">Discount</th><th class="pb-2 text-right font-medium">Total</th>'
+            .'</tr></thead><tbody>'.$rows.'</tbody></table>'
+        );
     }
 
     /**
