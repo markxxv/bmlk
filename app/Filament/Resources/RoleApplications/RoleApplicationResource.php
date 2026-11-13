@@ -104,6 +104,15 @@ class RoleApplicationResource extends Resource
             TextColumn::make('user.name')->label('Customer')->searchable(),
             TextColumn::make('user.email')->label('Email')->searchable(),
             TextColumn::make('role')->badge()->color('gray'),
+            TextColumn::make('user.influencer_code')->label('Promo code')->badge()->color('gray')
+                ->searchable()->placeholder('—')->copyable(),
+            TextColumn::make('user.influencer_discount')->label('Discount')
+                ->suffix(' %')->numeric(decimalPlaces: 0)
+                ->placeholder('—')
+                ->visible(true)
+                ->state(fn (RoleApplication $record): ?float => $record->role === 'influencer'
+                    ? (float) $record->user?->influencer_discount
+                    : null),
             TextColumn::make('status')->badge()->color(fn (string $state): string => match ($state) {
                 'approved' => 'success', 'rejected' => 'danger', default => 'warning',
             }),

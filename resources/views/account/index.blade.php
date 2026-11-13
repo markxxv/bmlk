@@ -113,6 +113,7 @@
                             <x-lucide-ticket-percent class="h-5 w-5" aria-hidden="true" />
                             <h3 class="font-serif text-xl text-zinc-900">{{ __('Votre code permanent') }}</h3>
                         </div>
+                        <p class="mt-3 text-sm text-zinc-500">{{ __('Réduction offerte avec votre code : :percent %', ['percent' => number_format($user->influencer_discount, 0)]) }}</p>
 
                         @if (filled($user->influencer_code))
                             <div class="mt-5 flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-2xl bg-bmlk-soft p-3.5 pl-4"
