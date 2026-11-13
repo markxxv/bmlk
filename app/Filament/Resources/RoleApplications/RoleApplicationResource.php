@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\RoleApplications;
 
 use App\Filament\Resources\RoleApplications\Pages;
+use App\Models\Order;
 use App\Models\RoleApplication;
 use App\Models\User;
 use Closure;
@@ -98,6 +99,33 @@ class RoleApplicationResource extends Resource
         ]);
     }
 
+    /**
+     * Paid, non-cancelled orders placed with the partner's promo code (includes
+     * orders imported from the old site) => [count, revenue incl. VAT].
+     *
+     * @return array{0: ?int, 1: ?float}
+     */
+    protected static function promoSales(RoleApplication $record): array
+    {
+        static $cache = [];
+
+        $code = $record->user?->influencer_code;
+        if ($record->role !== 'influencer' || blank($code)) {
+            return [null, null];
+        }
+
+        return $cache[Str::upper($code)] ??= (function () use ($code): array {
+            $row = Order::query()
+                ->whereRaw('UPPER(promo_code) = ?', [Str::upper($code)])
+                ->where('payment_status', 'paid')
+                ->where('status', '!=', 'cancelled')
+                ->selectRaw('COUNT(*) AS c, COALESCE(SUM(total_amount), 0) AS s')
+                ->first();
+
+            return [(int) $row->c, (float) $row->s];
+        })();
+    }
+
     public static function table(Table $table): Table
     {
         return $table->columns([
@@ -113,6 +141,12 @@ class RoleApplicationResource extends Resource
                 ->state(fn (RoleApplication $record): ?float => $record->role === 'influencer'
                     ? (float) $record->user?->influencer_discount
                     : null),
+            TextColumn::make('promo_orders')->label('Sales')
+                ->state(fn (RoleApplication $record): ?int => self::promoSales($record)[0])
+                ->placeholder('—'),
+            TextColumn::make('promo_revenue')->label('Revenue')
+                ->state(fn (RoleApplication $record): ?float => self::promoSales($record)[1])
+                ->money('EUR')->placeholder('—'),
             TextColumn::make('status')->badge()->color(fn (string $state): string => match ($state) {
                 'approved' => 'success', 'rejected' => 'danger', default => 'warning',
             }),
