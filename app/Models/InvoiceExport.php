@@ -54,7 +54,7 @@ class InvoiceExport extends Model
 
     public function isReady(): bool
     {
-        return $this->status === self::READY && $this->file_path && Storage::disk(self::DISK)->exists($this->file_path);
+        return $this->status === self::READY && filled($this->file_path);
     }
 
     public function downloadName(): string

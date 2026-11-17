@@ -59,7 +59,11 @@ class BuildInvoiceExports extends Command
 
             $relative = InvoiceExport::DIRECTORY.'/invoices_'.$export->id.'_'.bin2hex(random_bytes(6)).'.zip';
             Storage::disk(InvoiceExport::DISK)->makeDirectory(InvoiceExport::DIRECTORY);
-            File::move($zipPath, Storage::disk(InvoiceExport::DISK)->path($relative));
+            $target = Storage::disk(InvoiceExport::DISK)->path($relative);
+            File::move($zipPath, $target);
+            // The cron user and the web server user usually differ: make the archive readable by the web app.
+            @chmod(dirname($target), 0755);
+            @chmod($target, 0644);
 
             $export->forceFill([
                 'status' => InvoiceExport::READY,
