@@ -12,6 +12,7 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\InvoiceExportDownloadController;
 use App\Http\Controllers\WarehouseRefundController;
 use App\Http\Middleware\EnsureWarehouseStaff;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,9 @@ use Illuminate\Support\Facades\Route;
 // endpoint also makes the authorization rules directly testable.
 Route::post('/_admin/customer-preview/{user}', [CustomerPreviewController::class, 'start'])
     ->middleware(['auth', 'throttle:6,1'])->name('customer-preview.start');
+// Invoice archives (Filament "Invoices" page, Telegram link). Admin-only; guests go to /admin/login.
+Route::get('/_admin/invoice-exports/{export}/download', InvoiceExportDownloadController::class)
+    ->middleware('throttle:30,1')->name('invoice-exports.download');
 Route::post('/_customer-preview/stop', [CustomerPreviewController::class, 'stop'])
     ->middleware(['auth', 'throttle:12,1'])->name('customer-preview.stop');
 

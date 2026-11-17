@@ -39,3 +39,8 @@ Schedule::command('partners:telegram-notifications')->everyFiveMinutes()->withou
 Schedule::command('queue:work database --queue=partner-telegram --stop-when-empty --max-time=45 --tries=3')
     ->everyMinute()
     ->withoutOverlapping(5);
+
+// Invoice ZIPs requested on the admin "Invoices" page: the HTTP request only inserts a row,
+// this picks it up within a minute. runInBackground keeps a long build from delaying other tasks.
+Schedule::command('invoices:build-exports')->everyMinute()->withoutOverlapping(30)->runInBackground();
+Schedule::command('invoices:prune-exports')->dailyAt('03:30')->timezone('Europe/Paris')->withoutOverlapping(10);
