@@ -283,10 +283,10 @@ class ProductResource extends Resource
 
                 TextColumn::make('name_fr')
                     ->label('Name')
-                    ->width('130px')
                     ->state(fn (Product $record): string => $record->getTranslation('name', 'fr', false) ?: '—')
                     ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("name->>'fr' ILIKE ?", ["%{$search}%"]))
-                    ->weight('medium'),
+                    ->weight('medium')
+                    ->width('190px'),
 
                 EditableColumn::make('stock')
                     ->label('Stock')
