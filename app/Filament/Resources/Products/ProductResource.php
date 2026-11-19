@@ -287,7 +287,7 @@ class ProductResource extends Resource
                     ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("name->>'fr' ILIKE ?", ["%{$search}%"]))
                     ->weight('medium')
                     ->width('290px')
-                    ->extraAttributes(['style' => 'width:100px;max-width: 290px'])
+                    ->extraAttributes(['style' => 'width:100%;max-width: 290px'])
                     ->wrap()
                     ->lineClamp(1)
                     ->tooltip(fn ($state) => $state),
