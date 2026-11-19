@@ -288,7 +288,6 @@ class ProductResource extends Resource
                     ->weight('medium')
                     ->width('290px')
                     ->extraAttributes(['style' => 'width:100%;max-width: 290px'])
-                    ->wrap()
                     ->lineClamp(1)
                     ->tooltip(fn ($state) => $state),
 
