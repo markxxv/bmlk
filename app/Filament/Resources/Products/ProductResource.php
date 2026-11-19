@@ -286,8 +286,8 @@ class ProductResource extends Resource
                     ->state(fn (Product $record): string => $record->getTranslation('name', 'fr', false) ?: '—')
                     ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("name->>'fr' ILIKE ?", ["%{$search}%"]))
                     ->weight('medium')
-                    ->width('190px')
-                    ->extraAttributes(['style' => 'max-width: 190px'])
+                    ->width('240px')
+                    ->extraAttributes(['style' => 'max-width: 240px'])
                     ->wrap()
                     ->lineClamp(1)
                     ->tooltip(fn ($state) => $state),
