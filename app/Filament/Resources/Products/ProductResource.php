@@ -456,7 +456,7 @@ class ProductResource extends Resource
     protected static function discountField(): TextInput
     {
         return TextInput::make('discount_percent')
-            ->label('Temporary discount')
+            ->label('Discount')
             ->integer()
             ->minValue(0)
             ->maxValue(99)
