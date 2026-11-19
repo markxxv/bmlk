@@ -33,6 +33,7 @@ class ProductStockTest extends TestCase
         $product = $this->product();
 
         $page = Livewire::test(ListProducts::class)
+            ->call('toggleStockEditing')
             ->call('updateTableColumnState', 'stock', (string) $product->id, '42');
 
         $this->assertSame(42, (int) $product->fresh()->stock);
@@ -50,13 +51,52 @@ class ProductStockTest extends TestCase
     public function test_invalid_stock_does_not_overwrite_the_saved_value(): void
     {
         $product = $this->product(12);
-        $page = Livewire::test(ListProducts::class);
+        $page = Livewire::test(ListProducts::class)
+            ->call('toggleStockEditing');
 
         foreach (['-1', '1.5', 'abc', '2147483648'] as $invalid) {
             $page->call('updateTableColumnState', 'stock', (string) $product->id, $invalid);
 
             $this->assertSame(12, (int) $product->fresh()->stock);
         }
+    }
+
+    public function test_stock_is_read_only_until_editing_is_enabled_and_is_locked_again_afterwards(): void
+    {
+        $product = $this->product(12);
+
+        $page = Livewire::test(ListProducts::class)
+            ->assertSet('editingStock', false)
+            ->assertCanRenderTableColumn('stock_readonly')
+            ->assertCanNotRenderTableColumn('stock')
+            ->call('updateTableColumnState', 'stock', (string) $product->id, '99');
+
+        $this->assertSame(12, (int) $product->fresh()->stock);
+
+        $page->callAction('toggleStockEditing')
+            ->assertSet('editingStock', true)
+            ->assertCanRenderTableColumn('stock')
+            ->assertCanNotRenderTableColumn('stock_readonly')
+            ->call('updateTableColumnState', 'stock', (string) $product->id, '42');
+
+        $this->assertSame(42, (int) $product->fresh()->stock);
+
+        $page->callAction('toggleStockEditing')
+            ->assertSet('editingStock', false)
+            ->call('updateTableColumnState', 'stock', (string) $product->id, '99');
+
+        $this->assertSame(42, (int) $product->fresh()->stock);
+    }
+
+    public function test_stock_sort_is_preserved_when_editing_mode_changes(): void
+    {
+        Livewire::test(ListProducts::class)
+            ->call('sortTable', 'stock_readonly', 'asc')
+            ->assertSet('tableSort', 'stock_readonly:asc')
+            ->call('toggleStockEditing')
+            ->assertSet('tableSort', 'stock:asc')
+            ->call('toggleStockEditing')
+            ->assertSet('tableSort', 'stock_readonly:asc');
     }
 
     public function test_unset_stock_filter_does_not_include_zero_stock(): void
