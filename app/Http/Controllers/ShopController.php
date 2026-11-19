@@ -203,6 +203,11 @@ class ShopController extends Controller
         $validated = $request->validate([
             'product_ids' => ['present', 'array', 'max:100'],
             'product_ids.*' => ['required', 'integer', 'min:1', 'distinct'],
+            'cart_items' => ['sometimes', 'array', 'max:100'],
+            'cart_items.*' => ['required', 'array'],
+            'cart_items.*.product_id' => ['required', 'integer', 'min:1'],
+            'cart_items.*.quantity' => ['sometimes', 'integer', 'min:1', 'max:99'],
+            'cart_items.*.options' => ['sometimes', 'array'],
         ]);
 
         $availableIds = Product::query()
@@ -213,10 +218,19 @@ class ShopController extends Controller
             ->map(fn (mixed $id): int => (int) $id)
             ->values();
 
+        $cartItems = collect($validated['cart_items'] ?? [])
+            ->filter(fn (array $item): bool => $availableIds->contains((int) $item['product_id']));
+
+        $prices = $cartItems->isEmpty()
+            ? []
+            : $this->normalizeItems($cartItems->all())->map(fn (array $item): float => $item['unit_price'])->all();
+
         return response()->json([
             'available_ids' => $availableIds,
+            'cart_prices' => (object) $prices,
+            'prices_message' => __('Les variantes et les prix du panier ont été actualisés. Vérifiez votre sélection.'),
             'removed_message' => __('Ces articles ne sont plus disponibles et ont été retirés du panier :'),
-        ]);
+        ])->header('Cache-Control', 'no-store');
     }
 
     public function checkout(): View
@@ -243,6 +257,7 @@ class ShopController extends Controller
             'message' => ['nullable', 'string', 'max:2000'],
             'privacy' => ['accepted'],
             'cart_items' => ['required', 'string'],
+            'confirm_cart_prices' => ['sometimes', 'boolean'],
             'promo_code' => ['nullable', 'string', 'max:32'],
             'shipping_option' => ['required', 'string', 'max:190'],
             'shipping_contract_id' => ['required', 'integer', 'min:1'],
@@ -270,6 +285,16 @@ class ShopController extends Controller
         }
 
         $items = $this->normalizeItems($cartItems);
+
+        // If a promotion changes after the last quote, ask the customer to review the new total.
+        foreach ($items as $index => $item) {
+            if (($validated['confirm_cart_prices'] ?? false) && isset($cartItems[$index]['unit_price']) && is_numeric($cartItems[$index]['unit_price'])
+                && (int) round((float) $cartItems[$index]['unit_price'] * 100) !== (int) round($item['unit_price'] * 100)) {
+                throw ValidationException::withMessages([
+                    'cart_items' => __('Les variantes et les prix du panier ont été actualisés. Vérifiez votre sélection.'),
+                ]);
+            }
+        }
 
         $subtotal = round(
             $items->sum(fn (array $item): float => (float) $item['line_total']),
@@ -691,7 +716,7 @@ class ShopController extends Controller
             $slug = $product->getTranslation('slug', $locale, false)
                 ?: $product->getTranslation('slug', 'fr', false);
 
-            $unitPrice = round($unitPrice, 2);
+            $unitPrice = $product->priceAfterDiscount($unitPrice);
 
             return [
                 'product_id' => $product->id,

@@ -44,7 +44,7 @@ class Product extends Model implements HasMedia
     {
         return Attribute::get(
             fn (): ?string => $this->price !== null
-                ? self::formatPriceValue($this->price)
+                ? self::formatPriceValue($this->priceAfterDiscount($this->price))
                 : null
         );
     }
@@ -53,7 +53,7 @@ class Product extends Model implements HasMedia
     {
         return Attribute::get(
             fn (): ?string => $this->price_min !== null
-                ? self::formatPriceValue($this->price_min)
+                ? self::formatPriceValue($this->priceAfterDiscount($this->price_min))
                 : null
         );
     }
@@ -62,7 +62,7 @@ class Product extends Model implements HasMedia
     {
         return Attribute::get(
             fn (): ?string => $this->price_max !== null
-                ? self::formatPriceValue($this->price_max)
+                ? self::formatPriceValue($this->priceAfterDiscount($this->price_max))
                 : null
         );
     }
@@ -74,6 +74,22 @@ class Product extends Model implements HasMedia
                 ? self::formatPriceValue($this->compare_at_price)
                 : null
         );
+    }
+
+    public function discountPercent(): int
+    {
+        return max(0, min(99, (int) $this->discount_percent));
+    }
+
+    public function priceAfterDiscount(mixed $price): ?float
+    {
+        if ($price === null) {
+            return null;
+        }
+
+        $cents = (int) round((float) $price * 100);
+
+        return round($cents * (100 - $this->discountPercent()) / 100) / 100;
     }
 
     public static function formatPriceValue(mixed $value): string
@@ -100,6 +116,7 @@ class Product extends Model implements HasMedia
             'price_min' => 'decimal:2',
             'price_max' => 'decimal:2',
             'compare_at_price' => 'decimal:2',
+            'discount_percent' => 'integer',
         ];
     }
 

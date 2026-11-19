@@ -299,7 +299,7 @@
                             this.errors.general = this.$store.cart.availabilityNotice;
                             return;
                         }
-                        if (availability.removed) {
+                        if (availability.removed || availability.changed) {
                             this.cartNotice = this.$store.cart.availabilityNotice;
                             this.errors.cart_items = [this.cartNotice];
                             return;
@@ -346,6 +346,7 @@
                     });
 
                     body.append('cart_items', JSON.stringify(this.$store.cart.items));
+                    body.append('confirm_cart_prices', '1');
 
                     try {
                         const response = await fetch(@js(route('checkout.store')), {

@@ -108,14 +108,14 @@
 
         $productOptions = collect($product->options ?? [])
             ->filter(fn (mixed $option): bool => is_array($option) && filled(data_get($option, 'id')))
-            ->map(function (array $option) use ($localeKey): array {
+            ->map(function (array $option) use ($localeKey, $product): array {
                 $id = data_get($option, 'id');
                 $label = data_get($option, "label.{$localeKey}")
                     ?: data_get($option, 'label.FR')
                     ?: $id;
 
                 $choices = collect(data_get($option, 'values', []))
-                    ->map(function (mixed $value): array {
+                    ->map(function (mixed $value) use ($product): array {
                         if (is_array($value)) {
                             $quantity = data_get($value, 'quantity');
                             $price = data_get($value, 'price.amount');
@@ -125,8 +125,9 @@
                                 'value' => null,
                                 'quantity' => $quantity !== null ? (int) $quantity : null,
                                 'price' => $price !== null ? (float) $price : null,
+                                'sale_price' => $product->priceAfterDiscount($price),
                                 'formatted_price' => $price !== null
-                                    ? \App\Models\Product::formatPriceValue($price)
+                                    ? \App\Models\Product::formatPriceValue($product->priceAfterDiscount($price))
                                     : null,
                                 'display' => $quantity !== null ? $quantity.' ×' : __('Option'),
                             ];
@@ -159,6 +160,7 @@
             'url' => $canonical,
             'image' => $product->storefrontImageUrl('thumb'),
             'price' => $product->price !== null ? (float) $product->price : null,
+            'sale_price' => $product->priceAfterDiscount($product->price),
             'available' => $product->available,
         ];
 
@@ -170,7 +172,7 @@
                 'url' => $canonical,
                 'priceCurrency' => 'EUR',
                 'availability' => $product->available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-                'price' => (float) $product->price,
+                'price' => $product->priceAfterDiscount($product->price),
             ];
         } elseif ($product->price_min !== null || $product->price_max !== null) {
             $offerSchema = array_filter([
@@ -178,8 +180,8 @@
                 'url' => $canonical,
                 'priceCurrency' => 'EUR',
                 'availability' => $product->available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-                'lowPrice' => $product->price_min !== null ? (float) $product->price_min : null,
-                'highPrice' => $product->price_max !== null ? (float) $product->price_max : null,
+                'lowPrice' => $product->priceAfterDiscount($product->price_min),
+                'highPrice' => $product->priceAfterDiscount($product->price_max),
             ], fn ($value) => $value !== null);
         }
 
@@ -346,17 +348,24 @@
                     return options.every(option => Boolean(this.selected[option.id]));
                 },
 
+                get pricedOption() {
+                    return Object.values(this.selected)
+                        .filter(option => option.price !== null && option.price !== undefined)
+                        .at(-1);
+                },
+
+                get currentOriginalPrice() {
+                    return this.pricedOption ? Number(this.pricedOption.price)
+                        : (product.price != null ? Number(product.price) : null);
+                },
+
                 get currentPrice() {
-                    const pricedOption = Object.values(this.selected)
-                        .find(option => option.price !== null && option.price !== undefined);
+                    return this.pricedOption ? Number(this.pricedOption.sale_price)
+                        : (product.sale_price != null ? Number(product.sale_price) : null);
+                },
 
-                    if (pricedOption) {
-                        return Number(pricedOption.price);
-                    }
-
-                    return product.price !== null && product.price !== undefined
-                        ? Number(product.price)
-                        : null;
+                get originalPriceLabel() {
+                    return this.currentOriginalPrice === null ? '' : this.formatPrice(this.currentOriginalPrice);
                 },
 
                 get isReady() {
@@ -370,8 +379,10 @@
                         return fallbackPriceLabel || selectOptionsLabel;
                     }
 
-                    const price = Number(this.currentPrice);
+                    return this.formatPrice(this.currentPrice);
+                },
 
+                formatPrice(price) {
                     return new Intl.NumberFormat(numberLocale, {
                         style: 'currency',
                         currency: 'EUR',
@@ -557,7 +568,10 @@
                                         data-number-trend
                                     >{{ $priceLabel ?: __('Sélectionnez les options') }}</p>
 
-                                    @if ($product->compare_at_price !== null && $product->price !== null && (float) $product->compare_at_price > (float) $product->price)
+                                    @if ($product->discountPercent() > 0)
+                                        <p class="text-sm text-zinc-400 line-through" x-text="originalPriceLabel" x-show="currentOriginalPrice !== null">{{ $product->price !== null ? \App\Models\Product::formatPriceValue($product->price).' €' : '' }}</p>
+                                        <span class="rounded-full bg-bmlk-brand px-2.5 py-1 text-xs font-semibold text-white">−{{ $product->discountPercent() }}%</span>
+                                    @elseif ($product->compare_at_price !== null && $product->price !== null && (float) $product->compare_at_price > (float) $product->price)
                                         <p class="text-sm text-zinc-400 line-through">
                                             {{ $product->formatted_compare_at_price }} €
                                         </p>
@@ -868,13 +882,7 @@
                                             </h3>
 
                                             <div class="shrink-0 pt-1 text-sm font-semibold text-zinc-900">
-                                                @if ($recommendedProduct->price)
-                                                    {{ $recommendedProduct->formatted_price }} €
-                                                @elseif ($recommendedProduct->price_min && $recommendedProduct->price_max)
-                                                    {{ $recommendedProduct->formatted_price_min }}–{{ $recommendedProduct->formatted_price_max }} €
-                                                @elseif ($recommendedProduct->price_min)
-                                                    {{ __('Dès :price €', ['price' => $recommendedProduct->formatted_price_min]) }}
-                                                @endif
+                                                <x-product-price :product="$recommendedProduct" />
                                             </div>
                                         </div>
                                     </div>

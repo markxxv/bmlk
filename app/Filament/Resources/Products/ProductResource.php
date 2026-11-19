@@ -8,6 +8,7 @@ use App\Filament\Tables\Columns\EditableColumn;
 use App\Models\Category;
 use App\Models\Product;
 use BackedEnum;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -20,6 +21,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -233,6 +235,7 @@ class ProductResource extends Resource
                                                     ->numeric()
                                                     ->inputMode('decimal')
                                                     ->prefix('€'),
+                                                static::discountField(),
                                             ]),
                                     ]),
 
@@ -331,6 +334,13 @@ class ProductResource extends Resource
                     ->state(fn (Product $record): string => static::priceLabel($record))
                     ->alignEnd(),
 
+                TextColumn::make('discount_percent')
+                    ->label('Discount')
+                    ->formatStateUsing(fn (mixed $state): string => (int) $state > 0 ? '−'.(int) $state.'%' : '0%')
+                    ->badge()
+                    ->color(fn (mixed $state): string => (int) $state > 0 ? 'success' : 'gray')
+                    ->sortable(),
+
                 IconColumn::make('active')
                     ->label('Active')
                     ->boolean()
@@ -380,6 +390,7 @@ class ProductResource extends Resource
                         ->whereRaw('(SELECT AVG(rating) FROM product_ratings WHERE product_id = products.id) <= 3')),
                 SelectFilter::make('category_id')
                     ->label('Category')
+                    ->multiple()
                     ->options(fn (): array => static::categoryOptions()),
                 Filter::make('stock_unset')
                     ->label('Stock not set')
@@ -396,11 +407,57 @@ class ProductResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('setDiscount')
+                        ->label('Set discount')
+                        ->icon('lucide-percent')
+                        ->visible(fn (): bool => auth()->user()?->is_admin === true)
+                        ->schema([static::discountField()])
+                        ->action(function (Collection $records, array $data): void {
+                            static::updateDiscount($records, (int) $data['discount_percent']);
+
+                            Notification::make()->title('Discount updated')->success()->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                    BulkAction::make('resetDiscount')
+                        ->label('Reset discount')
+                        ->icon('lucide-rotate-ccw')
+                        ->visible(fn (): bool => auth()->user()?->is_admin === true)
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records): void {
+                            static::updateDiscount($records, 0);
+
+                            Notification::make()->title('Discount reset')->success()->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make()
                         ->icon('lucide-trash-2'),
                 ]),
             ])
             ->defaultSort('id', 'desc');
+    }
+
+    protected static function updateDiscount(Collection $records, int $percent): void
+    {
+        abort_unless(auth()->user()?->is_admin === true, 403);
+
+        $ids = $records
+            ->filter(fn (Product $record): bool => static::canEdit($record))
+            ->pluck('id');
+
+        Product::query()->whereIn('id', $ids)->update(['discount_percent' => $percent]);
+    }
+
+    protected static function discountField(): TextInput
+    {
+        return TextInput::make('discount_percent')
+            ->label('Temporary discount')
+            ->integer()
+            ->minValue(0)
+            ->maxValue(99)
+            ->suffix('%')
+            ->default(0)
+            ->required()
+            ->helperText('Applied to the original price and all priced options. Set to 0 to restore prices.');
     }
 
     public static function getEloquentQuery(): Builder

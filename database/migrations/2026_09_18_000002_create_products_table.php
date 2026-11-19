@@ -34,6 +34,7 @@ return new class extends Migration
             $table->decimal('price_min', 12, 2)->nullable();
             $table->decimal('price_max', 12, 2)->nullable();
             $table->decimal('compare_at_price', 12, 2)->nullable();
+            $table->unsignedSmallInteger('discount_percent')->default(0);
 
             $table->unsignedInteger('delivery_weight')->nullable(); // grams
             $table->decimal('delivery_height', 8, 2)->nullable(); // cm
@@ -48,6 +49,10 @@ return new class extends Migration
 
             $table->index(['category_id', 'active']);
         });
+
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE products ADD CONSTRAINT products_discount_percent_check CHECK (discount_percent BETWEEN 0 AND 99)');
+        }
 
         DB::statement("CREATE UNIQUE INDEX products_slug_fr_unique ON products ((slug->>'fr')) WHERE (slug->>'fr') IS NOT NULL AND (slug->>'fr') <> ''");
         DB::statement("CREATE UNIQUE INDEX products_slug_en_unique ON products ((slug->>'en')) WHERE (slug->>'en') IS NOT NULL AND (slug->>'en') <> ''");
