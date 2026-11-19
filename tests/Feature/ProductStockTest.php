@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Filament\Resources\Products\Pages\ListProducts;
+use App\Filament\Tables\Columns\EditableColumn;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -33,7 +35,6 @@ class ProductStockTest extends TestCase
         $product = $this->product();
 
         $page = Livewire::test(ListProducts::class)
-            ->call('toggleStockEditing')
             ->call('updateTableColumnState', 'stock', (string) $product->id, '42');
 
         $this->assertSame(42, (int) $product->fresh()->stock);
@@ -51,8 +52,7 @@ class ProductStockTest extends TestCase
     public function test_invalid_stock_does_not_overwrite_the_saved_value(): void
     {
         $product = $this->product(12);
-        $page = Livewire::test(ListProducts::class)
-            ->call('toggleStockEditing');
+        $page = Livewire::test(ListProducts::class);
 
         foreach (['-1', '1.5', 'abc', '2147483648'] as $invalid) {
             $page->call('updateTableColumnState', 'stock', (string) $product->id, $invalid);
@@ -61,42 +61,29 @@ class ProductStockTest extends TestCase
         }
     }
 
-    public function test_stock_is_read_only_until_editing_is_enabled_and_is_locked_again_afterwards(): void
+    public function test_stock_is_rendered_as_a_custom_editable_column_and_can_be_sorted(): void
     {
         $product = $this->product(12);
 
-        $page = Livewire::test(ListProducts::class)
-            ->assertSet('editingStock', false)
-            ->assertCanRenderTableColumn('stock_readonly')
-            ->assertCanNotRenderTableColumn('stock')
+        Livewire::test(ListProducts::class)
+            ->assertTableColumnExists('stock', fn (EditableColumn $column): bool => ! $column->isDisabled(), $product)
+            ->assertCanRenderTableColumn('stock')
+            ->assertSeeHtml('data-inline-edit-column="stock"')
+            ->call('sortTable', 'stock', 'asc')
+            ->assertSet('tableSort', 'stock:asc');
+    }
+
+    public function test_stock_cannot_be_updated_when_the_product_update_policy_denies_access(): void
+    {
+        $product = $this->product(12);
+
+        Gate::policy(Product::class, ReadOnlyStockProductPolicy::class);
+
+        Livewire::test(ListProducts::class)
+            ->assertTableColumnExists('stock', fn (EditableColumn $column): bool => $column->isDisabled(), $product)
             ->call('updateTableColumnState', 'stock', (string) $product->id, '99');
 
         $this->assertSame(12, (int) $product->fresh()->stock);
-
-        $page->callAction('toggleStockEditing')
-            ->assertSet('editingStock', true)
-            ->assertCanRenderTableColumn('stock')
-            ->assertCanNotRenderTableColumn('stock_readonly')
-            ->call('updateTableColumnState', 'stock', (string) $product->id, '42');
-
-        $this->assertSame(42, (int) $product->fresh()->stock);
-
-        $page->callAction('toggleStockEditing')
-            ->assertSet('editingStock', false)
-            ->call('updateTableColumnState', 'stock', (string) $product->id, '99');
-
-        $this->assertSame(42, (int) $product->fresh()->stock);
-    }
-
-    public function test_stock_sort_is_preserved_when_editing_mode_changes(): void
-    {
-        Livewire::test(ListProducts::class)
-            ->call('sortTable', 'stock_readonly', 'asc')
-            ->assertSet('tableSort', 'stock_readonly:asc')
-            ->call('toggleStockEditing')
-            ->assertSet('tableSort', 'stock:asc')
-            ->call('toggleStockEditing')
-            ->assertSet('tableSort', 'stock_readonly:asc');
     }
 
     public function test_unset_stock_filter_does_not_include_zero_stock(): void
@@ -126,5 +113,23 @@ class ProductStockTest extends TestCase
             'price' => 12,
             'stock' => $stock,
         ]);
+    }
+}
+
+class ReadOnlyStockProductPolicy
+{
+    public function viewAny(User $user): bool
+    {
+        return true;
+    }
+
+    public function view(User $user, Product $product): bool
+    {
+        return true;
+    }
+
+    public function update(User $user, Product $product): bool
+    {
+        return false;
     }
 }
