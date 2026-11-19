@@ -279,17 +279,26 @@ class ProductResource extends Resource
                     ->conversion('thumb')
                     ->filterMediaUsing(fn (Collection $media): Collection => $media->take(1))
                     ->square()
-                    ->size(90),
+                    ->size(56),
 
                 TextColumn::make('name_fr')
-                    ->label('Name')
+                    ->label('Product')
                     ->state(fn (Product $record): string => $record->getTranslation('name', 'fr', false) ?: '—')
-                    ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("name->>'fr' ILIKE ?", ["%{$search}%"]))
+                    ->description(fn (Product $record): ?string => $record->category?->getTranslation('name', 'fr', false) ?: null)
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query->where(fn (Builder $query): Builder => $query
+                        ->whereRaw("LOWER(name->>'fr') LIKE LOWER(?)", ["%{$search}%"])
+                        ->orWhereRaw("LOWER(slug->>'fr') LIKE LOWER(?)", ["%{$search}%"])))
                     ->weight('medium')
-                    ->width('290px')
-                    ->extraAttributes(['style' => 'width:100%;max-width: 290px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;display: block;'])
-                    ->lineClamp(1)
-                    ->tooltip(fn ($state) => $state),
+                    ->width('240px')
+                    ->extraAttributes(['style' => 'max-width: 240px'])
+                    ->wrap()
+                    ->lineClamp(2)
+                    ->tooltip(fn ($state) => $state)
+                    ->color(fn (Product $record): string => static::storefrontUrl($record) ? 'primary' : 'gray')
+                    ->icon(fn (Product $record): ?string => static::storefrontUrl($record) ? 'lucide-external-link' : null)
+                    ->iconPosition(\Filament\Support\Enums\IconPosition::After)
+                    ->url(fn (Product $record): ?string => static::storefrontUrl($record))
+                    ->openUrlInNewTab(),
 
                 EditableColumn::make('stock')
                     ->label('Stock')
@@ -300,7 +309,7 @@ class ProductResource extends Resource
                     ->width('60px')
                     ->disabled(fn (Product $record): bool => auth()->user()?->is_admin !== true || ! static::canEdit($record)),
 
-               TextColumn::make('price_display')
+                TextColumn::make('price_display')
                     ->label('Price')
                     ->width('60px')
                     ->state(fn (Product $record): string => static::priceLabel($record))
@@ -314,55 +323,26 @@ class ProductResource extends Resource
                     ->color(fn (mixed $state): string => (int) $state > 0 ? 'success' : 'gray')
                     ->sortable(),
 
-                TextColumn::make('slug_fr')
-                    ->label('Site')
-                    ->state(fn (Product $record): string => $record->getTranslation('slug', 'fr', false) ?: '—')
-                    ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("slug->>'fr' ILIKE ?", ["%{$search}%"]))
-                    ->badge()
-                    ->color('gray')
-                    ->icon('lucide-external-link')
-                    ->url(fn (Product $record): ?string => $record->active && ! $record->trashed() && filled($record->getTranslation('slug', 'fr', false))
-                        ? route('shop.product', ['slug' => $record->getTranslation('slug', 'fr', false)])
-                        : null)
-                    ->openUrlInNewTab(),
-
-                TextColumn::make('category_name')
-                    ->label('Category')
-                    ->state(fn (Product $record): string => $record->category?->getTranslation('name', 'fr', false) ?: '—')
-                    ->badge()
-                    ->color('gray'),
-
-                // TextColumn::make('sku')
-                //     ->label('SKU')
-                //     ->searchable()
-                //     ->placeholder('—')
-                //     ->toggleable(),
-
                 TextColumn::make('ratings_avg_rating')
-                    ->label('Avg rating')
-                    ->formatStateUsing(fn (mixed $state): string => $state === null ? '—' : number_format((float) $state, 2).' / 5')
+                    ->label('Rating')
+                    ->placeholder('—')
+                    ->formatStateUsing(fn (mixed $state): string => $state === null ? '—' : number_format((float) $state, 1).' / 5')
+                    ->description(fn (Product $record): string => $record->ratings_count.' reviews')
                     ->sortable(),
 
-                TextColumn::make('ratings_count')
-                    ->label('Ratings')
-                    ->sortable(),
-
-                IconColumn::make('active')
-                    ->label('Active')
-                    ->boolean()
-                    ->trueIcon('lucide-circle-check')
-                    ->falseIcon('lucide-circle-x')
-                    ->trueColor('success')
-                    ->falseColor('danger'),
-
-                IconColumn::make('available')
-                    ->label('Available')
-                    ->boolean()
-                    ->trueIcon('lucide-circle-check')
-                    ->falseIcon('lucide-circle-x')
-                    ->trueColor('success')
-                    ->falseColor('danger')
-                    ->sortable(),
+                TextColumn::make('available')
+                    ->label('Status')
+                    ->state(fn (Product $record): string => ! $record->active ? 'Hidden' : ($record->available ? 'Live' : 'Paused'))
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Live' => 'success',
+                        'Paused' => 'warning',
+                        default => 'gray',
+                    })
+                    ->tooltip(fn (Product $record): string => 'Active: '.($record->active ? 'Yes' : 'No').' · Available: '.($record->available ? 'Yes' : 'No'))
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query
+                        ->orderBy('active', $direction)
+                        ->orderBy('available', $direction)),
 
                 IconColumn::make('featured')
                     ->label('Featured')
@@ -409,7 +389,9 @@ class ProductResource extends Resource
             ])
             ->recordActions([
                 EditAction::make()
-                    ->icon('lucide-pencil'),
+                    ->icon('lucide-pencil')
+                    ->iconButton()
+                    ->tooltip('Edit product'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -466,9 +448,19 @@ class ProductResource extends Resource
             ->helperText('Applied to the original price and all priced options. Set to 0 to restore prices.');
     }
 
+    protected static function storefrontUrl(Product $record): ?string
+    {
+        $slug = $record->getTranslation('slug', 'fr', false);
+
+        return $record->active && ! $record->trashed() && filled($slug)
+            ? route('shop.product', ['slug' => $slug, 'locale' => 'fr'])
+            : null;
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->with('category')
             ->withCount('ratings')
             ->withAvg('ratings', 'rating');
     }
