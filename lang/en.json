@@ -703,5 +703,7 @@
     "Merci pour votre achat !": "Thank you for your purchase!",
     "Votre paiement pour « :course » est confirmé.": "Your payment for “:course” is confirmed.",
     "Un e-mail a été envoyé à :email.": "An email has been sent to :email.",
-    "Acheter maintenant": "Buy now"
+    "Acheter maintenant": "Buy now",
+    ":count en stock": ":count in stock",
+    "Rupture de stock": "Out of stock"
 }

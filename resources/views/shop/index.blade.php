@@ -117,18 +117,34 @@
                                 $productUrl = $productSlug
                                     ? route('shop.product', ['slug' => $productSlug])
                                     : route('shop.index');
+                                $showStockBadge = $product->stock !== null && $product->stock < 10;
                             @endphp
 
                             <article class="group min-w-0" data-blur-reveal-item>
                                 <a href="{{ $productUrl }}" class="block">
                                     <div class="relative aspect-[3/4] overflow-hidden rounded-2xl">
-                                        @unless ($product->available)
-                                            <span class="absolute right-3 top-3 z-20 rounded-full bg-white/95 px-3 py-1.5 text-xs font-medium text-bmlk-brand">{{ __('Indisponible') }}</span>
-                                        @endunless
-                                        @if ($product->is_new)
-                                            <span class="absolute left-3 top-3 z-10 rounded-full bg-[#DDA1AA] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-900 sm:left-4 sm:top-4 sm:px-4 sm:py-2 sm:text-xs">
-                                                {{ __('Nouveau') }}
-                                            </span>
+                                        @if ($product->is_new || ! $product->available || $showStockBadge)
+                                            <div class="pointer-events-none absolute inset-x-3 top-3 z-20 flex flex-wrap items-start gap-1.5">
+                                                @if ($product->is_new)
+                                                    <span class="rounded-full bg-[#DDA1AA] px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-900 sm:px-4 sm:py-2 sm:text-xs">
+                                                        {{ __('Nouveau') }}
+                                                    </span>
+                                                @endif
+
+                                                @if (! $product->available || $showStockBadge)
+                                                    <div class="ml-auto flex flex-col items-end gap-1">
+                                                        @unless ($product->available)
+                                                            <span class="rounded-full bg-white/95 px-3 py-1.5 text-xs font-medium text-bmlk-brand">{{ __('Indisponible') }}</span>
+                                                        @endunless
+
+                                                        @if ($showStockBadge)
+                                                            <span data-stock-badge="{{ $product->stock }}" class="rounded-full bg-white px-2.5 py-1 text-[10px] font-medium sm:px-3 sm:py-1.5 sm:text-xs {{ $product->stock > 0 ? 'text-zinc-700' : 'text-bmlk-brand' }}">
+                                                                {{ $product->stock > 0 ? __(':count en stock', ['count' => $product->stock]) : __('Rupture de stock') }}
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                            </div>
                                         @endif
 
                                     @if ($image)

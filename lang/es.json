@@ -703,5 +703,7 @@
     "Merci pour votre achat !": "¡Gracias por tu compra!",
     "Votre paiement pour « :course » est confirmé.": "Tu pago de «:course» está confirmado.",
     "Un e-mail a été envoyé à :email.": "Se ha enviado un correo a :email.",
-    "Acheter maintenant": "Comprar ahora"
+    "Acheter maintenant": "Comprar ahora",
+    ":count en stock": ":count en stock",
+    "Rupture de stock": "Sin stock"
 }

@@ -565,6 +565,12 @@
                                 </div>
                             @endif
 
+                            @if ($product->stock !== null)
+                                <p data-product-stock="{{ $product->stock }}" class="mt-3 text-sm font-medium {{ $product->stock > 0 ? 'text-zinc-500' : 'text-bmlk-brand' }}">
+                                    {{ $product->stock > 0 ? __(':count en stock', ['count' => $product->stock]) : __('Rupture de stock') }}
+                                </p>
+                            @endif
+
                             @if ($productDescription)
                                 <p class="mt-6 max-w-xl text-base leading-8 text-zinc-600 sm:text-lg">
                                     {{ $productDescription }}
