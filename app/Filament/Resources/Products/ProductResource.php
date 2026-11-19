@@ -285,6 +285,44 @@ class ProductResource extends Resource
                     ->searchable(query: fn (Builder $query, string $search): Builder => $query->whereRaw("name->>'fr' ILIKE ?", ["%{$search}%"]))
                     ->weight('medium'),
 
+                TextColumn::make('stock_readonly')
+                    ->label('Stock')
+                    ->state(fn (Product $record): ?int => $record->stock)
+                    ->placeholder('—')
+                    ->sortable(['stock'])
+                    ->width('60px')
+                    ->hidden(fn (Pages\ListProducts $livewire): bool => $livewire->editingStock),
+
+                TextInputColumn::make('stock')
+                    ->visible(fn (Pages\ListProducts $livewire): bool => $livewire->editingStock)
+                    ->label('Stock')
+                    ->inputMode('numeric')
+                    ->placeholder('—')
+                    ->rules(['nullable', 'integer', 'min:0', 'max:2147483647'])
+                    ->sortable()
+                    ->width('60px')
+                    ->disabled(fn (Product $record, Pages\ListProducts $livewire): bool =>
+                        ! $livewire->editingStock || auth()->user()?->is_admin !== true || ! static::canEdit($record))
+                    ->extraInputAttributes([
+                        'data-stock-input' => 'true',
+                        'x-on:focus' => '$el.select()',
+                        'x-on:keydown.enter.prevent' => '$el.blur()',
+                        'x-on:keydown.tab' => <<<'JS'
+                            const inputs = Array.from($el.closest('table')?.querySelectorAll('input[data-stock-input]:not(:disabled)') ?? [])
+                            const index = inputs.indexOf($el)
+                            const next = inputs[index + ($event.shiftKey ? -1 : 1)]
+                            if (index !== -1 && next) {
+                                $event.preventDefault()
+                                next.focus()
+                            }
+                            JS,
+                    ])
+                    ->afterStateUpdated(fn () => Notification::make()
+                        ->title('Stock saved')
+                        ->success()
+                        ->duration(1500)
+                        ->send()),
+
                 TextColumn::make('slug_fr')
                     ->label('Site')
                     ->state(fn (Product $record): string => $record->getTranslation('slug', 'fr', false) ?: '—')
@@ -322,44 +360,6 @@ class ProductResource extends Resource
                     ->label('Price')
                     ->state(fn (Product $record): string => static::priceLabel($record))
                     ->alignEnd(),
-
-                TextColumn::make('stock_readonly')
-                    ->label('Stock')
-                    ->state(fn (Product $record): ?int => $record->stock)
-                    ->placeholder('—')
-                    ->sortable(['stock'])
-                    ->width('110px')
-                    ->hidden(fn (Pages\ListProducts $livewire): bool => $livewire->editingStock),
-
-                TextInputColumn::make('stock')
-                    ->visible(fn (Pages\ListProducts $livewire): bool => $livewire->editingStock)
-                    ->label('Stock')
-                    ->inputMode('numeric')
-                    ->placeholder('—')
-                    ->rules(['nullable', 'integer', 'min:0', 'max:2147483647'])
-                    ->sortable()
-                    ->width('110px')
-                    ->disabled(fn (Product $record, Pages\ListProducts $livewire): bool =>
-                        ! $livewire->editingStock || auth()->user()?->is_admin !== true || ! static::canEdit($record))
-                    ->extraInputAttributes([
-                        'data-stock-input' => 'true',
-                        'x-on:focus' => '$el.select()',
-                        'x-on:keydown.enter.prevent' => '$el.blur()',
-                        'x-on:keydown.tab' => <<<'JS'
-                            const inputs = Array.from($el.closest('table')?.querySelectorAll('input[data-stock-input]:not(:disabled)') ?? [])
-                            const index = inputs.indexOf($el)
-                            const next = inputs[index + ($event.shiftKey ? -1 : 1)]
-                            if (index !== -1 && next) {
-                                $event.preventDefault()
-                                next.focus()
-                            }
-                            JS,
-                    ])
-                    ->afterStateUpdated(fn () => Notification::make()
-                        ->title('Stock saved')
-                        ->success()
-                        ->duration(1500)
-                        ->send()),
 
                 IconColumn::make('active')
                     ->label('Active')
