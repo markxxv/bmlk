@@ -296,6 +296,20 @@ class ProductResource extends Resource
                     ->width('60px')
                     ->disabled(fn (Product $record): bool => auth()->user()?->is_admin !== true || ! static::canEdit($record)),
 
+               TextColumn::make('price_display')
+                    ->label('Price')
+                    ->width('60px')
+                    ->state(fn (Product $record): string => static::priceLabel($record))
+                    ->alignEnd(),
+
+                TextColumn::make('discount_percent')
+                    ->width('60px')
+                    ->label('Discount')
+                    ->formatStateUsing(fn (mixed $state): string => (int) $state > 0 ? '−'.(int) $state.'%' : '0%')
+                    ->badge()
+                    ->color(fn (mixed $state): string => (int) $state > 0 ? 'success' : 'gray')
+                    ->sortable(),
+
                 TextColumn::make('slug_fr')
                     ->label('Site')
                     ->state(fn (Product $record): string => $record->getTranslation('slug', 'fr', false) ?: '—')
@@ -327,18 +341,6 @@ class ProductResource extends Resource
 
                 TextColumn::make('ratings_count')
                     ->label('Ratings')
-                    ->sortable(),
-
-                TextColumn::make('price_display')
-                    ->label('Price')
-                    ->state(fn (Product $record): string => static::priceLabel($record))
-                    ->alignEnd(),
-
-                TextColumn::make('discount_percent')
-                    ->label('Discount')
-                    ->formatStateUsing(fn (mixed $state): string => (int) $state > 0 ? '−'.(int) $state.'%' : '0%')
-                    ->badge()
-                    ->color(fn (mixed $state): string => (int) $state > 0 ? 'success' : 'gray')
                     ->sortable(),
 
                 IconColumn::make('active')
