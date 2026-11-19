@@ -279,7 +279,8 @@ class ProductResource extends Resource
                     ->conversion('thumb')
                     ->filterMediaUsing(fn (Collection $media): Collection => $media->take(1))
                     ->square()
-                    ->size(56),
+                    ->size(56)
+                    ->width('1%'),
 
                 TextColumn::make('name_fr')
                     ->label('Product')
