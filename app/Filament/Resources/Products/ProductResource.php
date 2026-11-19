@@ -19,6 +19,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -28,6 +29,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -321,6 +323,34 @@ class ProductResource extends Resource
                     ->state(fn (Product $record): string => static::priceLabel($record))
                     ->alignEnd(),
 
+                TextInputColumn::make('stock')
+                    ->label('Stock')
+                    ->inputMode('numeric')
+                    ->placeholder('—')
+                    ->rules(['nullable', 'integer', 'min:0', 'max:2147483647'])
+                    ->sortable()
+                    ->width('110px')
+                    ->disabled(fn (Product $record): bool => auth()->user()?->is_admin !== true || ! static::canEdit($record))
+                    ->extraInputAttributes([
+                        'data-stock-input' => 'true',
+                        'x-on:focus' => '$el.select()',
+                        'x-on:keydown.enter.prevent' => '$el.blur()',
+                        'x-on:keydown.tab' => <<<'JS'
+                            const inputs = Array.from($el.closest('table')?.querySelectorAll('input[data-stock-input]:not(:disabled)') ?? [])
+                            const index = inputs.indexOf($el)
+                            const next = inputs[index + ($event.shiftKey ? -1 : 1)]
+                            if (index !== -1 && next) {
+                                $event.preventDefault()
+                                next.focus()
+                            }
+                            JS,
+                    ])
+                    ->afterStateUpdated(fn () => Notification::make()
+                        ->title('Stock saved')
+                        ->success()
+                        ->duration(1500)
+                        ->send()),
+
                 IconColumn::make('active')
                     ->label('Active')
                     ->boolean()
@@ -371,6 +401,9 @@ class ProductResource extends Resource
                 SelectFilter::make('category_id')
                     ->label('Category')
                     ->options(fn (): array => static::categoryOptions()),
+                Filter::make('stock_unset')
+                    ->label('Stock not set')
+                    ->query(fn (Builder $query): Builder => $query->whereNull('stock')),
                 TernaryFilter::make('active'),
                 TernaryFilter::make('available'),
                 TernaryFilter::make('featured'),
