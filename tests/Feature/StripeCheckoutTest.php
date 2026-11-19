@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\StripeController;
+use App\Models\Category;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -72,6 +74,49 @@ class StripeCheckoutTest extends TestCase
         $paidAt = $order->fresh()->paid_at;
         $this->postJson('/stripe/webhook', $event)->assertOk();
         $this->assertSame($paidAt, $order->fresh()->paid_at);
+    }
+
+    public function test_confirmed_payment_deducts_tracked_stock_once_and_never_below_zero(): void
+    {
+        $tracked = $this->product(10);
+        $low = $this->product(2);
+        $untracked = $this->product(null);
+        $zero = $this->product(0);
+
+        $order = $this->order();
+        $order->update([
+            'stripe_session_id' => 'cs_test_one',
+            'items' => array_map(fn (array $item): array => $item + [
+                'unit_price' => 1,
+                'line_total' => $item['quantity'],
+            ], [
+                ['product_id' => $tracked->id, 'name' => 'Gel', 'quantity' => 2],
+                ['product_id' => $tracked->id, 'name' => 'Gel', 'quantity' => 3],
+                ['product_id' => $low->id, 'name' => 'Gel', 'quantity' => 4],
+                ['product_id' => $untracked->id, 'name' => 'Gel', 'quantity' => 1],
+                ['product_id' => $zero->id, 'name' => 'Gel', 'quantity' => 1],
+                ['product_id' => 999999, 'name' => 'Legacy item', 'quantity' => 1],
+            ]),
+        ]);
+
+        $this->sendStripeEvent($order, 'checkout.session.completed', 'unpaid');
+        $this->assertSame('processing', $order->fresh()->payment_status);
+        $this->assertSame(10, (int) $tracked->fresh()->stock);
+
+        $this->sendStripeEvent($order, 'checkout.session.async_payment_succeeded', 'paid');
+        $this->assertSame('paid', $order->fresh()->payment_status);
+        $this->assertSame(5, (int) $tracked->fresh()->stock);
+        $this->assertSame(0, (int) $low->fresh()->stock);
+        $this->assertTrue($low->fresh()->available);
+        $this->assertNull($untracked->fresh()->stock);
+        $this->assertSame(0, (int) $zero->fresh()->stock);
+
+        $this->sendStripeEvent($order, 'checkout.session.completed', 'paid');
+        $this->sendStripeEvent($order, 'checkout.session.async_payment_succeeded', 'paid');
+
+        $this->assertSame(5, (int) $tracked->fresh()->stock);
+        $this->assertSame(0, (int) $low->fresh()->stock);
+        $this->assertNull($untracked->fresh()->stock);
     }
 
     public function test_order_with_email_asks_only_for_email_without_a_token(): void
@@ -209,6 +254,36 @@ class StripeCheckoutTest extends TestCase
         ])->get(route('order.status', [
             'orderNumber' => $order->order_number,
         ]))->assertOk();
+    }
+
+    private function sendStripeEvent(Order $order, string $type, string $paymentStatus): void
+    {
+        $event = [
+            'type' => $type,
+            'data' => ['object' => $this->stripeSession($order, $paymentStatus)],
+        ];
+        $timestamp = time();
+        $signature = hash_hmac('sha256', $timestamp.'.'.json_encode($event), 'whsec_test');
+
+        $this->withHeader('Stripe-Signature', "t={$timestamp},v1={$signature}")
+            ->postJson('/stripe/webhook', $event)->assertOk();
+    }
+
+    private function product(?int $stock): Product
+    {
+        $category = Category::query()->first() ?? Category::query()->create([
+            'name' => ['fr' => 'Soins'],
+            'slug' => ['fr' => 'soins'],
+        ]);
+
+        return Product::query()->create([
+            'category_id' => $category->id,
+            'name' => ['fr' => 'Gel'],
+            'slug' => ['fr' => 'gel-'.Str::random(12)],
+            'active' => true,
+            'price' => 12,
+            'stock' => $stock,
+        ]);
     }
 
     private function order(): Order

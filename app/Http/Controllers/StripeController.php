@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderTelegramNotification;
 use App\Models\User;
 use App\Services\OrderRefundService;
+use App\Services\ProductStockService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
@@ -309,13 +310,17 @@ class StripeController extends Controller
                 ]);
 
                 if ($updated === 1) {
+                    // Only the winning paid transition consumes stock. Keep it in
+                    // the same transaction so duplicate confirmations cannot deduct twice.
+                    app(ProductStockService::class)->decrementForItems($order->items);
+
                     // Register once at verified payment. An immediate attempt
                     // follows; cron retries failures and sends daily reminders.
                     OrderTelegramNotification::query()->firstOrCreate(['order_id' => $order->id]);
                 }
 
                 return $updated;
-            });
+            }, 3);
             if ($changed) {
                 $this->createCustomerForPaidOrder($order->fresh());
                 // Immediately notify staff after the response has been sent.
