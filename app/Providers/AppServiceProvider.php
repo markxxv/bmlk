@@ -35,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Localized routes are generated with a {locale} segment; the default
         // locale is served unprefixed, so strip its segment from the path.
-        $defaultLocale = config('app.locale');
+        $defaultLocale = config('app.default_locale', config('app.locale'));
         URL::defaults(['locale' => $defaultLocale]);
         URL::formatPathUsing(function (string $path) use ($defaultLocale): string {
             $prefix = '/'.$defaultLocale;

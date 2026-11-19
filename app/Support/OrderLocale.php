@@ -18,7 +18,7 @@ class OrderLocale
 
         return in_array($locale, config('app.supported_locales', []), true)
             ? $locale
-            : config('app.locale');
+            : config('app.default_locale', config('app.locale'));
     }
 
     public static function run(Order $order, callable $callback): mixed

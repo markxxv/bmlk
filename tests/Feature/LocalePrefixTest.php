@@ -30,6 +30,15 @@ class LocalePrefixTest extends TestCase
         $this->get('/es')->assertOk()->assertSee('<html lang="es"', false);
     }
 
+    public function test_repeated_localized_requests_do_not_change_the_default_locale(): void
+    {
+        $this->get('/en/livraison')->assertOk()->assertSee('<html lang="en"', false);
+        $this->get('/en/shop')->assertOk()->assertSee('<html lang="en"', false);
+        $this->get('/es/livraison')->assertOk()->assertSee('<html lang="es"', false);
+        $this->get('/livraison')->assertOk()->assertSee('<html lang="fr"', false);
+        $this->get('/fr/livraison')->assertRedirect('/livraison')->assertStatus(301);
+    }
+
     public function test_default_locale_prefix_redirects_to_the_unprefixed_url(): void
     {
         $this->get('/fr/livraison')->assertRedirect('/livraison')->assertStatus(301);

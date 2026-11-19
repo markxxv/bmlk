@@ -17,7 +17,7 @@ class SetLocale
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $default = config('app.locale');
+        $default = config('app.default_locale', config('app.locale'));
         $route = $request->route();
         $locale = $route?->parameter('locale');
 

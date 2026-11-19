@@ -73,7 +73,7 @@ class LocaleUrls
             return [];
         }
 
-        $default = config('app.locale');
+        $default = config('app.default_locale', config('app.locale'));
 
         if (isset($urls[$default])) {
             $urls['x-default'] = $urls[$default];

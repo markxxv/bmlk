@@ -80,10 +80,13 @@ return [
 
     'locale' => env('APP_LOCALE', 'fr'),
 
+    // Laravel changes app.locale at runtime; this remains the canonical URL locale.
+    'default_locale' => env('APP_LOCALE', 'fr'),
+
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
     /*
-    | Public storefront languages. The default locale (app.locale) is served
+    | Public storefront languages. The default locale (app.default_locale) is served
     | without a URL prefix; every other one lives under /{locale}/...
     */
 
