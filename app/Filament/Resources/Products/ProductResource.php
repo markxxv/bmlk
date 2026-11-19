@@ -503,6 +503,7 @@ class ProductResource extends Resource
 
                     Repeater::make("details.{$locale}")
                         ->label('Details')
+                        ->defaultItems(0)
                         ->schema([
                             TextInput::make('title')
                                 ->required()
