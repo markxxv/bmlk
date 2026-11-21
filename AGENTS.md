@@ -517,3 +517,11 @@ Sales logic:
 - /avis/{token} is a standalone Alpine-only page for reviewing one order without authentication. Never add marketing, analytics, GTM or cart scripts to resources/js/reviews.js. No order address, phone or email is exposed there.
 - The opt-out link is signed and requires a CSRF-protected confirmation POST. Hashed email preferences live in review_email_opt_outs across orders.
 - Deployment: php artisan migrate --force, npm run build, php artisan view:cache. Verify with php artisan test --filter=ReviewRequestsTest and php artisan test --filter=ProductRatingsTest.
+
+## Homepage editor
+
+- Filament **Homepage** (`/admin/homepage`) sits immediately below Dashboard and is administrator-only. It uses the Filament 5.11 JavaScript field renderer with React 19; its state is deferred until Publish changes.
+- `site_settings.value` is a JSONB document with one `homepage` record: `theme`, `badge_enabled`, and `translations` keyed by every supported storefront locale. Each language includes hero copy, the campaign badge, and homepage SEO. `HomepageSettings` owns the complete field whitelist, bounds, default translations, and server-side validation. Preserve fixed CTA destinations, markup, and palette presets; never accept arbitrary HTML, class names, colours, or URLs from this editor.
+- The preview loads the same `components/home-hero.blade.php` as the storefront, without animations, through an admin-only iframe. React synchronizes text and preset changes locally, including native plain-text inline inputs. The editor offers desktop and mobile previews. No request is required while typing.
+- Keep the original Signature preset and the curated Black Friday, Porcelain and Blue Atelier schemes. All four share the existing mascot and packaging stripe. The campaign badge is separately toggled.
+- Deployment: `composer install --no-interaction`, `php artisan migrate --force`, `npm ci`, `npm run build`, `php artisan optimize:clear`. Verify `php artisan test --filter=HomepageSettingsTest` and `node --test tests/js/homepage-editor-state.test.js`.
