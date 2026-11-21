@@ -1,14 +1,14 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createPortal } from 'react-dom';
-import { editTranslation } from './homepage-editor-state';
+import { editTranslation, editDiscount, formatDiscount } from './homepage-editor-state';
 
 const languageNames = { fr: 'French', en: 'English', es: 'Spanish' };
 const longFields = new Set(['description', 'meta_description', 'eyebrow']);
 
-function PlainInput({ field, value, onChange, onFocus, onBlur, id, disabled, autoFocus = false }) {
+function PlainInput({ field, value, onChange, onFocus, onBlur, id, disabled, required = true, autoFocus = false }) {
     const props = {
-        id, value, disabled, autoFocus, maxLength: field.max, required: true,
+        id, value, disabled, autoFocus, maxLength: field.max, required,
         onChange: event => onChange(event.target.value), onFocus, onBlur,
         onKeyDown: event => {
             if (event.key === 'Enter' && !event.nativeEvent.isComposing) event.preventDefault();
@@ -18,6 +18,10 @@ function PlainInput({ field, value, onChange, onFocus, onBlur, id, disabled, aut
     return field.max >= 100 && field.label !== 'Meta title'
         ? <textarea {...props} rows={field.max > 200 ? 3 : 2} />
         : <input {...props} type="text" />;
+}
+
+function DiscountInput({ value, onChange, ...props }) {
+    return <input {...props} type="text" inputMode="numeric" maxLength={3} pattern="[0-9]{1,3}" value={value ?? ''} aria-invalid={!Number.isInteger(value)} onChange={event => onChange(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') event.preventDefault(); }} />;
 }
 
 function Preview({ settings, locale, config, onEdit, highlighted, onHighlight, disabled }) {
@@ -64,15 +68,18 @@ function Preview({ settings, locale, config, onEdit, highlighted, onHighlight, d
         const hero = document?.querySelector('[data-home-hero]');
         if (!hero) return;
         hero.dataset.theme = settings.theme;
-        hero.querySelector('[data-home-badge]').hidden = !settings.badge_enabled;
+        hero.dataset.campaign = String(settings.badge_enabled);
+        hero.querySelectorAll('[data-home-badge]').forEach(element => { element.hidden = !settings.badge_enabled; });
+        const note = hero.querySelector('[data-home-offer-note]');
+        if (note) note.hidden = !settings.badge_enabled || !copy.badge_note?.trim();
         document.documentElement.lang = locale;
         hero.querySelectorAll('[data-home-field]').forEach(element => {
             const key = element.dataset.homeField;
-            const value = copy[key] ?? '';
+            const value = key === 'badge_percent' ? formatDiscount(settings.badge_percent) : (copy[key] ?? '');
             if (element.textContent !== value) element.textContent = value;
             element.toggleAttribute('data-editing', highlighted === key);
         });
-    }, [document, settings.theme, settings.badge_enabled, copy, locale, highlighted]);
+    }, [document, settings.theme, settings.badge_enabled, settings.badge_percent, copy, locale, highlighted]);
 
     useEffect(() => {
         if (!document) return;
@@ -130,8 +137,10 @@ function Preview({ settings, locale, config, onEdit, highlighted, onHighlight, d
                 if (event.key === 'Enter' || event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); setInline(null); }
             }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 5 }} htmlFor="hero-inline-value">{config.fields[inline.key].label}</label>
-                <input id="hero-inline-value" type="text" autoFocus value={copy[inline.key]} maxLength={config.fields[inline.key].max} onChange={event => edit(inline.key, event.target.value)} onBlur={() => setInline(null)} style={{ width: '100%', background: '#F7F5F6', padding: '10px 12px', fontSize: Math.min(28, 16 / scale), borderRadius: 8, outline: '2px solid #A9636F' }} />
-                <small style={{ display: 'block', marginTop: 7, fontSize: 12 }}>Enter to finish · plain text only</small>
+                {inline.key === 'badge_percent'
+                    ? <DiscountInput id="hero-inline-value" autoFocus value={settings.badge_percent} onChange={value => edit(inline.key, value)} onBlur={() => setInline(null)} style={{ width: '100%', background: '#F7F5F6', padding: '10px 12px', fontSize: Math.min(28, 16 / scale), borderRadius: 8, outline: '2px solid #A9636F' }} />
+                    : <input id="hero-inline-value" type="text" autoFocus value={copy[inline.key] ?? ''} maxLength={config.fields[inline.key].max} onChange={event => edit(inline.key, event.target.value)} onBlur={() => setInline(null)} style={{ width: '100%', background: '#F7F5F6', padding: '10px 12px', fontSize: Math.min(28, 16 / scale), borderRadius: 8, outline: '2px solid #A9636F' }} />}
+                <small style={{ display: 'block', marginTop: 7, fontSize: 12 }}>{inline.key === 'badge_percent' ? '1–100% · all languages' : 'Enter to finish · plain text only'}</small>
             </div>, portal,
         )}
     </div>;
@@ -162,16 +171,17 @@ function HomepageEditor(props) {
     }
 
     function edit(key, value) {
-        emit(editTranslation(current.current, locale, key, value, config.fields));
+        emit(key === 'badge_percent' ? editDiscount(current.current, value) : editTranslation(current.current, locale, key, value, config.fields));
     }
 
     function field(key) {
         const definition = config.fields[key];
         const id = `${props.id}-${locale}-${key}`;
-        const value = settings.translations[locale][key] ?? '';
+        const value = key === 'badge_percent' ? settings.badge_percent : (settings.translations[locale][key] ?? '');
+        const inputProps = { id, value, disabled, onChange: next => edit(key, next), onFocus: () => setHighlighted(key), onBlur: props.onBlur };
         return <label key={key} htmlFor={id} className={`he-field ${highlighted === key ? 'he-field-selected' : ''}`}>
             <span>{definition.label}{longFields.has(key) && <small>{Array.from(value).length}/{definition.max}</small>}</span>
-            <PlainInput id={id} field={definition} value={value} disabled={disabled} onChange={next => edit(key, next)} onFocus={() => setHighlighted(key)} onBlur={props.onBlur} />
+            {key === 'badge_percent' ? <DiscountInput {...inputProps} /> : <PlainInput {...inputProps} field={definition} required={key !== 'badge_note'} />}
         </label>;
     }
 
@@ -195,8 +205,12 @@ function HomepageEditor(props) {
                         </div>
                     </div>
                     <div className="he-section"><h3>Campaign</h3>
-                        <label className="he-toggle"><span>Show promotional badge</span><input type="checkbox" role="switch" checked={settings.badge_enabled} disabled={disabled} onChange={event => emit({ ...current.current, badge_enabled: event.target.checked })} /></label>
-                        {settings.badge_enabled && field('badge')}
+                        <label className="he-toggle"><span>Show promotional offer</span><input type="checkbox" role="switch" checked={settings.badge_enabled} disabled={disabled} onChange={event => emit({ ...current.current, badge_enabled: event.target.checked })} /></label>
+                        {settings.badge_enabled && <>
+                            <div className="he-campaign-fields">{field('badge')}{field('badge_percent')}</div>
+                            <p className="he-field-help">One discount for the text and round badge, in every language.</p>
+                            {field('badge_note')}
+                        </>}
                     </div>
                     <div className="he-section"><h3>Hero copy</h3>
                         {field('eyebrow')}{field('headline_script')}{field('headline')}{field('description')}

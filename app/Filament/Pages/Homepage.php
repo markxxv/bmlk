@@ -45,7 +45,9 @@ class Homepage extends Page
                 ->rendererConfiguration([
                     'locales' => HomepageSettings::locales(),
                     'themes' => HomepageSettings::THEMES,
-                    'fields' => collect(HomepageSettings::FIELDS)->map(fn (array $field) => ['label' => $field['label'], 'max' => $field['max']])->all(),
+                    'fields' => collect(HomepageSettings::FIELDS)->map(fn (array $field) => ['label' => $field['label'], 'max' => $field['max']])->all() + [
+                        'badge_percent' => ['label' => 'Discount (%)', 'max' => 100],
+                    ],
                     'previewUrl' => route('homepage.preview'),
                 ]),
         ]);
