@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { plainText, editTranslation, editDiscount, formatDiscount } from '../../resources/js/homepage-editor-state.js';
+import { plainText, editTranslation, editDiscount, formatDiscount, editBenefitIcon } from '../../resources/js/homepage-editor-state.js';
 
 test('limits plain text to a safe length and removes markup delimiters and control characters', () => {
     assert.equal(plainText('Été\nà\tParis', 30), 'Été à Paris');
@@ -30,4 +30,14 @@ test('both editing surfaces update the same immutable locale state', () => {
     assert.equal(original.translations.en.headline, 'Hello');
     assert.equal(editTranslation(original, 'de', 'headline', 'Hallo', fields), original);
     assert.equal(editTranslation(original, 'en', 'unknown', 'hey', fields), original);
+});
+
+test('benefit icons are global, immutable and stored as plain Lucide names', () => {
+    const original = { benefit_icons: { feature_one: 'leaf', feature_two: 'globe-2', feature_three: 'graduation-cap' }, translations: { fr: {}, en: {} } };
+    const changed = editBenefitIcon(original, 'feature_one', 'shield-check');
+    assert.equal(changed.benefit_icons.feature_one, 'shield-check');
+    assert.equal(original.benefit_icons.feature_one, 'leaf');
+    assert.strictEqual(changed.translations, original.translations);
+    assert.strictEqual(editBenefitIcon(original, 'unknown', 'heart'), original);
+    for (const invalid of ['<svg/>', '../heart', 'Heart', '', null]) assert.strictEqual(editBenefitIcon(original, 'feature_one', invalid), original);
 });

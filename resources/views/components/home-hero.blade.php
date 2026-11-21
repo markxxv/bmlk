@@ -57,7 +57,7 @@
 
                     <div class="grid grid-cols-3 gap-2 md:border-t md:border-[var(--hero-rule)] md:pt-5 sm:gap-5 lg:gap-4" data-blur-reveal data-blur-stagger="0.1" data-blur-duration="0.75" data-blur-y="12" data-blur-pixels="7">
                         <div class="flex items-start gap-3" data-blur-reveal-item>
-                            <x-lucide-leaf class="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--bmc-accent)] sm:h-5 sm:w-5" stroke-width="1.4" />
+                            <span data-home-icon="feature_one" data-icon-name="{{ $settings['benefit_icons']['feature_one'] }}" class="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--bmc-accent)] sm:h-5 sm:w-5" @unless ($preview) aria-hidden="true" @endunless>{{ svg('lucide-'.$settings['benefit_icons']['feature_one'], 'h-full w-full', ['stroke-width' => 1.4]) }}</span>
                             <div>
                                 <p class="text-[9px] font-semibold text-[color:var(--bmc-accent)] sm:text-[11px] sm:tracking-widest"><span data-home-field="feature_one">{{ $copy['feature_one'] }}</span></p>
                                 <p class="mt-1 hidden text-[10px] text-[color:var(--bmc-accent)] sm:block"><span data-home-field="feature_one_detail">{{ $copy['feature_one_detail'] }}</span></p>
@@ -65,14 +65,14 @@
                         </div>
 
                         <div class="flex items-start gap-3" data-blur-reveal-item>
-                            <x-lucide-globe-2 class="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--bmc-accent)] sm:h-5 sm:w-5" stroke-width="1.4" />
+                            <span data-home-icon="feature_two" data-icon-name="{{ $settings['benefit_icons']['feature_two'] }}" class="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--bmc-accent)] sm:h-5 sm:w-5" @unless ($preview) aria-hidden="true" @endunless>{{ svg('lucide-'.$settings['benefit_icons']['feature_two'], 'h-full w-full', ['stroke-width' => 1.4]) }}</span>
                             <div>
                                 <p class="text-[9px] font-semibold text-[color:var(--bmc-accent)] sm:text-[11px] sm:tracking-widest"><span data-home-field="feature_two">{{ $copy['feature_two'] }}</span></p>
                             </div>
                         </div>
 
                         <div class="flex items-start gap-3" data-blur-reveal-item>
-                            <x-lucide-graduation-cap class="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--bmc-accent)] sm:h-5 sm:w-5" stroke-width="1.4" />
+                            <span data-home-icon="feature_three" data-icon-name="{{ $settings['benefit_icons']['feature_three'] }}" class="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--bmc-accent)] sm:h-5 sm:w-5" @unless ($preview) aria-hidden="true" @endunless>{{ svg('lucide-'.$settings['benefit_icons']['feature_three'], 'h-full w-full', ['stroke-width' => 1.4]) }}</span>
                             <div>
                                 <p class="text-[9px] font-semibold text-[color:var(--bmc-accent)] sm:text-[11px] sm:tracking-widest"><span data-home-field="feature_three">{{ $copy['feature_three'] }}</span></p>
                             </div>

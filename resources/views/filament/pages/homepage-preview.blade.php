@@ -10,6 +10,8 @@
     <style>
         [data-home-field] { cursor: text; border-radius: 3px; outline-offset: 4px; }
         [data-home-field]:hover, [data-home-field]:focus-visible, [data-home-field][data-editing] { outline: 2px dashed currentColor; }
+        [data-home-icon] { cursor: pointer; border-radius: 3px; outline-offset: 4px; }
+        [data-home-icon]:hover, [data-home-icon]:focus-visible { outline: 2px dashed currentColor; }
         body { margin: 0; overflow: hidden; }
     </style>
 </head>
