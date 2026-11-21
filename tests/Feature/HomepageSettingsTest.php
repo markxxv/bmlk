@@ -35,20 +35,59 @@ class HomepageSettingsTest extends TestCase
         $settings = HomepageSettings::defaults();
         $settings['theme'] = 'black-friday';
         $settings['badge_enabled'] = true;
+        $settings['badge_percent'] = 55;
         $settings['translations']['en']['headline'] = 'Precision for everyone';
         $settings['translations']['en']['badge'] = 'Seasonal offer';
+        $settings['translations']['en']['badge_note'] = '22–29 November';
         $settings['translations']['en']['meta_title'] = 'Our new homepage';
         $settings['translations']['en']['meta_description'] = 'Find your new favourites.';
 
         HomepageSettings::save(['settings' => $settings]);
-        $this->get('/en')->assertOk()->assertSee('data-theme="black-friday"', false)->assertSee('Precision for everyone')->assertSee('Seasonal offer')->assertSee('<title>Our new homepage</title>', false)->assertSee('Find your new favourites.');
-        $this->get('/')->assertOk()->assertSee('plus de précision')->assertDontSee('Precision for everyone');
+        $response = $this->get('/en')->assertOk()->assertSee('data-theme="black-friday"', false)->assertSee('Precision for everyone')->assertSee('Seasonal offer')->assertSee('22–29 November')->assertSee('<title>Our new homepage</title>', false)->assertSee('Find your new favourites.');
+        // Main offer, mobile medallion, desktop medallion use the same number.
+        $this->assertSame(3, substr_count($response->getContent(), '−55&nbsp;%'));
+        $this->get('/')->assertOk()->assertSee('plus de précision')->assertSee('−55&nbsp;%', false)->assertDontSee('Precision for everyone')->assertDontSee('22–29 November');
 
         $settings['badge_enabled'] = false;
         HomepageSettings::save(['settings' => $settings]);
-        $this->get('/en')->assertOk()->assertDontSee('Seasonal offer');
+        $this->get('/en')->assertOk()->assertDontSee('Seasonal offer')->assertDontSee('data-home-field="badge_percent"', false)->assertDontSee('22–29 November');
         $this->assertDatabaseCount('site_settings', 1);
         $this->assertSame(false, SiteSetting::first()->value['badge_enabled']);
+    }
+
+    public function test_existing_settings_gain_a_safe_default_discount_without_losing_custom_copy(): void
+    {
+        $legacy = HomepageSettings::defaults();
+        unset($legacy['badge_percent']);
+        foreach ($legacy['translations'] as &$copy) {
+            unset($copy['badge_note']);
+        }
+        unset($copy);
+        $legacy['translations']['fr']['badge'] = 'Offre spéciale';
+        SiteSetting::query()->create(['key' => HomepageSettings::KEY, 'value' => $legacy]);
+
+        $settings = HomepageSettings::load();
+        $this->assertSame(70, $settings['badge_percent']);
+        $this->assertSame('Offre spéciale', $settings['translations']['fr']['badge']);
+        $this->assertSame('', $settings['translations']['fr']['badge_note']);
+        $this->assertSame($settings, HomepageSettings::save(['settings' => $settings]));
+    }
+
+    public function test_campaign_rejects_invalid_discount_values(): void
+    {
+        $settings = HomepageSettings::defaults();
+        $settings['badge_enabled'] = true;
+
+        foreach ([0, 101, 70.5, '70', null] as $invalid) {
+            $settings['badge_percent'] = $invalid;
+            try {
+                HomepageSettings::save(['settings' => $settings]);
+                $this->fail('Invalid discount was accepted.');
+            } catch (ValidationException $exception) {
+                $this->assertArrayHasKey('data.settings.badge_percent', $exception->errors());
+            }
+        }
+        $this->assertDatabaseCount('site_settings', 0);
     }
 
     public function test_unsupported_theme_extra_keys_and_markup_cannot_be_saved(): void

@@ -38,6 +38,9 @@
 .he-field input:focus, .he-field textarea:focus { outline: 2px solid #a9636f; outline-offset: 0; }
 .he-field-selected > span { color: #a9636f; }
 .he-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+.he-campaign-fields { display: grid; grid-template-columns: minmax(0, 2fr) minmax(85px, 1fr); gap: 7px; }
+.he-field-help { color: #71717a; font-size: 11px; line-height: 1.4; }
+.he-field input[aria-invalid='true'] { outline: 2px solid #dc2626; outline-offset: 0; }
 .he-seo { margin-top: 16px; }
 .he-seo summary { display: flex; align-items: center; justify-content: space-between; padding: 16px; cursor: pointer; list-style: none; }
 .he-seo summary::-webkit-details-marker { display: none; }
@@ -51,6 +54,7 @@
 .dark .he-segmented button[aria-pressed='true'], .dark .he-theme[aria-pressed='true'] { background: #442a39; color: #f5d9e4; }
 .dark .he-section + .he-section { border-color: #ffffff15; }
 .dark .he-toolbar small, .dark .he-seo small, .dark .he-preview-footer, .dark .he-section h3 { color: #a1a1aa; }
+.dark .he-field-help { color: #a1a1aa; }
 @media (max-width: 1100px) {
     .he-grid { grid-template-columns: minmax(0, 1fr); }
     .he-preview { position: static; }
