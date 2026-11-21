@@ -8,6 +8,7 @@ use App\Models\Event;
 use App\Models\Page;
 use App\Models\Product;
 use App\Models\Representative;
+use App\Support\HomepageSettings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
@@ -40,28 +41,30 @@ class FrontController extends Controller
 
         $events = $this->upcomingEvents(4);
 
-        $seo = match ($this->catalogLocale()) {
-            'en' => [
-                'title' => 'HEMA-Free UV Gels, Bases & Tops | BLACK MILK France',
-                'description' => 'Discover BLACK MILK UV gels, camouflage bases, top coats, polygels and cuticle care. Professional nail products featuring HEMA-free formulas.',
-            ],
-            'es' => [
-                'title' => 'Geles UV, bases y tops sin HEMA | BLACK MILK France',
-                'description' => 'Descubre los geles UV, bases camuflaje, tops, polygels y cuidado de cutículas BLACK MILK. Productos profesionales de manicura con fórmulas sin HEMA.',
-            ],
-            default => [
-                'title' => 'Gels UV, bases et tops sans HEMA | BLACK MILK France',
-                'description' => 'Découvrez les gels UV, bases camouflage, tops, polygels et soins des cuticules BLACK MILK. Produits de manucure professionnelle, avec des formules sans HEMA.',
-            ],
-        };
+        $homepage = HomepageSettings::load();
+        $heroCopy = HomepageSettings::copy($homepage, $this->catalogLocale());
 
         return view('home', [
             'coffrets' => $coffrets,
             'categories' => $categories,
             'events' => $events,
-            'metaTitle' => $seo['title'],
-            'metaDescription' => $seo['description'],
+            'homepage' => $homepage,
+            'heroCopy' => $heroCopy,
+            'metaTitle' => $heroCopy['meta_title'],
+            'metaDescription' => $heroCopy['meta_description'],
             'canonical' => route('home'),
+        ]);
+    }
+
+    public function homepagePreview(): View
+    {
+        abort_unless(auth()->user()?->is_admin === true, 403);
+
+        $homepage = HomepageSettings::load();
+
+        return view('filament.pages.homepage-preview', [
+            'homepage' => $homepage,
+            'heroCopy' => HomepageSettings::copy($homepage, config('app.default_locale', 'fr')),
         ]);
     }
 

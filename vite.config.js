@@ -2,11 +2,18 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
 import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+    build: {
+        rolldownOptions: {
+            // Filament dynamically imports the renderer's default export.
+            preserveEntrySignatures: 'strict',
+        },
+    },
     plugins: [
         laravel({
-            input: ['resources/js/app.js', 'resources/js/product.js', 'resources/js/mascot.js', 'resources/js/reviews.js', 'resources/css/app.css', 'resources/css/filament/admin/theme.css'],
+            input: ['resources/js/app.js', 'resources/js/product.js', 'resources/js/mascot.js', 'resources/js/reviews.js', 'resources/css/app.css', 'resources/css/filament/admin/theme.css', 'resources/js/homepage-editor.jsx'],
             refresh: true,
             fonts: [
                 bunny('Instrument Sans', {
@@ -15,6 +22,7 @@ export default defineConfig({
             ],
         }),
         tailwindcss(),
+        react(),
     ],
     server: {
         watch: {

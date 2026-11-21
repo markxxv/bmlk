@@ -1,5 +1,6 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 @import '../../brand.css';
+@import './homepage-editor.css';
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';

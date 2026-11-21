@@ -26,6 +26,58 @@
 }
 
 /* Homepage hero signature — keep the rotation independent of the line-reveal animation. */
+.home-hero {
+    --hero-bg: #DDA1AA;
+    --bmc-accent: #712B47;
+    --hero-script: #70879C;
+    --hero-rule: #C98792;
+    --hero-primary: #712B47;
+    --hero-primary-ink: #FFFFFF;
+    --hero-secondary: #FFFFFF;
+    --hero-secondary-ink: #712B47;
+    --hero-badge: #F6EEE6;
+    --hero-badge-ink: #712B47;
+    background-color: var(--hero-bg);
+}
+
+.home-hero[data-theme='black-friday'] {
+    --hero-bg: #26222A;
+    --bmc-accent: #F6EEE6;
+    --hero-script: #E3B69B;
+    --hero-rule: #594B55;
+    --hero-primary: #F0D1BC;
+    --hero-primary-ink: #29232B;
+    --hero-secondary: #403642;
+    --hero-secondary-ink: #F6EEE6;
+    --hero-badge: #F0D1BC;
+    --hero-badge-ink: #29232B;
+}
+
+.home-hero[data-theme='porcelain'] {
+    --hero-bg: #F6EEE6;
+    --bmc-accent: #712B47;
+    --hero-script: #6A839A;
+    --hero-rule: #DDC8CA;
+    --hero-badge: #ECD6DF;
+}
+
+.home-hero[data-theme='blue-atelier'] {
+    --hero-bg: #CBDBE9;
+    --bmc-accent: #343C53;
+    --hero-script: #712B47;
+    --hero-rule: #A6BACC;
+    --hero-primary: #343C53;
+    --hero-secondary-ink: #343C53;
+    --hero-badge: #F6EEE6;
+}
+
+.home-hero-primary { background: var(--hero-primary); color: var(--hero-primary-ink); }
+.home-hero-secondary { background: var(--hero-secondary); color: var(--hero-secondary-ink); }
+.home-hero-badge { display: inline-flex; background: var(--hero-badge); color: var(--hero-badge-ink); }
+.home-hero-badge[hidden] { display: none; }
+.home-hero [data-home-field] { overflow-wrap: anywhere; }
+.home-hero-preview { margin-top: 0; padding-top: 0; }
+
 .home-hero-script {
     display: inline-block;
     font-family: 'Great Vibes', cursive;
@@ -36,13 +88,14 @@
     padding-right: 0.12em;
     transform: rotate(-6deg);
     transform-origin: left center;
-    color: #70879C;
+    color: var(--hero-script, #70879C);
     text-shadow: rgba(246, 238, 230, 0.6) 1px 1px 0,
         rgba(38, 54, 76, 0.35) -1px -1px 0,
         rgba(38, 54, 76, 0) 0 18px 30px;
     position: relative;
     z-index: 1;
-    white-space: nowrap;
+    max-width: 100%;
+    white-space: normal;
 }
 
 @media (max-width: 639px) {
