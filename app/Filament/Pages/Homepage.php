@@ -52,6 +52,7 @@ class Homepage extends Page
                     'previewUrl' => route('homepage.preview'),
                     'iconCatalogUrl' => route('homepage.icons'),
                     'selectedIcons' => HomepageBenefitIcons::selected($this->data['settings']['benefit_icons'] ?? null),
+                    'chevronDown' => svg('lucide-chevron-down')->toHtml(),
                 ]),
         ]);
     }

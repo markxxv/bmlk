@@ -324,7 +324,7 @@ function HomepageEditor(props) {
             </aside>
         </div>
         <details className="he-seo">
-            <summary><span><strong>Search engine optimisation</strong><small>Homepage meta title and description · {locale.toUpperCase()}</small></span><span className="he-chevron">⌄</span></summary>
+            <summary><span><strong>Search engine optimisation</strong><small>Homepage meta title and description · {locale.toUpperCase()}</small></span><span className="he-chevron"><IconGlyph asset={config.chevronDown} /></span></summary>
             <div className="he-seo-body">{field('meta_title')}{field('meta_description')}</div>
         </details>
         {iconPicker && !disabled && <IconPicker key={iconPicker} label={config.fields[iconPicker].label} selected={settings.benefit_icons[iconPicker]} url={config.iconCatalogUrl} onClose={() => setIconPicker(null)} onSelect={icon => {
