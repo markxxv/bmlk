@@ -8,8 +8,11 @@ use App\Models\Event;
 use App\Models\Page;
 use App\Models\Product;
 use App\Models\Representative;
+use App\Support\HomepageBenefitIcons;
 use App\Support\HomepageSettings;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -66,6 +69,15 @@ class FrontController extends Controller
             'homepage' => $homepage,
             'heroCopy' => HomepageSettings::copy($homepage, config('app.default_locale', 'fr')),
         ]);
+    }
+
+    public function homepageIcons(Request $request): JsonResponse
+    {
+        abort_unless(auth()->user()?->is_admin === true, 403);
+
+        $input = $request->validate(['q' => ['nullable', 'string', 'max:80'], 'page' => ['nullable', 'integer', 'min:1', 'max:1000']]);
+
+        return response()->json(HomepageBenefitIcons::search($input['q'] ?? '', (int) ($input['page'] ?? 1)));
     }
 
     public function events(): View

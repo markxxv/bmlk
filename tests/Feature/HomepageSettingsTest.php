@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Filament\Pages\Homepage;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Support\HomepageBenefitIcons;
 use App\Support\HomepageSettings;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -58,7 +59,7 @@ class HomepageSettingsTest extends TestCase
     public function test_existing_settings_gain_a_safe_default_discount_without_losing_custom_copy(): void
     {
         $legacy = HomepageSettings::defaults();
-        unset($legacy['badge_percent']);
+        unset($legacy['badge_percent'], $legacy['benefit_icons']);
         foreach ($legacy['translations'] as &$copy) {
             unset($copy['badge_note']);
         }
@@ -68,6 +69,7 @@ class HomepageSettingsTest extends TestCase
 
         $settings = HomepageSettings::load();
         $this->assertSame(70, $settings['badge_percent']);
+        $this->assertSame(HomepageBenefitIcons::DEFAULTS, $settings['benefit_icons']);
         $this->assertSame('Offre spéciale', $settings['translations']['fr']['badge']);
         $this->assertSame('', $settings['translations']['fr']['badge_note']);
         $this->assertSame($settings, HomepageSettings::save(['settings' => $settings]));
@@ -119,6 +121,46 @@ class HomepageSettingsTest extends TestCase
         $this->assertSame('/admin/homepage', Homepage::getUrl(isAbsolute: false, panel: 'admin'));
     }
 
+    public function test_benefit_icons_are_shared_by_every_language_and_validated_against_lucide(): void
+    {
+        $settings = HomepageSettings::defaults();
+        $settings['benefit_icons']['feature_one'] = 'shield-check';
+        HomepageSettings::save(['settings' => $settings]);
+
+        $this->assertSame($settings, HomepageSettings::load());
+        foreach (['/', '/en', '/es'] as $url) {
+            $this->get($url)->assertOk()->assertSee('data-home-icon="feature_one" data-icon-name="shield-check"', false);
+        }
+
+        foreach (['unknown-icon-xyz', '../../shield-check', '<svg></svg>'] as $invalid) {
+            $settings['benefit_icons']['feature_one'] = $invalid;
+            try {
+                HomepageSettings::save(['settings' => $settings]);
+                $this->fail('Invalid icon was accepted.');
+            } catch (ValidationException $exception) {
+                $this->assertArrayHasKey('data.settings.benefit_icons.feature_one', $exception->errors());
+            }
+        }
+        $this->assertSame('shield-check', HomepageSettings::load()['benefit_icons']['feature_one']);
+    }
+
+    public function test_icon_catalogue_is_admin_only_searchable_and_paginated(): void
+    {
+        $this->get(route('homepage.icons'))->assertRedirect();
+        $user = User::factory()->create();
+        $this->actingAs($user)->get(route('homepage.icons'))->assertForbidden();
+        $user->forceFill(['is_admin' => true])->save();
+
+        $this->actingAs($user)->getJson(route('homepage.icons', ['q' => 'shield check']))
+            ->assertOk()->assertJsonPath('icons.0.name', 'shield-check');
+        $this->assertStringContainsString('<svg', HomepageBenefitIcons::search('shield-check', 1)['icons'][0]['svg']);
+        $first = $this->getJson(route('homepage.icons'))->assertOk()->assertJsonCount(36, 'icons')->json();
+        $second = $this->getJson(route('homepage.icons', ['page' => 2]))->assertOk()->assertJsonPath('page', 2)->json();
+        $this->assertGreaterThan(36, $first['total']);
+        $this->assertEmpty(array_intersect(array_column($first['icons'], 'name'), array_column($second['icons'], 'name')));
+        $this->getJson(route('homepage.icons', ['q' => '../../shield-check']))->assertOk()->assertJsonPath('total', 0);
+    }
+
     public function test_filament_publish_persists_the_deferred_editor_state(): void
     {
         Filament::setCurrentPanel(Filament::getPanel('admin'));
@@ -128,6 +170,7 @@ class HomepageSettingsTest extends TestCase
 
         $settings = HomepageSettings::defaults();
         $settings['theme'] = 'porcelain';
+        $settings['benefit_icons']['feature_three'] = 'award';
         $settings['translations']['fr']['headline'] = 'Une nouvelle précision';
 
         Livewire::test(Homepage::class)

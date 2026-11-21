@@ -27,6 +27,8 @@ Route::get('/_admin/invoice-exports/{export}/download', InvoiceExportDownloadCon
     ->middleware('throttle:30,1')->name('invoice-exports.download');
 Route::get('/_admin/homepage-preview', [FrontController::class, 'homepagePreview'])
     ->middleware('auth')->name('homepage.preview');
+Route::get('/_admin/homepage-icons', [FrontController::class, 'homepageIcons'])
+    ->middleware('auth')->name('homepage.icons');
 Route::post('/_customer-preview/stop', [CustomerPreviewController::class, 'stop'])
     ->middleware(['auth', 'throttle:12,1'])->name('customer-preview.stop');
 

@@ -65,7 +65,7 @@ final class HomepageSettings
             $translations[$locale] = $copy;
         }
 
-        return ['theme' => 'signature', 'badge_enabled' => false, 'badge_percent' => self::DEFAULT_BADGE_PERCENT, 'translations' => $translations];
+        return ['theme' => 'signature', 'badge_enabled' => false, 'badge_percent' => self::DEFAULT_BADGE_PERCENT, 'benefit_icons' => HomepageBenefitIcons::DEFAULTS, 'translations' => $translations];
     }
 
     public static function load(): array
@@ -86,6 +86,7 @@ final class HomepageSettings
         if (is_int($percent) && $percent >= 1 && $percent <= 100) {
             $settings['badge_percent'] = $percent;
         }
+        $settings['benefit_icons'] = HomepageBenefitIcons::normalize($stored['benefit_icons'] ?? null);
 
         foreach ($settings['translations'] as $locale => $copy) {
             foreach ($copy as $key => $default) {
@@ -104,13 +105,20 @@ final class HomepageSettings
     {
         $locales = self::locales();
         $rules = [
-            'data.settings' => ['required', 'array:theme,badge_enabled,badge_percent,translations'],
+            'data.settings' => ['required', 'array:theme,badge_enabled,badge_percent,benefit_icons,translations'],
             'data.settings.theme' => ['required', 'string', Rule::in(array_keys(self::THEMES))],
             'data.settings.badge_enabled' => ['required', 'boolean:strict'],
             'data.settings.badge_percent' => ['required_if:data.settings.badge_enabled,true', 'nullable', 'integer:strict', 'between:1,100'],
+            'data.settings.benefit_icons' => ['required', 'array:'.implode(',', array_keys(HomepageBenefitIcons::DEFAULTS))],
             'data.settings.translations' => ['required', 'array:'.implode(',', $locales)],
         ];
         $attributes = ['data.settings.badge_percent' => 'discount percentage'];
+
+        foreach (HomepageBenefitIcons::DEFAULTS as $key => $default) {
+            $path = 'data.settings.benefit_icons.'.$key;
+            $rules[$path] = ['required', 'string', Rule::in(HomepageBenefitIcons::names())];
+            $attributes[$path] = self::FIELDS[$key]['label'].' icon';
+        }
 
         foreach ($locales as $locale) {
             $path = 'data.settings.translations.'.$locale;
@@ -129,6 +137,7 @@ final class HomepageSettings
             'theme' => $validated['theme'],
             'badge_enabled' => $validated['badge_enabled'],
             'badge_percent' => (int) ($validated['badge_percent'] ?? self::DEFAULT_BADGE_PERCENT),
+            'benefit_icons' => HomepageBenefitIcons::normalize($validated['benefit_icons']),
             'translations' => [],
         ];
         foreach ($locales as $locale) {

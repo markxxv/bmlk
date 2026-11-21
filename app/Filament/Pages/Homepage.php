@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Support\HomepageBenefitIcons;
 use App\Support\HomepageSettings;
 use BackedEnum;
 use Filament\Forms\Components\JsField;
@@ -42,13 +43,15 @@ class Homepage extends Page
                 ->hiddenLabel()
                 ->columnSpanFull()
                 ->renderer(fn () => Vite::asset('resources/js/homepage-editor.jsx'))
-                ->rendererConfiguration([
+                ->rendererConfiguration(fn () => [
                     'locales' => HomepageSettings::locales(),
                     'themes' => HomepageSettings::THEMES,
                     'fields' => collect(HomepageSettings::FIELDS)->map(fn (array $field) => ['label' => $field['label'], 'max' => $field['max']])->all() + [
                         'badge_percent' => ['label' => 'Discount (%)', 'max' => 100],
                     ],
                     'previewUrl' => route('homepage.preview'),
+                    'iconCatalogUrl' => route('homepage.icons'),
+                    'selectedIcons' => HomepageBenefitIcons::selected($this->data['settings']['benefit_icons'] ?? null),
                 ]),
         ]);
     }

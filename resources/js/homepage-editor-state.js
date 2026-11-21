@@ -25,3 +25,8 @@ export function editDiscount(settings, rawValue) {
 export function formatDiscount(value) {
     return Number.isInteger(value) && value >= 1 && value <= 100 ? `−${value}\u00a0%` : '—';
 }
+
+export function editBenefitIcon(settings, key, name) {
+    if (!Object.hasOwn(settings.benefit_icons, key) || typeof name !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name)) return settings;
+    return { ...settings, benefit_icons: { ...settings.benefit_icons, [key]: name } };
+}
