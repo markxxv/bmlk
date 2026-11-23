@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Country;
 use App\Models\Order;
 use App\Services\Invoices\InvoiceData;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,6 +15,8 @@ class CheckoutBillingTest extends TestCase
     {
         $this->postJson(route('checkout.store'), [
             'billing_type' => 'business', 'billing_same_as_shipping' => '1',
+            // Old inputs must be ignored when the billing address is copied.
+            'billing_country_code' => 'INVALID',
         ])->assertUnprocessable()
             ->assertJsonValidationErrors(['billing_company', 'billing_vat'])
             ->assertJsonMissingValidationErrors([
@@ -38,6 +39,8 @@ class CheckoutBillingTest extends TestCase
     {
         $this->postJson(route('checkout.store'), [
             'billing_type' => 'individual',
+            // Switching back to B2C must ignore stale, invalid company inputs.
+            'billing_vat' => 'INVALID!', 'billing_country_code' => 'INVALID',
         ])->assertUnprocessable()
             ->assertJsonMissingValidationErrors([
                 'billing_company', 'billing_vat', 'billing_address',
