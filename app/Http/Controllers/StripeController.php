@@ -52,7 +52,9 @@ class StripeController extends Controller
                     return $this->thanksUrl($order);
                 }
 
-                if (($session['status'] ?? null) === 'open') {
+                // A recorded failed payment must start a fresh attempt, even
+                // if Stripe still reports the old session as open.
+                if (($session['status'] ?? null) === 'open' && $order->payment_status !== 'failed') {
                     return $session['url'] ?? null;
                 }
 

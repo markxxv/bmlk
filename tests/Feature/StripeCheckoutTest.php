@@ -75,7 +75,7 @@ class StripeCheckoutTest extends TestCase
         // Duplicate events must not change an already paid order.
         $paidAt = $order->fresh()->paid_at;
         $this->postJson('/stripe/webhook', $event)->assertOk();
-        $this->assertSame($paidAt, $order->fresh()->paid_at);
+        $this->assertTrue($paidAt->equalTo($order->fresh()->paid_at));
     }
 
     public function test_verified_payment_queues_one_invoice_only(): void

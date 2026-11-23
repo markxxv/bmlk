@@ -78,15 +78,44 @@ class CustomerInvoiceTest extends TestCase
         Storage::disk('local')->assertDirectoryEmpty('invoices');
     }
 
-    public function test_customer_preview_cannot_issue_invoices(): void
+    public function test_customer_preview_can_download_pdf_without_issuing_an_invoice(): void
     {
         $user = User::factory()->create();
         $order = $this->order($user);
 
         $this->actingAs($user)->withSession(['customer_preview' => ['user_id' => $user->id]])
-            ->get(route('account.invoice', $order))->assertForbidden();
+            ->get(route('account.index'))
+            ->assertOk()
+            ->assertSee(route('account.invoice', $order), false);
+        $this->get(route('account.order', $order))
+            ->assertOk()
+            ->assertSee(__('Télécharger la facture'));
+        $this->get(route('account.invoice', $order))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
 
+        $this->assertNull($order->fresh()->invoice_issued_at);
         $this->assertNull($order->fresh()->invoice_file_path);
+        $this->assertSame([], Storage::disk(OrderInvoiceService::DISK)->allFiles('invoices'));
+    }
+
+    public function test_preview_can_download_unclaimed_verified_email_order_but_not_another_customer_order(): void
+    {
+        $user = User::factory()->create();
+        $unclaimed = $this->order($user, ['user_id' => null]);
+        $another = User::factory()->create();
+        $otherOrder = $this->order($another);
+
+        $this->actingAs($user)->withSession(['customer_preview' => ['user_id' => $user->id]]);
+        $this->get(route('account.index'))
+            ->assertOk()
+            ->assertSee(route('account.invoice', $unclaimed), false)
+            ->assertDontSee(route('account.invoice', $otherOrder), false);
+        $this->get(route('account.invoice', $unclaimed))->assertOk();
+        $this->get(route('account.invoice', $otherOrder))->assertNotFound();
+
+        $this->assertNull($unclaimed->fresh()->user_id);
+        $this->assertNull($unclaimed->fresh()->invoice_file_path);
     }
 
     private function order(User $user, array $overrides = []): Order

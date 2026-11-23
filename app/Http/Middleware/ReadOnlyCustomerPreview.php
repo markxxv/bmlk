@@ -39,7 +39,7 @@ class ReadOnlyCustomerPreview
         if (! $request->routeIs(
             'home', 'shop.index', 'shop.category', 'shop.product',
             'events', 'formations', 'where-to-buy', 'createurs', 'reparation',
-            'page', 'account.index', 'account.order', 'account.profile',
+            'page', 'account.index', 'account.order', 'account.invoice', 'account.profile',
             'account.roles', 'account.wholesale', 'account.influencer',
         )) {
             return redirect()->route('account.index');

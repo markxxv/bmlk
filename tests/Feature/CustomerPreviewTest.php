@@ -34,7 +34,12 @@ class CustomerPreviewTest extends TestCase
 
         $this->get(route('account.order', $order))
             ->assertOk()
-            ->assertSee($order->order_number);
+            ->assertSee($order->order_number)
+            ->assertSee(__('Télécharger la facture'));
+
+        $this->get(route('account.invoice', $order))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
 
         $this->post(route('customer-preview.stop'))
             ->assertRedirect(route('filament.admin.resources.customers.index'))

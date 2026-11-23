@@ -105,7 +105,7 @@
             </div>
 
             @auth
-                @if ($order->payment_status === 'paid' && (int) $order->user_id === (int) auth()->id() && ! request()->session()->has('customer_preview'))
+                @if ($order->payment_status === 'paid' && ($canShowRatings ?? false))
                     <a href="{{ route('account.invoice', $order) }}"
                         class="mt-7 inline-flex items-center gap-2 rounded-full bg-bmlk-soft px-5 py-3 text-sm font-medium text-bmlk-brand transition hover:bg-zinc-100">
                         <x-lucide-file-down class="h-4 w-4" aria-hidden="true" />

@@ -87,7 +87,7 @@
                             <x-lucide-chevron-right class="h-4 w-4 text-zinc-400 transition group-hover:translate-x-0.5 group-hover:text-bmlk-brand" aria-hidden="true" />
                         </span>
                         </a>
-                        @if ($order->payment_status === 'paid' && $order->user_id === $user->id && ! request()->session()->has('customer_preview'))
+                        @if ($order->payment_status === 'paid')
                             <a href="{{ route('account.invoice', $order) }}" class="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-bmlk-brand transition hover:underline">
                                 <x-lucide-file-down class="h-4 w-4" aria-hidden="true" />
                                 {{ __('Télécharger la facture') }} · PDF
