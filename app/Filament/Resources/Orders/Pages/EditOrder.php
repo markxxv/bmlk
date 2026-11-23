@@ -17,6 +17,13 @@ class EditOrder extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('downloadInvoice')
+                ->label('Download invoice')
+                ->icon('lucide-file-down')
+                ->visible(fn (): bool => $this->record->payment_status === 'paid')
+                ->url(fn (): string => route('admin.orders.invoice', $this->record))
+                ->openUrlInNewTab(),
+
             Action::make('sendcloudSync')
                 ->label('Synchroniser Sendcloud')
                 ->icon('lucide-refresh-cw')

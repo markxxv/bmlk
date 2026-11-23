@@ -14,6 +14,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StripeController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\InvoiceExportDownloadController;
+use App\Http\Controllers\AdminOrderInvoiceController;
 use App\Http\Controllers\WarehouseRefundController;
 use App\Http\Middleware\EnsureWarehouseStaff;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,9 @@ Route::post('/_admin/customer-preview/{user}', [CustomerPreviewController::class
 // Invoice archives (Filament "Invoices" page, Telegram link). Admin-only; guests go to /admin/login.
 Route::get('/_admin/invoice-exports/{export}/download', InvoiceExportDownloadController::class)
     ->middleware('throttle:30,1')->name('invoice-exports.download');
+// Direct PDF download from the Filament order editor, with admin authorization.
+Route::get('/_admin/orders/{order}/invoice', AdminOrderInvoiceController::class)
+    ->middleware('throttle:20,1')->name('admin.orders.invoice');
 Route::get('/_admin/homepage-preview', [FrontController::class, 'homepagePreview'])
     ->middleware('auth')->name('homepage.preview');
 Route::get('/_admin/homepage-icons', [FrontController::class, 'homepageIcons'])
