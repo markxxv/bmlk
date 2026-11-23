@@ -72,7 +72,8 @@ class CustomerPreviewTest extends TestCase
 
         $this->post(route('customer-preview.start', User::factory()->create()))->assertForbidden();
 
-        $this->get('/admin')->assertRedirect(route('account.index'));
+        // Filament denies non-admin users before the preview redirect can run.
+        $this->get('/admin')->assertForbidden();
         $this->get(route('account.checkout', ['orderNumber' => $order->order_number]))
             ->assertRedirect(route('account.index'));
 
