@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Services\Invoices\InvoiceData;
 use App\Services\Invoices\InvoicePdf;
+use App\Services\Invoices\InvoiceStorageException;
 use App\Services\Invoices\OrderInvoiceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -50,7 +52,26 @@ class CustomerInvoiceController extends Controller
 
         // Existing paid orders can be downloaded immediately even before the
         // background queue has built their invoice.
-        $path = app(OrderInvoiceService::class)->issue($order);
+        try {
+            $path = app(OrderInvoiceService::class)->issue($order);
+        } catch (InvoiceStorageException $exception) {
+            Log::error('Invoice PDF storage failed; check write permissions for the PHP-FPM user.', [
+                'order_id' => $order->id,
+                'disk' => OrderInvoiceService::DISK,
+                'path' => $exception->path,
+            ]);
+
+            // Permit a download during a storage outage without silently
+            // registering an invoice that was never saved.
+            return response()->streamDownload(
+                static function () use ($order): void {
+                    echo InvoicePdf::render(InvoiceData::forOrder($order));
+                },
+                $filename,
+                $headers,
+            );
+        }
+
         abort_unless($path, 404);
 
         return Storage::disk(OrderInvoiceService::DISK)->download($path, $filename, $headers);

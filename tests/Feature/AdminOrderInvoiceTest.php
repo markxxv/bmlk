@@ -6,6 +6,7 @@ use App\Filament\Resources\Orders\Pages\EditOrder;
 use App\Models\Order;
 use App\Models\User;
 use App\Services\Invoices\OrderInvoiceService;
+use App\Services\Invoices\InvoiceStorageException;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -67,6 +68,23 @@ class AdminOrderInvoiceTest extends TestCase
         $this->get($url)->assertOk();
         $this->assertSame($bytes, Storage::disk('local')->get($issued->invoice_file_path));
         $this->assertTrue($issued->invoice_issued_at->equalTo($order->fresh()->invoice_issued_at));
+    }
+
+    public function test_admin_gets_temporary_pdf_when_private_storage_is_unwritable(): void
+    {
+        $order = $this->order();
+        $service = \Mockery::mock(OrderInvoiceService::class);
+        $service->shouldReceive('issue')->once()
+            ->andThrow(new InvoiceStorageException('invoices/test.pdf'));
+        $this->app->instance(OrderInvoiceService::class, $service);
+
+        $this->actingAs(User::factory()->create(['is_admin' => true]))
+            ->get(route('admin.orders.invoice', $order))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
+
+        $this->assertNull($order->fresh()->invoice_file_path);
+        $this->assertNull($order->fresh()->invoice_issued_at);
     }
 
     public function test_admin_cannot_issue_unpaid_invoice(): void

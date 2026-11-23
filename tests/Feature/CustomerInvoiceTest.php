@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Services\Invoices\InvoiceData;
 use App\Services\Invoices\OrderInvoiceService;
+use App\Services\Invoices\InvoiceStorageException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -63,6 +64,23 @@ class CustomerInvoiceTest extends TestCase
         $this->assertSame($bytes, Storage::disk('local')->get($fresh->invoice_file_path));
         $this->assertTrue($issuedAt->equalTo($order->fresh()->invoice_issued_at));
         $this->assertCount(1, Storage::disk('local')->allFiles('invoices'));
+    }
+
+    public function test_customer_gets_temporary_pdf_when_storage_is_unwritable(): void
+    {
+        $user = User::factory()->create();
+        $order = $this->order($user);
+        $service = \Mockery::mock(OrderInvoiceService::class);
+        $service->shouldReceive('issue')->once()
+            ->andThrow(new InvoiceStorageException('invoices/test.pdf'));
+        $this->app->instance(OrderInvoiceService::class, $service);
+
+        $this->actingAs($user)->get(route('account.invoice', $order))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
+
+        $this->assertNull($order->fresh()->invoice_file_path);
+        $this->assertNull($order->fresh()->invoice_issued_at);
     }
 
     public function test_unpaid_or_other_customers_orders_cannot_be_downloaded(): void

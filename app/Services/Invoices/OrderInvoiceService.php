@@ -5,7 +5,6 @@ namespace App\Services\Invoices;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use RuntimeException;
 
 class OrderInvoiceService
 {
@@ -35,7 +34,7 @@ class OrderInvoiceService
             $pdf = InvoicePdf::render(InvoiceData::forOrder($locked));
 
             if (! Storage::disk(self::DISK)->put($path, $pdf)) {
-                throw new RuntimeException('Cannot save the order invoice.');
+                throw new InvoiceStorageException($path);
             }
 
             $locked->forceFill([
