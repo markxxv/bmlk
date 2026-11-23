@@ -163,7 +163,7 @@ $localized = function (): void {
         Route::get('/account/login', [AccountController::class, 'loginForm'])->name('account.login');
         Route::post('/account/login', [AccountController::class, 'login'])->middleware('throttle:5,1')->name('account.login.submit');
         Route::get('/account/forgot-password', [AccountController::class, 'forgotForm'])->name('password.request');
-        Route::post('/account/forgot-password', [AccountController::class, 'sendResetLink'])->middleware('throttle:3,1')->name('password.email');
+        Route::post('/account/forgot-password', [AccountController::class, 'sendResetLink'])->name('password.email');
         Route::post('/account/reset-password', [AccountController::class, 'resetPassword'])->middleware('throttle:5,1')->name('password.update');
     });
 
