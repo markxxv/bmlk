@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CreatorsController;
 use App\Http\Controllers\CustomerPreviewController;
+use App\Http\Controllers\CustomerInvoiceController;
 
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\RepairController;
@@ -171,6 +172,8 @@ $localized = function (): void {
         Route::post('/account/logout', [AccountController::class, 'logout'])->name('account.logout');
         Route::get('/account', [AccountController::class, 'index'])->name('account.index');
         Route::get('/account/orders/{order}', [AccountController::class, 'order'])->name('account.order');
+        Route::get('/account/orders/{order}/invoice', CustomerInvoiceController::class)
+            ->middleware('throttle:15,1')->name('account.invoice');
         Route::post('/account/orders/{order}/ratings', [ProductRatingController::class, 'store'])
             ->middleware('throttle:20,1')->name('account.ratings.store');
         Route::get('/account/courses', [AccountController::class, 'courses'])->name('account.courses');

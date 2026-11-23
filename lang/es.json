@@ -713,5 +713,6 @@
     "L’adresse de facturation est identique à l’adresse de livraison": "La dirección fiscal es la misma que la de entrega",
     "Adresse de facturation": "Dirección fiscal",
     "Pays de facturation": "País de facturación",
-    "Choisir un pays": "Seleccionar país"
+    "Choisir un pays": "Seleccionar país",
+    "Télécharger la facture": "Descargar factura"
 }

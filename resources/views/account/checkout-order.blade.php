@@ -104,6 +104,16 @@
                 </div>
             </div>
 
+            @auth
+                @if ($order->payment_status === 'paid' && (int) $order->user_id === (int) auth()->id() && ! request()->session()->has('customer_preview'))
+                    <a href="{{ route('account.invoice', $order) }}"
+                        class="mt-7 inline-flex items-center gap-2 rounded-full bg-bmlk-soft px-5 py-3 text-sm font-medium text-bmlk-brand transition hover:bg-zinc-100">
+                        <x-lucide-file-down class="h-4 w-4" aria-hidden="true" />
+                        {{ __('Télécharger la facture') }} · PDF
+                    </a>
+                @endif
+            @endauth
+
             @if ($order->address || $order->city)
                 <section class="mt-9 border-t border-zinc-100 pt-7">
                     <h2 class="font-serif text-xl text-zinc-900">{{ __('Adresse de livraison') }}</h2>

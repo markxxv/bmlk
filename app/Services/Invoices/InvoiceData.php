@@ -26,7 +26,9 @@ class InvoiceData
 
     public static function forOrder(Order $order): array
     {
-        $date = self::invoiceDate($order)->format('Y-m-d');
+        $date = ($order->invoice_issued_at ?? self::invoiceDate($order))
+            ->copy()->setTimezone(self::TIMEZONE)->format('Y-m-d');
+        $orderDate = self::invoiceDate($order)->format('Y-m-d');
         $lines = self::orderLines($order);
 
         $total = self::cents($order->total_amount);
@@ -39,7 +41,7 @@ class InvoiceData
             'number' => self::number($order),
             'date' => $date,
             'order_number' => self::number($order),
-            'order_date' => $date,
+            'order_date' => $orderDate,
             'payment' => 'Carte de crédit/débit',
             'address' => self::address($order),
             'items' => self::reconcile($lines, $subtotal, $subtotal),

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Support\OrderLocale;
+use App\Jobs\GenerateOrderInvoice;
 use App\Models\Order;
 use App\Models\OrderTelegramNotification;
 use App\Models\User;
@@ -323,6 +324,13 @@ class StripeController extends Controller
             }, 3);
             if ($changed) {
                 $this->createCustomerForPaidOrder($order->fresh());
+                // Build the private PDF after payment, independent of delivery status.
+                // A queue outage must never affect Stripe payment confirmation.
+                try {
+                    GenerateOrderInvoice::dispatch($order->id);
+                } catch (Throwable $e) {
+                    Log::error('Could not queue order invoice.', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                }
                 // Immediately notify staff after the response has been sent.
                 // Failure leaves the DB entry unsent for the hourly retry.
                 $paidOrderId = $order->id;

@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\StripeController;
+use App\Jobs\GenerateOrderInvoice;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -74,6 +76,18 @@ class StripeCheckoutTest extends TestCase
         $paidAt = $order->fresh()->paid_at;
         $this->postJson('/stripe/webhook', $event)->assertOk();
         $this->assertSame($paidAt, $order->fresh()->paid_at);
+    }
+
+    public function test_verified_payment_queues_one_invoice_only(): void
+    {
+        Queue::fake();
+        $order = $this->order();
+        $order->update(['stripe_session_id' => 'cs_test_one']);
+
+        $this->sendStripeEvent($order, 'checkout.session.completed', 'paid');
+        $this->sendStripeEvent($order, 'checkout.session.completed', 'paid');
+
+        Queue::assertPushed(GenerateOrderInvoice::class, 1);
     }
 
     public function test_confirmed_payment_deducts_tracked_stock_once_and_never_below_zero(): void
