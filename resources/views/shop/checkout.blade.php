@@ -17,6 +17,14 @@
                     city: '',
                     address: '',
                     message: '',
+                    billing_type: 'individual',
+                    billing_company: '',
+                    billing_vat: '',
+                    billing_same_as_shipping: true,
+                    billing_address: '',
+                    billing_zip: '',
+                    billing_city: '',
+                    billing_country_code: '',
                     privacy: false,
                     promo_code: '',
                     shipping_option: '',
@@ -39,6 +47,7 @@
                 shippingRequest: null,
                 shippingRevision: 0,
                 countries: @js($countries->toArray()),
+                billingCountries: @js($billingCountries->toArray()),
                 countrySearch: '',
                 countryPickerOpen: false,
                 countryHighlight: 0,
@@ -49,6 +58,13 @@
                     return this.countries.filter(country =>
                         !term || normalize(country.name).includes(term) || country.code.toLowerCase().includes(term)
                     );
+                },
+                copyShippingToBilling() {
+                    if (!this.form.billing_same_as_shipping) return;
+                    this.form.billing_address = this.form.address;
+                    this.form.billing_zip = this.form.zip;
+                    this.form.billing_city = this.form.city;
+                    this.form.billing_country_code = this.form.country;
                 },
                 selectCountry(country) {
                     const changed = this.form.country !== country.code;
@@ -339,10 +355,11 @@
                         return;
                     }
 
+                    if (this.form.billing_type === 'business') this.copyShippingToBilling();
                     const body = new FormData();
 
                     Object.entries(this.form).forEach(([key, value]) => {
-                        body.append(key, key === 'privacy' ? (value ? '1' : '0') : value);
+                        body.append(key, ['privacy', 'billing_same_as_shipping'].includes(key) ? (value ? '1' : '0') : value);
                     });
 
                     body.append('cart_items', JSON.stringify(this.$store.cart.items));
@@ -597,6 +614,89 @@
                                         placeholder="{{ __('Commentaire pour la commande') }}"
                                         class="w-full resize-none rounded-xl border border-transparent bg-zinc-50 pl-11 pr-4 py-3.5 text-sm text-zinc-800 placeholder:text-zinc-400 outline-none transition hover:bg-zinc-100/70 focus:border-[#DDA1AA] focus:bg-white focus:ring-2 focus:ring-[#DDA1AA]/15"
                                     ></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="border-b border-zinc-100 py-7 sm:py-8">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F6ECEE] text-bmlk-brand">
+                                    <x-lucide-receipt-text class="h-4 w-4" aria-hidden="true" />
+                                </span>
+                                <h2 class="font-serif text-2xl font-medium tracking-tight text-zinc-900">{{ __('Facturation') }}</h2>
+                            </div>
+                            <label class="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-zinc-700">
+                                <input type="checkbox" :checked="form.billing_type === 'business'"
+                                    @change="form.billing_type = $event.target.checked ? 'business' : 'individual'; if (form.billing_type === 'business') copyShippingToBilling()"
+                                    class="h-4 w-4 accent-bmlk-brand">
+                                {{ __('Je commande pour une entreprise') }}
+                            </label>
+                        </div>
+
+                        <div x-show="form.billing_type === 'business'" x-cloak class="mt-5 space-y-4">
+                            <div class="grid gap-3 sm:grid-cols-2">
+                                <div>
+                                    <label for="billing-company" class="mb-1.5 block text-xs font-medium text-zinc-600">{{ __('Raison sociale') }}</label>
+                                    <input id="billing-company" type="text" x-model.trim="form.billing_company"
+                                        :required="form.billing_type === 'business'" autocomplete="organization" maxlength="255"
+                                        class="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm text-zinc-800 outline-none transition focus:bg-white focus:ring-2 focus:ring-bmlk-brand"
+                                        placeholder="{{ __('Raison sociale') }}">
+                                    <p x-show="errors.billing_company" x-text="errors.billing_company?.[0]" class="mt-1 text-xs text-red-500"></p>
+                                </div>
+                                <div>
+                                    <label for="billing-vat" class="mb-1.5 block text-xs font-medium text-zinc-600">{{ __('Numéro de TVA / VAT') }}</label>
+                                    <input id="billing-vat" type="text" x-model.trim="form.billing_vat"
+                                        :required="form.billing_type === 'business'" maxlength="40" autocomplete="off"
+                                        class="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm uppercase text-zinc-800 outline-none transition focus:bg-white focus:ring-2 focus:ring-bmlk-brand"
+                                        placeholder="FR12345678901">
+                                    <p x-show="errors.billing_vat" x-text="errors.billing_vat?.[0]" class="mt-1 text-xs text-red-500"></p>
+                                </div>
+                            </div>
+
+                            <label class="inline-flex cursor-pointer items-center gap-2.5 text-sm text-zinc-700">
+                                <input type="checkbox" x-model="form.billing_same_as_shipping"
+                                    @change="copyShippingToBilling()" class="h-4 w-4 accent-bmlk-brand">
+                                {{ __('L’adresse de facturation est identique à l’adresse de livraison') }}
+                            </label>
+
+                            <div x-show="!form.billing_same_as_shipping" x-cloak class="grid gap-3 sm:grid-cols-2">
+                                <div class="sm:col-span-2">
+                                    <label for="billing-address" class="mb-1.5 block text-xs font-medium text-zinc-600">{{ __('Adresse de facturation') }}</label>
+                                    <input id="billing-address" type="text" x-model.trim="form.billing_address"
+                                        :required="form.billing_type === 'business' && !form.billing_same_as_shipping"
+                                        maxlength="1000" autocomplete="billing street-address"
+                                        class="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm text-zinc-800 outline-none transition focus:bg-white focus:ring-2 focus:ring-bmlk-brand">
+                                    <p x-show="errors.billing_address" x-text="errors.billing_address?.[0]" class="mt-1 text-xs text-red-500"></p>
+                                </div>
+                                <div>
+                                    <label for="billing-zip" class="mb-1.5 block text-xs font-medium text-zinc-600">{{ __('Code postal') }}</label>
+                                    <input id="billing-zip" type="text" x-model.trim="form.billing_zip"
+                                        :required="form.billing_type === 'business' && !form.billing_same_as_shipping"
+                                        maxlength="30" autocomplete="off"
+                                        class="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm text-zinc-800 outline-none transition focus:bg-white focus:ring-2 focus:ring-bmlk-brand">
+                                    <p x-show="errors.billing_zip" x-text="errors.billing_zip?.[0]" class="mt-1 text-xs text-red-500"></p>
+                                </div>
+                                <div>
+                                    <label for="billing-city" class="mb-1.5 block text-xs font-medium text-zinc-600">{{ __('Ville') }}</label>
+                                    <input id="billing-city" type="text" x-model.trim="form.billing_city"
+                                        :required="form.billing_type === 'business' && !form.billing_same_as_shipping"
+                                        maxlength="120" autocomplete="off"
+                                        class="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm text-zinc-800 outline-none transition focus:bg-white focus:ring-2 focus:ring-bmlk-brand">
+                                    <p x-show="errors.billing_city" x-text="errors.billing_city?.[0]" class="mt-1 text-xs text-red-500"></p>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label for="billing-country" class="mb-1.5 block text-xs font-medium text-zinc-600">{{ __('Pays de facturation') }}</label>
+                                    <select id="billing-country" x-model="form.billing_country_code"
+                                        :required="form.billing_type === 'business' && !form.billing_same_as_shipping"
+                                        class="w-full rounded-xl bg-zinc-50 px-4 py-3 text-sm text-zinc-800 outline-none transition focus:bg-white focus:ring-2 focus:ring-bmlk-brand">
+                                        <option value="">{{ __('Choisir un pays') }}</option>
+                                        <template x-for="country in billingCountries" :key="country.code">
+                                            <option :value="country.code" x-text="country.name"></option>
+                                        </template>
+                                    </select>
+                                    <p x-show="errors.billing_country_code" x-text="errors.billing_country_code?.[0]" class="mt-1 text-xs text-red-500"></p>
                                 </div>
                             </div>
                         </div>

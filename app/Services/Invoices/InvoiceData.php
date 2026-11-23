@@ -136,12 +136,23 @@ class InvoiceData
     {
         $isFrance = Str::upper((string) $order->shipping_country_code) === 'FR';
         $name = trim(preg_replace('/\s+/u', ' ', trim($order->first_name.' '.$order->last_name)));
-        $lines = [
-            $name,
-            trim((string) $order->address),
-            trim($order->zip.' '.$order->city),
-            $isFrance ? '' : trim((string) $order->country),
-        ];
+        if ($order->billing_type === 'business' && filled($order->billing_company)) {
+            $billingIsFrance = Str::upper((string) $order->billing_country_code) === 'FR';
+            $lines = [
+                trim((string) $order->billing_company),
+                filled($order->billing_vat) ? 'TVA / VAT: '.trim((string) $order->billing_vat) : '',
+                trim((string) ($order->billing_address ?: $order->address)),
+                trim((string) ($order->billing_zip ?: $order->zip).' '.($order->billing_city ?: $order->city)),
+                $billingIsFrance ? '' : trim((string) ($order->billing_country ?: $order->country)),
+            ];
+        } else {
+            $lines = [
+                $name,
+                trim((string) $order->address),
+                trim($order->zip.' '.$order->city),
+                $isFrance ? '' : trim((string) $order->country),
+            ];
+        }
 
         return array_values(array_filter(array_map(fn ($l) => trim((string) $l, ' ,'), $lines), fn ($l) => $l !== ''));
     }

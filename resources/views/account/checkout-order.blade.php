@@ -116,6 +116,22 @@
                 </section>
             @endif
 
+            @if ($order->billing_type === 'business' && filled($order->billing_company))
+                <section class="mt-6 rounded-2xl bg-zinc-50 p-5">
+                    <div class="flex items-center gap-2 text-bmlk-brand">
+                        <x-lucide-receipt-text class="h-4 w-4" aria-hidden="true" />
+                        <h2 class="text-sm font-semibold text-zinc-900">{{ __('Adresse de facturation') }}</h2>
+                    </div>
+                    <p class="mt-3 text-sm leading-6 text-zinc-600">
+                        <strong class="block text-zinc-900">{{ $order->billing_company }}</strong>
+                        <span class="block">{{ __('Numéro de TVA / VAT') }} : {{ $order->billing_vat }}</span>
+                        <span class="block">{{ $order->billing_address }}</span>
+                        <span class="block">{{ trim($order->billing_zip.' '.$order->billing_city) }}</span>
+                        <span class="block">{{ $order->billing_country }}</span>
+                    </p>
+                </section>
+            @endif
+
             @if ($order->payment_status !== 'paid' && $order->payment_status !== 'processing')
                 <form method="POST" action="{{ route('order.pay', ['orderNumber' => $order->order_number, 'token' => $order->access_token]) }}" class="mt-8">
                     @csrf

@@ -18,6 +18,7 @@ class Order extends Model
     {
         return [
             'items' => 'array',
+            'billing_same_as_shipping' => 'boolean',
             'ratings_enabled' => 'boolean',
             'delivered_at' => 'datetime',
             'review_request_sent_at' => 'datetime',

@@ -705,5 +705,13 @@
     "Un e-mail a été envoyé à :email.": "An email has been sent to :email.",
     "Acheter maintenant": "Buy now",
     ":count en stock": ":count in stock",
-    "Rupture de stock": "Out of stock"
+    "Rupture de stock": "Out of stock",
+    "Facturation": "Billing",
+    "Je commande pour une entreprise": "I'm buying for a business",
+    "Raison sociale": "Company name",
+    "Numéro de TVA / VAT": "VAT number",
+    "L’adresse de facturation est identique à l’adresse de livraison": "Billing address is the same as shipping address",
+    "Adresse de facturation": "Billing address",
+    "Pays de facturation": "Billing country",
+    "Choisir un pays": "Choose a country"
 }

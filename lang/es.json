@@ -705,5 +705,13 @@
     "Un e-mail a été envoyé à :email.": "Se ha enviado un correo a :email.",
     "Acheter maintenant": "Comprar ahora",
     ":count en stock": ":count en stock",
-    "Rupture de stock": "Sin stock"
+    "Rupture de stock": "Sin stock",
+    "Facturation": "Facturación",
+    "Je commande pour une entreprise": "Compro como empresa",
+    "Raison sociale": "Razón social",
+    "Numéro de TVA / VAT": "Número de IVA / VAT",
+    "L’adresse de facturation est identique à l’adresse de livraison": "La dirección fiscal es la misma que la de entrega",
+    "Adresse de facturation": "Dirección fiscal",
+    "Pays de facturation": "País de facturación",
+    "Choisir un pays": "Seleccionar país"
 }

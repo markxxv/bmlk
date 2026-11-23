@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use JsonException;
@@ -240,11 +241,15 @@ class ShopController extends Controller
             'metaDescription' => __('Finalisez votre commande BLACK MILK.'),
             'canonical' => route('checkout'),
             'countries' => Country::available()->ordered()->get(['code', 'name']),
+            'billingCountries' => Country::query()->ordered()->get(['code', 'name']),
         ]);
     }
 
     public function processOrder(Request $request): JsonResponse
     {
+        $isBusiness = $request->input('billing_type') === 'business';
+        $separateBillingAddress = $isBusiness && ! $request->boolean('billing_same_as_shipping', true);
+
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['nullable', 'string', 'max:255'],
@@ -255,6 +260,14 @@ class ShopController extends Controller
             'city' => ['required', 'string', 'max:120'],
             'address' => ['required', 'string', 'max:1000'],
             'message' => ['nullable', 'string', 'max:2000'],
+            'billing_type' => ['sometimes', Rule::in(['individual', 'business'])],
+            'billing_same_as_shipping' => ['sometimes', 'boolean'],
+            'billing_company' => [Rule::requiredIf($isBusiness), 'nullable', 'string', 'max:255'],
+            'billing_vat' => [Rule::requiredIf($isBusiness), 'nullable', 'string', 'min:4', 'max:40', 'regex:/^[A-Za-z0-9][A-Za-z0-9 .-]*$/'],
+            'billing_address' => [Rule::requiredIf($separateBillingAddress), 'nullable', 'string', 'max:1000'],
+            'billing_zip' => [Rule::requiredIf($separateBillingAddress), 'nullable', 'string', 'max:30'],
+            'billing_city' => [Rule::requiredIf($separateBillingAddress), 'nullable', 'string', 'max:120'],
+            'billing_country_code' => [Rule::requiredIf($separateBillingAddress), 'nullable', 'string', 'size:2', Rule::exists('countries', 'code')],
             'privacy' => ['accepted'],
             'cart_items' => ['required', 'string'],
             'confirm_cart_prices' => ['sometimes', 'boolean'],
@@ -366,6 +379,15 @@ class ShopController extends Controller
         // from Stripe. The public order URL token must never authenticate a user.
         $activationToken = Str::random(64);
 
+        // Billing information is an order snapshot, not a mutable account preference.
+        // Never trust posted billing-address fields when the copy checkbox is checked.
+        $billingCountryCode = $isBusiness
+            ? ($separateBillingAddress ? Str::upper($validated['billing_country_code']) : $countryCode)
+            : null;
+        $billingCountryName = $billingCountryCode
+            ? Country::query()->where('code', $billingCountryCode)->value('name')
+            : null;
+
         $order = Order::query()->create([
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'] ?? null,
@@ -385,6 +407,18 @@ class ShopController extends Controller
             'zip' => $validated['zip'] ?? null,
             'city' => $validated['city'],
             'address' => $validated['address'],
+            'billing_type' => $isBusiness ? 'business' : 'individual',
+            'billing_same_as_shipping' => ! $separateBillingAddress,
+            'billing_company' => $isBusiness ? trim($validated['billing_company']) : null,
+            'billing_vat' => $isBusiness ? preg_replace('/\s+/', '', Str::upper(trim($validated['billing_vat']))) : null,
+            'billing_address' => $isBusiness
+                ? ($separateBillingAddress ? $validated['billing_address'] : $validated['address']) : null,
+            'billing_zip' => $isBusiness
+                ? ($separateBillingAddress ? $validated['billing_zip'] : $validated['zip']) : null,
+            'billing_city' => $isBusiness
+                ? ($separateBillingAddress ? $validated['billing_city'] : $validated['city']) : null,
+            'billing_country_code' => $billingCountryCode,
+            'billing_country' => $billingCountryName,
             'message' => $validated['message'] ?? null,
             'items' => $items->values()->all(),
             'subtotal' => $subtotal,
