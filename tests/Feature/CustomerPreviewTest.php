@@ -174,6 +174,7 @@ class CustomerPreviewTest extends TestCase
         return Order::query()->create([
             'user_id' => $customer->id,
             'first_name' => 'Preview',
+            'phone' => '0102030405',
             'email' => $customer->email,
             'country' => 'France',
             'city' => 'Paris',
