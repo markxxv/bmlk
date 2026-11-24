@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\Country;
 use App\Http\Controllers\SendcloudController;
 use App\Models\Delivery;
 use App\Models\Order;
@@ -485,7 +484,6 @@ class CustomerAccountsTest extends TestCase
             'price' => 3,
             'active' => true,
         ]);
-        Country::query()->create(['code' => 'FR', 'name' => 'France', 'active' => true, 'sort' => 1]);
 
         // Checkout recomputes shipping server-side. Keep this test focused on
         // influencer pricing with a deterministic valid carrier option.
