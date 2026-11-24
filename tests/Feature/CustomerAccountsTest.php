@@ -305,6 +305,67 @@ class CustomerAccountsTest extends TestCase
         $this->assertTrue(Hash::check('ANewVerySecurePassword123!', $user->fresh()->password));
     }
 
+    public function test_unknown_email_creates_a_passwordless_account_and_sends_a_real_reset_link(): void
+    {
+        $this->post(route('password.email'), ['email' => ' NEW-CUSTOMER@example.com '])
+            ->assertRedirect()
+            ->assertSessionHas('success', __('Un e-mail avec votre lien a été envoyé. Vérifiez également vos courriers indésirables.'));
+
+        $user = User::query()->where('email', 'new-customer@example.com')->firstOrFail();
+
+        $this->assertDatabaseCount('users', 1);
+        $this->assertNull($user->password);
+        $this->assertNull($user->email_verified_at);
+        $this->assertFalse($user->is_admin);
+        $this->assertGuest();
+        $this->assertDatabaseHas('password_reset_tokens', ['email' => 'new-customer@example.com']);
+        Notification::assertSentTo($user, \Illuminate\Auth\Notifications\ResetPassword::class);
+    }
+
+    public function test_existing_email_receives_link_without_creating_another_account(): void
+    {
+        $user = User::query()->create([
+            'name' => 'Existing',
+            'email' => 'existing@example.com',
+            'password' => 'CurrentPassword123!',
+        ]);
+
+        $this->post(route('password.email'), ['email' => 'EXISTING@example.com'])
+            ->assertRedirect()
+            ->assertSessionHas('success', __('Un e-mail avec votre lien a été envoyé. Vérifiez également vos courriers indésirables.'));
+
+        $this->assertDatabaseCount('users', 1);
+        $this->assertTrue(Hash::check('CurrentPassword123!', $user->fresh()->password));
+        Notification::assertSentTo($user, \Illuminate\Auth\Notifications\ResetPassword::class);
+    }
+
+    public function test_repeated_password_request_does_not_claim_another_email_was_sent(): void
+    {
+        $this->post(route('password.email'), ['email' => 'repeat@example.com'])
+            ->assertSessionHas('success', __('Un e-mail avec votre lien a été envoyé. Vérifiez également vos courriers indésirables.'));
+
+        $this->post(route('password.email'), ['email' => 'repeat@example.com'])
+            ->assertSessionHasErrors(['email']);
+
+        $user = User::query()->where('email', 'repeat@example.com')->firstOrFail();
+        $this->assertDatabaseCount('users', 1);
+        Notification::assertSentToTimes($user, \Illuminate\Auth\Notifications\ResetPassword::class, 1);
+    }
+
+    public function test_mail_failure_is_reported_as_an_error_instead_of_a_false_success(): void
+    {
+        Password::shouldReceive('sendResetLink')
+            ->once()
+            ->andThrow(new \RuntimeException('SMTP connection failed'));
+
+        $this->post(route('password.email'), ['email' => 'mail-error@example.com'])
+            ->assertRedirect()
+            ->assertSessionHasErrors(['email'])
+            ->assertSessionMissing('success');
+
+        $this->assertDatabaseHas('users', ['email' => 'mail-error@example.com']);
+    }
+
     public function test_email_password_recovery_logs_customer_in_and_verifies_email_and_links_existing_orders(): void
     {
         $user = User::query()->create([

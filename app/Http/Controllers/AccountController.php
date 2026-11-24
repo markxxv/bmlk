@@ -262,9 +262,47 @@ class AccountController extends Controller
     {
         $data = $request->validate(['email' => ['required', 'email']]);
         $email = Str::lower(trim($data['email']));
-        $canonical = \App\Models\User::query()->whereRaw('LOWER(email) = ?', [$email])->value('email') ?? $email;
-        Password::sendResetLink(['email' => $canonical]);
-        return back()->with('success', __('Si ce compte existe, un lien vous a été envoyé.'));
+        $user = User::query()->whereRaw('LOWER(email) = ?', [$email])->first();
+
+        // This page creates accounts as well as recovering existing ones.
+        // A new account has no password and cannot be accessed until the
+        // recipient proves ownership of their mailbox through the reset link.
+        $user ??= User::query()->firstOrCreate(
+            ['email' => $email],
+            ['name' => Str::before($email, '@'), 'password' => null],
+        );
+
+        try {
+            $status = Password::sendResetLink(['email' => $user->email]);
+        } catch (\Throwable $exception) {
+            Log::error('Account password link could not be sent.', [
+                'user_id' => $user->id,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return back()->withErrors([
+                'email' => __('Le service est momentanément indisponible. Veuillez réessayer plus tard.'),
+            ])->withInput($request->only('email'));
+        }
+
+        if ($status === Password::RESET_THROTTLED) {
+            return back()->withErrors([
+                'email' => __('Un lien a déjà été demandé récemment. Patientez une minute avant de réessayer.'),
+            ])->withInput($request->only('email'));
+        }
+
+        if ($status !== Password::RESET_LINK_SENT) {
+            Log::warning('Account password link request was not sent.', [
+                'user_id' => $user->id,
+                'status' => $status,
+            ]);
+
+            return back()->withErrors([
+                'email' => __('Le service est momentanément indisponible. Veuillez réessayer plus tard.'),
+            ])->withInput($request->only('email'));
+        }
+
+        return back()->with('success', __('Un e-mail avec votre lien a été envoyé. Vérifiez également vos courriers indésirables.'));
     }
 
     public function resetForm(string $token, Request $request): View
