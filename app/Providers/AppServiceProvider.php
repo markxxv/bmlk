@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use App\Models\Event;
 use App\Models\Page;
 use App\Models\Product;
@@ -31,6 +34,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Each customer action gets its own quota. Laravel's generic numeric
+        // throttle shares a counter between different routes for the same user.
+        RateLimiter::for('account-role-applications', fn (Request $request) =>
+            Limit::perMinute(3)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip()))
+        );
+        RateLimiter::for('account-influencer-code', fn (Request $request) =>
+            Limit::perMinute(3)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip()))
+        );
+
         Blade::component('layouts.app', 'layout');
 
         // Localized routes are generated with a {locale} segment; the default

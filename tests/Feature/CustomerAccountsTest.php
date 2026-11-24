@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Country;
+use App\Http\Controllers\SendcloudController;
 use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\Product;
@@ -477,11 +479,29 @@ class CustomerAccountsTest extends TestCase
             'options' => [],
             'active' => true,
         ]);
-        Delivery::query()->create([
+        $delivery = Delivery::query()->create([
             'code' => 'fr',
             'name' => 'France',
             'price' => 3,
             'active' => true,
+        ]);
+        Country::query()->create(['code' => 'FR', 'name' => 'France', 'active' => true, 'sort' => 1]);
+
+        // Checkout recomputes shipping server-side. Keep this test focused on
+        // influencer pricing with a deterministic valid carrier option.
+        $this->mock(SendcloudController::class)->shouldReceive('options')->once()->andReturn([
+            'zone' => $delivery,
+            'parcel' => ['weight' => ['value' => '0.500', 'unit' => 'kg']],
+            'options' => [[
+                'code' => 'test-home',
+                'contract_id' => 123,
+                'carrier_code' => 'test',
+                'carrier' => 'Test',
+                'name' => 'Home',
+                'actual_price' => 3.0,
+                'price' => 3.0,
+                'requires_point' => false,
+            ]],
         ]);
 
         Http::fake(['api.stripe.com/*' => Http::response([
@@ -494,9 +514,13 @@ class CustomerAccountsTest extends TestCase
             'phone' => '0102030405',
             'email' => 'lou@example.com',
             'country' => 'fr',
+            'zip' => '75001',
             'city' => 'Paris',
             'address' => 'Rue Test',
             'privacy' => 1,
+            'shipping_option' => 'test-home',
+            'shipping_contract_id' => 123,
+            'shipping_quoted_price' => 3.0,
             'promo_code' => 'bmlover',
             'cart_items' => json_encode([[
                 'product_id' => $product->id,

@@ -186,11 +186,11 @@ $localized = function (): void {
         Route::post('/account/verification-notification', [AccountController::class, 'resendVerification'])
             ->middleware('throttle:2,1')->name('verification.send');
         Route::get('/account/roles', [AccountController::class, 'roles'])->name('account.roles');
-        Route::post('/account/roles', [AccountController::class, 'apply'])->middleware('throttle:3,1')->name('account.roles.apply');
+        Route::post('/account/roles', [AccountController::class, 'apply'])->middleware('throttle:account-role-applications')->name('account.roles.apply');
         Route::get('/account/wholesale', [AccountController::class, 'wholesale'])->name('account.wholesale');
         Route::get('/account/influencer', [AccountController::class, 'influencer'])->name('account.influencer');
         Route::post('/account/influencer/code', [AccountController::class, 'saveCode'])
-            ->middleware('throttle:3,1')->name('account.influencer.code');
+            ->middleware('throttle:account-influencer-code')->name('account.influencer.code');
     });
 
     // Public programme / lightweight application, stored in existing role_applications.
