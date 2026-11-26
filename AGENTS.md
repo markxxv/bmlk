@@ -378,7 +378,7 @@ Spatie Translatable fields are stored as PostgreSQL JSONB objects, for example:
 
 ## Warehouse order visibility
 
-- The Warehouse PWA lists **all** orders, matching Filament's order coverage: paid, unpaid, processing, failed, shipped, completed, cancelled, archived and refunded. Default ordering is newest-first.
+- The Warehouse PWA defaults to **To prepare** (`/warehouse?state=pending`), including entry, login and links back from order details. Missing or invalid filters redirect to this queue. **All** orders remain available only through the explicit `state=all` filter, matching Filament's order coverage. Default ordering is newest-first. Preserve direct order links from Telegram when logging in.
 - Mobile filters distinguish fulfillment state from payment state, and show independent badges on each card. The bottom counter reflects only paid, refundable-balance orders still awaiting preparation.
 - Staff may inspect an unpaid or failed order, but all fulfillment actions, Sendcloud label purchases and Stripe refund controls are unavailable until payment is confirmed.
 - Fully refunded orders remain in All orders and the Refunds filter for audit, but are excluded from actionable preparation queues.

@@ -54,9 +54,8 @@ class WarehousePwaTest extends TestCase
         $this->actingAs($this->staff());
         $order = $this->order();
 
-        $this->get(route('warehouse.orders.index'))
+        $this->get(route('warehouse.orders.index', ['state' => 'pending']))
             ->assertOk()
-            ->assertSee('All orders')
             ->assertSee('To prepare')
             ->assertDontSee('Commandes payées');
 
@@ -162,7 +161,7 @@ class WarehousePwaTest extends TestCase
         $unpaid = $this->order(['payment_status' => 'unpaid']);
         $failed = $this->order(['payment_status' => 'failed']);
 
-        $this->get(route('warehouse.orders.index'))
+        $this->get(route('warehouse.orders.index', ['state' => 'all']))
             ->assertOk()
             ->assertSee($pending->order_number)
             ->assertSee($processing->order_number)
@@ -195,6 +194,50 @@ class WarehousePwaTest extends TestCase
             ->assertOk()
             ->assertSee($failed->order_number)
             ->assertDontSee($pending->order_number);
+    }
+
+    public function test_warehouse_defaults_to_paid_preparation_queue_and_all_requires_explicit_state(): void
+    {
+        $this->actingAs($this->staff());
+        $paid = $this->order();
+        $unpaid = $this->order(['payment_status' => 'unpaid']);
+        $failed = $this->order(['payment_status' => 'failed']);
+        $preparing = $this->order(['status' => 'processing']);
+
+        $pendingUrl = route('warehouse.orders.index', ['state' => 'pending']);
+
+        $this->get(route('warehouse.orders.index'))->assertRedirect($pendingUrl);
+        $this->get(route('warehouse.orders.index', ['state' => 'unknown']))->assertRedirect($pendingUrl);
+        $this->get($pendingUrl)
+            ->assertOk()
+            ->assertSee($paid->order_number)
+            ->assertDontSee($unpaid->order_number)
+            ->assertDontSee($failed->order_number)
+            ->assertDontSee($preparing->order_number);
+
+        $this->get(route('warehouse.orders.index', ['state' => 'all']))
+            ->assertOk()
+            ->assertSee($unpaid->order_number)
+            ->assertSee('name="state" value="all"', false);
+
+        $this->get(route('warehouse.orders.show', $unpaid->order_number))
+            ->assertOk()
+            ->assertSee('href="'.$pendingUrl.'"', false);
+
+        $this->get(route('warehouse.login'))->assertRedirect($pendingUrl);
+    }
+
+    public function test_login_returns_to_preparation_queue_instead_of_previous_all_filter(): void
+    {
+        $staff = $this->staff();
+
+        $this->get(route('warehouse.orders.index', ['state' => 'all']))
+            ->assertRedirect(route('warehouse.login'));
+
+        $this->post(route('warehouse.login.submit'), [
+            'email' => $staff->email,
+            'password' => 'warehouse-password-123',
+        ])->assertRedirect(route('warehouse.orders.index', ['state' => 'pending']));
     }
 
     public function test_order_sort_toggle_orders_records_and_preserves_filters(): void

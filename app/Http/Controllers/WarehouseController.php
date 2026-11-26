@@ -22,7 +22,7 @@ class WarehouseController extends Controller
     public function loginForm(): View|RedirectResponse
     {
         if (Auth::check() && (Auth::user()->is_admin || Auth::user()->is_warehouse)) {
-            return redirect()->route('warehouse.orders.index');
+            return redirect()->route('warehouse.orders.index', ['state' => 'pending']);
         }
 
         return view('warehouse.login');
@@ -47,7 +47,14 @@ class WarehouseController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->intended(route('warehouse.orders.index'));
+        // Preserve direct links to orders (e.g. Telegram), but always start
+        // a new warehouse list session in the actionable preparation queue.
+        $intended = $request->session()->get('url.intended');
+        if (is_string($intended) && rtrim((string) parse_url($intended, PHP_URL_PATH), '/') === '/warehouse') {
+            $request->session()->forget('url.intended');
+        }
+
+        return redirect()->intended(route('warehouse.orders.index', ['state' => 'pending']));
     }
 
     public function logout(Request $request): RedirectResponse
@@ -59,7 +66,7 @@ class WarehouseController extends Controller
         return redirect()->route('warehouse.login');
     }
 
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         $states = [
             'all', 'pending', 'processing', 'shipped', 'completed',
@@ -67,9 +74,11 @@ class WarehouseController extends Controller
             'payment_processing', 'payment_failed', 'refunds',
         ];
 
-        $state = (string) $request->query('state', 'all');
-        if (! in_array($state, $states, true)) {
-            $state = 'all';
+        $state = $request->query('state');
+        if (! is_string($state) || ! in_array($state, $states, true)) {
+            $query = $request->only(['q', 'sort']);
+
+            return redirect()->route('warehouse.orders.index', ['state' => 'pending', ...$query]);
         }
 
         $search = mb_substr(trim((string) $request->query('q', '')), 0, 80);

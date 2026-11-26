@@ -1,6 +1,6 @@
 <x-warehouse.layout :title="$order->order_number">
     <header class="mb-4 flex items-start gap-3">
-        <a href="{{ route('warehouse.orders.index') }}" aria-label="{{ __('Back to orders') }}" class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white text-[#712B47] shadow-sm">
+        <a href="{{ route('warehouse.orders.index', ['state' => 'pending']) }}" aria-label="{{ __('Back to orders') }}" class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white text-[#712B47] shadow-sm">
             <x-lucide-arrow-left class="size-5" />
         </a>
         <div class="min-w-0 flex-1">
@@ -319,7 +319,7 @@
 
     <nav aria-label="{{ __('Order navigation') }}" class="fixed inset-x-0 bottom-0 z-20 bg-white/95 px-5 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur-sm">
         <div class="mx-auto flex max-w-xl items-center justify-between gap-3">
-            <a href="{{ route('warehouse.orders.index') }}" class="flex min-h-11 items-center gap-2 rounded-xl bg-zinc-100 px-4 text-sm font-bold text-zinc-700"><x-lucide-arrow-left class="size-4" />{{ __('Orders') }}</a>
+            <a href="{{ route('warehouse.orders.index', ['state' => 'pending']) }}" class="flex min-h-11 items-center gap-2 rounded-xl bg-zinc-100 px-4 text-sm font-bold text-zinc-700"><x-lucide-arrow-left class="size-4" />{{ __('Orders') }}</a>
             <span class="text-sm font-semibold text-[#712B47]">{{ $statusLabel }}</span>
         </div>
     </nav>

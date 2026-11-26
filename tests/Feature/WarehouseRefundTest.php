@@ -102,7 +102,7 @@ class WarehouseRefundTest extends TestCase
         $this->assertSame(1300, (int) $order->refunds()->where('type', 'order')->firstOrFail()->amount_cents);
         $this->assertSame(2100, (int) $order->refunds()->sum('amount_cents'));
 
-        $this->get(route('warehouse.orders.index'))->assertOk()->assertSee($order->order_number);
+        $this->get(route('warehouse.orders.index', ['state' => 'all']))->assertOk()->assertSee($order->order_number);
         $this->get(route('warehouse.orders.index', ['state' => 'pending']))
             ->assertOk()->assertDontSee($order->order_number);
         $this->get(route('warehouse.orders.show', $order->order_number))
@@ -220,7 +220,7 @@ class WarehouseRefundTest extends TestCase
         }
 
         $this->assertSame(1600, (int) $order->refunds()->sum('amount_cents'));
-        $this->get(route('warehouse.orders.index'))->assertOk()->assertSee($order->order_number);
+        $this->get(route('warehouse.orders.index', ['state' => 'all']))->assertOk()->assertSee($order->order_number);
         $this->get(route('warehouse.orders.index', ['state' => 'pending']))
             ->assertOk()->assertDontSee($order->order_number);
         $this->get(route('warehouse.orders.show', $order->order_number))
@@ -323,7 +323,7 @@ class WarehouseRefundTest extends TestCase
             ->assertOk()
             ->assertSee('Nail care × 1')
             ->assertSee('Cuticle oil · 30 ml × 2');
-        $this->get(route('warehouse.orders.index'))
+        $this->get(route('warehouse.orders.index', ['state' => 'all']))
             ->assertOk()
             ->assertSee($order->order_number)
             ->assertSee('Partial refund')

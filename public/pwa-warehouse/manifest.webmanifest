@@ -3,7 +3,7 @@
   "short_name": "BLACK MILK",
   "description": "Order preparation and Sendcloud shipping labels",
   "id": "/warehouse/",
-  "start_url": "/warehouse/",
+  "start_url": "/warehouse/?state=pending",
   "scope": "/warehouse/",
   "display": "standalone",
   "orientation": "portrait",

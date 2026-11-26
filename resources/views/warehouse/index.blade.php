@@ -12,7 +12,7 @@
     </header>
 
     <form method="GET" action="{{ route('warehouse.orders.index') }}" class="mb-4 flex items-center gap-2 rounded-2xl bg-white px-4 shadow-sm">
-        @if ($state !== 'all')<input type="hidden" name="state" value="{{ $state }}">@endif
+        <input type="hidden" name="state" value="{{ $state }}">
         @if ($sort !== 'newest')<input type="hidden" name="sort" value="{{ $sort }}">@endif
         <x-lucide-search class="size-5 shrink-0 text-zinc-400" />
         <input type="search" name="q" value="{{ $search }}" placeholder="{{ __('Order number, customer, city…') }}" class="min-h-12 w-full min-w-0 bg-transparent text-base outline-none placeholder:text-zinc-400" aria-label="{{ __('Search orders') }}">
@@ -23,8 +23,8 @@
 
     @php
         $fulfillmentFilters = [
-            'all' => 'All',
             'pending' => 'To prepare',
+            'all' => 'All',
             'processing' => 'Preparing',
             'shipped' => 'Shipped',
             'completed' => 'Completed',
