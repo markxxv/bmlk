@@ -55,6 +55,18 @@ class ProductStockService
 
             $current = $quantities[$productId] ?? 0;
             $quantities[$productId] = $current + min($quantity, self::MAX_STOCK - $current);
+
+            $gels = $item['box_gels'] ?? null;
+            if (is_array($gels) && count($gels) === GelBox::SIZE) {
+                foreach ($gels as $gel) {
+                    $gelId = $this->positiveInteger(is_array($gel) ? ($gel['id'] ?? null) : null);
+                    if ($gelId === null || $gelId === $productId) {
+                        continue;
+                    }
+                    $current = $quantities[$gelId] ?? 0;
+                    $quantities[$gelId] = $current + min($quantity, self::MAX_STOCK - $current);
+                }
+            }
         }
 
         // Consistent locking order when multiple orders contain the same products.

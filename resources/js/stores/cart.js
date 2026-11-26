@@ -45,6 +45,7 @@ export function registerCartStore(Alpine) {
                         product_id: Number(item.product_id),
                         quantity: Number(item.quantity || 1),
                         options: item.options || [],
+                        box_gels: (item.box_gels || []).map(gel => ({ id: gel.id })),
                     })),
                 }),
             });
@@ -68,26 +69,29 @@ export function registerCartStore(Alpine) {
                     const ids = [...new Set(snapshot.map(item => Number(item.product_id)))];
                     const data = await this.requestAvailability(ids, snapshot);
                     const prices = new Map(snapshot.map((item, index) => [item.id, data.cart_prices?.[index]]));
+                    const invalidBoxes = new Set((data.invalid_box_indexes || []).map(index => snapshot[index]?.id));
                     const checkedIds = new Set(ids);
                     const availableIds = new Set((data.available_ids || []).map(Number));
                     const removed = this.items.filter(item => {
                         const id = Number(item.product_id);
-                        return !Number.isInteger(id) || id < 1 || (checkedIds.has(id) && !availableIds.has(id));
+                        return invalidBoxes.has(item.id) || !Number.isInteger(id) || id < 1 || (checkedIds.has(id) && !availableIds.has(id));
                     });
 
                     if (removed.length) {
                         this.items = this.items.filter(item => !removed.includes(item));
                         this.save();
                         const names = [...new Set(removed.map(item => item.name).filter(Boolean))];
-                        this.availabilityNotice = (data.removed_message || 'Articles retirés du panier :') + ' ' + names.join(', ') + '.';
+                        this.availabilityNotice = (invalidBoxes.size ? data.box_message + ' ' : '') + (data.removed_message || 'Articles retirés du panier :') + ' ' + names.join(', ') + '.';
                     }
 
                     let changed = false;
                     const updated = this.items.map(item => {
                         const price = prices.get(item.id);
-                        if (price == null || Number(price) === Number(item.unit_price)) return item;
+                        const gels = data.box_gels?.[snapshot.findIndex(entry => entry.id === item.id)];
+                        const gelsChanged = gels && JSON.stringify(gels) !== JSON.stringify(item.box_gels);
+                        if (price == null || (Number(price) === Number(item.unit_price) && !gelsChanged)) return item;
                         changed = true;
-                        return { ...item, unit_price: Number(price) };
+                        return { ...item, unit_price: Number(price), ...(gels ? {box_gels: gels} : {}) };
                     });
 
                     if (changed) {
@@ -119,19 +123,26 @@ export function registerCartStore(Alpine) {
             return this.items.reduce((total, item) => total + Number(item.unit_price || 0) * Number(item.quantity || 1), 0);
         },
 
-        async addItem(product, selections = {}, quantity = 1) {
+        async addItem(product, selections = {}, quantity = 1, gels = []) {
             const options = Object.values(selections).filter(Boolean).sort((a, b) => String(a.id).localeCompare(String(b.id)));
             let unitPrice;
+            let boxGels = [];
 
             try {
                 const data = await this.requestAvailability([Number(product.id)], [{
-                    product_id: product.id, quantity, options,
+                    product_id: product.id, quantity, options, box_gels: gels,
                 }]);
                 if (!(data.available_ids || []).map(Number).includes(Number(product.id))) {
                     this.availabilityNotice = 'Ce produit est temporairement indisponible.';
                     this.isOpen = true;
                     return false;
                 }
+                if ((data.invalid_box_indexes || []).includes(0)) {
+                    this.availabilityNotice = data.box_message;
+                    this.isOpen = true;
+                    return false;
+                }
+                boxGels = data.box_gels?.[0] || [];
                 if (data.cart_prices?.[0] == null) throw new Error('Price check failed');
                 unitPrice = Number(data.cart_prices[0]);
             } catch {
@@ -141,7 +152,8 @@ export function registerCartStore(Alpine) {
             }
 
             const signature = options.map(option => `${option.id}:${option.key}`).join('|');
-            const itemId = `${product.id}|${signature || 'default'}`;
+            const gelSignature = boxGels.length ? `|gels:${boxGels.map(gel => gel.id).join(',')}` : '';
+            const itemId = `${product.id}|${signature || 'default'}${gelSignature}`;
             const existing = this.items.find(item => item.id === itemId);
             if (existing) {
                 existing.unit_price = unitPrice;
@@ -155,6 +167,7 @@ export function registerCartStore(Alpine) {
                     image: product.image,
                     unit_price: unitPrice,
                     options,
+                    ...(boxGels.length ? {box_gels: boxGels} : {}),
                     quantity: Number(quantity || 1),
                 });
             }

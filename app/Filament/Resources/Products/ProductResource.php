@@ -200,6 +200,10 @@ class ProductResource extends Resource
                                             ->offIcon('lucide-x')
                                             ->onColor('success')
                                             ->offColor('danger'),
+                                        Toggle::make('requires_gel_selection')
+                                            ->label('Custom gel box')
+                                            ->helperText('Customers must choose six gels from Gel Corex (category #1).')
+                                            ->default(false),
                                         Toggle::make('featured')
                                             ->label('Featured')
                                             ->onIcon('lucide-star')

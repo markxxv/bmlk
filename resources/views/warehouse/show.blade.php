@@ -96,6 +96,27 @@
                                 <div class="mt-1 text-xs text-zinc-500">{{ data_get($option, 'label') }}{{ filled(data_get($option, 'label')) ? ' · ' : '' }}{{ data_get($option, 'display') }}</div>
                             @endif
                         @endforeach
+                        @if (data_get($item, 'box_gels'))
+                            <div class="mt-3 space-y-1.5 rounded-lg bg-zinc-50 p-2">
+                                <p class="text-xs font-bold text-[#712B47]">{{ __('Gel box contents') }}</p>
+                                @foreach (collect(data_get($item, 'box_gels'))->groupBy('id') as $gels)
+                                    @php($gel = $gels->first())
+                                    <div class="flex items-center gap-2">
+                                        @if (filled(data_get($gel, 'image')))
+                                            <img src="{{ data_get($gel, 'image') }}" alt="" class="size-9 shrink-0 rounded-md bg-white object-contain">
+                                        @endif
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-xs font-semibold">{{ data_get($gel, 'name_en') ?: data_get($gel, 'name') }}</p>
+                                            @if (filled(data_get($gel, 'sku')))
+                                                <p class="text-xs text-zinc-500">{{ data_get($gel, 'sku') }}</p>
+                                            @endif
+                                        </div>
+                                        <span class="shrink-0 rounded-md bg-white px-2 py-1 text-xs font-bold text-[#712B47]">×{{ $gels->count() * $packingQuantity }}</span>
+                                    </div>
+                                @endforeach
+                                <p class="text-xs text-zinc-500">{{ __('Total gels to pack') }}: {{ 6 * $packingQuantity }}</p>
+                            </div>
+                        @endif
                         <div class="mt-2 text-xs text-zinc-500">{{ number_format((float) data_get($item, 'unit_price', 0), 2, ',', ' ') }} € / {{ __('unit') }}</div>
                         @if ($refundedQuantity > 0)
                             <p class="mt-1 text-xs font-bold text-rose-700">{{ $refundedQuantity }} {{ __('refunded / reserved') }}</p>

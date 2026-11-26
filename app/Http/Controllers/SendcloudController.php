@@ -269,6 +269,7 @@ class SendcloudController extends Controller
             'cart_items' => ['required','array','min:1'],
             'cart_items.*.product_id' => ['required','integer'],
             'cart_items.*.quantity' => ['required','integer','min:1','max:99'],
+            'cart_items.*.box_gels' => ['sometimes','array','max:6'],
         ]);
 
         // Server revalidates prices and product options; never trust cart totals from JS.
@@ -286,6 +287,9 @@ class SendcloudController extends Controller
                 $signature = collect($item['options'])->map(fn (array $option): string =>
                     $option['id'].':'.$option['key']
                 )->implode('|');
+                if (! empty($item['box_gels'])) {
+                    $signature .= '|gels:'.collect($item['box_gels'])->pluck('id')->implode(',');
+                }
 
                 return [
                     ...$item,

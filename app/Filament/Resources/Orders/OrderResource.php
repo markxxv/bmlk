@@ -251,6 +251,22 @@ class OrderResource extends Resource
                 $html .= '<p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">'.$options.'</p>';
             }
 
+            $gels = collect(data_get($item, 'box_gels', []))->filter(fn (mixed $gel): bool => is_array($gel))->groupBy('id');
+            if ($gels->isNotEmpty()) {
+                $html .= '<div class="mt-2 space-y-1 rounded-lg bg-white p-2 dark:bg-gray-900"><p class="text-xs font-semibold">Gel box contents (per box)</p>';
+                foreach ($gels as $group) {
+                    $gel = $group->first();
+                    $gelName = e((string) ($gel['name_en'] ?? $gel['name'] ?? 'Gel'));
+                    $sku = e((string) ($gel['sku'] ?? ''));
+                    $html .= '<div class="flex items-center gap-2 text-xs">';
+                    if (! empty($gel['image']) && preg_match('~^(https?://|/)~i', $gel['image'])) {
+                        $html .= '<img src="'.e($gel['image']).'" alt="" class="h-8 w-8 shrink-0 rounded object-contain">';
+                    }
+                    $html .= '<span class="min-w-0 flex-1">'.$gelName.($sku !== '' ? ' · '.$sku : '').'</span><strong>×'.$group->count().'</strong></div>';
+                }
+                $html .= '</div>';
+            }
+
             $html .= '<p class="mt-2 text-xs text-gray-500 dark:text-gray-400">'
                 .$quantity.' × '.number_format($unitPrice, 2, ',', ' ').' €</p>';
             $html .= '</div>';

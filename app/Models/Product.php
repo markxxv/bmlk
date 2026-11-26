@@ -105,6 +105,7 @@ class Product extends Model implements HasMedia
         return [
             'active' => 'boolean',
             'available' => 'boolean',
+            'requires_gel_selection' => 'boolean',
             'stock' => 'integer',
             'featured' => 'boolean',
             'is_new' => 'boolean',

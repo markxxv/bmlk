@@ -24,7 +24,15 @@
         @foreach ($order->items as $item)
             <div class="flex items-center gap-4 py-4">
                 @if (data_get($item, 'image'))<img src="{{ data_get($item, 'image') }}" alt="" class="h-16 w-16 rounded-xl object-cover">@endif
-                <p class="flex-1 text-sm">{{ data_get($item, 'name') }} <span class="text-zinc-500">× {{ data_get($item, 'quantity') }}</span></p>
+                <div class="min-w-0 flex-1 text-sm">
+                    <p>{{ data_get($item, 'name') }} <span class="text-zinc-500">× {{ data_get($item, 'quantity') }}</span></p>
+                    @if (data_get($item, 'box_gels'))
+                        <p class="mt-2 text-xs font-semibold text-bmlk-brand">{{ __('Composition du coffret') }}</p>
+                        @foreach (data_get($item, 'box_gels') as $gel)
+                            <p class="text-xs text-zinc-500">{{ data_get($gel, 'name') }}</p>
+                        @endforeach
+                    @endif
+                </div>
                 <p class="text-sm font-medium">{{ number_format((float) data_get($item, 'line_total'), 2, ',', ' ') }} €</p>
             </div>
         @endforeach

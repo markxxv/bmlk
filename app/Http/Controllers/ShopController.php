@@ -7,6 +7,7 @@ use App\Models\Country;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use App\Services\GelBox;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -191,6 +192,11 @@ class ShopController extends Controller
 
         return view('shop.product', [
             'product' => $product,
+            'boxGels' => $product->requires_gel_selection
+                ? GelBox::eligible()->whereKeyNot($product->id)->with('media')->get()
+                    ->map(fn (Product $gel): array => GelBox::snapshot($gel, $locale))
+                    ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)->values()->all()
+                : [],
             'recommended' => $recommended,
             'metaTitle' => $metaTitle,
             'metaDescription' => $metaDescription,
@@ -209,6 +215,7 @@ class ShopController extends Controller
             'cart_items.*.product_id' => ['required', 'integer', 'min:1'],
             'cart_items.*.quantity' => ['sometimes', 'integer', 'min:1', 'max:99'],
             'cart_items.*.options' => ['sometimes', 'array'],
+            'cart_items.*.box_gels' => ['sometimes', 'array', 'max:6'],
         ]);
 
         $availableIds = Product::query()
@@ -222,13 +229,35 @@ class ShopController extends Controller
         $cartItems = collect($validated['cart_items'] ?? [])
             ->filter(fn (array $item): bool => $availableIds->contains((int) $item['product_id']));
 
-        $prices = $cartItems->isEmpty()
-            ? []
-            : $this->normalizeItems($cartItems->all())->map(fn (array $item): float => $item['unit_price'])->all();
+        $invalidBoxIndexes = [];
+        try {
+            $normalized = $this->normalizeItems($cartItems->all());
+        } catch (ValidationException $exception) {
+            if (! isset($exception->errors()['box_gels'])) {
+                throw $exception;
+            }
+
+            // A stale configuration must not block other valid cart lines.
+            $normalized = collect();
+            foreach ($cartItems as $index => $item) {
+                try {
+                    $normalized->put($index, $this->normalizeItems([$item])->first());
+                } catch (ValidationException $lineException) {
+                    if (! isset($lineException->errors()['box_gels'])) {
+                        throw $lineException;
+                    }
+                    $invalidBoxIndexes[] = $index;
+                }
+            }
+        }
+        $prices = $normalized->map(fn (array $item): float => $item['unit_price'])->all();
 
         return response()->json([
             'available_ids' => $availableIds,
             'cart_prices' => (object) $prices,
+            'invalid_box_indexes' => $invalidBoxIndexes,
+            'box_gels' => (object) $normalized->filter(fn (array $item): bool => isset($item['box_gels']))->map(fn (array $item): array => $item['box_gels'])->all(),
+            'box_message' => __('La composition de votre coffret a changé. Sélectionnez à nouveau vos six gels.'),
             'prices_message' => __('Les variantes et les prix du panier ont été actualisés. Vérifiez votre sélection.'),
             'removed_message' => __('Ces articles ne sont plus disponibles et ont été retirés du panier :'),
         ])->header('Cache-Control', 'no-store');
@@ -611,6 +640,8 @@ class ShopController extends Controller
                 ]);
             }
 
+            $boxGels = GelBox::normalize($product, $cartItem['box_gels'] ?? [], $this->locale());
+
             $selectedOptions = collect($cartItem['options'] ?? [])
                 ->filter(fn (mixed $option): bool => is_array($option))
                 ->keyBy(fn (array $option): string => (string) ($option['id'] ?? ''));
@@ -761,6 +792,7 @@ class ShopController extends Controller
                     : route('shop.index'),
                 'image' => $product->storefrontImageUrl('thumb'),
                 'options' => $normalizedOptions,
+                ...($boxGels !== [] ? ['box_gels' => $boxGels] : []),
                 'quantity' => $quantity,
                 'unit_price' => $unitPrice,
                 'line_total' => round($unitPrice * $quantity, 2),

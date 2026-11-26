@@ -162,6 +162,7 @@
             'price' => $product->price !== null ? (float) $product->price : null,
             'sale_price' => $product->priceAfterDiscount($product->price),
             'available' => $product->available,
+            'requires_gel_selection' => $product->requires_gel_selection,
         ];
 
         $offerSchema = null;
@@ -268,9 +269,31 @@
 
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('blackMilkProduct', (product, options, fallbackPriceLabel, numberLocale, selectOptionsLabel) => ({
+            Alpine.data('blackMilkProduct', (product, options, fallbackPriceLabel, numberLocale, selectOptionsLabel, gels = []) => ({
                 qty: 1,
                 selected: {},
+                gelSearch: '',
+                selectedGels: [],
+                adding: false,
+
+                get filteredGels() {
+                    const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+                    const words = normalize(this.gelSearch).trim().split(/\s+/).filter(Boolean);
+                    return gels.filter(gel => words.every(word => normalize([gel.name, gel.name_en, gel.sku].join(' ')).includes(word)));
+                },
+
+                gelCount(id) {
+                    return this.selectedGels.filter(gel => gel.id === id).length;
+                },
+
+                addGel(gel) {
+                    if (this.selectedGels.length < 6) this.selectedGels.push(gel);
+                },
+
+                removeGel(id) {
+                    const index = this.selectedGels.findIndex(gel => gel.id === id);
+                    if (index >= 0) this.selectedGels.splice(index, 1);
+                },
 
                 init() {
                     options.forEach(option => {
@@ -370,6 +393,7 @@
 
                 get isReady() {
                     return product.available && this.allOptionsSelected
+                        && (! product.requires_gel_selection || this.selectedGels.length === 6)
                         && this.currentPrice !== null
                         && Number.isFinite(Number(this.currentPrice));
                 },
@@ -391,12 +415,17 @@
                     }).format(price);
                 },
 
-                addToCart() {
-                    if (! this.isReady || ! product.available) {
+                async addToCart() {
+                    if (! this.isReady || ! product.available || this.adding) {
                         return;
                     }
 
-                    this.$store.cart.addItem(product, this.selected, this.qty);
+                    this.adding = true;
+                    try {
+                        await this.$store.cart.addItem(product, this.selected, this.qty, [...this.selectedGels]);
+                    } finally {
+                        this.adding = false;
+                    }
                 },
             }));
         });
@@ -535,7 +564,8 @@
                             @js($productOptions),
                             @js($priceLabel),
                             @js($numberLocale),
-                            @js(__('Sélectionnez les options'))
+                            @js(__('Sélectionnez les options')),
+                            @js($boxGels ?? [])
                         )"
                     >
                         <div class="lg:sticky lg:top-8">
@@ -660,6 +690,10 @@
                                 </div>
                             @endif
 
+                            @if ($product->available && $product->requires_gel_selection)
+                                @include('shop.partials.gel-box-picker')
+                            @endif
+
                             @if ($product->available)
                             <div class="mt-9 flex flex-col gap-3 sm:flex-row">
                                 <div class="flex h-13 items-center justify-between rounded-full bg-white px-2 sm:w-36">
@@ -687,7 +721,7 @@
                                 <button
                                     type="button"
                                     @click="addToCart()"
-                                    :disabled="! isReady"
+                                    :disabled="! isReady || adding"
                                     :class="isReady
                                         ? 'bg-bmlk-brand text-white hover:bg-[#945763]'
                                         : 'cursor-not-allowed bg-zinc-200 text-zinc-400'"
@@ -695,7 +729,7 @@
                                 >
                                     <x-lucide-shopping-bag class="h-4 w-4" />
                                     <span x-show="isReady">{{ __('Ajouter au panier') }}</span>
-                                    <span x-show="! isReady">{{ __('Choisissez les options') }}</span>
+                                    <span x-show="! isReady">{{ $product->requires_gel_selection ? __('Choisissez vos 6 gels') : __('Choisissez les options') }}</span>
                                 </button>
                             </div>
 

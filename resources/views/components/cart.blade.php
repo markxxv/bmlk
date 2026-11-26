@@ -81,6 +81,15 @@
                                 </div>
                             </template>
 
+                            <template x-if="item.box_gels?.length">
+                                <div class="mt-2 rounded-lg bg-zinc-50 p-2 text-xs text-zinc-600">
+                                    <p class="mb-1 font-semibold text-bmlk-brand">{{ __('Composition du coffret') }}</p>
+                                    <template x-for="(gel, index) in item.box_gels" :key="index">
+                                        <p class="break-words" x-text="gel.name"></p>
+                                    </template>
+                                </div>
+                            </template>
+
                             <p
                                 class="mt-2 text-xs font-medium text-zinc-900"
                                 x-text="new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(item.unit_price)"

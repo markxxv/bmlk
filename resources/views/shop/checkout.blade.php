@@ -239,6 +239,7 @@
                         const needsCorrection = corrected.length === current.length &&
                             corrected.some((item, index) =>
                                 Number(item.unit_price) !== Number(current[index].unit_price) ||
+                                JSON.stringify(item.box_gels || []) !== JSON.stringify(current[index].box_gels || []) ||
                                 JSON.stringify(item.options) !== JSON.stringify(
                                     (current[index].options || []).map(option => ({
                                         id: option.id,
@@ -847,6 +848,15 @@
                                                     <span> · </span>
                                                     <span x-text="option.display"></span>
                                                 </p>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <template x-if="item.box_gels?.length">
+                                        <div class="mt-2 rounded-lg bg-zinc-50 p-2 text-xs text-zinc-600">
+                                            <p class="mb-1 font-semibold text-bmlk-brand">{{ __('Composition du coffret') }}</p>
+                                            <template x-for="(gel, index) in item.box_gels" :key="index">
+                                                <p class="break-words" x-text="gel.name"></p>
                                             </template>
                                         </div>
                                     </template>
