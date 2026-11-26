@@ -716,5 +716,8 @@
     "Adresse de facturation": "Billing address",
     "Pays de facturation": "Billing country",
     "Choisir un pays": "Choose a country",
-    "Télécharger la facture": "Download invoice"
+    "Télécharger la facture": "Download invoice",
+    "Votre facture": "Your invoice",
+    "Votre commande BLACK MILK a été expédiée. Vous trouverez votre facture au format PDF en pièce jointe à cet e-mail.": "Your BLACK MILK order has been shipped. Your invoice is attached to this email as a PDF.",
+    "Vous pouvez également retrouver votre facture dans votre espace personnel BLACK MILK.": "You can also find your invoice in your BLACK MILK account."
 }

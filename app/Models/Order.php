@@ -32,11 +32,24 @@ class Order extends Model
             'total_amount' => 'decimal:2',
             'paid_at' => 'datetime',
             'invoice_issued_at' => 'datetime',
+            'invoice_email_enabled' => 'boolean',
+            'invoice_email_sent_at' => 'datetime',
+            'invoice_email_attempted_at' => 'datetime',
             'payment_failed_at' => 'datetime',
             'paid_email_sent_at' => 'datetime',
             'failed_email_sent_at' => 'datetime',
             'failed_reminder_sent_at' => 'datetime',
         ];
+    }
+
+    public function scopeAwaitingInvoiceEmail(Builder $query): Builder
+    {
+        return $query->where('invoice_email_enabled', true)
+            ->where('payment_status', 'paid')
+            ->whereIn('status', ['shipped', 'completed'])
+            ->whereNotNull('email')
+            ->where('email', '<>', '')
+            ->whereNull('invoice_email_sent_at');
     }
 
     public function customerStatusLabel(): string

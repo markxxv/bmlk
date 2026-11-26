@@ -40,6 +40,9 @@ Schedule::command('queue:work database --queue=partner-telegram --stop-when-empt
     ->everyMinute()
     ->withoutOverlapping(5);
 
+// Queue only new checkout orders marked shipped or completed, never historical orders.
+Schedule::command('orders:queue-invoice-emails')->everyMinute()->withoutOverlapping(5);
+
 // Individual customer invoice PDFs are queued after payment. Historical paid
 // orders are also issued on the first authenticated download, without waiting.
 Schedule::command('queue:work database --queue=invoices --stop-when-empty --max-time=45 --tries=3')

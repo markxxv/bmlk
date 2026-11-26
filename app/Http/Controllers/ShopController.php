@@ -429,6 +429,7 @@ class ShopController extends Controller
             'status' => 'pending',
             'locale' => $this->locale(),
             'ratings_enabled' => true,
+            'invoice_email_enabled' => true,
             'user_id' => $request->user() && Str::lower($request->user()->email) === Str::lower($validated['email'])
                 ? $request->user()->id : null,
             'payment_status' => 'unpaid',

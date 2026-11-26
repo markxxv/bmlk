@@ -716,5 +716,8 @@
     "Adresse de facturation": "Dirección fiscal",
     "Pays de facturation": "País de facturación",
     "Choisir un pays": "Seleccionar país",
-    "Télécharger la facture": "Descargar factura"
+    "Télécharger la facture": "Descargar factura",
+    "Votre facture": "Tu factura",
+    "Votre commande BLACK MILK a été expédiée. Vous trouverez votre facture au format PDF en pièce jointe à cet e-mail.": "Tu pedido BLACK MILK ha sido enviado. Encontrarás tu factura en formato PDF adjunta a este correo.",
+    "Vous pouvez également retrouver votre facture dans votre espace personnel BLACK MILK.": "También puedes encontrar tu factura en tu cuenta de BLACK MILK."
 }
