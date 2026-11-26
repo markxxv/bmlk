@@ -67,6 +67,31 @@ class WarehousePwaTest extends TestCase
             ->assertDontSee('Étiquette de livraison');
     }
 
+    public function test_custom_gel_box_contents_render_in_warehouse_order(): void
+    {
+        $this->actingAs($this->staff());
+        $gels = [
+            ['id' => 11, 'name' => 'Gel A', 'name_en' => 'Gel A', 'sku' => null],
+            ['id' => 11, 'name' => 'Gel A', 'name_en' => 'Gel A', 'sku' => null],
+            ['id' => 12, 'name' => 'Gel B', 'name_en' => 'Gel B', 'sku' => 'GB12'],
+            ['id' => 13, 'name' => 'Gel C'],
+            ['id' => 14, 'name' => 'Gel D'],
+            ['id' => 15, 'name' => 'Gel E'],
+        ];
+        $order = $this->order([
+            'items' => [
+                ['name' => 'Custom box', 'quantity' => 2, 'unit_price' => 10, 'line_total' => 20, 'box_gels' => $gels],
+            ],
+        ]);
+
+        $this->get(route('warehouse.orders.show', $order->order_number))
+            ->assertOk()
+            ->assertSee('Gel box contents')
+            ->assertSeeInOrder(['Gel A', '×4', 'Gel B', 'GB12', '×2'])
+            ->assertSee('Total gels to pack')
+            ->assertSee('12');
+    }
+
     public function test_guests_are_redirected_to_the_warehouse_login(): void
     {
         $order = $this->order();

@@ -100,7 +100,9 @@
                             <div class="mt-3 space-y-1.5 rounded-lg bg-zinc-50 p-2">
                                 <p class="text-xs font-bold text-[#712B47]">{{ __('Gel box contents') }}</p>
                                 @foreach (collect(data_get($item, 'box_gels'))->groupBy('id') as $gels)
-                                    @php($gel = $gels->first())
+                                    @php
+                                        $gel = $gels->first();
+                                    @endphp
                                     <div class="flex items-center gap-2">
                                         @if (filled(data_get($gel, 'image')))
                                             <img src="{{ data_get($gel, 'image') }}" alt="" class="size-9 shrink-0 rounded-md bg-white object-contain">
