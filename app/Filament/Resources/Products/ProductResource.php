@@ -7,6 +7,7 @@ use App\Filament\Support\DeliveryFields;
 use App\Filament\Tables\Columns\EditableColumn;
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\GelBox;
 use BackedEnum;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -27,6 +28,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
@@ -200,10 +202,22 @@ class ProductResource extends Resource
                                             ->offIcon('lucide-x')
                                             ->onColor('success')
                                             ->offColor('danger'),
-                                        Toggle::make('requires_gel_selection')
-                                            ->label('Custom gel box')
-                                            ->helperText('Customers must choose six gels from Gel Corex (category #1).')
-                                            ->default(false),
+                                        Grid::make(['default' => 2])
+                                            ->schema([
+                                                Toggle::make('requires_gel_selection')
+                                                    ->label('Custom gel box')
+                                                    ->inline(false)
+                                                    ->default(false)
+                                                    ->live(),
+                                                TextInput::make('gel_selection_count')
+                                                    ->label('Gels per box')
+                                                    ->integer()
+                                                    ->minValue(1)
+                                                    ->maxValue(GelBox::MAX_SIZE)
+                                                    ->default(GelBox::DEFAULT_SIZE)
+                                                    ->visible(fn (Get $get): bool => (bool) $get('requires_gel_selection'))
+                                                    ->required(fn (Get $get): bool => (bool) $get('requires_gel_selection')),
+                                            ]),
                                         Toggle::make('featured')
                                             ->label('Featured')
                                             ->onIcon('lucide-star')

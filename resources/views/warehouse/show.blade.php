@@ -116,7 +116,7 @@
                                         <span class="shrink-0 rounded-md bg-white px-2 py-1 text-xs font-bold text-[#712B47]">×{{ $gels->count() * $packingQuantity }}</span>
                                     </div>
                                 @endforeach
-                                <p class="text-xs text-zinc-500">{{ __('Total gels to pack') }}: {{ 6 * $packingQuantity }}</p>
+                                <p class="text-xs text-zinc-500">{{ __('Total gels to pack') }}: {{ count(data_get($item, 'box_gels', [])) * $packingQuantity }}</p>
                             </div>
                         @endif
                         <div class="mt-2 text-xs text-zinc-500">{{ number_format((float) data_get($item, 'unit_price', 0), 2, ',', ' ') }} € / {{ __('unit') }}</div>

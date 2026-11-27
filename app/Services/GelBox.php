@@ -10,7 +10,9 @@ class GelBox
 {
     public const CATEGORY_ID = 1;
 
-    public const SIZE = 6;
+    public const DEFAULT_SIZE = 6;
+
+    public const MAX_SIZE = 99;
 
     public static function eligible(): Builder
     {
@@ -40,16 +42,18 @@ class GelBox
             return [];
         }
 
-        if (! $box->requires_gel_selection || ! is_array($selection)
-            || ! array_is_list($selection) || count($selection) !== self::SIZE) {
-            self::invalid();
+        $required = (int) $box->gel_selection_count;
+
+        if (! $box->requires_gel_selection || $required < 1 || $required > self::MAX_SIZE
+            || ! is_array($selection) || ! array_is_list($selection) || count($selection) !== $required) {
+            self::invalid($box);
         }
 
         $ids = [];
         foreach ($selection as $entry) {
             $id = is_array($entry) ? ($entry['id'] ?? null) : null;
             if ((! is_int($id) && ! is_string($id)) || ! filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])) {
-                self::invalid();
+                self::invalid($box);
             }
             $ids[] = (int) $id;
         }
@@ -59,19 +63,22 @@ class GelBox
 
         sort($ids, SORT_NUMERIC);
 
-        return array_map(function (int $id) use ($gels, $locale): array {
+        return array_map(function (int $id) use ($gels, $locale, $box): array {
             $gel = $gels->get($id);
             if (! $gel) {
-                self::invalid();
+                self::invalid($box);
             }
 
             return self::snapshot($gel, $locale);
         }, $ids);
     }
 
-    private static function invalid(): never
+    private static function invalid(Product $box): never
     {
-        $message = __('Choisissez six gels disponibles pour votre coffret.');
+        $count = (int) $box->gel_selection_count;
+        $message = $box->requires_gel_selection && $count >= 1 && $count <= self::MAX_SIZE
+            ? trans_choice('Choisissez un gel disponible pour votre coffret.|Choisissez :count gels disponibles pour votre coffret.', $count)
+            : __('La composition de votre coffret est invalide.');
 
         throw ValidationException::withMessages([
             'cart_items' => $message,

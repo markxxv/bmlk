@@ -73,9 +73,6 @@ class WarehousePwaTest extends TestCase
             ['id' => 11, 'name' => 'Gel A', 'name_en' => 'Gel A', 'sku' => null],
             ['id' => 11, 'name' => 'Gel A', 'name_en' => 'Gel A', 'sku' => null],
             ['id' => 12, 'name' => 'Gel B', 'name_en' => 'Gel B', 'sku' => 'GB12'],
-            ['id' => 13, 'name' => 'Gel C'],
-            ['id' => 14, 'name' => 'Gel D'],
-            ['id' => 15, 'name' => 'Gel E'],
         ];
         $order = $this->order([
             'items' => [
@@ -87,8 +84,7 @@ class WarehousePwaTest extends TestCase
             ->assertOk()
             ->assertSee('Gel box contents')
             ->assertSeeInOrder(['Gel A', '×4', 'Gel B', 'GB12', '×2'])
-            ->assertSee('Total gels to pack')
-            ->assertSee('12');
+            ->assertSee('Total gels to pack: 6');
     }
 
     public function test_guests_are_redirected_to_the_warehouse_login(): void

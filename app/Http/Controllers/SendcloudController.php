@@ -7,6 +7,7 @@ use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ShippingBox;
+use App\Services\GelBox;
 use App\Services\SendcloudTrackingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -269,7 +270,7 @@ class SendcloudController extends Controller
             'cart_items' => ['required','array','min:1'],
             'cart_items.*.product_id' => ['required','integer'],
             'cart_items.*.quantity' => ['required','integer','min:1','max:99'],
-            'cart_items.*.box_gels' => ['sometimes','array','max:6'],
+            'cart_items.*.box_gels' => ['sometimes','array','max:'.GelBox::MAX_SIZE],
         ]);
 
         // Server revalidates prices and product options; never trust cart totals from JS.

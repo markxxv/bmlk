@@ -23,7 +23,7 @@ class GelBoxTest extends TestCase
         $gel = Product::query()->create(['category_id' => $category->id, 'name' => ['fr' => 'Gel A'], 'slug' => ['fr' => 'gel-a'], 'active' => true, 'price' => 10, 'stock' => 20]);
         $box = Product::query()->create(['category_id' => $other->id, 'name' => ['fr' => 'Box'], 'slug' => ['fr' => 'box'], 'active' => true, 'price' => 45, 'stock' => 10, 'requires_gel_selection' => true]);
 
-        return [$box, $gel];
+        return [$box->refresh(), $gel];
     }
 
     public function test_box_requires_six_gels_and_uses_server_snapshots_and_box_price(): void
@@ -61,6 +61,33 @@ class GelBoxTest extends TestCase
             'product_ids' => [$box->id],
             'cart_items' => [['product_id' => $box->id, 'box_gels' => array_fill(0, 6, ['id' => $gel->id])]],
         ])->assertOk()->assertJsonPath('invalid_box_indexes', [0]);
+    }
+
+    public function test_box_count_is_configurable_and_stock_uses_the_order_snapshot(): void
+    {
+        [$box, $gel] = $this->catalog();
+        $this->assertSame(6, $box->gel_selection_count);
+
+        foreach ([1, 3, 12] as $count) {
+            $box->update(['gel_selection_count' => $count]);
+            $selection = array_fill(0, $count, ['id' => $gel->id]);
+            $cart = ['product_id' => $box->id, 'quantity' => 1, 'box_gels' => $selection];
+
+            $this->postJson(route('api.cart.availability'), [
+                'product_ids' => [$box->id], 'cart_items' => [$cart],
+            ])->assertOk()->assertJsonCount($count, 'box_gels.0')->assertJsonPath('invalid_box_indexes', []);
+
+            $item = app(ShopController::class)->normalizeItems([$cart])->first();
+            $this->assertCount($count, $item['box_gels']);
+            $this->assertSame(45.0, $item['unit_price']);
+
+            $box->update(['gel_selection_count' => $count + 1]);
+            $this->postJson(route('api.cart.availability'), [
+                'product_ids' => [$box->id], 'cart_items' => [$cart],
+            ])->assertOk()->assertJsonPath('invalid_box_indexes', [0]);
+
+            $this->assertSame($count, app(ProductStockService::class)->quantitiesForItems([$item])[$gel->id]);
+        }
     }
 
     public function test_stale_box_does_not_block_an_ordinary_cart_line(): void

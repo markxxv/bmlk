@@ -2,13 +2,13 @@
     <div class="flex items-center justify-between gap-3">
         <h2 id="gel-box-title" class="text-base font-semibold text-zinc-900">{{ __('Composez votre coffret') }}</h2>
         <span class="rounded-full bg-[#F3E4E7] px-3 py-1 text-sm font-semibold tabular-nums text-bmlk-brand" aria-live="polite">
-            <span x-text="selectedGels.length"></span> / 6
+            <span x-text="selectedGels.length"></span> / <span x-text="requiredGelCount"></span>
         </span>
     </div>
-    <p class="mt-1 text-sm text-zinc-500">{{ __('Choisissez vos 6 gels') }}. {{ __('Vous pouvez choisir plusieurs fois le même gel.') }}</p>
+    <p class="mt-1 text-sm text-zinc-500">{{ trans_choice('Choisissez votre gel|Choisissez vos :count gels', (int) $product->gel_selection_count) }}. {{ __('Vous pouvez choisir plusieurs fois le même gel.') }}</p>
 
     <div class="mt-4 grid grid-cols-6 gap-1.5 sm:gap-2">
-        <template x-for="slot in 6" :key="slot">
+        <template x-for="slot in requiredGelCount" :key="slot">
             <div class="relative flex aspect-square items-center justify-center rounded-lg bg-zinc-100">
                 <template x-if="selectedGels[slot - 1]">
                     <button type="button" class="relative size-full rounded-lg focus-visible:outline-2 focus-visible:outline-bmlk-brand"
@@ -26,7 +26,7 @@
         </template>
     </div>
     <div class="mt-4 h-1.5 overflow-hidden rounded-full bg-zinc-100" aria-hidden="true">
-        <div class="h-full rounded-full bg-bmlk-brand transition-all" :style="'width:' + (selectedGels.length / 6 * 100) + '%'"></div>
+        <div class="h-full rounded-full bg-bmlk-brand transition-all" :style="'width:' + (selectedGels.length / requiredGelCount * 100) + '%'"></div>
     </div>
 
     <div class="relative mt-5">
@@ -50,7 +50,7 @@
                     <button x-show="gelCount(gel.id)" type="button" @click="removeGel(gel.id)" :aria-label="@js(__('Retirer')) + ' ' + gel.name"
                         class="flex size-9 items-center justify-center rounded-full bg-white text-bmlk-brand"><x-lucide-minus class="size-4" /></button>
                     <span x-show="gelCount(gel.id)" class="min-w-4 text-center text-sm font-semibold text-bmlk-brand" x-text="gelCount(gel.id)"></span>
-                    <button type="button" @click="addGel(gel)" :disabled="selectedGels.length >= 6" :aria-label="@js(__('Ajouter')) + ' ' + gel.name"
+                    <button type="button" @click="addGel(gel)" :disabled="selectedGels.length >= requiredGelCount" :aria-label="@js(__('Ajouter')) + ' ' + gel.name"
                         class="flex size-9 items-center justify-center rounded-full bg-bmlk-brand text-white disabled:bg-zinc-200 disabled:text-zinc-400"><x-lucide-plus class="size-4" /></button>
                 </div>
             </div>

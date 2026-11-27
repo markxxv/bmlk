@@ -215,7 +215,7 @@ class ShopController extends Controller
             'cart_items.*.product_id' => ['required', 'integer', 'min:1'],
             'cart_items.*.quantity' => ['sometimes', 'integer', 'min:1', 'max:99'],
             'cart_items.*.options' => ['sometimes', 'array'],
-            'cart_items.*.box_gels' => ['sometimes', 'array', 'max:6'],
+            'cart_items.*.box_gels' => ['sometimes', 'array', 'max:'.GelBox::MAX_SIZE],
         ]);
 
         $availableIds = Product::query()
@@ -257,7 +257,7 @@ class ShopController extends Controller
             'cart_prices' => (object) $prices,
             'invalid_box_indexes' => $invalidBoxIndexes,
             'box_gels' => (object) $normalized->filter(fn (array $item): bool => isset($item['box_gels']))->map(fn (array $item): array => $item['box_gels'])->all(),
-            'box_message' => __('La composition de votre coffret a changé. Sélectionnez à nouveau vos six gels.'),
+            'box_message' => __('La composition de votre coffret a changé. Sélectionnez à nouveau vos gels.'),
             'prices_message' => __('Les variantes et les prix du panier ont été actualisés. Vérifiez votre sélection.'),
             'removed_message' => __('Ces articles ne sont plus disponibles et ont été retirés du panier :'),
         ])->header('Cache-Control', 'no-store');

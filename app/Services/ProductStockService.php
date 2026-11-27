@@ -57,7 +57,8 @@ class ProductStockService
             $quantities[$productId] = $current + min($quantity, self::MAX_STOCK - $current);
 
             $gels = $item['box_gels'] ?? null;
-            if (is_array($gels) && count($gels) === GelBox::SIZE) {
+            // Paid orders retain their original composition even if the catalog changes.
+            if (is_array($gels) && array_is_list($gels) && count($gels) >= 1 && count($gels) <= GelBox::MAX_SIZE) {
                 foreach ($gels as $gel) {
                     $gelId = $this->positiveInteger(is_array($gel) ? ($gel['id'] ?? null) : null);
                     if ($gelId === null || $gelId === $productId) {

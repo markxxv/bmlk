@@ -163,6 +163,7 @@
             'sale_price' => $product->priceAfterDiscount($product->price),
             'available' => $product->available,
             'requires_gel_selection' => $product->requires_gel_selection,
+            'gel_selection_count' => $product->gel_selection_count,
         ];
 
         $offerSchema = null;
@@ -274,6 +275,7 @@
                 selected: {},
                 gelSearch: '',
                 selectedGels: [],
+                requiredGelCount: Number(product.gel_selection_count),
                 adding: false,
 
                 get filteredGels() {
@@ -287,7 +289,7 @@
                 },
 
                 addGel(gel) {
-                    if (this.selectedGels.length < 6) this.selectedGels.push(gel);
+                    if (this.selectedGels.length < this.requiredGelCount) this.selectedGels.push(gel);
                 },
 
                 removeGel(id) {
@@ -393,7 +395,7 @@
 
                 get isReady() {
                     return product.available && this.allOptionsSelected
-                        && (! product.requires_gel_selection || this.selectedGels.length === 6)
+                        && (! product.requires_gel_selection || this.selectedGels.length === this.requiredGelCount)
                         && this.currentPrice !== null
                         && Number.isFinite(Number(this.currentPrice));
                 },
@@ -729,7 +731,7 @@
                                 >
                                     <x-lucide-shopping-bag class="h-4 w-4" />
                                     <span x-show="isReady">{{ __('Ajouter au panier') }}</span>
-                                    <span x-show="! isReady">{{ $product->requires_gel_selection ? __('Choisissez vos 6 gels') : __('Choisissez les options') }}</span>
+                                    <span x-show="! isReady">{{ $product->requires_gel_selection ? trans_choice('Choisissez votre gel|Choisissez vos :count gels', (int) $product->gel_selection_count) : __('Choisissez les options') }}</span>
                                 </button>
                             </div>
 
