@@ -1,4 +1,4 @@
-<section class="mt-8 rounded-2xl bg-white p-4 sm:p-5" aria-labelledby="gel-box-title">
+<section class="relative z-45 mt-8 rounded-2xl bg-white p-4 sm:p-5" aria-labelledby="gel-box-title">
     <div class="flex items-center justify-between gap-3">
         <h2 id="gel-box-title" class="text-base font-semibold text-zinc-900">{{ __('Composez votre coffret') }}</h2>
         <span class="rounded-full bg-[#F3E4E7] px-3 py-1 text-sm font-semibold tabular-nums text-bmlk-brand" aria-live="polite">

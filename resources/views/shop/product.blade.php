@@ -570,7 +570,7 @@
                             @js($boxGels ?? [])
                         )"
                     >
-                        <div class="lg:sticky lg:top-8">
+                        <div @class(['lg:sticky lg:top-8', 'lg:z-45' => $product->available && $product->requires_gel_selection])>
                             <div class="flex flex-wrap items-center gap-2">
                                 @if ($categoryName)
                                     <a
